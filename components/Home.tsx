@@ -98,17 +98,16 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                         </p>
                     </button>
 
-                    {/* ANGULAR GYM CARD (Placeholder) */}
+                    {/* ANGULAR GYM CARD (Active but Disabled) */}
                     <button
                         disabled
-                        className="group relative h-64 bg-slate-900/20 backdrop-blur-sm border border-slate-800/50 rounded-3xl p-8 flex flex-col items-center justify-center text-center opacity-70 cursor-not-allowed"
+                        className="group relative h-64 bg-slate-900/40 backdrop-blur-md border border-slate-800 rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-default"
                     >
-                        <div className="absolute top-4 right-4 px-2 py-1 bg-slate-800 text-[9px] font-bold text-slate-400 uppercase tracking-wider rounded">Coming Soon</div>
-                        <div className="w-16 h-16 bg-slate-800/50 rounded-2xl flex items-center justify-center text-slate-600 mb-4 border border-slate-700">
+                        <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mb-4 shadow-inner border border-red-500/20">
                             <Braces size={28} strokeWidth={1.5} />
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-500 mb-2 tracking-tight font-outfit">Angular Lab</h2>
-                        <p className="text-slate-600 text-sm font-medium max-w-[200px] leading-relaxed">
+                        <h2 className="text-2xl font-bold text-white mb-2 tracking-tight font-outfit">Angular Lab</h2>
+                        <p className="text-slate-400 text-sm font-medium max-w-[200px] leading-relaxed">
                             Frontend architecture & components.
                         </p>
                     </button>
