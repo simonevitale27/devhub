@@ -1,0 +1,5 @@
+{
+  "name": "SQL Gym",
+  "description": "An interactive SQL practice environment with dynamic difficulty, immediate feedback, and progressive learning levels.",
+  "requestFramePermissions": []
+}
