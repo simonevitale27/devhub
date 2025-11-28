@@ -2,34 +2,43 @@ import React, { useMemo } from 'react';
 import { TrendingUp, Hash, Type, AlertCircle } from 'lucide-react';
 import { analyzeResultStats, ColumnStats } from '../utils/statsHelpers';
 
+import DataVisualization from './DataVisualization';
+
 interface ResultStatsProps {
   data: any[];
+  query: string;
 }
 
-const ResultStats: React.FC<ResultStatsProps> = ({ data }) => {
+const ResultStats: React.FC<ResultStatsProps> = ({ data, query }) => {
   const stats = useMemo(() => analyzeResultStats(data), [data]);
 
-  // Don't show stats if less than 2 rows
-  if (!data || data.length < 2) return null;
-
-  // Don't show if no stats calculated
-  if (stats.length === 0) return null;
+  // Don't show stats if less than 2 rows (unless it's a KPI which DataVisualization handles)
+  // But ResultStats logic for cards requires stats.length > 0
+  const showCards = data && data.length >= 2 && stats.length > 0;
 
   return (
-    <div className="mt-4 p-4 bg-slate-900/30 rounded-lg border border-slate-700">
-      <div className="flex items-center gap-2 mb-3">
-        <TrendingUp size={16} className="text-blue-400" />
-        <h3 className="text-sm font-bold text-slate-300">Statistiche Rapide</h3>
-        <span className="text-xs text-slate-500">
-          ({data.length} righe analizzate)
-        </span>
-      </div>
+    <div className="space-y-6">
+      {/* Charts Section */}
+      <DataVisualization data={data} solutionQuery={query} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {stats.map((columnStat) => (
-          <ColumnStatCard key={columnStat.columnName} stat={columnStat} />
-        ))}
-      </div>
+      {/* Stats Cards Section */}
+      {showCards && (
+        <div className="p-4 bg-slate-900/30 rounded-lg border border-slate-700">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp size={16} className="text-blue-400" />
+            <h3 className="text-sm font-bold text-slate-300">Statistiche Colonne</h3>
+            <span className="text-xs text-slate-500">
+              ({data.length} righe analizzate)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {stats.map((columnStat) => (
+              <ColumnStatCard key={columnStat.columnName} stat={columnStat} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

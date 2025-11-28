@@ -30,6 +30,7 @@ import {
   AlertTriangle,
   Bot,
   History,
+  Bug,
 } from "lucide-react";
 import { downloadCSV, compareResults } from "../utils/sqlHelpers";
 import { format } from "sql-formatter";
@@ -169,6 +170,16 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
   useEffect(() => {
     loadContent();
   }, [loadContent]);
+
+  // Pre-load broken code in Debug Mode
+  useEffect(() => {
+    if (!isGymMode && exercise) {
+      // Use brokenCode if available, otherwise fallback to removing last char from solution
+      const brokenSQL = exercise.brokenCode || exercise.solutionQuery?.slice(0, -1) || '';
+      setSqlCode(brokenSQL);
+    }
+  }, [exercise, isGymMode]);
+
 
   const handleResetInput = () => {
     setUserResult(null);
@@ -569,7 +580,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                     : "text-slate-400 hover:text-slate-300"
                 }`}
               >
-                <Keyboard size={12} /> COPY
+                <Bug size={12} /> DEBUG
               </button>
             </div>
 
@@ -706,15 +717,86 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
           {/* EDITOR AREA */}
           <div className="flex-1 flex min-h-0">
             {!isGymMode && exercise ? (
-              // COPY MODE SPLIT
+              // DEBUG MODE SPLIT
               <>
-                <div className="w-1/2 bg-[#0b1120] border-r border-slate-800 p-4 overflow-auto">
-                  <div className="text-xs font-bold text-purple-500 uppercase mb-2 flex items-center gap-2">
-                    <Code size={14} /> Codice Target
+                <div className="w-1/2 bg-[#0b1120] border-r border-slate-800 p-6 overflow-auto custom-scrollbar">
+                  <div className="mb-6">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider mb-4">
+                      <Bug size={14} /> Modalità Debug
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-3 leading-tight">
+                      {exercise?.title}
+                    </h3>
+                    <p className="text-slate-300 text-sm leading-relaxed">
+                      {exercise?.description}
+                    </p>
                   </div>
-                  <code className="font-mono text-sm text-purple-200 whitespace-pre-wrap select-none">
-                    {exercise?.solutionQuery}
-                  </code>
+
+                  <div className="space-y-4">
+                    {/* Instructions Card */}
+                    <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4">
+                      <strong className="block text-slate-400 text-xs uppercase tracking-wider mb-2">
+                        Obiettivo
+                      </strong>
+                      <p className="text-sm text-slate-300">
+                        Il codice nell'editor contiene un <span className="text-amber-400 font-bold">errore intenzionale</span>. 
+                        Analizza la query, trova il bug e correggilo per ottenere il risultato atteso.
+                      </p>
+                    </div>
+
+                    {/* Hint Section */}
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setShowHint(!showHint)}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
+                          showHint
+                            ? "bg-amber-950/30 border-amber-500/50 text-amber-200"
+                            : "bg-slate-900/30 border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                        }`}
+                      >
+                        <span className="text-sm font-medium flex items-center gap-2">
+                          <Lightbulb size={16} className={showHint ? "text-amber-400" : ""} />
+                          {showHint ? "Nascondi Indizio" : "Dammi un indizio"}
+                        </span>
+                        {showHint ? <ChevronRight className="rotate-90" size={16} /> : <ChevronRight size={16} />}
+                      </button>
+                      
+                      {showHint && exercise?.debugHint && (
+                        <div className="bg-amber-950/20 border border-amber-500/20 rounded-lg p-4 animate-in slide-in-from-top-2">
+                          <p className="text-sm text-amber-200 flex gap-2">
+                            <span className="text-amber-500 font-bold">💡</span>
+                            {exercise.debugHint}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Solution Section */}
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setShowSolution(!showSolution)}
+                        className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
+                          showSolution
+                            ? "bg-purple-950/30 border-purple-500/50 text-purple-200"
+                            : "bg-slate-900/30 border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                        }`}
+                      >
+                        <span className="text-sm font-medium flex items-center gap-2">
+                          <Unlock size={16} className={showSolution ? "text-purple-400" : ""} />
+                          {showSolution ? "Nascondi Soluzione" : "Mostra Soluzione"}
+                        </span>
+                        {showSolution ? <ChevronRight className="rotate-90" size={16} /> : <ChevronRight size={16} />}
+                      </button>
+
+                      {showSolution && (
+                        <div className="bg-purple-950/20 border border-purple-500/20 rounded-lg p-4 animate-in slide-in-from-top-2">
+                          <code className="font-mono text-sm text-purple-200 block whitespace-pre-wrap">
+                            {exercise?.solutionQuery}
+                          </code>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <div className="w-1/2 flex flex-col bg-[#0f172a]">
                   <div className="bg-slate-900/50 p-2 border-b border-slate-800 flex justify-end">
@@ -722,7 +804,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                       onClick={handleRun}
                       className="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-md shadow-lg shadow-purple-900/20 flex items-center gap-2 transition-all active:scale-95"
                     >
-                      <Play size={14} /> RUN CHECK
+                      <Play size={14} /> VERIFICA
                     </button>
                   </div>
                   <div className="flex-1 relative bg-[#0f172a]">
@@ -1063,6 +1145,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                     ? [userResult.data]
                     : []
                 }
+                query={sqlCode}
               />
             </div>
           </div>

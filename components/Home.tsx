@@ -67,20 +67,20 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                         <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/5 group-hover:ring-blue-500/30 transition-all duration-500"></div>
                     </button>
 
-                    {/* CODE CHECKER CARD */}
+                    {/* DATALAB CARD */}
                     <button
-                        onClick={() => onNavigate(Page.CodeChecker)}
-                        className="group relative h-64 bg-slate-900/40 backdrop-blur-md border border-slate-800 hover:border-purple-500/50 rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/10 active:scale-95"
+                        onClick={() => onNavigate(Page.DataLab)}
+                        className="group relative h-64 bg-slate-900/40 backdrop-blur-md border border-slate-800 hover:border-emerald-500/50 rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/10 active:scale-95"
                     >
-                        <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 mb-4 group-hover:scale-110 transition-transform duration-500 shadow-inner border border-purple-500/20">
+                        <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 mb-4 group-hover:scale-110 transition-transform duration-500 shadow-inner border border-emerald-500/20">
                             <Code2 size={28} strokeWidth={1.5} />
                         </div>
-                        <h2 className="text-2xl font-bold text-white mb-2 tracking-tight font-outfit">Code Checker</h2>
+                        <h2 className="text-2xl font-bold text-white mb-2 tracking-tight font-outfit">DataLab</h2>
                         <p className="text-slate-400 text-sm font-medium max-w-[200px] leading-relaxed">
-                            Analisi AI-Simulated, review stile e ottimizzazione.
+                            Carica CSV, interroga con SQL, ricevi feedback AI.
                         </p>
 
-                        <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/5 group-hover:ring-purple-500/30 transition-all duration-500"></div>
+                        <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/5 group-hover:ring-emerald-500/30 transition-all duration-500"></div>
                     </button>
 
                     {/* PYTHON GYM CARD (Placeholder) */}

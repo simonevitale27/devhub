@@ -20,7 +20,7 @@ export enum TopicId {
 export enum Page {
   Home = 'home',
   SqlGym = 'sql_gym',
-  CodeChecker = 'code_checker',
+  DataLab = 'data_lab',
   PythonGym = 'python_gym',
   AngularGym = 'angular_gym'
 }
@@ -50,6 +50,8 @@ export interface Exercise {
   description: string;
   initialQuery: string;
   solutionQuery: string;
+  brokenCode?: string; // For Debug Mode: query with intentional error
+  debugHint?: string;  // For Debug Mode: hint about the error
   hints: string[];
   explanation: string;
 }
@@ -90,4 +92,12 @@ export interface ChartConfig {
   type: 'bar' | 'pie' | 'kpi' | 'none';
   xKey: string;
   yKey: string;
+}
+
+export interface CsvData {
+  tableName: string;
+  fileName: string;
+  headers: string[];
+  rows: any[][];
+  rowCount: number;
 }
