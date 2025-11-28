@@ -33,6 +33,8 @@ export enum PracticeMode {
 export interface TableColumn {
   name: string;
   type: string;
+  isPrimaryKey?: boolean;
+  isForeignKey?: boolean;
 }
 
 export interface TableSchema {

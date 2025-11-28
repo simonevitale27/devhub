@@ -6,7 +6,7 @@ export const DB_SCHEMAS: TableSchema[] = [
   {
     tableName: 'utenti',
     columns: [
-      { name: 'id', type: 'INT' },
+      { name: 'id', type: 'INT', isPrimaryKey: true },
       { name: 'nome', type: 'VARCHAR' },
       { name: 'email', type: 'VARCHAR' },
       { name: 'paese', type: 'VARCHAR' },
@@ -16,7 +16,7 @@ export const DB_SCHEMAS: TableSchema[] = [
   {
     tableName: 'categorie',
     columns: [
-      { name: 'id', type: 'INT' },
+      { name: 'id', type: 'INT', isPrimaryKey: true },
       { name: 'nome', type: 'VARCHAR' },
       { name: 'descrizione', type: 'VARCHAR' }
     ]
@@ -24,7 +24,7 @@ export const DB_SCHEMAS: TableSchema[] = [
   {
     tableName: 'fornitori',
     columns: [
-      { name: 'id', type: 'INT' },
+      { name: 'id', type: 'INT', isPrimaryKey: true },
       { name: 'azienda', type: 'VARCHAR' },
       { name: 'contatto', type: 'VARCHAR' },
       { name: 'nazione', type: 'VARCHAR' }
@@ -33,10 +33,10 @@ export const DB_SCHEMAS: TableSchema[] = [
   {
     tableName: 'prodotti',
     columns: [
-      { name: 'id', type: 'INT' },
+      { name: 'id', type: 'INT', isPrimaryKey: true },
       { name: 'nome', type: 'VARCHAR' },
-      { name: 'categoria_id', type: 'INT' },
-      { name: 'fornitore_id', type: 'INT' },
+      { name: 'categoria_id', type: 'INT', isForeignKey: true },
+      { name: 'fornitore_id', type: 'INT', isForeignKey: true },
       { name: 'prezzo', type: 'DECIMAL' },
       { name: 'stock', type: 'INT' }
     ]
@@ -44,9 +44,9 @@ export const DB_SCHEMAS: TableSchema[] = [
   {
     tableName: 'ordini',
     columns: [
-      { name: 'id', type: 'INT' },
-      { name: 'utente_id', type: 'INT' },
-      { name: 'prodotto_id', type: 'INT' },
+      { name: 'id', type: 'INT', isPrimaryKey: true },
+      { name: 'utente_id', type: 'INT', isForeignKey: true },
+      { name: 'prodotto_id', type: 'INT', isForeignKey: true },
       { name: 'data_ordine', type: 'DATE' },
       { name: 'quantita', type: 'INT' }
     ]
@@ -54,8 +54,8 @@ export const DB_SCHEMAS: TableSchema[] = [
   {
     tableName: 'spedizioni',
     columns: [
-      { name: 'id', type: 'INT' },
-      { name: 'ordine_id', type: 'INT' },
+      { name: 'id', type: 'INT', isPrimaryKey: true },
+      { name: 'ordine_id', type: 'INT', isForeignKey: true },
       { name: 'data_spedizione', type: 'DATE' },
       { name: 'corriere', type: 'VARCHAR' },
       { name: 'codice_tracking', type: 'VARCHAR' }
@@ -64,9 +64,9 @@ export const DB_SCHEMAS: TableSchema[] = [
   {
     tableName: 'recensioni',
     columns: [
-      { name: 'id', type: 'INT' },
-      { name: 'prodotto_id', type: 'INT' },
-      { name: 'utente_id', type: 'INT' },
+      { name: 'id', type: 'INT', isPrimaryKey: true },
+      { name: 'prodotto_id', type: 'INT', isForeignKey: true },
+      { name: 'utente_id', type: 'INT', isForeignKey: true },
       { name: 'voto', type: 'INT' },
       { name: 'commento', type: 'VARCHAR' }
     ]

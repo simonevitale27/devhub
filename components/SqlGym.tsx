@@ -1,33 +1,34 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Play,
-  RotateCcw,
-  ArrowRight,
-  Lightbulb,
-  CheckCircle2,
-  XCircle,
-  Database,
-  ChevronLeft,
   ChevronRight,
-  Shuffle,
+  ChevronLeft,
+  Sparkles,
+  RotateCcw,
+  Lightbulb,
+  Eye,
+  Database,
   Layers,
+  Code2,
+  Table as TableIcon,
+  CheckCircle2,
+  AlertCircle,
+  Download,
+  Wand2,
+  Keyboard,
+  TrendingUp,
+  X,
+  Home as HomeIcon,
+  Search,
+  GitBranch,
+  Dumbbell,
+  Shuffle,
   Unlock,
   Lock,
-  AlertTriangle,
-  EyeOff,
-  HelpCircle,
-  MessageCircle,
-  Search,
-  Home as HomeIcon,
-  Keyboard,
-  Dumbbell,
-  Hexagon,
   Code,
+  XCircle,
+  AlertTriangle,
   Bot,
-  GitBranch,
-  FileText,
-  Download,
-  Sparkles,
   History,
 } from "lucide-react";
 import { downloadCSV, compareResults } from "../utils/sqlHelpers";
@@ -51,6 +52,7 @@ import { generateExercises } from "../services/exerciseGenerator";
 import SchemaViewer from "./SchemaViewer";
 import CodeEditor from "./CodeEditor";
 import ResultsTable from "./ResultsTable";
+import ResultStats from "./ResultStats";
 import SchemaERDiagram from "./SchemaERDiagram";
 import ResultDiff from "./ResultDiff";
 import ErrorBoundary from "./ErrorBoundary";
@@ -84,6 +86,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
   const [showHint, setShowHint] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [showErrorExplanation, setShowErrorExplanation] = useState(false);
+  const [showStatsModal, setShowStatsModal] = useState(false); // New state for stats modal
   const [isDbReady, setIsDbReady] = useState(false);
   const [showDbPanel, setShowDbPanel] = useState(false);
   const [showERDiagram, setShowERDiagram] = useState(false);
@@ -140,6 +143,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     setShowErrorExplanation(false);
     setSqlCode("");
     setShowSolution(false);
+    setShowStatsModal(false); // Close stats modal on new content load
 
     try {
       if (practiceMode === PracticeMode.Type) {
@@ -173,6 +177,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     setShowErrorExplanation(false);
     setSqlCode("");
     setShowSolution(false);
+    setShowStatsModal(false); // Close stats modal on reset
   };
 
   const formatSQL = () => {
@@ -225,6 +230,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     }
 
     setShowErrorExplanation(false);
+    setShowStatsModal(false); // Close stats modal on new run
 
     // TYPE MODE validation (copy mode)
     if (practiceMode === PracticeMode.Type && exercise) {
@@ -948,26 +954,35 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                       ) : (
                         // Show normal results - clean table only
                         <div className="flex-1 overflow-hidden flex flex-col">
-                          {/* CSV Download Button */}
-                          {validation?.isCorrect && (
-                            <div className="p-2 border-b border-slate-800 bg-slate-900/50 flex justify-end">
-                              <button
-                                onClick={() =>
-                                  downloadCSV(
-                                    Array.isArray(userResult.data)
-                                      ? userResult.data
-                                      : [],
-                                    `sql_result_${Date.now()}.csv`
-                                  )
-                                }
-                                className="px-4 py-1.5 text-xs font-bold rounded-lg border transition-all flex items-center gap-2 shadow-sm active:scale-95 bg-emerald-600/20 border-emerald-500/50 text-emerald-300 hover:bg-emerald-600/30"
-                                title="Scarica risultati in CSV"
-                              >
-                                <Download size={14} />
-                                Scarica CSV
-                              </button>
-                            </div>
-                          )}
+                          {/* Toolbar with CSV Download and Stats Button */}
+                          <div className="p-2 border-b border-slate-800 bg-slate-900/50 flex justify-end gap-2">
+                            {/* Stats Button */}
+                            <button
+                              onClick={() => setShowStatsModal(true)}
+                              className="px-4 py-1.5 text-xs font-bold rounded-lg border transition-all flex items-center gap-2 shadow-sm active:scale-95 bg-blue-600/20 border-blue-500/50 text-blue-300 hover:bg-blue-600/30"
+                              title="Visualizza statistiche rapide"
+                            >
+                              <TrendingUp size={14} />
+                              Statistiche
+                            </button>
+                            
+                            {/* CSV Download Button */}
+                            <button
+                              onClick={() =>
+                                downloadCSV(
+                                  Array.isArray(userResult.data)
+                                    ? userResult.data
+                                    : [],
+                                  `sql_result_${Date.now()}.csv`
+                                )
+                              }
+                              className="px-4 py-1.5 text-xs font-bold rounded-lg border transition-all flex items-center gap-2 shadow-sm active:scale-95 bg-emerald-600/20 border-emerald-500/50 text-emerald-300 hover:bg-emerald-600/30"
+                              title="Scarica risultati in CSV"
+                            >
+                              <Download size={14} />
+                              Scarica CSV
+                            </button>
+                          </div>
 
                           <div className="flex-1 overflow-hidden">
                             <ErrorBoundary>
@@ -1004,6 +1019,55 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
         </div>
       </main>
 
+      {/* Stats Modal */}
+      {showStatsModal && userResult?.success && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => setShowStatsModal(false)}
+        >
+          <div
+            className="relative bg-[#0b1120] border border-slate-700 rounded-xl shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-auto animate-in zoom-in-95 duration-300 custom-scrollbar"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-[#0b1120]">
+              <div className="flex items-center gap-2">
+                <TrendingUp size={18} className="text-blue-400" />
+                <h2 className="text-lg font-bold text-white">Statistiche Rapide</h2>
+                <span className="text-xs text-slate-500">
+                  ({
+                    Array.isArray(userResult.data)
+                      ? userResult.data.length
+                      : userResult.data
+                      ? 1
+                      : 0
+                  } righe analizzate)
+                </span>
+              </div>
+              <button
+                onClick={() => setShowStatsModal(false)}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                aria-label="Chiudi"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <ResultStats
+                data={
+                  Array.isArray(userResult.data)
+                    ? userResult.data
+                    : userResult.data
+                    ? [userResult.data]
+                    : []
+                }
+              />
+            </div>
+          </div>
+        </div>
+      )}
       {/* ER Diagram Modal */}
       {showERDiagram && (
         <SchemaERDiagram

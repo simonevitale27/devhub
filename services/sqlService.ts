@@ -39,17 +39,44 @@ export const initDatabase = (difficulty: Difficulty) => {
     // Seed Data (Expanded for better realism)
     alasql('INSERT INTO categorie SELECT * FROM ?', [categoriesList]);
 
+    // Hardcoded Users
+    const fixedUsers = [
+      { id: 101, nome: 'Mario Rossi', email: 'mario.rossi@example.com', paese: 'Italia', premium: true },
+      { id: 102, nome: 'Luigi Verdi', email: 'luigi.verdi@example.com', paese: 'Italia', premium: false },
+      { id: 103, nome: 'John Doe', email: 'john.doe@example.com', paese: 'USA', premium: true },
+      { id: 104, nome: 'Sophie Martin', email: 'sophie.martin@example.com', paese: 'Francia', premium: false }
+    ];
+    alasql('INSERT INTO utenti SELECT * FROM ?', [fixedUsers]);
+
     const users = [];
     for (let i = 1; i <= 35; i++) users.push({
       id: i, nome: getRandom(firstNames), email: 'user' + i + '@mail.com', paese: getRandom(countries), premium: Math.random() > 0.5
     });
     alasql('INSERT INTO utenti SELECT * FROM ?', [users]);
 
+    // Hardcoded Suppliers
+    const fixedSuppliers = [
+      { id: 101, azienda: 'TechSolutions', contatto: 'Elon Musk', nazione: 'USA' },
+      { id: 102, azienda: 'GlobalTrade', contatto: 'Jack Ma', nazione: 'Cina' },
+      { id: 103, azienda: 'LogisticaVelocissima', contatto: 'Mario Draghi', nazione: 'Italia' }
+    ];
+    alasql('INSERT INTO fornitori SELECT * FROM ?', [fixedSuppliers]);
+
     const suppliers = [];
     for (let i = 1; i <= 10; i++) suppliers.push({
       id: i, azienda: getRandom(companies) + ' ' + i, contatto: getRandom(firstNames) + ' ' + getRandom(lastNames), nazione: getRandom(countries)
     });
     alasql('INSERT INTO fornitori SELECT * FROM ?', [suppliers]);
+
+    // Hardcoded Products
+    const fixedProducts = [
+      { id: 101, nome: 'Laptop Pro', categoria_id: 1, prezzo: 1200, stock: 50, fornitore_id: 101 },
+      { id: 102, nome: 'Smartphone X', categoria_id: 1, prezzo: 800, stock: 20, fornitore_id: 101 },
+      { id: 103, nome: 'Monitor 4K', categoria_id: 1, prezzo: 400, stock: 10, fornitore_id: 102 },
+      { id: 104, nome: 'T-Shirt Basic', categoria_id: 2, prezzo: 20, stock: 100, fornitore_id: 102 },
+      { id: 105, nome: 'Divano Moderno', categoria_id: 3, prezzo: 500, stock: 5, fornitore_id: 103 }
+    ];
+    alasql('INSERT INTO prodotti SELECT * FROM ?', [fixedProducts]);
 
     const products = [];
     for (let i = 1; i <= 40; i++) products.push({
@@ -58,6 +85,15 @@ export const initDatabase = (difficulty: Difficulty) => {
     alasql('INSERT INTO prodotti SELECT * FROM ?', [products]);
 
     // Seed Orders
+    // Hardcoded Orders for Date Consistency
+    const fixedOrders = [
+        { id: 1001, utente_id: 101, prodotto_id: 101, data_ordine: '2023-01-01', quantita: 1 }, // New Year Order
+        { id: 1002, utente_id: 101, prodotto_id: 102, data_ordine: '2023-01-15', quantita: 2 },
+        { id: 1003, utente_id: 102, prodotto_id: 104, data_ordine: '2023-06-01', quantita: 5 }, // Summer Start
+        { id: 1004, utente_id: 103, prodotto_id: 103, data_ordine: '2023-12-25', quantita: 1 }  // Christmas
+    ];
+    alasql('INSERT INTO ordini SELECT * FROM ?', [fixedOrders]);
+
     const orders = [];
     for (let i = 1; i <= 60; i++) orders.push({
       id: i, utente_id: getRandomInt(1, 35), prodotto_id: getRandomInt(1, 40), data_ordine: `2023-${getRandomInt(1, 12)}-${getRandomInt(1, 28)}`, quantita: getRandomInt(1, 10)
@@ -113,6 +149,14 @@ export const runQuery = (sql: string): QueryResult => {
 export const getTablePreview = (tableName: string): any[] => {
   try {
     return alasql(`SELECT * FROM ${tableName} LIMIT 5`);
+  } catch (e) {
+    return [];
+  }
+}
+
+export const getAllTableData = (tableName: string): any[] => {
+  try {
+    return alasql(`SELECT * FROM ${tableName}`);
   } catch (e) {
     return [];
   }
