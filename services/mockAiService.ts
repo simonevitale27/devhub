@@ -9,6 +9,89 @@ interface ReviewResult {
     priority: string[];
 }
 
+/**
+ * Intelligent SQL error explainer
+ * Analyzes the error message and optionally the query to provide context-specific help
+ */
+export const explainSqlError = (errorMessage: string, query?: string): string => {
+    const errLower = errorMessage.toLowerCase();
+    const queryLower = query?.toLowerCase() || '';
+    
+    // SYNTAX ERRORS
+    if (errLower.includes('parse error') || errLower.includes('syntax')) {
+        // Try to identify specific syntax issues
+        if (queryLower.includes('selct') || queryLower.includes('selet')) {
+            return "Errore di sintassi: sembra esserci un errore di battitura nella parola chiave SELECT. Verifica l'ortografia dei comandi SQL (SELECT, FROM, WHERE, ecc.).";
+        }
+        if (queryLower.includes('form ') || queryLower.endsWith('form')) {
+            return "Errore di sintassi: controlla la parola chiave FROM. Potresti aver scritto FORM invece di FROM per errore.";
+        }
+        if (queryLower.match(/\bwher\b/) || queryLower.match(/\bwhere[^a-z]/)) {
+            return "Errore di sintassi: verifica la parola chiave WHERE. Potrebbe esserci un errore di battitura o una virgola/parentesi mancante.";
+        }
+        
+        // Generic syntax help
+        return "Errore di sintassi SQL: la struttura della query non è corretta.\n\nControlla i seguenti punti:\n- Tutte le parole chiave sono scritte correttamente (SELECT, FROM, WHERE, JOIN, GROUP BY)?\n- Hai dimenticato una virgola tra le colonne?\n- Tutte le parentesi aperte sono state chiuse?\n- Le stringhe di testo sono racchiuse tra apici singoli?\n\nSuggerimento: usa il pulsante Formatta per visualizzare meglio la struttura della query e individuare l'errore.";
+    }
+    
+    // TABLE NOT FOUND
+    if ((errLower.includes('table') && errLower.includes('exist')) || 
+        errLower.includes('table') && errLower.includes('not found')) {
+        return "Tabella non trovata: stai tentando di accedere a una tabella che non esiste nel database.\n\nCosa fare:\n- Controlla lo Schema Database nel pannello a sinistra\n- Verifica l'ortografia del nome della tabella (attenzione alle maiuscole e minuscole)\n- Le tabelle disponibili sono: utenti, prodotti, ordini, categorie, fornitori, spedizioni, recensioni\n\nSuggerimento: usa il pulsante Mostra Schema DB per visualizzare il diagramma completo delle relazioni.";
+    }
+    
+    // COLUMN NOT FOUND
+    if ((errLower.includes('column') && errLower.includes('exist')) || 
+        errLower.includes('column') && errLower.includes('not found') ||
+        errLower.includes('no such column')) {
+        
+        // Try to extract the problematic column name
+        const colMatch = errorMessage.match(/column[:\s]+['"`]?(\w+)['"`]?/i);
+        const problemCol = colMatch ? colMatch[1] : null;
+        
+        return `Colonna non trovata${problemCol ? ' (' + problemCol + ')' : ''}: la colonna che stai cercando di selezionare non esiste nella tabella specificata.\n\nCause comuni:\n- Errore di battitura nel nome della colonna (esempio: nome invece di nome_utente)\n- La colonna si trova in un'altra tabella\n- Alcune colonne usano il formato snake_case con underscore (esempio: categoria_id, data_ordine)\n\nSuggerimento: apri lo Schema Database e verifica i nomi esatti delle colonne per ogni tabella.`;
+    }
+    
+    // AMBIGUOUS COLUMN
+    if (errLower.includes('ambiguous') || errLower.includes('ambiguity')) {
+        return "Colonna ambigua: hai eseguito una JOIN tra più tabelle e una colonna esiste in entrambe. SQL non è in grado di determinare da quale tabella prenderla.\n\nSoluzione: usa il prefisso della tabella per specificare l'origine.\n\nEsempio errato:\nSELECT id FROM utenti JOIN ordini...\n\nEsempio corretto:\nSELECT utenti.id, ordini.id\nFROM utenti\nJOIN ordini ON utenti.id = ordini.utente_id\n\nBuona pratica: quando usi JOIN, specifica sempre tabella.colonna per evitare ambiguità.";
+    }
+    
+    // GROUP BY ERRORS
+    if (errLower.includes('group by') || errLower.includes('aggregat')) {
+        return "Errore di aggregazione con GROUP BY: quando usi funzioni aggregate (COUNT, SUM, AVG, MAX, MIN), devi seguire una regola precisa.\n\nRegola fondamentale: tutte le colonne nel SELECT che non sono racchiuse in una funzione aggregata devono essere presenti nella clausola GROUP BY.\n\nEsempio corretto:\nSELECT paese, COUNT(*)\nFROM utenti\nGROUP BY paese;\n\nEsempio errato (la colonna nome non è nel GROUP BY):\nSELECT paese, nome, COUNT(*)\nFROM utenti\nGROUP BY paese;\n\nSe vuoi mostrare la colonna nome, devi aggregarla (esempio: MAX(nome)) oppure aggiungerla al GROUP BY.";
+    }
+    
+    // JOIN ERRORS (missing ON clause)
+    if ((errLower.includes('join') && errLower.includes('on')) || 
+        (queryLower.includes('join') && !queryLower.includes(' on '))) {
+        return "Errore JOIN: le operazioni di JOIN richiedono una clausola ON per specificare come collegare le tabelle.\n\nSintassi corretta:\nSELECT *\nFROM tabella1\nJOIN tabella2 ON tabella1.id = tabella2.id_riferimento\n\nEsempio pratico:\nSELECT utenti.nome, ordini.data_ordine\nFROM utenti\nJOIN ordini ON utenti.id = ordini.utente_id\n\nRicorda: la clausola ON specifica la chiave esterna che collega le due tabelle.";
+    }
+    
+    // WHERE CLAUSE ERRORS
+    if (errLower.includes('where') || (queryLower.includes('where') && errLower.includes('expect'))) {
+        return "Errore nella clausola WHERE: c'è un problema nella condizione di filtro.\n\nControlla i seguenti punti:\n- Le stringhe di testo devono essere racchiuse tra apici singoli: WHERE paese = 'Italia'\n- I numeri non richiedono apici: WHERE prezzo > 100\n- Gli operatori disponibili sono: =, >, <, >=, <=, !=, LIKE, IN\n- Per filtrare valori NULL usa: WHERE campo IS NULL (non WHERE campo = NULL)\n\nSuggerimento: se confronti stringhe, assicurati di usare gli apici singoli.";
+    }
+    
+    // COMPARISON / OPERATOR ERRORS
+    if (errLower.includes('operator') || errLower.includes('comparison')) {
+        return "Errore operatore: stai usando un operatore di confronto in modo errato.\n\nOperatori corretti in SQL:\n- Uguaglianza: = (non == come in altri linguaggi)\n- Diverso: != oppure <>\n- Maggiore/Minore: >, <, >=, <=\n- Ricerca pattern: LIKE (esempio: WHERE nome LIKE '%Mario%')\n- Lista valori: IN (esempio: WHERE id IN (1, 2, 3))\n- Controllo NULL: IS NULL / IS NOT NULL\n\nRicorda: in SQL si usa il simbolo = singolo per l'uguaglianza, non il doppio ==.";
+    }
+    
+    // LIMIT/OFFSET ERRORS
+    if (errLower.includes('limit') || errLower.includes('offset')) {
+        return "Errore LIMIT/OFFSET: problema nella paginazione dei risultati.\n\nSintassi corretta:\nSELECT * FROM utenti LIMIT 10;           (restituisce i primi 10 risultati)\nSELECT * FROM utenti LIMIT 10 OFFSET 20; (restituisce i risultati dal 21° al 30°)\n\nNota: LIMIT e OFFSET richiedono numeri interi positivi.";
+    }
+    
+    // SUBQUERY ERRORS
+    if (errLower.includes('subquery') || errLower.includes('scalar')) {
+        return "Errore subquery: problema con una query annidata.\n\nCause comuni:\n- Una subquery che dovrebbe restituire un singolo valore ne restituisce molti\n- Hai dimenticato le parentesi attorno alla subquery\n- La subquery usata in FROM non ha un alias\n\nEsempio corretto:\nSELECT nome\nFROM utenti\nWHERE id = (SELECT utente_id FROM ordini WHERE id = 1);\n\nNota: le subquery usate nella clausola FROM devono avere un alias. Esempio: FROM (SELECT ...) AS nome_subquery";
+    }
+    
+    // GENERIC / FALLBACK
+    return "Errore SQL: la query non è valida.\n\nPassi per individuare il problema:\n1. Leggi attentamente il messaggio di errore qui sopra\n2. Controlla la sintassi SQL: parole chiave, virgole, parentesi\n3. Verifica che le tabelle e le colonne esistano nello schema\n4. Prova a eseguire porzioni semplificate della query\n5. Usa il pulsante Formatta per rendere più leggibile il codice\n\nSe l'errore persiste, prova a usare il pulsante Suggerimento per vedere un indizio sull'esercizio.";
+};
+
 export const analyzeCode = (code: string, language: string, context: string): Promise<ReviewResult> => {
     return new Promise((resolve) => {
         // Simulate AI thinking delay

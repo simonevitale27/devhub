@@ -60,51 +60,120 @@ export const generateMermaidER = (schemas: TableSchema[]): string => {
 };
 
 /**
+ * Normalize a single row: convert all values to strings for consistent comparison
+ */
+const normalizeRow = (row: any): any => {
+  const normalized: any = {};
+  for (const key in row) {
+    const value = row[key];
+    // Convert to string, handling null/undefined/boolean consistently
+    if (value === null || value === undefined) {
+      normalized[key] = '';
+    } else if (typeof value === 'boolean') {
+      normalized[key] = value ? 'true' : 'false';
+    } else if (typeof value === 'number') {
+      normalized[key] = String(value);
+    } else {
+      normalized[key] = String(value).trim();
+    }
+  }
+  return normalized;
+};
+
+/**
+ * Sort rows deterministically based on all column values
+ */
+const sortRows = (rows: any[]): any[] => {
+  if (rows.length === 0) return rows;
+  
+  return [...rows].sort((a, b) => {
+    const keysA = Object.keys(a).sort();
+    const keysB = Object.keys(b).sort();
+    
+    // Compare all columns in order
+    for (const key of keysA) {
+      const valA = String(a[key] ?? '');
+      const valB = String(b[key] ?? '');
+      if (valA < valB) return -1;
+      if (valA > valB) return 1;
+    }
+    return 0;
+  });
+};
+
+/**
  * Compare two result sets and return differences
+ * Now with normalization and order-agnostic comparison
  */
 export const compareResults = (userRows: any[], expectedRows: any[]): DiffResult => {
   const missingRows: any[] = [];
   const extraRows: any[] = [];
   const differentCells: { rowIndex: number; column: string }[] = [];
+  
+  // Detect column differences
+  let hasExtraColumns = false;
+  let extraColumns: string[] = [];
+  
+  if (userRows.length > 0 && expectedRows.length > 0) {
+    const userCols = new Set(Object.keys(userRows[0]));
+    const expectedCols = new Set(Object.keys(expectedRows[0]));
+    
+    // Check if user has extra columns (e.g., SELECT * vs SELECT name, age)
+    extraColumns = Array.from(userCols).filter(col => !expectedCols.has(col));
+    hasExtraColumns = extraColumns.length > 0;
+  }
+
+  // Normalize and sort both result sets
+  const normalizedUser = userRows.map(normalizeRow);
+  const normalizedExpected = expectedRows.map(normalizeRow);
+  
+  const sortedUser = sortRows(normalizedUser);
+  const sortedExpected = sortRows(normalizedExpected);
 
   // Find missing rows (in expected but not in user)
-  expectedRows.forEach(expectedRow => {
-    const found = userRows.some(userRow => 
-      JSON.stringify(userRow) === JSON.stringify(expectedRow)
-    );
+  sortedExpected.forEach(expectedRow => {
+    // Only compare columns that exist in expected result
+    const expectedCols = Object.keys(expectedRow);
+    
+    const found = sortedUser.some(userRow => {
+      // Compare only the expected columns
+      return expectedCols.every(col => userRow[col] === expectedRow[col]);
+    });
+    
     if (!found) {
       missingRows.push(expectedRow);
     }
   });
 
   // Find extra rows (in user but not in expected)
-  userRows.forEach(userRow => {
-    const found = expectedRows.some(expectedRow => 
-      JSON.stringify(userRow) === JSON.stringify(expectedRow)
-    );
+  sortedUser.forEach(userRow => {
+    const expectedCols = expectedRows.length > 0 ? Object.keys(expectedRows[0]) : [];
+    
+    const found = sortedExpected.some(expectedRow => {
+      // Compare only the expected columns
+      return expectedCols.every(col => userRow[col] === expectedRow[col]);
+    });
+    
     if (!found) {
       extraRows.push(userRow);
     }
   });
 
-  // Find different cells at matching indices
-  const minLength = Math.min(userRows.length, expectedRows.length);
+  // Find different cells (not really needed with normalized comparison, but keep for compatibility)
+  const minLength = Math.min(sortedUser.length, sortedExpected.length);
   for (let i = 0; i < minLength; i++) {
-    const userRow = userRows[i];
-    const expectedRow = expectedRows[i];
+    const userRow = sortedUser[i];
+    const expectedRow = sortedExpected[i];
     
-    if (JSON.stringify(userRow) !== JSON.stringify(expectedRow)) {
-      // Find which columns are different
-      const columns = Object.keys(expectedRow);
-      columns.forEach(col => {
-        if (userRow[col] !== expectedRow[col]) {
-          differentCells.push({ rowIndex: i, column: col });
-        }
-      });
-    }
+    const expectedCols = Object.keys(expectedRow);
+    expectedCols.forEach(col => {
+      if (userRow[col] !== expectedRow[col]) {
+        differentCells.push({ rowIndex: i, column: col });
+      }
+    });
   }
 
-  return { missingRows, extraRows, differentCells };
+  return { missingRows, extraRows, differentCells, hasExtraColumns, extraColumns };
 };
 
 /**

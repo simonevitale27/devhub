@@ -30,7 +30,7 @@ import {
   Sparkles,
   History,
 } from "lucide-react";
-import { downloadCSV } from "../utils/sqlHelpers";
+import { downloadCSV, compareResults } from "../utils/sqlHelpers";
 import { format } from "sql-formatter";
 import {
   Difficulty,
@@ -46,6 +46,7 @@ import {
   runQuery,
   translateSqlError,
 } from "../services/sqlService";
+import { explainSqlError } from "../services/mockAiService";
 import { generateExercises } from "../services/exerciseGenerator";
 import SchemaViewer from "./SchemaViewer";
 import CodeEditor from "./CodeEditor";
@@ -286,18 +287,37 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
         setExpectedResult(sanitizedData);
 
         if (solutionRes.success) {
-          const userJson = JSON.stringify(res.data || []);
-          const solJson = JSON.stringify(solutionData);
-          const isCorrect = userJson === solJson;
+          // Use enhanced compareResults for robust validation
+          const userRows = Array.isArray(res.data) ? res.data : res.data ? [res.data] : [];
+          const diff = compareResults(userRows, sanitizedData);
+          
+          // Check if results match (ignoring row order and type differences)
+          const isCorrect = diff.missingRows.length === 0 && diff.extraRows.length === 0;
+          
+          const userRowCount = userRows.length;
+          const expectedRowCount = sanitizedData.length;
 
-          let message = isCorrect
-            ? "Risultato perfetto!"
-            : "Il risultato non coincide.";
-          const userRowCount = Array.isArray(res.data) ? res.data.length : 0;
-          const expectedRowCount = solutionData.length;
+          let message = "";
+          let warningLevel: 'none' | 'yellow' = 'none';
+          let warningMessage = "";
 
-          if (!isCorrect && userRowCount !== expectedRowCount) {
-            message = `Attenzione: Hai estratto ${userRowCount} righe, ma ne erano attese ${expectedRowCount}.`;
+          if (isCorrect) {
+            // Results are correct!
+            if (diff.hasExtraColumns) {
+              // Yellow warning: correct data but extra columns (e.g., SELECT *)
+              message = "Risultato corretto!";
+              warningLevel = 'yellow';
+              warningMessage = `Hai selezionato più colonne del necessario (${diff.extraColumns?.join(', ')}). La traccia richiedeva solo colonne specifiche. Prova a evitare SELECT * e seleziona solo le colonne richieste.`;
+            } else {
+              // Perfect match!
+              message = "Risultato perfetto!";
+            }
+          } else {
+            // Results don't match
+            message = "Il risultato non coincide.";
+            if (userRowCount !== expectedRowCount) {
+              message = `Attenzione: Hai estratto ${userRowCount} righe, ma ne erano attese ${expectedRowCount}.`;
+            }
           }
 
           setValidation({
@@ -305,6 +325,8 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
             userRowCount,
             expectedRowCount,
             message,
+            warningLevel,
+            warningMessage,
           });
         } else {
           // Query succeeded but solution query failed - still show results
@@ -851,23 +873,35 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                 </div>
                 <div className="w-1/2 bg-[#0b1120] flex flex-col min-h-0">
                   {validation && (
-                    <div
-                      className={`p-3 border-b border-slate-800 ${
-                        validation.isCorrect
-                          ? "bg-emerald-900/20 text-emerald-400 border-emerald-900/50"
-                          : "bg-red-900/20 text-red-400 border-red-900/50"
-                      } flex items-center gap-2 text-sm font-bold shrink-0 animate-in slide-in-from-top-2`}
-                    >
-                      {validation.isCorrect ? (
-                        <CheckCircle2
-                          size={18}
-                          className="fill-emerald-900/50"
-                        />
-                      ) : (
-                        <XCircle size={18} className="fill-red-900/50" />
-                      )}{" "}
-                      {validation.message}
-                    </div>
+                    <>
+                      <div
+                        className={`p-3 border-b border-slate-800 ${
+                          validation.isCorrect
+                            ? "bg-emerald-900/20 text-emerald-400 border-emerald-900/50"
+                            : "bg-red-900/20 text-red-400 border-red-900/50"
+                        } flex items-center gap-2 text-sm font-bold shrink-0 animate-in slide-in-from-top-2`}
+                      >
+                        {validation.isCorrect ? (
+                          <CheckCircle2
+                            size={18}
+                            className="fill-emerald-900/50"
+                          />
+                        ) : (
+                          <XCircle size={18} className="fill-red-900/50" />
+                        )}{" "}
+                        {validation.message}
+                      </div>
+                      
+                      {/* Yellow warning banner for extra columns */}
+                      {validation.warningLevel === 'yellow' && validation.warningMessage && (
+                        <div className="p-3 border-b border-amber-800/50 bg-amber-900/20 text-amber-300 flex items-start gap-2 text-xs shrink-0 animate-in slide-in-from-top-2">
+                          <AlertTriangle size={16} className="shrink-0 mt-0.5 fill-amber-900/50" />
+                          <div className="flex-1 leading-relaxed whitespace-pre-wrap">
+                            {validation.warningMessage}
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                   {userResult?.error && (
                     <div className="p-4 bg-red-950/30 border-b border-red-900/50 shrink-0">
@@ -888,7 +922,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                           <div className="text-xs font-bold uppercase tracking-wider text-red-500 mb-1">
                             Diagnosi:
                           </div>
-                          {translateSqlError(userResult.error)}
+                          {explainSqlError(userResult.error, sqlCode)}
                         </div>
                       )}
                     </div>

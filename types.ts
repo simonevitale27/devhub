@@ -72,12 +72,16 @@ export interface ValidationResult {
   userRowCount: number;
   expectedRowCount: number;
   message: string;
+  warningLevel?: 'none' | 'yellow';
+  warningMessage?: string;
 }
 
 export interface DiffResult {
   missingRows: any[];
   extraRows: any[];
   differentCells: { rowIndex: number; column: string }[];
+  hasExtraColumns?: boolean;
+  extraColumns?: string[];
 }
 
 export interface ChartConfig {
