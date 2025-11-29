@@ -42,6 +42,8 @@ interface ExerciseBlueprint {
     hints: string[];
     explanation: string;
     replacements?: Record<string, (string | number)[]>;
+    brokenCode?: string;        // For Debug Mode: query with intentional error
+    debugHint?: string;         // For Debug Mode: hint about the error
 }
 
 // --- QUESTION DATABASE ---
@@ -54,7 +56,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT * FROM {table}",
                 hints: ["Per selezionare tutte le colonne, esiste un carattere jolly apposito (*).", "La struttura base è: SELECT [colonne] FROM [tabella]."],
                 explanation: "SELECT * è il comando standard per ispezionare l'intero contenuto di una tabella.",
-                replacements: { table: ['utenti', 'prodotti', 'ordini', 'fornitori', 'spedizioni', 'categorie', 'recensioni'] }
+                replacements: { table: ['utenti', 'prodotti', 'ordini', 'fornitori', 'spedizioni', 'categorie', 'recensioni'] },
+                brokenCode: "SELETC * FROM {table}",
+                debugHint: "Controlla attentamente come hai scritto il comando 'SELECT'. C'è un errore di battitura."
             },
             {
                 titleTemplate: "Estrazione {col} Utenti",
@@ -62,7 +66,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT {col} FROM utenti",
                 hints: ["Specifica il nome della colonna desiderata dopo il comando SELECT.", "Non usare * se ti serve solo un campo specifico."],
                 explanation: "Selezionare solo le colonne necessarie ottimizza le performance e la privacy.",
-                replacements: { col: ['email', 'nome', 'paese', 'premium'] }
+                replacements: { col: ['email', 'nome', 'paese', 'premium'] },
+                brokenCode: "SELECT {col} FORM utenti",
+                debugHint: "La parola chiave 'FROM' sembra scritta male. Verifica lo spelling."
             },
             {
                 titleTemplate: "Listino Prezzi: {col}",
@@ -70,7 +76,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT {col} FROM prodotti",
                 hints: ["Indica la colonna '{col}' dopo SELECT.", "Specifica la tabella di origine corretta."],
                 explanation: "La proiezione (selezione di colonne specifiche) permette di creare report focalizzati.",
-                replacements: { col: ['nome', 'prezzo', 'stock', 'categoria_id'] }
+                replacements: { col: ['nome', 'prezzo', 'stock', 'categoria_id'] },
+                brokenCode: "SELECT {col} FROM prodoti",
+                debugHint: "Il nome della tabella 'prodotti' contiene un errore. Controlla le doppie lettere."
             },
             {
                 titleTemplate: "Visualizza Tutti gli Ordini",
@@ -78,7 +86,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT * FROM ordini",
                 hints: ["Usa SELECT * per recuperare tutte le informazioni.", "La tabella da interrogare è 'ordini'.", "Non applicare nessun filtro WHERE."],
                 explanation: "Visualizzare tutti i record è il primo passo per l'analisi dei dati operativi.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT * FROM ordini,",
+                debugHint: "Hai lasciato una virgola di troppo alla fine della query? In SQL la virgola separa le colonne, non chiude l'istruzione."
             },
             {
                 titleTemplate: "Elenco Fornitori Completo",
@@ -86,7 +96,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT * FROM fornitori",
                 hints: ["Usa SELECT * FROM fornitori per ottenere l'anagrafica completa.", "Controlla che il nome della tabella sia corretto."],
                 explanation: "Mantenere l'anagrafica fornitori accessibile è cruciale per la gestione della supply chain.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT * form fornitori",
+                debugHint: "Attenzione alla parola chiave 'FROM'. È scritta correttamente?"
             },
             {
                 titleTemplate: "Tutte le Categorie",
@@ -94,7 +106,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT * FROM categorie",
                 hints: ["Seleziona tutto (*) dalla tabella 'categorie'.", "Questa query ti mostrerà id, nome e descrizione."],
                 explanation: "Avere una visione chiara delle categorie aiuta nell'organizzazione del catalogo prodotti.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT * FROM category",
+                debugHint: "Il nome della tabella deve essere in italiano, come nel database. Prova 'categorie'."
             },
             {
                 titleTemplate: "Elenco Spedizioni",
@@ -102,7 +116,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT * FROM spedizioni",
                 hints: ["Esegui una SELECT * sulla tabella 'spedizioni'.", "Utile per vedere corrieri, date e tracking code."],
                 explanation: "L'accesso rapido ai dati di spedizione è vitale per il supporto clienti.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT * FROM spedizioni WHERE",
+                debugHint: "Hai aggiunto una clausola 'WHERE' ma non hai specificato nessuna condizione. Se vuoi tutto, rimuovila."
             },
             {
                 titleTemplate: "Recensioni Complete",
@@ -110,7 +126,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT * FROM recensioni",
                 hints: ["Usa SELECT * FROM recensioni.", "Vedrai chi ha scritto la recensione, il voto e il commento."],
                 explanation: "Le recensioni sono una fonte diretta di feedback per migliorare i prodotti.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT ALL FROM recensioni",
+                debugHint: "Per selezionare tutte le colonne si usa il simbolo asterisco (*), non la parola 'ALL'."
             },
             {
                 titleTemplate: "Nomi Utenti",
@@ -118,7 +136,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nome FROM utenti",
                 hints: ["Seleziona solo la colonna 'nome'.", "La tabella di riferimento è 'utenti'.", "Sintassi: SELECT nome FROM utenti;"],
                 explanation: "Estrarre solo i nomi è utile per personalizzare l'interfaccia utente.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT nome utenti",
+                debugHint: "Manca la parola chiave che collega la colonna alla tabella. Quale comando va tra 'nome' e 'utenti'?"
             },
             {
                 titleTemplate: "Email Utenti",
@@ -126,7 +146,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT email FROM utenti",
                 hints: ["Specifica 'email' dopo la clausola SELECT.", "FROM utenti indica la sorgente dei dati."],
                 explanation: "Le liste di email sono fondamentali per le comunicazioni di marketing.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT email FROM users",
+                debugHint: "La tabella si chiama 'utenti', non 'users'. I nomi nel database sono in italiano."
             },
             {
                 titleTemplate: "Paesi Utenti",
@@ -134,7 +156,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT paese FROM utenti",
                 hints: ["Seleziona la colonna 'paese'.", "Non usare DISTINCT per ora, mostra tutti i valori grezzi."],
                 explanation: "Analizzare la provenienza degli utenti aiuta a mirare le strategie di espansione.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT paese FROM utenti .",
+                debugHint: "C'è un carattere non valido alla fine della query. Rimuovi il punto."
             },
             {
                 titleTemplate: "Stato Premium",
@@ -142,7 +166,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT premium FROM utenti",
                 hints: ["La colonna 'premium' è un booleano (true/false).", "Selezionala dalla tabella 'utenti'."],
                 explanation: "I dati sugli abbonamenti sono critici per le previsioni di fatturato.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT premium FORM utenti",
+                debugHint: "Hai scritto 'FORM' invece di 'FROM'."
             },
             {
                 titleTemplate: "Nomi Prodotti",
@@ -150,7 +176,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nome FROM prodotti",
                 hints: ["Seleziona solo la colonna 'nome' dalla tabella 'prodotti'.", "Utile per generare elenchi semplici."],
                 explanation: "Una lista di nomi prodotti è la base per qualsiasi catalogo.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT name FROM prodotti",
+                debugHint: "La colonna si chiama 'nome', non 'name'."
             },
             {
                 titleTemplate: "Prezzi Prodotti",
@@ -158,7 +186,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT prezzo FROM prodotti",
                 hints: ["Concentrati sulla colonna 'prezzo'.", "La tabella è 'prodotti'."],
                 explanation: "L'analisi dei prezzi è fondamentale per il posizionamento sul mercato.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT prezzo FROM prodotti,",
+                debugHint: "Rimuovi la virgola finale."
             },
             {
                 titleTemplate: "Stock Disponibile",
@@ -166,7 +196,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT stock FROM prodotti",
                 hints: ["Seleziona la colonna 'stock'.", "Questo ti darà solo i numeri delle quantità."],
                 explanation: "Monitorare lo stock aiuta a prevenire l'esaurimento scorte.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT stoc FROM prodotti",
+                debugHint: "La colonna 'stock' è scritta male ('stoc'). Manca una lettera."
             },
             {
                 titleTemplate: "ID Categorie Prodotti",
@@ -174,7 +206,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT categoria_id FROM prodotti",
                 hints: ["Seleziona la colonna 'categoria_id'.", "La tabella è 'prodotti'."],
                 explanation: "Le chiavi esterne come categoria_id collegano i dati tra tabelle diverse.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT categoria id FROM prodotti",
+                debugHint: "Il nome della colonna 'categoria_id' contiene un trattino basso (underscore). Non usare spazi."
             },
             {
                 titleTemplate: "ID Fornitori",
@@ -182,7 +216,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT fornitore_id FROM prodotti",
                 hints: ["Seleziona 'fornitore_id' dalla tabella 'prodotti'.", "Utile per capire chi fornisce cosa."],
                 explanation: "Identificare i fornitori è il primo passo per gestire gli approvvigionamenti.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT fornitore-id FROM prodotti",
+                debugHint: "I nomi delle colonne usano l'underscore (_), non il trattino (-)."
             },
             {
                 titleTemplate: "ID Ordini",
@@ -190,7 +226,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT id FROM ordini",
                 hints: ["Seleziona la colonna 'id' dalla tabella 'ordini'.", "Gli ID sono univoci per ogni ordine."],
                 explanation: "Gli ID sequenziali aiutano a tracciare il volume degli ordini nel tempo.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT id FROM ordini WHERE id",
+                debugHint: "La clausola WHERE è incompleta. Rimuovila se vuoi tutti gli ID."
             },
             {
                 titleTemplate: "Date Ordini",
@@ -198,7 +236,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT data_ordine FROM ordini",
                 hints: ["La colonna da selezionare è 'data_ordine'.", "La tabella è 'ordini'."],
                 explanation: "Analizzare le date degli ordini rivela i picchi di vendita.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT data ordine FROM ordini",
+                debugHint: "Manca l'underscore nel nome della colonna 'data_ordine'."
             },
             {
                 titleTemplate: "Quantità Ordinate",
@@ -206,7 +246,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT quantita FROM ordini",
                 hints: ["Seleziona 'quantita' dalla tabella 'ordini'.", "Vedrai quanti pezzi sono stati ordinati per riga."],
                 explanation: "I dati sulle quantità aiutano a dimensionare la logistica.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT quantity FROM ordini",
+                debugHint: "Usa il nome italiano della colonna: 'quantita'."
             },
             {
                 titleTemplate: "Nomi Categorie",
@@ -214,7 +256,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nome FROM categorie",
                 hints: ["Seleziona 'nome' dalla tabella 'categorie'.", "Questi nomi appariranno nel menu del sito."],
                 explanation: "I nomi delle categorie sono essenziali per la navigazione dell'utente.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT nome FROM categorie ORDER BY",
+                debugHint: "Hai lasciato un 'ORDER BY' incompleto alla fine. Rimuovilo."
             },
             {
                 titleTemplate: "Descrizioni Categorie",
@@ -222,7 +266,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT descrizione FROM categorie",
                 hints: ["Seleziona la colonna 'descrizione'.", "La tabella è 'categorie'."],
                 explanation: "Le descrizioni aiutano i motori di ricerca a indicizzare i contenuti.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT desc FROM categorie",
+                debugHint: "Il nome della colonna è 'descrizione', non l'abbreviazione 'desc'."
             },
             {
                 titleTemplate: "Aziende Fornitori",
@@ -230,7 +276,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT azienda FROM fornitori",
                 hints: ["Seleziona la colonna 'azienda' dalla tabella 'fornitori'.", "Otterrai la ragione sociale dei partner."],
                 explanation: "Conoscere i propri partner commerciali è fondamentale per il business.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT azienda FROM fornitore",
+                debugHint: "Il nome della tabella è al plurale: 'fornitori'."
             },
             {
                 titleTemplate: "Nazioni Fornitori",
@@ -238,7 +286,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nazione FROM fornitori",
                 hints: ["Seleziona 'nazione' dalla tabella 'fornitori'.", "Utile per mappare la supply chain."],
                 explanation: "La diversificazione geografica dei fornitori riduce i rischi.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT nazione, FROM fornitori",
+                debugHint: "C'è una virgola di troppo dopo 'nazione'."
             },
             {
                 titleTemplate: "Corrieri Spedizioni",
@@ -246,7 +296,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT corriere FROM spedizioni",
                 hints: ["Seleziona la colonna 'corriere'.", "La tabella è 'spedizioni'."],
                 explanation: "Analizzare i corrieri utilizzati aiuta a ottimizzare i costi di spedizione.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT corriere FROM spedizione",
+                debugHint: "La tabella si chiama 'spedizioni' (plurale)."
             },
             {
                 titleTemplate: "Voti Recensioni",
@@ -254,7 +306,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT voto FROM recensioni",
                 hints: ["Seleziona 'voto' dalla tabella 'recensioni'.", "I voti sono numeri interi (solitamente 1-5)."],
                 explanation: "I voti sono la metrica principale per la soddisfazione del cliente.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT voto FROM recensioni,",
+                debugHint: "Rimuovi la virgola finale."
             },
             {
                 titleTemplate: "Commenti Recensioni",
@@ -262,7 +316,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT commento FROM recensioni",
                 hints: ["Seleziona la colonna 'commento'.", "La tabella è 'recensioni'."],
                 explanation: "I commenti offrono insight qualitativi preziosi.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT comment FROM recensioni",
+                debugHint: "La colonna è 'commento', non 'comment'."
             },
             {
                 titleTemplate: "Due Colonne Utenti",
@@ -270,7 +326,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nome, email FROM utenti",
                 hints: ["Scrivi i nomi delle colonne separati da una virgola.", "Esempio: SELECT col1, col2 FROM tabella."],
                 explanation: "Selezionare più colonne permette di costruire dataset completi.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT nome email FROM utenti",
+                debugHint: "Quando selezioni più colonne, devi separarle con una virgola."
             },
             {
                 titleTemplate: "Nome e Paese",
@@ -278,7 +336,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nome, paese FROM utenti",
                 hints: ["Seleziona 'nome' e 'paese' separati da virgola.", "Dalla tabella 'utenti'."],
                 explanation: "La segmentazione geografica è chiave per il marketing mirato.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT nome; paese FROM utenti",
+                debugHint: "Usa la virgola (,) per separare le colonne, non il punto e virgola (;)."
             },
             {
                 titleTemplate: "Nome e Prezzo Prodotti",
@@ -286,7 +346,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nome, prezzo FROM prodotti",
                 hints: ["Seleziona 'nome' e 'prezzo'.", "Dalla tabella 'prodotti'."],
                 explanation: "Un listino semplice è spesso il documento più richiesto dai commerciali.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT nome e prezzo FROM prodotti",
+                debugHint: "In SQL non si usa 'e' per unire le colonne. Usa una virgola."
             },
             {
                 titleTemplate: "Prodotto e Stock",
@@ -294,7 +356,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nome, stock FROM prodotti",
                 hints: ["Seleziona 'nome' e 'stock'.", "Separa le colonne con una virgola."],
                 explanation: "Associare nome e quantità dà una visione immediata della disponibilità.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT nome stock FROM prodotti",
+                debugHint: "Manca la virgola tra 'nome' e 'stock'."
             },
             {
                 titleTemplate: "Tre Colonne Utenti",
@@ -302,7 +366,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nome, email, paese FROM utenti",
                 hints: ["Elenca le tre colonne separate da virgole dopo SELECT.", "L'ordine delle colonne nella query determina l'ordine nel risultato."],
                 explanation: "Più colonne selezioni, più dettagliato sarà il tuo report.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT nome, email paese FROM utenti",
+                debugHint: "Hai dimenticato una virgola tra 'email' e 'paese'."
             },
             {
                 titleTemplate: "ID e Data Ordini",
@@ -310,7 +376,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT id, data_ordine FROM ordini",
                 hints: ["Seleziona 'id' e 'data_ordine'.", "Dalla tabella 'ordini'."],
                 explanation: "Associare ID e data è fondamentale per la tracciabilità temporale.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT id, data-ordine FROM ordini",
+                debugHint: "Attenzione al nome della colonna data: usa l'underscore (_)."
             },
             {
                 titleTemplate: "Categoria e Descrizione",
@@ -318,15 +386,19 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT nome, descrizione FROM categorie",
                 hints: ["Seleziona 'nome' e 'descrizione'.", "Dalla tabella 'categorie'."],
                 explanation: "Revisionare i testi delle categorie migliora la comunicazione del brand.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT nome, descrizione FROM category",
+                debugHint: "Tabella errata. Usa il nome italiano 'categorie'."
             },
-            {
+                {
                 titleTemplate: "Azienda e Nazione Fornitore",
                 descTemplate: "Per il report sulla sostenibilità, mostra il nome dell'azienda fornitrice e la sua nazione.",
                 queryTemplate: "SELECT azienda, nazione FROM fornitori",
                 hints: ["Seleziona 'azienda' e 'nazione'.", "Dalla tabella 'fornitori'."],
                 explanation: "La trasparenza sulla provenienza dei fornitori è un valore aggiunto.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT azienda nazione FROM fornitori",
+                debugHint: "Manca la virgola di separazione tra le colonne."
             },
             {
                 titleTemplate: "Corriere e Tracking",
@@ -334,7 +406,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT corriere, codice_tracking FROM spedizioni",
                 hints: ["Seleziona 'corriere' e 'codice_tracking'.", "Dalla tabella 'spedizioni'."],
                 explanation: "Questi dati sono essenziali per permettere ai clienti di seguire il pacco.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT corriere, codice tracking FROM spedizioni",
+                debugHint: "Il nome della colonna 'codice_tracking' non può avere spazi. Usa l'underscore."
             },
             {
                 titleTemplate: "Voto e Commento",
@@ -342,16 +416,19 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT voto, commento FROM recensioni",
                 hints: ["Seleziona 'voto' e 'commento'.", "Dalla tabella 'recensioni'."],
                 explanation: "Leggere il commento associato al voto dà contesto alla valutazione.",
-                replacements: {}
+                replacements: {},
+                brokenCode: "SELECT voto, commento FROM recensioni,",
+                debugHint: "C'è una virgola di troppo alla fine."
             },
-            // NEW EXERCISES FOR BASICS EASY
             {
                 titleTemplate: "Solo ID {table}",
                 descTemplate: "Per operazioni di manutenzione database, estrai solo la chiave primaria (ID) dalla tabella {table}.",
                 queryTemplate: "SELECT id FROM {table}",
                 hints: ["Seleziona solo la colonna 'id'.", "Utile per verificare la sequenza delle chiavi."],
                 explanation: "Lavorare solo con gli ID è efficiente per operazioni di verifica strutturale.",
-                replacements: { table: ['utenti', 'prodotti', 'ordini', 'categorie', 'fornitori', 'spedizioni', 'recensioni'] }
+                replacements: { table: ['utenti', 'prodotti', 'ordini', 'categorie', 'fornitori', 'spedizioni', 'recensioni'] },
+                brokenCode: "SELECT id FROM {table} .",
+                debugHint: "Rimuovi il punto finale."
             },
             {
                 titleTemplate: "Check {col} in {table}",
@@ -359,7 +436,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT {col} FROM {table}",
                 hints: ["Seleziona la colonna specificata.", "Verifica se ci sono valori anomali a vista."],
                 explanation: "Il controllo qualità dei dati inizia spesso con una semplice ispezione visiva.",
-                replacements: { table: ['utenti', 'prodotti'], col: ['nome', 'email', 'prezzo'] }
+                replacements: { table: ['utenti', 'prodotti'], col: ['nome', 'email', 'prezzo'] },
+                brokenCode: "SELECT {col} FROM {table},",
+                debugHint: "Rimuovi la virgola finale."
             },
             {
                 titleTemplate: "Dump {table} per Backup",
@@ -367,7 +446,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT * FROM {table}",
                 hints: ["Usa SELECT * per vedere tutto.", "È una buona pratica controllare i dati prima di modifiche."],
                 explanation: "Verificare lo stato dei dati prima di interventi è una best practice IT.",
-                replacements: { table: ['recensioni', 'spedizioni'] }
+                replacements: { table: ['recensioni', 'spedizioni'] },
+                brokenCode: "SELETC * FROM {table}",
+                debugHint: "Typo su SELECT."
             },
             {
                 titleTemplate: "Anteprima {table}",
@@ -375,7 +456,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT * FROM {table}",
                 hints: ["Usa SELECT *.", "Osserva i nomi delle colonne e i tipi di dati."],
                 explanation: "L'esplorazione iniziale delle tabelle è fondamentale per capire il database.",
-                replacements: { table: ['fornitori', 'categorie'] }
+                replacements: { table: ['fornitori', 'categorie'] },
+                brokenCode: "SELECT * form {table}",
+                debugHint: "Typo su FROM."
             },
             {
                 titleTemplate: "Lista {col} da {table}",
@@ -383,7 +466,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT {col} FROM {table}",
                 hints: ["Seleziona la colonna richiesta.", "È un'operazione di lettura base."],
                 explanation: "Le liste semplici sono utili per controlli a campione.",
-                replacements: { table: ['utenti'], col: ['paese', 'premium'] }
+                replacements: { table: ['utenti'], col: ['paese', 'premium'] },
+                brokenCode: "SELECT {col} FROM {table} WHERE",
+                debugHint: "Rimuovi WHERE incompleto."
             },
             {
                 titleTemplate: "Report {col1}, {col2}",
@@ -391,7 +476,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT {col1}, {col2} FROM prodotti",
                 hints: ["Seleziona le due colonne separate da virgola.", "L'ordine richiesto è importante."],
                 explanation: "I report ad-hoc richiedono spesso solo un sottoinsieme dei dati.",
-                replacements: { col1: ['nome'], col2: ['stock', 'prezzo'] }
+                replacements: { col1: ['nome'], col2: ['stock', 'prezzo'] },
+                brokenCode: "SELECT {col1} {col2} FROM prodotti",
+                debugHint: "Manca la virgola."
             },
             {
                 titleTemplate: "Info Spedizione: {col}",
@@ -399,7 +486,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT {col} FROM spedizioni",
                 hints: ["Seleziona la colonna specifica.", "Fornisci solo l'informazione richiesta."],
                 explanation: "Fornire dati precisi aumenta la fiducia del cliente.",
-                replacements: { col: ['codice_tracking', 'data_spedizione'] }
+                replacements: { col: ['codice_tracking', 'data_spedizione'] },
+                brokenCode: "SELECT {col} FROM spedizioni,",
+                debugHint: "Via la virgola finale."
             },
             {
                 titleTemplate: "Dettaglio Ordine: {col}",
@@ -407,7 +496,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT {col} FROM ordini",
                 hints: ["Seleziona la colonna indicata.", "Dalla tabella ordini."],
                 explanation: "I controlli incrociati spesso si basano su singole colonne chiave.",
-                replacements: { col: ['quantita', 'data_ordine'] }
+                replacements: { col: ['quantita', 'data_ordine'] },
+                brokenCode: "SELECT {col} FROM ordini .",
+                debugHint: "Via il punto finale."
             },
             {
                 titleTemplate: "Catalogo: {col}",
@@ -415,7 +506,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT {col} FROM prodotti",
                 hints: ["Seleziona la colonna del prodotto.", "Dati aggiornati sono cruciali per l'e-commerce."],
                 explanation: "Mantenere il catalogo sincronizzato è vitale per le vendite.",
-                replacements: { col: ['nome', 'prezzo'] }
+                replacements: { col: ['nome', 'prezzo'] },
+                brokenCode: "SELECT {col} FROM prodotti .",
+                debugHint: "Via il punto finale."
             },
             {
                 titleTemplate: "Rubrica: {col}",
@@ -423,7 +516,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 queryTemplate: "SELECT {col} FROM utenti",
                 hints: ["Seleziona il dato contatto richiesto.", "Dalla tabella utenti."],
                 explanation: "Dati di contatto accurati facilitano la comunicazione interna.",
-                replacements: { col: ['email', 'nome'] }
+                replacements: { col: ['email', 'nome'] },
+                brokenCode: "SELECT {col} FROM utenti,",
+                debugHint: "Via la virgola finale."
             }
         ],
         [Difficulty.Medium]: [
@@ -1193,6 +1288,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Check Stock Esatto ({val})",
                 descTemplate: "Il responsabile di magazzino vuole verificare l'inventario. Trova tutti i prodotti dalla tabella 'prodotti' che hanno esattamente {val} unità in giacenza.",
                 queryTemplate: "SELECT * FROM prodotti WHERE stock = {val}",
+                brokenCode: "SELECT * FROM prodotti WHERE stock {val}",
+                debugHint: "Manca l'operatore di confronto (=).",
                 hints: ["Per filtrare i risultati, usa la clausola condizionale appropriata.", "L'operatore di uguaglianza è =."],
                 explanation: "La clausola WHERE permette di selezionare solo le righe che soddisfano una condizione specifica.",
                 replacements: { val: [0, 5, 10, 15, 20, 25, 30, 40, 50] }
@@ -1201,6 +1298,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro per Paese: {country}",
                 descTemplate: "Il team marketing vuole lanciare una campagna locale. Seleziona tutti gli utenti registrati che risiedono in '{country}'.",
                 queryTemplate: "SELECT * FROM utenti WHERE paese = '{country}'",
+                brokenCode: "SELECT * FROM utenti WHERE paese = {country}",
+                debugHint: "Le stringhe devono essere racchiuse tra apici singoli.",
                 hints: ["Le stringhe vanno delimitate da apici singoli.", "Esempio: WHERE colonna = 'valore'."],
                 explanation: "In SQL, le stringhe di testo devono essere sempre delimitate da apici singoli.",
                 replacements: { country: DATA.countries }
@@ -1209,6 +1308,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzi Maggiori di {val}",
                 descTemplate: "Per un'analisi sui prodotti di fascia alta, mostra solo i prodotti che costano più di {val} euro.",
                 queryTemplate: "SELECT * FROM prodotti WHERE prezzo > {val}",
+                brokenCode: "SELECT * FROM prodotti WHER prezzo > {val}",
+                debugHint: "Errore di battitura nella parola chiave WHERE.",
                 hints: ["Usa l'operatore di confronto maggiore (>).", "Non servono apici per i numeri."],
                 explanation: "Gli operatori di confronto come > permettono di filtrare dati numerici.",
                 replacements: { val: [10, 20, 30, 50, 75, 100, 150, 200] }
@@ -1217,6 +1318,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Ordini Quantità Minima",
                 descTemplate: "Identifica i piccoli ordini per ottimizzare la logistica. Trova gli ordini con meno di {val} articoli.",
                 queryTemplate: "SELECT * FROM ordini WHERE quantita < {val}",
+                brokenCode: "SELECT * FROM ordini WHERE quantita << {val}",
+                debugHint: "Operatore di confronto errato (doppio simbolo).",
                 hints: ["Usa l'operatore minore (<).", "Confronta la colonna quantita con il valore {val}."],
                 explanation: "Filtrare per valori inferiori a una soglia è utile per segmentare i dati.",
                 replacements: { val: [2, 3, 4, 5, 6, 7, 8, 10] }
@@ -1225,6 +1328,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzi Minori di {val}",
                 descTemplate: "Per la sezione 'Offerte Economiche', trova tutti i prodotti che costano meno di {val} euro.",
                 queryTemplate: "SELECT * FROM prodotti WHERE prezzo < {val}",
+                brokenCode: "SELECT * FROM prodotti WHERE price < {val}",
+                debugHint: "Nome colonna errato (forse è in inglese?).",
                 hints: ["Usa l'operatore minore (<).", "Il prezzo è un valore numerico."],
                 explanation: "L'operatore < seleziona valori strettamente inferiori a quello specificato.",
                 replacements: { val: [20, 30, 50, 75, 100] }
@@ -1233,6 +1338,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Stock Maggiore di {val}",
                 descTemplate: "Verifica la disponibilità per grandi ordini. Mostra i prodotti con uno stock superiore a {val} unità.",
                 queryTemplate: "SELECT * FROM prodotti WHERE stock > {val}",
+                brokenCode: "SELECT * FROM prodotti WHERE stock >> {val}",
+                debugHint: "Operatore di confronto errato.",
                 hints: ["Usa WHERE stock > {val}.", "Assicurati di usare il nome corretto della colonna."],
                 explanation: "Filtrare per disponibilità minima è essenziale per la gestione degli ordini.",
                 replacements: { val: [5, 10, 15, 20, 30] }
@@ -1241,6 +1348,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Stock Minore di {val}",
                 descTemplate: "Allarme scorte: trova i prodotti con stock inferiore a {val} unità per pianificare il riordino.",
                 queryTemplate: "SELECT * FROM prodotti WHERE stock < {val}",
+                brokenCode: "SELECT * FROM prodotti WHERE stock =< {val}",
+                debugHint: "L'operatore 'minore o uguale' si scrive <=.",
                 hints: ["Usa WHERE stock < {val}.", "Questo filtro aiuta a prevenire l'esaurimento scorte."],
                 explanation: "Monitorare i livelli di stock bassi è cruciale per la continuità del business.",
                 replacements: { val: [5, 10, 15, 20] }
@@ -1249,6 +1358,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Utenti Premium",
                 descTemplate: "Il servizio clienti vuole contattare i VIP. Seleziona tutti gli utenti che hanno l'abbonamento premium attivo.",
                 queryTemplate: "SELECT * FROM utenti WHERE premium = TRUE",
+                brokenCode: "SELECT * FROM utenti WHERE premium = VERO",
+                debugHint: "In SQL i booleani sono TRUE o FALSE (in inglese).",
                 hints: ["Usa WHERE premium = TRUE.", "TRUE è una parola chiave per il valore booleano vero."],
                 explanation: "I campi booleani possono essere filtrati direttamente con TRUE o FALSE.",
                 replacements: {}
@@ -1257,6 +1368,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Utenti Non Premium",
                 descTemplate: "Per una campagna di upsell, trova tutti gli utenti che NON hanno ancora l'abbonamento premium.",
                 queryTemplate: "SELECT * FROM utenti WHERE premium = FALSE",
+                brokenCode: "SELECT * FROM utenti WHERE premium = 'FALSE'",
+                debugHint: "FALSE è una parola chiave, non una stringa.",
                 hints: ["Usa WHERE premium = FALSE.", "FALSE indica che l'utente non è premium."],
                 explanation: "Identificare gli utenti non premium è il primo passo per strategie di conversione.",
                 replacements: {}
@@ -1265,6 +1378,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Categoria Specifica ({cat})",
                 descTemplate: "Mostra il catalogo prodotti filtrato per la categoria con ID {cat}.",
                 queryTemplate: "SELECT * FROM prodotti WHERE categoria_id = {cat}",
+                brokenCode: "SELECT * FROM prodotti WHERE category_id = {cat}",
+                debugHint: "Controlla il nome della colonna per l'ID categoria.",
                 hints: ["Usa WHERE categoria_id = {cat}.", "L'ID è un numero intero."],
                 explanation: "Filtrare per chiave esterna (ID categoria) è il modo standard per navigare le relazioni.",
                 replacements: { cat: [1, 2, 3] }
@@ -1273,6 +1388,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Fornitore Specifico ({forn})",
                 descTemplate: "Dobbiamo contattare un fornitore. Trova tutti i prodotti forniti dal fornitore con ID {forn}.",
                 queryTemplate: "SELECT * FROM prodotti WHERE fornitore_id = {forn}",
+                brokenCode: "SELECT * FROM prodotti WHERE fornitore id = {forn}",
+                debugHint: "I nomi delle colonne non possono contenere spazi.",
                 hints: ["Usa WHERE fornitore_id = {forn}.", "Filtra sulla colonna della chiave esterna."],
                 explanation: "Questo tipo di query è frequente nei pannelli di amministrazione.",
                 replacements: { forn: [1, 2, 3] }
@@ -1281,6 +1398,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Quantità Ordine Esatta ({qty})",
                 descTemplate: "Analisi pattern di acquisto: trova tutti gli ordini con una quantità esattamente uguale a {qty}.",
                 queryTemplate: "SELECT * FROM ordini WHERE quantita = {qty}",
+                brokenCode: "SELECT * FROM ordini WHERE quantita == {qty}",
+                debugHint: "In SQL l'uguaglianza si esprime con un singolo uguale.",
                 hints: ["Usa l'operatore di uguaglianza (=).", "Cerca nella tabella ordini."],
                 explanation: "L'uguaglianza esatta è utile per trovare corrispondenze precise.",
                 replacements: { qty: [1, 2, 3, 4, 5] }
@@ -1289,6 +1408,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Quantità Maggiore di {qty}",
                 descTemplate: "Identifica gli ordini voluminosi. Mostra gli ordini con quantità superiore a {qty} unità.",
                 queryTemplate: "SELECT * FROM ordini WHERE quantita > {qty}",
+                brokenCode: "SELECT * FROM ordini WHERE quantity > {qty}",
+                debugHint: "Controlla il nome della colonna quantità.",
                 hints: ["Usa l'operatore maggiore (>).", "Filtra sulla colonna quantita."],
                 explanation: "Filtrare per quantità aiuta a segmentare gli ordini per dimensione.",
                 replacements: { qty: [2, 3, 4, 5] }
@@ -1297,6 +1418,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Voto Recensione ({voto})",
                 descTemplate: "Analisi sentiment: trova tutte le recensioni con un voto esattamente uguale a {voto}.",
                 queryTemplate: "SELECT * FROM recensioni WHERE voto = {voto}",
+                brokenCode: "SELECT * FROM recensioni WHERE vote = {voto}",
+                debugHint: "Controlla il nome della colonna voto.",
                 hints: ["Usa WHERE voto = {voto}.", "Il voto è un numero intero."],
                 explanation: "Filtrare le recensioni per voto aiuta a capire la soddisfazione dei clienti.",
                 replacements: { voto: [1, 2, 3, 4, 5] }
@@ -1305,6 +1428,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Recensioni Positive ({voto}+)",
                 descTemplate: "Mostra tutte le recensioni con voto maggiore o uguale a {voto}.",
                 queryTemplate: "SELECT * FROM recensioni WHERE voto >= {voto}",
+                brokenCode: "SELECT * FROM recensioni WHERE voto > = {voto}",
+                debugHint: "L'operatore 'maggiore o uguale' si scrive >= senza spazi.",
                 hints: ["Usa WHERE voto >= valore", ">= significa maggiore o uguale"],
                 explanation: "Filtro per recensioni positive.",
                 replacements: { voto: [3, 4, 5] }
@@ -1313,6 +1438,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Recensioni Negative ({voto}-)",
                 descTemplate: "Trova tutte le recensioni con voto minore o uguale a {voto}.",
                 queryTemplate: "SELECT * FROM recensioni WHERE voto <= {voto}",
+                brokenCode: "SELECT * FROM recensioni WHERE voto < = {voto}",
+                debugHint: "L'operatore 'minore o uguale' si scrive <= senza spazi.",
                 hints: ["Usa WHERE voto <= valore", "<= significa minore o uguale"],
                 explanation: "Filtro per recensioni negative.",
                 replacements: { voto: [2, 3] }
@@ -1321,6 +1448,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo Maggiore o Uguale ({val})",
                 descTemplate: "Mostra i prodotti con prezzo maggiore o uguale a {val} euro.",
                 queryTemplate: "SELECT * FROM prodotti WHERE prezzo >= {val}",
+                brokenCode: "SELECT * FROM prodotti WHERE prezzo => {val}",
+                debugHint: "L'operatore 'maggiore o uguale' si scrive >=.",
                 hints: ["Usa WHERE prezzo >= valore"],
                 explanation: "Filtro con operatore >=.",
                 replacements: { val: [50, 100, 150, 200] }
@@ -1329,6 +1458,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo Minore o Uguale ({val})",
                 descTemplate: "Trova i prodotti con prezzo minore o uguale a {val} euro.",
                 queryTemplate: "SELECT * FROM prodotti WHERE prezzo <= {val}",
+                brokenCode: "SELECT * FROM prodotti WHERE prezzo =< {val}",
+                debugHint: "L'operatore 'minore o uguale' si scrive <=.",
                 hints: ["Usa WHERE prezzo <= valore"],
                 explanation: "Filtro con operatore <=.",
                 replacements: { val: [20, 50, 75, 100] }
@@ -1337,6 +1468,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Stock Maggiore o Uguale ({val})",
                 descTemplate: "Mostra i prodotti con stock maggiore o uguale a {val} unità.",
                 queryTemplate: "SELECT * FROM prodotti WHERE stock >= {val}",
+                brokenCode: "SELECT * FROM prodotti WHERE stock >= {val} ;",
+                debugHint: "Rimuovi il punto e virgola finale se presente (o altro errore).",
                 hints: ["Usa WHERE stock >= valore"],
                 explanation: "Filtro per prodotti ben forniti.",
                 replacements: { val: [10, 20, 30, 40] }
@@ -1345,6 +1478,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Stock Minore o Uguale ({val})",
                 descTemplate: "Trova i prodotti con stock minore o uguale a {val} unità.",
                 queryTemplate: "SELECT * FROM prodotti WHERE stock <= {val}",
+                brokenCode: "SELECT * FROM prodotti WHERE stock <= {val} ;",
+                debugHint: "Rimuovi il punto e virgola finale se presente (o altro errore).",
                 hints: ["Usa WHERE stock <= valore"],
                 explanation: "Filtro per scorte basse.",
                 replacements: { val: [5, 10, 15, 20] }
@@ -1353,6 +1488,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Quantità Minore o Uguale ({qty})",
                 descTemplate: "Mostra gli ordini con quantità minore o uguale a {qty}.",
                 queryTemplate: "SELECT * FROM ordini WHERE quantita <= {qty}",
+                brokenCode: "SELECT * FROM ordini WHERE quantita <= '{qty}'",
+                debugHint: "Non servono apici per i valori numerici.",
                 hints: ["Usa WHERE quantita <= valore"],
                 explanation: "Filtro per ordini piccoli.",
                 replacements: { qty: [2, 3, 4, 5] }
@@ -1361,6 +1498,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Quantità Maggiore o Uguale ({qty})",
                 descTemplate: "Trova gli ordini con quantità maggiore o uguale a {qty}.",
                 queryTemplate: "SELECT * FROM ordini WHERE quantita >= {qty}",
+                brokenCode: "SELECT * FROM ordini WHERE quantita >= '{qty}'",
+                debugHint: "Non servono apici per i valori numerici.",
                 hints: ["Usa WHERE quantita >= valore"],
                 explanation: "Filtro per ordini grandi.",
                 replacements: { qty: [3, 4, 5] }
@@ -1369,6 +1508,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nome Prodotto Esatto",
                 descTemplate: "Trova il prodotto con nome esattamente uguale a 'Prod 1'.",
                 queryTemplate: "SELECT * FROM prodotti WHERE nome = 'Prod 1'",
+                brokenCode: "SELECT * FROM prodotti WHERE nome = Prod 1",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["Usa WHERE nome = 'valore'", "Ricorda gli apici per le stringhe"],
                 explanation: "Filtro per nome esatto.",
                 replacements: {}
@@ -1377,6 +1518,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Email Utente Esatta",
                 descTemplate: "Trova l'utente con email esattamente uguale a 'user1@mail.com'.",
                 queryTemplate: "SELECT * FROM utenti WHERE email = 'user1@mail.com'",
+                brokenCode: "SELECT * FROM utenti WHERE email = user1@mail.com",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["Usa WHERE email = 'valore'"],
                 explanation: "Filtro per email specifica.",
                 replacements: {}
@@ -1385,6 +1528,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Corriere Specifico ({corr})",
                 descTemplate: "Mostra tutte le spedizioni gestite dal corriere '{corr}'.",
                 queryTemplate: "SELECT * FROM spedizioni WHERE corriere = '{corr}'",
+                brokenCode: "SELECT * FROM spedizioni WHERE corriere = {corr}",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["Usa WHERE corriere = 'valore'"],
                 explanation: "Filtro per corriere specifico.",
                 replacements: { corr: DATA.couriers }
@@ -1393,6 +1538,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Azienda Fornitore ({azienda})",
                 descTemplate: "Trova il fornitore con azienda esattamente uguale a '{azienda}'.",
                 queryTemplate: "SELECT * FROM fornitori WHERE azienda = '{azienda}'",
+                brokenCode: "SELECT * FROM fornitori WHERE azienda = {azienda}",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["Usa WHERE azienda = 'valore'"],
                 explanation: "Filtro per azienda specifica.",
                 replacements: { azienda: DATA.suppliers }
@@ -1401,6 +1548,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nazione Fornitore ({nazione})",
                 descTemplate: "Mostra tutti i fornitori con sede in '{nazione}'.",
                 queryTemplate: "SELECT * FROM fornitori WHERE nazione = '{nazione}'",
+                brokenCode: "SELECT * FROM fornitori WHERE nazione = {nazione}",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["Usa WHERE nazione = 'valore'"],
                 explanation: "Filtro per nazione fornitore.",
                 replacements: { nazione: DATA.countries }
@@ -1409,6 +1558,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nome Categoria ({cat})",
                 descTemplate: "Trova la categoria con nome esattamente uguale a '{cat}'.",
                 queryTemplate: "SELECT * FROM categorie WHERE nome = '{cat}'",
+                brokenCode: "SELECT * FROM categorie WHERE nome = {cat}",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["Usa WHERE nome = 'valore'"],
                 explanation: "Filtro per nome categoria.",
                 replacements: { cat: DATA.categories }
@@ -1417,6 +1568,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "ID Utente Esatto ({id})",
                 descTemplate: "Trova l'utente con ID esattamente uguale a {id}.",
                 queryTemplate: "SELECT * FROM utenti WHERE id = {id}",
+                brokenCode: "SELECT * FROM utenti WHERE id == {id}",
+                debugHint: "In SQL l'uguaglianza si esprime con un singolo uguale.",
                 hints: ["Usa WHERE id = valore"],
                 explanation: "Filtro per ID specifico.",
                 replacements: { id: [1, 2, 3, 4, 5, 10, 15, 20] }
@@ -1425,6 +1578,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "ID Prodotto Esatto ({id})",
                 descTemplate: "Mostra il prodotto con ID esattamente uguale a {id}.",
                 queryTemplate: "SELECT * FROM prodotti WHERE id = {id}",
+                brokenCode: "SELECT * FROM prodotti WHERE id == {id}",
+                debugHint: "In SQL l'uguaglianza si esprime con un singolo uguale.",
                 hints: ["Usa WHERE id = valore"],
                 explanation: "Filtro per ID prodotto.",
                 replacements: { id: [1, 2, 3, 4, 5, 10, 15, 20] }
@@ -1433,6 +1588,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "ID Ordine Esatto ({id})",
                 descTemplate: "Trova l'ordine con ID esattamente uguale a {id}.",
                 queryTemplate: "SELECT * FROM ordini WHERE id = {id}",
+                brokenCode: "SELECT * FROM ordini WHERE id == {id}",
+                debugHint: "In SQL l'uguaglianza si esprime con un singolo uguale.",
                 hints: ["Usa WHERE id = valore"],
                 explanation: "Filtro per ID ordine.",
                 replacements: { id: [1, 2, 3, 4, 5, 10, 15, 20, 25, 30] }
@@ -1442,6 +1599,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Data Esatta",
                 descTemplate: "Trova gli ordini effettuati esattamente il '2023-01-15'.",
                 queryTemplate: "SELECT * FROM ordini WHERE data_ordine = '2023-01-15'",
+                brokenCode: "SELECT * FROM ordini WHERE data_ordine = 2023-01-15",
+                debugHint: "Le date sono stringhe e devono essere racchiuse tra apici.",
                 hints: ["Usa WHERE data_ordine = 'YYYY-MM-DD'"],
                 explanation: "Filtro su data specifica.",
                 replacements: {}
@@ -1450,6 +1609,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Anno 2023",
                 descTemplate: "Trova gli ordini effettuati nell'anno 2023 (usa YEAR(data_ordine) = 2023).",
                 queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2023",
+                brokenCode: "SELECT * FROM ordini WHERE YEAR(data_ordine) == 2023",
+                debugHint: "In SQL l'uguaglianza si esprime con un singolo uguale.",
                 hints: ["Usa YEAR()"],
                 explanation: "Filtro su anno.",
                 replacements: {}
@@ -1458,6 +1619,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Mese Gennaio",
                 descTemplate: "Trova gli ordini effettuati a Gennaio (MONTH(data_ordine) = 1).",
                 queryTemplate: "SELECT * FROM ordini WHERE MONTH(data_ordine) = 1",
+                brokenCode: "SELECT * FROM ordini WHERE MONTH(data_ordine) = 'Gennaio'",
+                debugHint: "La funzione MONTH restituisce un numero (1-12).",
                 hints: ["Usa MONTH()"],
                 explanation: "Filtro su mese.",
                 replacements: {}
@@ -1466,6 +1629,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prodotti Stock Zero",
                 descTemplate: "Trova i prodotti esauriti (stock = 0).",
                 queryTemplate: "SELECT * FROM prodotti WHERE stock = 0",
+                brokenCode: "SELECT * FROM prodotti WHERE stock == 0",
+                debugHint: "In SQL l'uguaglianza si esprime con un singolo uguale.",
                 hints: ["WHERE stock = 0"],
                 explanation: "Filtro per prodotti esauriti.",
                 replacements: {}
@@ -1474,6 +1639,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prodotti Stock Positivo",
                 descTemplate: "Trova i prodotti disponibili (stock > 0).",
                 queryTemplate: "SELECT * FROM prodotti WHERE stock > 0",
+                brokenCode: "SELECT * FROM prodotti WHERE stock > '0'",
+                debugHint: "Non servono apici per i valori numerici.",
                 hints: ["WHERE stock > 0"],
                 explanation: "Filtro per prodotti disponibili.",
                 replacements: {}
@@ -1482,6 +1649,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo Minimo 10",
                 descTemplate: "Trova i prodotti che costano almeno 10 euro.",
                 queryTemplate: "SELECT * FROM prodotti WHERE prezzo >= 10",
+                brokenCode: "SELECT * FROM prodotti WHERE prezzo >= '10'",
+                debugHint: "Non servono apici per i valori numerici.",
                 hints: ["WHERE prezzo >= 10"],
                 explanation: "Filtro prezzo minimo.",
                 replacements: {}
@@ -1490,6 +1659,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo Massimo 100",
                 descTemplate: "Trova i prodotti che costano al massimo 100 euro.",
                 queryTemplate: "SELECT * FROM prodotti WHERE prezzo <= 100",
+                brokenCode: "SELECT * FROM prodotti WHERE prezzo <= '100'",
+                debugHint: "Non servono apici per i valori numerici.",
                 hints: ["WHERE prezzo <= 100"],
                 explanation: "Filtro prezzo massimo.",
                 replacements: {}
@@ -1498,6 +1669,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Utenti Italiani",
                 descTemplate: "Trova tutti gli utenti che vivono in 'Italia'.",
                 queryTemplate: "SELECT * FROM utenti WHERE paese = 'Italia'",
+                brokenCode: "SELECT * FROM utenti WHERE paese = Italia",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["WHERE paese = 'Italia'"],
                 explanation: "Filtro paese specifico.",
                 replacements: {}
@@ -1506,6 +1679,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Utenti Francesi",
                 descTemplate: "Trova tutti gli utenti che vivono in 'Francia'.",
                 queryTemplate: "SELECT * FROM utenti WHERE paese = 'Francia'",
+                brokenCode: "SELECT * FROM utenti WHERE paese = Francia",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["WHERE paese = 'Francia'"],
                 explanation: "Filtro paese specifico.",
                 replacements: {}
@@ -1514,6 +1689,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Utenti Tedeschi",
                 descTemplate: "Trova tutti gli utenti che vivono in 'Germania'.",
                 queryTemplate: "SELECT * FROM utenti WHERE paese = 'Germania'",
+                brokenCode: "SELECT * FROM utenti WHERE paese = Germania",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["WHERE paese = 'Germania'"],
                 explanation: "Filtro paese specifico.",
                 replacements: {}
@@ -1522,6 +1699,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Spedizioni DHL",
                 descTemplate: "Trova tutte le spedizioni affidate a 'DHL'.",
                 queryTemplate: "SELECT * FROM spedizioni WHERE corriere = 'DHL'",
+                brokenCode: "SELECT * FROM spedizioni WHERE corriere = DHL",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["WHERE corriere = 'DHL'"],
                 explanation: "Filtro corriere.",
                 replacements: {}
@@ -1530,6 +1709,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Spedizioni UPS",
                 descTemplate: "Trova tutte le spedizioni affidate a 'UPS'.",
                 queryTemplate: "SELECT * FROM spedizioni WHERE corriere = 'UPS'",
+                brokenCode: "SELECT * FROM spedizioni WHERE corriere = UPS",
+                debugHint: "Le stringhe devono essere racchiuse tra apici.",
                 hints: ["WHERE corriere = 'UPS'"],
                 explanation: "Filtro corriere.",
                 replacements: {}
@@ -1538,6 +1719,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Recensioni 5 Stelle",
                 descTemplate: "Trova tutte le recensioni con voto 5.",
                 queryTemplate: "SELECT * FROM recensioni WHERE voto = 5",
+                brokenCode: "SELECT * FROM recensioni WHERE voto == 5",
+                debugHint: "In SQL l'uguaglianza si esprime con un singolo uguale.",
                 hints: ["WHERE voto = 5"],
                 explanation: "Filtro voto massimo.",
                 replacements: {}
@@ -2192,6 +2375,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Pari/Dispari",
                 descTemplate: "Trova ordini con ID pari.",
                 queryTemplate: "SELECT * FROM ordini WHERE id % 2 = 0",
+                brokenCode: "SELECT * FROM ordini WHERE id % 2 == 0",
+                debugHint: "In SQL l'uguaglianza si esprime con un singolo uguale.",
                 hints: ["Usa modulo % 2"],
                 explanation: "Filtro parità.",
                 replacements: {}
@@ -2200,6 +2385,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Dispari",
                 descTemplate: "Trova ordini con ID dispari.",
                 queryTemplate: "SELECT * FROM ordini WHERE id % 2 <> 0",
+                brokenCode: "SELECT * FROM ordini WHERE id % 2 =! 0",
+                debugHint: "L'operatore 'diverso' si scrive <> (o !=).",
                 hints: ["Usa modulo % 2 diverso da 0"],
                 explanation: "Filtro disparità.",
                 replacements: {}
@@ -2208,6 +2395,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "NOT LIKE Complesso",
                 descTemplate: "Trova utenti il cui nome NON contiene 'a'.",
                 queryTemplate: "SELECT * FROM utenti WHERE nome NOT LIKE '%a%'",
+                brokenCode: "SELECT * FROM utenti WHERE nome NO LIKE '%a%'",
+                debugHint: "La clausola corretta è NOT LIKE.",
                 hints: ["NOT LIKE '%a%'"],
                 explanation: "Esclusione pattern.",
                 replacements: {}
@@ -2216,6 +2405,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "NOT LIKE Iniziale",
                 descTemplate: "Trova prodotti che NON iniziano per 'P'.",
                 queryTemplate: "SELECT * FROM prodotti WHERE nome NOT LIKE 'P%'",
+                brokenCode: "SELECT * FROM prodotti WHERE nome NOT LIKE P%",
+                debugHint: "Il pattern deve essere racchiuso tra apici.",
                 hints: ["NOT LIKE 'P%'"],
                 explanation: "Esclusione iniziale.",
                 replacements: {}
@@ -2224,6 +2415,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Lunghezza Email",
                 descTemplate: "Trova utenti con email più corta di 15 caratteri.",
                 queryTemplate: "SELECT * FROM utenti WHERE LEN(email) < 15",
+                brokenCode: "SELECT * FROM utenti WHERE LEN(email) < '15'",
+                debugHint: "Non servono apici per i valori numerici.",
                 hints: ["LEN(email) < 15"],
                 explanation: "Filtro lunghezza.",
                 replacements: {}
@@ -2232,6 +2425,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Dominio Email",
                 descTemplate: "Trova utenti con dominio email diverso da 'gmail.com' (usando LIKE).",
                 queryTemplate: "SELECT * FROM utenti WHERE email NOT LIKE '%@gmail.com'",
+                brokenCode: "SELECT * FROM utenti WHERE email NOT LIKE %@gmail.com",
+                debugHint: "Il pattern deve essere racchiuso tra apici.",
                 hints: ["NOT LIKE '%@gmail.com'"],
                 explanation: "Esclusione dominio.",
                 replacements: {}
@@ -2240,6 +2435,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Prezzo o Stock Zero",
                 descTemplate: "Trova prodotti gratis (prezzo=0) o esauriti (stock=0).",
                 queryTemplate: "SELECT * FROM prodotti WHERE prezzo = 0 OR stock = 0",
+                brokenCode: "SELECT * FROM prodotti WHERE prezzo = 0 OR stock == 0",
+                debugHint: "In SQL l'uguaglianza si esprime con un singolo uguale.",
                 hints: ["OR tra due uguaglianze"],
                 explanation: "Casi limite.",
                 replacements: {}
@@ -2248,6 +2445,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Multiplo Categorie",
                 descTemplate: "Trova prodotti di cat 1 con prezzo > 10, o cat 2 con prezzo > 20.",
                 queryTemplate: "SELECT * FROM prodotti WHERE (categoria_id = 1 AND prezzo > 10) OR (categoria_id = 2 AND prezzo > 20)",
+                brokenCode: "SELECT * FROM prodotti WHERE (categoria_id = 1 AND prezzo > 10) OR (categoria_id = 2 AND prezzo > 20",
+                debugHint: "Manca una parentesi di chiusura.",
                 hints: ["Parentesi essenziali"],
                 explanation: "Logica condizionale complessa.",
                 replacements: {}
@@ -2256,6 +2455,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Filtro Esclusivo",
                 descTemplate: "Trova prodotti che sono o cat 1 o cat 2, ma non entrambi (XOR simulato).",
                 queryTemplate: "SELECT * FROM prodotti WHERE (categoria_id = 1 OR categoria_id = 2) AND NOT (categoria_id = 1 AND categoria_id = 2)",
+                brokenCode: "SELECT * FROM prodotti WHERE (categoria_id = 1 OR categoria_id = 2) AND NOT (categoria_id = 1 AND categoria_id = 2",
+                debugHint: "Manca una parentesi di chiusura.",
                 hints: ["(A OR B) AND NOT (A AND B)"],
                 explanation: "XOR logico.",
                 replacements: {}
@@ -2264,8 +2465,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Logica Complessa Finale",
                 descTemplate: "Trova i prodotti che ((costano più di 150 E stock > 20) O (categoria_id = 2 E prezzo < 100)) E fornitore_id <> 3.",
                 queryTemplate: "SELECT * FROM prodotti WHERE ((prezzo > 150 AND stock > 20) OR (categoria_id = 2 AND prezzo < 100)) AND fornitore_id <> 3",
+                brokenCode: "SELECT * FROM prodotti WHERE ((prezzo > 150 AND stock > 20) OR (categoria_id = 2 AND prezzo < 100) AND fornitore_id <> 3",
+                debugHint: "Controlla il bilanciamento delle parentesi.",
                 hints: ["Usa parentesi multiple", "((A AND B) OR (C AND D)) AND E"],
-                explanation: "Logica complessa con parentesi multiple.",
+                explanation: "Logica condizionale complessa.",
                 replacements: {}
             }
         ]
@@ -2276,6 +2479,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo Crescente",
                 descTemplate: "Mostra l'elenco dei prodotti ordinati dal più economico al più costoso.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY prezzo ASC",
+                brokenCode: "SELECT * FROM prodotti ORDER prezzo ASC",
+                debugHint: "Manca la parola chiave BY dopo ORDER.",
                 hints: ["Usa ORDER BY colonna ASC", "ASC è opzionale (default)"],
                 explanation: "L'ordinamento base.",
                 replacements: {}
@@ -2284,6 +2489,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Stock Decrescente",
                 descTemplate: "Ordina i prodotti in base alla quantità in magazzino, dal più alto al più basso.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY stock DESC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY stock DES",
+                debugHint: "Errore di battitura nella parola chiave DESC.",
                 hints: ["Usa ORDER BY colonna DESC"],
                 explanation: "DESC inverte l'ordine.",
                 replacements: {}
@@ -2292,6 +2499,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Ordini Cronologici",
                 descTemplate: "Visualizza gli ordini partendo dal più vecchio (data minore).",
                 queryTemplate: "SELECT * FROM ordini ORDER BY data_ordine",
+                brokenCode: "SELECT * FROM ordini ORDER data_ordine",
+                debugHint: "Manca la parola chiave BY dopo ORDER.",
                 hints: ["Le date ordinate ASC partono dal passato verso il futuro"],
                 explanation: "Ordinare date è essenziale per analisi temporali.",
                 replacements: {}
@@ -2300,6 +2509,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nomi Utenti A-Z",
                 descTemplate: "Ordina gli utenti alfabeticamente per nome dalla A alla Z.",
                 queryTemplate: "SELECT * FROM utenti ORDER BY nome ASC",
+                brokenCode: "SELECT * FROM utenti ORDER BY nome A SC",
+                debugHint: "Errore di battitura nella parola chiave ASC.",
                 hints: ["Usa ORDER BY nome ASC"],
                 explanation: "Ordinamento alfabetico crescente.",
                 replacements: {}
@@ -2308,6 +2519,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nomi Utenti Z-A",
                 descTemplate: "Ordina gli utenti alfabeticamente per nome dalla Z alla A.",
                 queryTemplate: "SELECT * FROM utenti ORDER BY nome DESC",
+                brokenCode: "SELECT * FROM utenti ORDER BY nome DSC",
+                debugHint: "Errore di battitura nella parola chiave DESC.",
                 hints: ["Usa ORDER BY nome DESC"],
                 explanation: "Ordinamento alfabetico decrescente.",
                 replacements: {}
@@ -2316,6 +2529,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Email Utenti A-Z",
                 descTemplate: "Ordina gli utenti per email in ordine alfabetico crescente.",
                 queryTemplate: "SELECT * FROM utenti ORDER BY email ASC",
+                brokenCode: "SELECT * FROM utenti ORDER BY email AS",
+                debugHint: "Errore di battitura nella parola chiave ASC.",
                 hints: ["Usa ORDER BY email ASC"],
                 explanation: "Ordinamento su colonna email.",
                 replacements: {}
@@ -2324,6 +2539,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Paesi Utenti A-Z",
                 descTemplate: "Ordina gli utenti per paese in ordine alfabetico crescente.",
                 queryTemplate: "SELECT * FROM utenti ORDER BY paese ASC",
+                brokenCode: "SELECT * FROM utenti ORDER BY country ASC",
+                debugHint: "Controlla il nome della colonna paese.",
                 hints: ["Usa ORDER BY paese ASC"],
                 explanation: "Ordinamento per paese.",
                 replacements: {}
@@ -2332,6 +2549,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nomi Prodotti A-Z",
                 descTemplate: "Ordina i prodotti per nome in ordine alfabetico crescente.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY nome ASC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY name ASC",
+                debugHint: "Controlla il nome della colonna nome.",
                 hints: ["Usa ORDER BY nome ASC"],
                 explanation: "Ordinamento prodotti per nome.",
                 replacements: {}
@@ -2340,6 +2559,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nomi Prodotti Z-A",
                 descTemplate: "Ordina i prodotti per nome in ordine alfabetico decrescente.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY nome DESC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY name DESC",
+                debugHint: "Controlla il nome della colonna nome.",
                 hints: ["Usa ORDER BY nome DESC"],
                 explanation: "Ordinamento decrescente per nome.",
                 replacements: {}
@@ -2348,6 +2569,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo Decrescente",
                 descTemplate: "Ordina i prodotti dal più costoso al più economico.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY prezzo DESC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY price DESC",
+                debugHint: "Controlla il nome della colonna prezzo.",
                 hints: ["Usa ORDER BY prezzo DESC"],
                 explanation: "Ordinamento decrescente per prezzo.",
                 replacements: {}
@@ -2356,6 +2579,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Stock Crescente",
                 descTemplate: "Ordina i prodotti per stock dal più basso al più alto.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY stock ASC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY stock ASCC",
+                debugHint: "Errore di battitura nella parola chiave ASC.",
                 hints: ["Usa ORDER BY stock ASC"],
                 explanation: "Ordinamento crescente per stock.",
                 replacements: {}
@@ -2364,6 +2589,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "ID Utenti Crescente",
                 descTemplate: "Ordina gli utenti per ID in ordine crescente.",
                 queryTemplate: "SELECT * FROM utenti ORDER BY id ASC",
+                brokenCode: "SELECT * FROM utenti ORDER BY id A_SC",
+                debugHint: "Errore di battitura nella parola chiave ASC.",
                 hints: ["Usa ORDER BY id ASC"],
                 explanation: "Ordinamento per ID crescente.",
                 replacements: {}
@@ -2372,6 +2599,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "ID Utenti Decrescente",
                 descTemplate: "Ordina gli utenti per ID in ordine decrescente.",
                 queryTemplate: "SELECT * FROM utenti ORDER BY id DESC",
+                brokenCode: "SELECT * FROM utenti ORDER BY id DE SC",
+                debugHint: "Errore di battitura nella parola chiave DESC.",
                 hints: ["Usa ORDER BY id DESC"],
                 explanation: "Ordinamento per ID decrescente.",
                 replacements: {}
@@ -2380,6 +2609,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "ID Prodotti Crescente",
                 descTemplate: "Ordina i prodotti per ID in ordine crescente.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY id ASC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY id AS",
+                debugHint: "Errore di battitura nella parola chiave ASC.",
                 hints: ["Usa ORDER BY id ASC"],
                 explanation: "Ordinamento prodotti per ID.",
                 replacements: {}
@@ -2388,6 +2619,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "ID Prodotti Decrescente",
                 descTemplate: "Ordina i prodotti per ID in ordine decrescente.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY id DESC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY id DES",
+                debugHint: "Errore di battitura nella parola chiave DESC.",
                 hints: ["Usa ORDER BY id DESC"],
                 explanation: "Ordinamento decrescente per ID.",
                 replacements: {}
@@ -2396,6 +2629,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Categoria ID Crescente",
                 descTemplate: "Ordina i prodotti per categoria_id in ordine crescente.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY categoria_id ASC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY categoria_id AS",
+                debugHint: "Errore di battitura nella parola chiave ASC.",
                 hints: ["Usa ORDER BY categoria_id ASC"],
                 explanation: "Ordinamento per categoria.",
                 replacements: {}
@@ -2404,6 +2639,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Categoria ID Decrescente",
                 descTemplate: "Ordina i prodotti per categoria_id in ordine decrescente.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY categoria_id DESC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY categoria_id DES",
+                debugHint: "Errore di battitura nella parola chiave DESC.",
                 hints: ["Usa ORDER BY categoria_id DESC"],
                 explanation: "Ordinamento decrescente per categoria.",
                 replacements: {}
@@ -2412,6 +2649,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Fornitore ID Crescente",
                 descTemplate: "Ordina i prodotti per fornitore_id in ordine crescente.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY fornitore_id ASC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY fornitore_id AS",
+                debugHint: "Errore di battitura nella parola chiave ASC.",
                 hints: ["Usa ORDER BY fornitore_id ASC"],
                 explanation: "Ordinamento per fornitore.",
                 replacements: {}
@@ -2420,6 +2659,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Fornitore ID Decrescente",
                 descTemplate: "Ordina i prodotti per fornitore_id in ordine decrescente.",
                 queryTemplate: "SELECT * FROM prodotti ORDER BY fornitore_id DESC",
+                brokenCode: "SELECT * FROM prodotti ORDER BY fornitore_id DES",
+                debugHint: "Errore di battitura nella parola chiave DESC.",
                 hints: ["Usa ORDER BY fornitore_id DESC"],
                 explanation: "Ordinamento decrescente per fornitore.",
                 replacements: {}
@@ -2428,6 +2669,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Ordini Data Decrescente",
                 descTemplate: "Ordina gli ordini dalla data più recente alla più vecchia.",
                 queryTemplate: "SELECT * FROM ordini ORDER BY data_ordine DESC",
+                brokenCode: "SELECT * FROM ordini ORDER BY data_ordine DES",
+                debugHint: "Errore di battitura nella parola chiave DESC.",
                 hints: ["Usa ORDER BY data_ordine DESC"],
                 explanation: "Ordinamento decrescente per data.",
                 replacements: {}
@@ -2436,6 +2679,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Quantità Ordine Crescente",
                 descTemplate: "Ordina gli ordini per quantità dal più basso al più alto.",
                 queryTemplate: "SELECT * FROM ordini ORDER BY quantita ASC",
+                brokenCode: "SELECT * FROM ordini ORDER BY quantita AS",
+                debugHint: "Errore di battitura nella parola chiave ASC.",
                 hints: ["Usa ORDER BY quantita ASC"],
                 explanation: "Ordinamento per quantità crescente.",
                 replacements: {}
@@ -2444,6 +2689,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Quantità Ordine Decrescente",
                 descTemplate: "Ordina gli ordini per quantità dal più alto al più basso.",
                 queryTemplate: "SELECT * FROM ordini ORDER BY quantita DESC",
+                brokenCode: "SELECT * FROM ordini ORDER BY quantita DES",
+                debugHint: "Errore di battitura nella parola chiave DESC.",
                 hints: ["Usa ORDER BY quantita DESC"],
                 explanation: "Ordinamento per quantità decrescente.",
                 replacements: {}
@@ -2452,6 +2699,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "ID Ordine Crescente",
                 descTemplate: "Ordina gli ordini per ID in ordine crescente.",
                 queryTemplate: "SELECT * FROM ordini ORDER BY id ASC",
+                brokenCode: "SELECT * FROM ordini ORDER BY id AS",
+                debugHint: "Errore di battitura nella parola chiave ASC.",
                 hints: ["Usa ORDER BY id ASC"],
                 explanation: "Ordinamento ordini per ID.",
                 replacements: {}
@@ -2460,6 +2709,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "ID Ordine Decrescente",
                 descTemplate: "Ordina gli ordini per ID in ordine decrescente.",
                 queryTemplate: "SELECT * FROM ordini ORDER BY id DESC",
+                brokenCode: "SELECT * FROM ordini ORDER BY id DES",
+                debugHint: "Errore di battitura nella parola chiave DESC.",
                 hints: ["Usa ORDER BY id DESC"],
                 explanation: "Ordinamento decrescente per ID ordine.",
                 replacements: {}
@@ -3246,6 +3497,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nomi Maiuscoli",
                 descTemplate: "Il sistema richiede i nomi utente tutti in maiuscolo per la stampa badge.",
                 queryTemplate: "SELECT UPPER(nome) FROM utenti",
+                brokenCode: "SELECT UPPER(nome FROM utenti",
+                debugHint: "Manca una parentesi di chiusura nella funzione.",
                 hints: ["Usa UPPER()"],
                 explanation: "Converte stringhe in UPPERCASE.",
                 replacements: {}
@@ -3254,6 +3507,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Arrotondamento Prezzi",
                 descTemplate: "Visualizza i prezzi arrotondati all'intero più vicino.",
                 queryTemplate: "SELECT ROUND(prezzo, 0) FROM prodotti",
+                brokenCode: "SELECT ROUND(prezzo 0) FROM prodotti",
+                debugHint: "Gli argomenti della funzione devono essere separati da una virgola.",
                 hints: ["Usa ROUND(col, 0)"],
                 explanation: "Arrotondamento matematico standard.",
                 replacements: {}
@@ -3262,6 +3517,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Nomi",
                 descTemplate: "Calcola quanti caratteri è lungo il nome di ogni prodotto.",
                 queryTemplate: "SELECT nome, LENGTH(nome) FROM prodotti",
+                brokenCode: "SELECT nome, LENGTH(nome FROM prodotti",
+                debugHint: "Manca una parentesi di chiusura nella funzione.",
                 hints: ["Usa LENGTH() o LEN()"],
                 explanation: "Utile per validazione dati.",
                 replacements: {}
@@ -3270,6 +3527,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nomi Minuscoli",
                 descTemplate: "Converte tutti i nomi utente in minuscolo per uniformità.",
                 queryTemplate: "SELECT LOWER(nome) FROM utenti",
+                brokenCode: "SELECT LOW(nome) FROM utenti",
+                debugHint: "Il nome della funzione per convertire in minuscolo è LOWER.",
                 hints: ["Usa LOWER()"],
                 explanation: "Converte stringhe in lowercase.",
                 replacements: {}
@@ -3278,6 +3537,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Email Maiuscole",
                 descTemplate: "Converte tutte le email in maiuscolo.",
                 queryTemplate: "SELECT UPPER(email) FROM utenti",
+                brokenCode: "SELECT UP(email) FROM utenti",
+                debugHint: "Il nome della funzione per convertire in maiuscolo è UPPER.",
                 hints: ["Usa UPPER() su email"],
                 explanation: "UPPER() su colonna email.",
                 replacements: {}
@@ -3286,6 +3547,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nomi Prodotti Maiuscoli",
                 descTemplate: "Converte tutti i nomi prodotti in maiuscolo.",
                 queryTemplate: "SELECT UPPER(nome) FROM prodotti",
+                brokenCode: "SELECT UPPER nome FROM prodotti",
+                debugHint: "Le funzioni richiedono le parentesi attorno agli argomenti.",
                 hints: ["Usa UPPER() su nome prodotto"],
                 explanation: "UPPER() su nomi prodotti.",
                 replacements: {}
@@ -3294,6 +3557,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Paesi Maiuscoli",
                 descTemplate: "Converte tutti i paesi in maiuscolo.",
                 queryTemplate: "SELECT UPPER(paese) FROM utenti",
+                brokenCode: "SELECT UPPER(paese FROM utenti",
+                debugHint: "Manca una parentesi di chiusura.",
                 hints: ["Usa UPPER() su paese"],
                 explanation: "UPPER() su colonna paese.",
                 replacements: {}
@@ -3302,6 +3567,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Aziende Maiuscole",
                 descTemplate: "Converte tutti i nomi azienda in maiuscolo.",
                 queryTemplate: "SELECT UPPER(azienda) FROM fornitori",
+                brokenCode: "SELECT UPPER(azienda)) FROM fornitori",
+                debugHint: "C'è una parentesi di troppo.",
                 hints: ["Usa UPPER() su azienda"],
                 explanation: "UPPER() su aziende.",
                 replacements: {}
@@ -3310,6 +3577,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Corrieri Maiuscoli",
                 descTemplate: "Converte tutti i nomi corriere in maiuscolo.",
                 queryTemplate: "SELECT UPPER(corriere) FROM spedizioni",
+                brokenCode: "SELECT UPPER corriere) FROM spedizioni",
+                debugHint: "Manca la parentesi di apertura.",
                 hints: ["Usa UPPER() su corriere"],
                 explanation: "UPPER() su corrieri.",
                 replacements: {}
@@ -3318,6 +3587,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo Arrotondato 1 Decimale",
                 descTemplate: "Visualizza i prezzi arrotondati a 1 decimale.",
                 queryTemplate: "SELECT ROUND(prezzo, 1) FROM prodotti",
+                brokenCode: "SELECT ROUND(prezzo; 1) FROM prodotti",
+                debugHint: "Usa la virgola per separare gli argomenti.",
                 hints: ["Usa ROUND(prezzo, 1)"],
                 explanation: "Arrotondamento a 1 decimale.",
                 replacements: {}
@@ -3326,6 +3597,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo Arrotondato 2 Decimali",
                 descTemplate: "Visualizza i prezzi arrotondati a 2 decimali.",
                 queryTemplate: "SELECT ROUND(prezzo, 2) FROM prodotti",
+                brokenCode: "SELECT ROUND(prezzo 2) FROM prodotti",
+                debugHint: "Manca la virgola tra gli argomenti.",
                 hints: ["Usa ROUND(prezzo, 2)"],
                 explanation: "Arrotondamento a 2 decimali.",
                 replacements: {}
@@ -3334,6 +3607,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Stock Arrotondato",
                 descTemplate: "Arrotonda lo stock all'intero più vicino (anche se già intero).",
                 queryTemplate: "SELECT ROUND(stock, 0) FROM prodotti",
+                brokenCode: "SELECT ROUND(stock, 0 FROM prodotti",
+                debugHint: "Manca la parentesi di chiusura.",
                 hints: ["Usa ROUND(stock, 0)"],
                 explanation: "Arrotondamento stock.",
                 replacements: {}
@@ -3342,6 +3617,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Email",
                 descTemplate: "Calcola la lunghezza di ogni email utente.",
                 queryTemplate: "SELECT email, LENGTH(email) FROM utenti",
+                brokenCode: "SELECT email, LENGHT(email) FROM utenti",
+                debugHint: "Errore di battitura nel nome della funzione.",
                 hints: ["Usa LENGTH() su email"],
                 explanation: "Lunghezza colonna email.",
                 replacements: {}
@@ -3350,6 +3627,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Nomi Utenti",
                 descTemplate: "Calcola quanti caratteri è lungo il nome di ogni utente.",
                 queryTemplate: "SELECT nome, LENGTH(nome) FROM utenti",
+                brokenCode: "SELECT nome, LENGTH(nome FROM utenti",
+                debugHint: "Manca una parentesi di chiusura nella funzione.",
                 hints: ["Usa LENGTH() su nome utente"],
                 explanation: "Lunghezza nomi utenti.",
                 replacements: {}
@@ -3358,6 +3637,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Paesi",
                 descTemplate: "Calcola la lunghezza del nome di ogni paese.",
                 queryTemplate: "SELECT paese, LENGTH(paese) FROM utenti",
+                brokenCode: "SELECT paese, LENGTH(paese FROM utenti",
+                debugHint: "Manca una parentesi di chiusura nella funzione.",
                 hints: ["Usa LENGTH() su paese"],
                 explanation: "Lunghezza nomi paesi.",
                 replacements: {}
@@ -3366,6 +3647,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Commenti",
                 descTemplate: "Calcola la lunghezza di ogni commento nelle recensioni.",
                 queryTemplate: "SELECT commento, LENGTH(commento) FROM recensioni",
+                brokenCode: "SELECT commento, LENGTH(commento FROM recensioni",
+                debugHint: "Manca una parentesi di chiusura nella funzione.",
                 hints: ["Usa LENGTH() su commento"],
                 explanation: "Lunghezza commenti recensioni.",
                 replacements: {}
@@ -3374,6 +3657,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Codice Tracking",
                 descTemplate: "Calcola la lunghezza di ogni codice tracking.",
                 queryTemplate: "SELECT codice_tracking, LENGTH(codice_tracking) FROM spedizioni",
+                brokenCode: "SELECT codice_tracking, LENGTH(codice_tracking FROM spedizioni",
+                debugHint: "Manca una parentesi di chiusura nella funzione.",
                 hints: ["Usa LENGTH() su codice_tracking"],
                 explanation: "Lunghezza codici tracking.",
                 replacements: {}
@@ -3382,6 +3667,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Aziende",
                 descTemplate: "Calcola la lunghezza del nome di ogni azienda fornitore.",
                 queryTemplate: "SELECT azienda, LENGTH(azienda) FROM fornitori",
+                brokenCode: "SELECT azienda, LENGTH(azienda FROM fornitori",
+                debugHint: "Manca una parentesi di chiusura nella funzione.",
                 hints: ["Usa LENGTH() su azienda"],
                 explanation: "Lunghezza nomi aziende.",
                 replacements: {}
@@ -3390,6 +3677,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Categorie",
                 descTemplate: "Calcola la lunghezza del nome di ogni categoria.",
                 queryTemplate: "SELECT nome, LENGTH(nome) FROM categorie",
+                brokenCode: "SELECT nome, LENGTH(nome FROM categorie",
+                debugHint: "Manca una parentesi di chiusura nella funzione.",
                 hints: ["Usa LENGTH() su nome categoria"],
                 explanation: "Lunghezza nomi categorie.",
                 replacements: {}
@@ -3398,6 +3687,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Descrizioni",
                 descTemplate: "Calcola la lunghezza della descrizione di ogni categoria.",
                 queryTemplate: "SELECT descrizione, LENGTH(descrizione) FROM categorie",
+                brokenCode: "SELECT descrizione, LENGTH(descrizione FROM categorie",
+                debugHint: "Manca una parentesi di chiusura nella funzione.",
                 hints: ["Usa LENGTH() su descrizione"],
                 explanation: "Lunghezza descrizioni categorie.",
                 replacements: {}
@@ -3406,6 +3697,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo e Lunghezza Nome",
                 descTemplate: "Mostra nome prodotto, prezzo arrotondato e lunghezza del nome.",
                 queryTemplate: "SELECT nome, ROUND(prezzo, 0), LENGTH(nome) FROM prodotti",
+                brokenCode: "SELECT nome, ROUND(prezzo, 0), LENGTH(nome FROM prodotti",
+                debugHint: "Manca una parentesi di chiusura nella funzione LENGTH.",
                 hints: ["Combina ROUND e LENGTH", "SELECT nome, ROUND(prezzo, 0), LENGTH(nome)"],
                 explanation: "Funzioni multiple in una query.",
                 replacements: {}
@@ -3414,6 +3707,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nome e Lunghezza Email",
                 descTemplate: "Mostra nome utente, email in maiuscolo e lunghezza email.",
                 queryTemplate: "SELECT nome, UPPER(email), LENGTH(email) FROM utenti",
+                brokenCode: "SELECT nome, UPPER(email), LENGTH(email FROM utenti",
+                debugHint: "Manca una parentesi di chiusura nella funzione LENGTH.",
                 hints: ["Combina UPPER e LENGTH", "SELECT nome, UPPER(email), LENGTH(email)"],
                 explanation: "Funzioni multiple su colonne diverse.",
                 replacements: {}
@@ -3430,6 +3725,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Tutto Maiuscolo",
                 descTemplate: "Converte nome, email e paese in maiuscolo.",
                 queryTemplate: "SELECT UPPER(nome), UPPER(email), UPPER(paese) FROM utenti",
+                brokenCode: "SELECT UPPER(nome), UPPER(email), UPPER(paese FROM utenti",
+                debugHint: "Manca una parentesi di chiusura nell'ultima funzione UPPER.",
                 hints: ["Usa UPPER tre volte", "SELECT UPPER(nome), UPPER(email), UPPER(paese)"],
                 explanation: "UPPER multiplo.",
                 replacements: {}
@@ -3438,6 +3735,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Tutto Minuscolo",
                 descTemplate: "Converte nome, email e paese in minuscolo.",
                 queryTemplate: "SELECT LOWER(nome), LOWER(email), LOWER(paese) FROM utenti",
+                brokenCode: "SELECT LOWER(nome), LOWER(email), LOWER(paese FROM utenti",
+                debugHint: "Manca una parentesi di chiusura nell'ultima funzione LOWER.",
                 hints: ["Usa LOWER tre volte", "SELECT LOWER(nome), LOWER(email), LOWER(paese)"],
                 explanation: "LOWER multiplo.",
                 replacements: {}
@@ -3446,6 +3745,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezze Multiple",
                 descTemplate: "Calcola la lunghezza di nome, email e paese per ogni utente.",
                 queryTemplate: "SELECT nome, LENGTH(nome), LENGTH(email), LENGTH(paese) FROM utenti",
+                brokenCode: "SELECT nome, LENGTH(nome), LENGTH(email), LENGTH(paese FROM utenti",
+                debugHint: "Manca una parentesi di chiusura nell'ultima funzione LENGTH.",
                 hints: ["Usa LENGTH tre volte", "SELECT nome, LENGTH(nome), LENGTH(email), LENGTH(paese)"],
                 explanation: "LENGTH multiplo.",
                 replacements: {}
@@ -3454,6 +3755,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Arrotondamenti Multipli",
                 descTemplate: "Arrotonda prezzo a 2 decimali e stock all'intero per ogni prodotto.",
                 queryTemplate: "SELECT nome, ROUND(prezzo, 2), ROUND(stock, 0) FROM prodotti",
+                brokenCode: "SELECT nome, ROUND(prezzo, 2), ROUND(stock, 0 FROM prodotti",
+                debugHint: "Manca una parentesi di chiusura nell'ultima funzione ROUND.",
                 hints: ["ROUND con precisioni diverse", "SELECT nome, ROUND(prezzo, 2), ROUND(stock, 0)"],
                 explanation: "ROUND con precisioni diverse.",
                 replacements: {}
@@ -3462,6 +3765,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Funzioni Miste",
                 descTemplate: "Mostra nome prodotto in maiuscolo, prezzo arrotondato e lunghezza nome.",
                 queryTemplate: "SELECT UPPER(nome), ROUND(prezzo, 0), LENGTH(nome) FROM prodotti",
+                brokenCode: "SELECT UPPER(nome), ROUND(prezzo, 0), LENGTH(nome FROM prodotti",
+                debugHint: "Manca una parentesi di chiusura nella funzione LENGTH.",
                 hints: ["Combina UPPER, ROUND e LENGTH", "SELECT UPPER(nome), ROUND(prezzo, 0), LENGTH(nome)"],
                 explanation: "Funzioni miste su colonne diverse.",
                 replacements: {}
@@ -3470,6 +3775,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Email e Lunghezza",
                 descTemplate: "Mostra email in minuscolo e la sua lunghezza.",
                 queryTemplate: "SELECT LOWER(email), LENGTH(email) FROM utenti",
+                brokenCode: "SELECT LOWER(email), LENGTH(email FROM utenti",
+                debugHint: "Manca una parentesi di chiusura nella funzione LENGTH.",
                 hints: ["Combina LOWER e LENGTH", "SELECT LOWER(email), LENGTH(email)"],
                 explanation: "LOWER combinato con LENGTH.",
                 replacements: {}
@@ -3478,6 +3785,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Nome e Prezzo Formattati",
                 descTemplate: "Mostra nome prodotto in maiuscolo e prezzo arrotondato a 1 decimale.",
                 queryTemplate: "SELECT UPPER(nome), ROUND(prezzo, 1) FROM prodotti",
+                brokenCode: "SELECT UPPER(nome), ROUND(prezzo, 1 FROM prodotti",
+                debugHint: "Manca una parentesi di chiusura nella funzione ROUND.",
                 hints: ["Combina UPPER e ROUND", "SELECT UPPER(nome), ROUND(prezzo, 1)"],
                 explanation: "UPPER combinato con ROUND.",
                 replacements: {}
@@ -3487,6 +3796,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Nome Azienda",
                 descTemplate: "Calcola la lunghezza del nome di ogni azienda fornitore.",
                 queryTemplate: "SELECT azienda, LENGTH(azienda) FROM fornitori",
+                brokenCode: "SELECT azienda, LENGTH(azienda FROM fornitori",
+                debugHint: "Manca una parentesi di chiusura nella funzione LENGTH.",
                 hints: ["Usa LENGTH()"],
                 explanation: "Funzione stringa base.",
                 replacements: {}
@@ -3495,6 +3806,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Lunghezza Nome Corriere",
                 descTemplate: "Calcola la lunghezza del nome di ogni corriere.",
                 queryTemplate: "SELECT corriere, LENGTH(corriere) FROM spedizioni",
+                brokenCode: "SELECT corriere, LENGTH(corriere FROM spedizioni",
+                debugHint: "Manca una parentesi di chiusura nella funzione LENGTH.",
                 hints: ["Usa LENGTH()"],
                 explanation: "Funzione stringa base.",
                 replacements: {}
@@ -3503,6 +3816,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 titleTemplate: "Prezzo Arrotondato (No Decimali)",
                 descTemplate: "Mostra i prezzi arrotondati a 0 decimali.",
                 queryTemplate: "SELECT ROUND(prezzo, 0) FROM prodotti",
+                brokenCode: "SELECT ROUND(prezzo 0) FROM prodotti",
+                debugHint: "Manca la virgola tra gli argomenti.",
                 hints: ["ROUND(prezzo, 0)"],
                 explanation: "Arrotondamento intero.",
                 replacements: {}
@@ -4213,54 +4528,54 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
     },
     [TopicId.Dates]: {
         [Difficulty.Easy]: [
-            { titleTemplate: "Estrazione Anno Ordine", descTemplate: "Analizziamo le tendenze annuali. Estrai l'anno dalla data di ogni ordine.", queryTemplate: "SELECT YEAR(data_ordine) FROM ordini", hints: ["Usa la funzione YEAR()"], explanation: "YEAR() estrae la parte anno da una data.", replacements: {} },
-            { titleTemplate: "Filtro Anno {year}", descTemplate: "Seleziona tutti gli ordini effettuati esclusivamente nel {year}.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = {year}", hints: ["Usa WHERE YEAR(data) = ..."], explanation: "Filtro su componente data.", replacements: { year: DATA.years } },
-            { titleTemplate: "Estrazione Mese Spedizione", descTemplate: "Per reportistica mensile, estrai il mese numerico dalle date di spedizione.", queryTemplate: "SELECT MONTH(data_spedizione) FROM spedizioni", hints: ["Usa MONTH()"], explanation: "MONTH() restituisce da 1 a 12.", replacements: {} },
-            { titleTemplate: "Anno Ordini", descTemplate: "Estrai l'anno da ogni data ordine.", queryTemplate: "SELECT YEAR(data_ordine) FROM ordini", hints: ["Usa YEAR(data_ordine)"], explanation: "YEAR() per estrarre anno.", replacements: {} },
-            { titleTemplate: "Anno Spedizioni", descTemplate: "Estrai l'anno da ogni data spedizione.", queryTemplate: "SELECT YEAR(data_spedizione) FROM spedizioni", hints: ["Usa YEAR(data_spedizione)"], explanation: "YEAR() su date spedizioni.", replacements: {} },
-            { titleTemplate: "Mese Ordini", descTemplate: "Estrai il mese (1-12) da ogni data ordine.", queryTemplate: "SELECT MONTH(data_ordine) FROM ordini", hints: ["Usa MONTH(data_ordine)"], explanation: "MONTH() per estrarre mese.", replacements: {} },
-            { titleTemplate: "Mese Spedizioni", descTemplate: "Estrai il mese da ogni data spedizione.", queryTemplate: "SELECT MONTH(data_spedizione) FROM spedizioni", hints: ["Usa MONTH(data_spedizione)"], explanation: "MONTH() su date spedizioni.", replacements: {} },
-            { titleTemplate: "Anno e Data Ordine", descTemplate: "Mostra la data ordine completa e l'anno estratto.", queryTemplate: "SELECT data_ordine, YEAR(data_ordine) FROM ordini", hints: ["Mostra data e YEAR()", "SELECT data_ordine, YEAR(data_ordine)"], explanation: "Data completa e anno estratto.", replacements: {} },
-            { titleTemplate: "Mese e Data Spedizione", descTemplate: "Mostra la data spedizione completa e il mese estratto.", queryTemplate: "SELECT data_spedizione, MONTH(data_spedizione) FROM spedizioni", hints: ["Mostra data e MONTH()", "SELECT data_spedizione, MONTH(data_spedizione)"], explanation: "Data completa e mese estratto.", replacements: {} },
-            { titleTemplate: "Anno e Mese Ordini", descTemplate: "Estrai anno e mese da ogni data ordine.", queryTemplate: "SELECT YEAR(data_ordine), MONTH(data_ordine) FROM ordini", hints: ["Usa YEAR() e MONTH()", "SELECT YEAR(data_ordine), MONTH(data_ordine)"], explanation: "YEAR e MONTH insieme.", replacements: {} },
-            { titleTemplate: "Anno e Mese Spedizioni", descTemplate: "Estrai anno e mese da ogni data spedizione.", queryTemplate: "SELECT YEAR(data_spedizione), MONTH(data_spedizione) FROM spedizioni", hints: ["Usa YEAR() e MONTH()", "SELECT YEAR(data_spedizione), MONTH(data_spedizione)"], explanation: "YEAR e MONTH su spedizioni.", replacements: {} },
-            { titleTemplate: "Filtro Anno 2022", descTemplate: "Trova tutti gli ordini effettuati nel 2022.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2022", hints: ["WHERE YEAR(data_ordine) = 2022"], explanation: "Filtro per anno specifico.", replacements: {} },
-            { titleTemplate: "Filtro Anno 2023", descTemplate: "Trova tutti gli ordini effettuati nel 2023.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2023", hints: ["WHERE YEAR(data_ordine) = 2023"], explanation: "Filtro per anno 2023.", replacements: {} },
-            { titleTemplate: "Filtro Anno 2024", descTemplate: "Trova tutti gli ordini effettuati nel 2024.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2024", hints: ["WHERE YEAR(data_ordine) = 2024"], explanation: "Filtro per anno 2024.", replacements: {} },
-            { titleTemplate: "Filtro Mese Gennaio", descTemplate: "Trova tutti gli ordini effettuati a Gennaio (mese 1).", queryTemplate: "SELECT * FROM ordini WHERE MONTH(data_ordine) = 1", hints: ["WHERE MONTH(data_ordine) = 1"], explanation: "Filtro per mese specifico.", replacements: {} },
-            { titleTemplate: "Filtro Mese {month}", descTemplate: "Trova tutti gli ordini effettuati nel mese {month}.", queryTemplate: "SELECT * FROM ordini WHERE MONTH(data_ordine) = {month}", hints: ["WHERE MONTH(data_ordine) = {month}"], explanation: "Filtro per mese variabile.", replacements: { month: DATA.months } },
-            { titleTemplate: "Filtro Mese Spedizione {month}", descTemplate: "Trova tutte le spedizioni avvenute nel mese {month}.", queryTemplate: "SELECT * FROM spedizioni WHERE MONTH(data_spedizione) = {month}", hints: ["WHERE MONTH(data_spedizione) = {month}"], explanation: "Filtro mese su spedizioni.", replacements: { month: DATA.months } },
-            { titleTemplate: "Data Ordine Completa", descTemplate: "Mostra tutte le date ordine senza estrazioni.", queryTemplate: "SELECT data_ordine FROM ordini", hints: ["SELECT data_ordine FROM ordini"], explanation: "Visualizzazione date complete.", replacements: {} },
-            { titleTemplate: "Data Spedizione Completa", descTemplate: "Mostra tutte le date spedizione senza estrazioni.", queryTemplate: "SELECT data_spedizione FROM spedizioni", hints: ["SELECT data_spedizione FROM spedizioni"], explanation: "Visualizzazione date spedizioni.", replacements: {} },
-            { titleTemplate: "Ordini con Anno", descTemplate: "Mostra ID ordine, data ordine e anno estratto.", queryTemplate: "SELECT id, data_ordine, YEAR(data_ordine) FROM ordini", hints: ["Mostra id, data e YEAR()", "SELECT id, data_ordine, YEAR(data_ordine)"], explanation: "ID, data e anno insieme.", replacements: {} },
-            { titleTemplate: "Spedizioni con Mese", descTemplate: "Mostra ID spedizione, data spedizione e mese estratto.", queryTemplate: "SELECT id, data_spedizione, MONTH(data_spedizione) FROM spedizioni", hints: ["Mostra id, data e MONTH()", "SELECT id, data_spedizione, MONTH(data_spedizione)"], explanation: "ID, data e mese insieme.", replacements: {} },
-            { titleTemplate: "Ordini con Anno e Mese", descTemplate: "Mostra data ordine, anno e mese estratti.", queryTemplate: "SELECT data_ordine, YEAR(data_ordine), MONTH(data_ordine) FROM ordini", hints: ["Mostra data, YEAR e MONTH", "SELECT data_ordine, YEAR(data_ordine), MONTH(data_ordine)"], explanation: "Data completa con anno e mese.", replacements: {} },
-            { titleTemplate: "Spedizioni con Anno e Mese", descTemplate: "Mostra data spedizione, anno e mese estratti.", queryTemplate: "SELECT data_spedizione, YEAR(data_spedizione), MONTH(data_spedizione) FROM spedizioni", hints: ["Mostra data, YEAR e MONTH", "SELECT data_spedizione, YEAR(data_spedizione), MONTH(data_spedizione)"], explanation: "Data completa con anno e mese spedizioni.", replacements: {} },
-            { titleTemplate: "Filtro Data Specifica", descTemplate: "Trova tutti gli ordini effettuati il 1 Gennaio 2023.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine = '2023-01-01'", hints: ["WHERE data_ordine = '2023-01-01'", "Le date sono stringhe 'YYYY-MM-DD'"], explanation: "Filtro per data specifica.", replacements: {} },
-            { titleTemplate: "Filtro Data Dopo", descTemplate: "Trova tutti gli ordini effettuati dopo il 1 Gennaio 2023.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine > '2023-01-01'", hints: ["WHERE data_ordine > '2023-01-01'"], explanation: "Filtro per data maggiore.", replacements: {} },
-            { titleTemplate: "Filtro Data Prima", descTemplate: "Trova tutti gli ordini effettuati prima del 1 Gennaio 2024.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine < '2024-01-01'", hints: ["WHERE data_ordine < '2024-01-01'"], explanation: "Filtro per data minore.", replacements: {} },
-            { titleTemplate: "Filtro Data Dopo o Uguale", descTemplate: "Trova tutti gli ordini dal 1 Gennaio 2023 in poi.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine >= '2023-01-01'", hints: ["WHERE data_ordine >= '2023-01-01'"], explanation: "Filtro per data maggiore o uguale.", replacements: {} },
-            { titleTemplate: "Filtro Data Prima o Uguale", descTemplate: "Trova tutti gli ordini fino al 31 Dicembre 2023.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine <= '2023-12-31'", hints: ["WHERE data_ordine <= '2023-12-31'"], explanation: "Filtro per data minore o uguale.", replacements: {} },
-            { titleTemplate: "Filtro Range Date", descTemplate: "Trova tutti gli ordini tra il 1 Gennaio 2023 e il 31 Dicembre 2023.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine BETWEEN '2023-01-01' AND '2023-12-31'", hints: ["WHERE data_ordine BETWEEN '...' AND '...'"], explanation: "BETWEEN per range di date.", replacements: {} },
+            { titleTemplate: "Estrazione Anno Ordine", descTemplate: "Analizziamo le tendenze annuali. Estrai l'anno dalla data di ogni ordine.", queryTemplate: "SELECT YEAR(data_ordine) FROM ordini", brokenCode: "SELECT YEAR(data_ordine FROM ordini", debugHint: "Manca una parentesi di chiusura nella funzione YEAR.", hints: ["Usa la funzione YEAR()"], explanation: "YEAR() estrae la parte anno da una data.", replacements: {} },
+            { titleTemplate: "Filtro Anno {year}", descTemplate: "Seleziona tutti gli ordini effettuati esclusivamente nel {year}.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = {year}", brokenCode: "SELECT * FROM ordini WHERE YEAR(data_ordine = {year}", debugHint: "Manca una parentesi di chiusura nella funzione YEAR.", hints: ["Usa WHERE YEAR(data) = ..."], explanation: "Filtro su componente data.", replacements: { year: DATA.years } },
+            { titleTemplate: "Estrazione Mese Spedizione", descTemplate: "Per reportistica mensile, estrai il mese numerico dalle date di spedizione.", queryTemplate: "SELECT MONTH(data_spedizione) FROM spedizioni", brokenCode: "SELECT MONTH(data_spedizione FROM spedizioni", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["Usa MONTH()"], explanation: "MONTH() restituisce da 1 a 12.", replacements: {} },
+            { titleTemplate: "Anno Ordini", descTemplate: "Estrai l'anno da ogni data ordine.", queryTemplate: "SELECT YEAR(data_ordine) FROM ordini", brokenCode: "SELECT YEA(data_ordine) FROM ordini", debugHint: "Errore di battitura nel nome della funzione YEAR.", hints: ["Usa YEAR(data_ordine)"], explanation: "YEAR() per estrarre anno.", replacements: {} },
+            { titleTemplate: "Anno Spedizioni", descTemplate: "Estrai l'anno da ogni data spedizione.", queryTemplate: "SELECT YEAR(data_spedizione) FROM spedizioni", brokenCode: "SELECT YEAR(data_spedizione FROM spedizioni", debugHint: "Manca una parentesi di chiusura nella funzione YEAR.", hints: ["Usa YEAR(data_spedizione)"], explanation: "YEAR() su date spedizioni.", replacements: {} },
+            { titleTemplate: "Mese Ordini", descTemplate: "Estrai il mese (1-12) da ogni data ordine.", queryTemplate: "SELECT MONTH(data_ordine) FROM ordini", brokenCode: "SELECT MON(data_ordine) FROM ordini", debugHint: "Errore di battitura nel nome della funzione MONTH.", hints: ["Usa MONTH(data_ordine)"], explanation: "MONTH() per estrarre mese.", replacements: {} },
+            { titleTemplate: "Mese Spedizioni", descTemplate: "Estrai il mese da ogni data spedizione.", queryTemplate: "SELECT MONTH(data_spedizione) FROM spedizioni", brokenCode: "SELECT MONTH(data_spedizione FROM spedizioni", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["Usa MONTH(data_spedizione)"], explanation: "MONTH() su date spedizioni.", replacements: {} },
+            { titleTemplate: "Anno e Data Ordine", descTemplate: "Mostra la data ordine completa e l'anno estratto.", queryTemplate: "SELECT data_ordine, YEAR(data_ordine) FROM ordini", brokenCode: "SELECT data_ordine, YEAR(data_ordine FROM ordini", debugHint: "Manca una parentesi di chiusura nella funzione YEAR.", hints: ["Mostra data e YEAR()", "SELECT data_ordine, YEAR(data_ordine)"], explanation: "Data completa e anno estratto.", replacements: {} },
+            { titleTemplate: "Mese e Data Spedizione", descTemplate: "Mostra la data spedizione completa e il mese estratto.", queryTemplate: "SELECT data_spedizione, MONTH(data_spedizione) FROM spedizioni", brokenCode: "SELECT data_spedizione, MONTH(data_spedizione FROM spedizioni", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["Mostra data e MONTH()", "SELECT data_spedizione, MONTH(data_spedizione)"], explanation: "Data completa e mese estratto.", replacements: {} },
+            { titleTemplate: "Anno e Mese Ordini", descTemplate: "Estrai anno e mese da ogni data ordine.", queryTemplate: "SELECT YEAR(data_ordine), MONTH(data_ordine) FROM ordini", brokenCode: "SELECT YEAR(data_ordine), MONTH(data_ordine FROM ordini", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["Usa YEAR() e MONTH()", "SELECT YEAR(data_ordine), MONTH(data_ordine)"], explanation: "YEAR e MONTH insieme.", replacements: {} },
+            { titleTemplate: "Anno e Mese Spedizioni", descTemplate: "Estrai anno e mese da ogni data spedizione.", queryTemplate: "SELECT YEAR(data_spedizione), MONTH(data_spedizione) FROM spedizioni", brokenCode: "SELECT YEAR(data_spedizione), MONTH(data_spedizione FROM spedizioni", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["Usa YEAR() e MONTH()", "SELECT YEAR(data_spedizione), MONTH(data_spedizione)"], explanation: "YEAR e MONTH su spedizioni.", replacements: {} },
+            { titleTemplate: "Filtro Anno 2022", descTemplate: "Trova tutti gli ordini effettuati nel 2022.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2022", brokenCode: "SELECT * FROM ordini WHERE YEAR(data_ordine) == 2022", debugHint: "In SQL si usa un solo uguale per il confronto.", hints: ["WHERE YEAR(data_ordine) = 2022"], explanation: "Filtro per anno specifico.", replacements: {} },
+            { titleTemplate: "Filtro Anno 2023", descTemplate: "Trova tutti gli ordini effettuati nel 2023.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2023", brokenCode: "SELECT * FROM ordini WHERE YEAR(data_ordine) 2023", debugHint: "Manca l'operatore di confronto (=).", hints: ["WHERE YEAR(data_ordine) = 2023"], explanation: "Filtro per anno 2023.", replacements: {} },
+            { titleTemplate: "Filtro Anno 2024", descTemplate: "Trova tutti gli ordini effettuati nel 2024.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2024", brokenCode: "SELECT * FROM ordini WHERE YEAR(data_ordine) = '2024", debugHint: "Manca l'apice di chiusura per l'anno.", hints: ["WHERE YEAR(data_ordine) = 2024"], explanation: "Filtro per anno 2024.", replacements: {} },
+            { titleTemplate: "Filtro Mese Gennaio", descTemplate: "Trova tutti gli ordini effettuati a Gennaio (mese 1).", queryTemplate: "SELECT * FROM ordini WHERE MONTH(data_ordine) = 1", brokenCode: "SELECT * FROM ordini WHERE MONTH(data_ordine) = 1)", debugHint: "C'è una parentesi di troppo.", hints: ["WHERE MONTH(data_ordine) = 1"], explanation: "Filtro per mese specifico.", replacements: {} },
+            { titleTemplate: "Filtro Mese {month}", descTemplate: "Trova tutti gli ordini effettuati nel mese {month}.", queryTemplate: "SELECT * FROM ordini WHERE MONTH(data_ordine) = {month}", brokenCode: "SELECT * FROM ordini WHERE MONTH(data_ordine = {month}", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["WHERE MONTH(data_ordine) = {month}"], explanation: "Filtro per mese variabile.", replacements: { month: DATA.months } },
+            { titleTemplate: "Filtro Mese Spedizione {month}", descTemplate: "Trova tutte le spedizioni avvenute nel mese {month}.", queryTemplate: "SELECT * FROM spedizioni WHERE MONTH(data_spedizione) = {month}", brokenCode: "SELECT * FROM spedizioni WHERE MONTH(data_spedizione = {month}", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["WHERE MONTH(data_spedizione) = {month}"], explanation: "Filtro mese su spedizioni.", replacements: { month: DATA.months } },
+            { titleTemplate: "Data Ordine Completa", descTemplate: "Mostra tutte le date ordine senza estrazioni.", queryTemplate: "SELECT data_ordine FROM ordini", brokenCode: "SELECT data_ordine FORM ordini", debugHint: "Errore di battitura nella parola chiave FROM.", hints: ["SELECT data_ordine FROM ordini"], explanation: "Visualizzazione date complete.", replacements: {} },
+            { titleTemplate: "Data Spedizione Completa", descTemplate: "Mostra tutte le date spedizione senza estrazioni.", queryTemplate: "SELECT data_spedizione FROM spedizioni", brokenCode: "SELECT data_spedizione FORM spedizioni", debugHint: "Errore di battitura nella parola chiave FROM.", hints: ["SELECT data_spedizione FROM spedizioni"], explanation: "Visualizzazione date spedizioni.", replacements: {} },
+            { titleTemplate: "Ordini con Anno", descTemplate: "Mostra ID ordine, data ordine e anno estratto.", queryTemplate: "SELECT id, data_ordine, YEAR(data_ordine) FROM ordini", brokenCode: "SELECT id, data_ordine, YEAR(data_ordine FROM ordini", debugHint: "Manca una parentesi di chiusura nella funzione YEAR.", hints: ["Mostra id, data e YEAR()", "SELECT id, data_ordine, YEAR(data_ordine)"], explanation: "ID, data e anno insieme.", replacements: {} },
+            { titleTemplate: "Spedizioni con Mese", descTemplate: "Mostra ID spedizione, data spedizione e mese estratto.", queryTemplate: "SELECT id, data_spedizione, MONTH(data_spedizione) FROM spedizioni", brokenCode: "SELECT id, data_spedizione, MONTH(data_spedizione FROM spedizioni", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["Mostra id, data e MONTH()", "SELECT id, data_spedizione, MONTH(data_spedizione)"], explanation: "ID, data e mese insieme.", replacements: {} },
+            { titleTemplate: "Ordini con Anno e Mese", descTemplate: "Mostra data ordine, anno e mese estratti.", queryTemplate: "SELECT data_ordine, YEAR(data_ordine), MONTH(data_ordine) FROM ordini", brokenCode: "SELECT data_ordine, YEAR(data_ordine), MONTH(data_ordine FROM ordini", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["Mostra data, YEAR e MONTH", "SELECT data_ordine, YEAR(data_ordine), MONTH(data_ordine)"], explanation: "Data completa con anno e mese.", replacements: {} },
+            { titleTemplate: "Spedizioni con Anno e Mese", descTemplate: "Mostra data spedizione, anno e mese estratti.", queryTemplate: "SELECT data_spedizione, YEAR(data_spedizione), MONTH(data_spedizione) FROM spedizioni", brokenCode: "SELECT data_spedizione, YEAR(data_spedizione), MONTH(data_spedizione FROM spedizioni", debugHint: "Manca una parentesi di chiusura nella funzione MONTH.", hints: ["Mostra data, YEAR e MONTH", "SELECT data_spedizione, YEAR(data_spedizione), MONTH(data_spedizione)"], explanation: "Data completa con anno e mese spedizioni.", replacements: {} },
+            { titleTemplate: "Filtro Data Specifica", descTemplate: "Trova tutti gli ordini effettuati il 1 Gennaio 2023.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine = '2023-01-01'", brokenCode: "SELECT * FROM ordini WHERE data_ordine = 2023-01-01", debugHint: "Le date devono essere racchiuse tra apici singoli.", hints: ["WHERE data_ordine = '2023-01-01'", "Le date sono stringhe 'YYYY-MM-DD'"], explanation: "Filtro per data specifica.", replacements: {} },
+            { titleTemplate: "Filtro Data Dopo", descTemplate: "Trova tutti gli ordini effettuati dopo il 1 Gennaio 2023.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine > '2023-01-01'", brokenCode: "SELECT * FROM ordini WHERE data_ordine > 2023-01-01", debugHint: "Le date devono essere racchiuse tra apici singoli.", hints: ["WHERE data_ordine > '2023-01-01'"], explanation: "Filtro per data maggiore.", replacements: {} },
+            { titleTemplate: "Filtro Data Prima", descTemplate: "Trova tutti gli ordini effettuati prima del 1 Gennaio 2024.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine < '2024-01-01'", brokenCode: "SELECT * FROM ordini WHERE data_ordine < 2024-01-01", debugHint: "Le date devono essere racchiuse tra apici singoli.", hints: ["WHERE data_ordine < '2024-01-01'"], explanation: "Filtro per data minore.", replacements: {} },
+            { titleTemplate: "Filtro Data Dopo o Uguale", descTemplate: "Trova tutti gli ordini dal 1 Gennaio 2023 in poi.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine >= '2023-01-01'", brokenCode: "SELECT * FROM ordini WHERE data_ordine >= 2023-01-01", debugHint: "Le date devono essere racchiuse tra apici singoli.", hints: ["WHERE data_ordine >= '2023-01-01'"], explanation: "Filtro per data maggiore o uguale.", replacements: {} },
+            { titleTemplate: "Filtro Data Prima o Uguale", descTemplate: "Trova tutti gli ordini fino al 31 Dicembre 2023.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine <= '2023-12-31'", brokenCode: "SELECT * FROM ordini WHERE data_ordine <= 2023-12-31", debugHint: "Le date devono essere racchiuse tra apici singoli.", hints: ["WHERE data_ordine <= '2023-12-31'"], explanation: "Filtro per data minore o uguale.", replacements: {} },
+            { titleTemplate: "Filtro Range Date", descTemplate: "Trova tutti gli ordini tra il 1 Gennaio 2023 e il 31 Dicembre 2023.", queryTemplate: "SELECT * FROM ordini WHERE data_ordine BETWEEN '2023-01-01' AND '2023-12-31'", brokenCode: "SELECT * FROM ordini WHERE data_ordine BETWEEN 2023-01-01 AND 2023-12-31", debugHint: "Le date devono essere racchiuse tra apici singoli.", hints: ["WHERE data_ordine BETWEEN '...' AND '...'"], explanation: "BETWEEN per range di date.", replacements: {} },
             {
                 titleTemplate: "Anno con Alias", descTemplate: "Estrai l'anno dalla data ordine e rinominalo come 'Anno_Ordine'.",
-                queryTemplate: "SELECT YEAR(data_ordine) AS Anno_Ordine FROM ordini", hints: ["YEAR(data_ordine) AS Anno_Ordine"], explanation: "YEAR con alias.", replacements: {}
+                queryTemplate: "SELECT YEAR(data_ordine) AS Anno_Ordine FROM ordini", brokenCode: "SELECT YEAR(data_ordine) ASS Anno_Ordine FROM ordini", debugHint: "Errore di battitura nella parola chiave AS.", hints: ["YEAR(data_ordine) AS Anno_Ordine"], explanation: "YEAR con alias.", replacements: {}
             },
             {
                 titleTemplate: "Mese con Alias", descTemplate: "Estrai il mese dalla data spedizione e rinominalo come 'Mese_Spedizione'.",
-                queryTemplate: "SELECT MONTH(data_spedizione) AS Mese_Spedizione FROM spedizioni", hints: ["MONTH(data_spedizione) AS Mese_Spedizione"], explanation: "MONTH con alias.", replacements: {}
+                queryTemplate: "SELECT MONTH(data_spedizione) AS Mese_Spedizione FROM spedizioni", brokenCode: "SELECT MONTH(data_spedizione) AS Mese_Spedizione FORM spedizioni", debugHint: "Errore di battitura nella parola chiave FROM.", hints: ["MONTH(data_spedizione) AS Mese_Spedizione"], explanation: "MONTH con alias.", replacements: {}
             },
             // NEW EXERCISES FOR DATES EASY
-            { titleTemplate: "Giorno Ordine", descTemplate: "Estrai il giorno (1-31) dalla data ordine.", queryTemplate: "SELECT DAY(data_ordine) FROM ordini", hints: ["DAY()"], explanation: "Estrai giorno.", replacements: {} },
-            { titleTemplate: "Giorno Spedizione", descTemplate: "Estrai il giorno (1-31) dalla data spedizione.", queryTemplate: "SELECT DAY(data_spedizione) FROM spedizioni", hints: ["DAY()"], explanation: "Estrai giorno spedizione.", replacements: {} },
-            { titleTemplate: "Data Corrente", descTemplate: "Mostra la data e ora corrente.", queryTemplate: "SELECT NOW()", hints: ["NOW()"], explanation: "Timestamp attuale.", replacements: {} },
-            { titleTemplate: "Filtro Giorno 1", descTemplate: "Trova ordini fatti il primo del mese.", queryTemplate: "SELECT * FROM ordini WHERE DAY(data_ordine) = 1", hints: ["DAY(...) = 1"], explanation: "Inizio mese.", replacements: {} },
-            { titleTemplate: "Filtro Giorno 15", descTemplate: "Trova ordini fatti a metà mese (15).", queryTemplate: "SELECT * FROM ordini WHERE DAY(data_ordine) = 15", hints: ["DAY(...) = 15"], explanation: "Metà mese.", replacements: {} },
-            { titleTemplate: "Filtro Anno Passato", descTemplate: "Trova ordini del 2022.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2022", hints: ["YEAR(...) = 2022"], explanation: "Storico.", replacements: {} },
-            { titleTemplate: "Filtro Mese Dicembre", descTemplate: "Trova ordini di Dicembre (12).", queryTemplate: "SELECT * FROM ordini WHERE MONTH(data_ordine) = 12", hints: ["MONTH(...) = 12"], explanation: "Fine anno.", replacements: {} },
-            { titleTemplate: "Data Ordine Alias", descTemplate: "Seleziona data ordine rinominandola 'Data'.", queryTemplate: "SELECT data_ordine AS Data FROM ordini", hints: ["AS Data"], explanation: "Alias semplice.", replacements: {} },
-            { titleTemplate: "Data Spedizione Alias", descTemplate: "Seleziona data spedizione rinominandola 'Spedito_Il'.", queryTemplate: "SELECT data_spedizione AS Spedito_Il FROM spedizioni", hints: ["AS Spedito_Il"], explanation: "Alias descrittivo.", replacements: {} },
-            { titleTemplate: "Anno Corrente Alias", descTemplate: "Estrai anno ordine come 'Anno_Rif'.", queryTemplate: "SELECT YEAR(data_ordine) AS Anno_Rif FROM ordini", hints: ["YEAR(...) AS ..."], explanation: "Alias su funzione.", replacements: {} }
+            { titleTemplate: "Giorno Ordine", descTemplate: "Estrai il giorno (1-31) dalla data ordine.", queryTemplate: "SELECT DAY(data_ordine) FROM ordini", brokenCode: "SELECT DAY(data_ordine FROM ordini", debugHint: "Manca una parentesi di chiusura nella funzione DAY.", hints: ["DAY()"], explanation: "Estrai giorno.", replacements: {} },
+            { titleTemplate: "Giorno Spedizione", descTemplate: "Estrai il giorno (1-31) dalla data spedizione.", queryTemplate: "SELECT DAY(data_spedizione) FROM spedizioni", brokenCode: "SELECT DAY(data_spedizione FROM spedizioni", debugHint: "Manca una parentesi di chiusura nella funzione DAY.", hints: ["DAY()"], explanation: "Estrai giorno spedizione.", replacements: {} },
+            { titleTemplate: "Data Corrente", descTemplate: "Mostra la data e ora corrente.", queryTemplate: "SELECT NOW()", brokenCode: "SELECT NOW", debugHint: "Le funzioni richiedono le parentesi, anche se vuote.", hints: ["NOW()"], explanation: "Timestamp attuale.", replacements: {} },
+            { titleTemplate: "Filtro Giorno 1", descTemplate: "Trova ordini fatti il primo del mese.", queryTemplate: "SELECT * FROM ordini WHERE DAY(data_ordine) = 1", brokenCode: "SELECT * FROM ordini WHERE DAY(data_ordine) = 1)", debugHint: "C'è una parentesi di troppo.", hints: ["DAY(...) = 1"], explanation: "Inizio mese.", replacements: {} },
+            { titleTemplate: "Filtro Giorno 15", descTemplate: "Trova ordini fatti a metà mese (15).", queryTemplate: "SELECT * FROM ordini WHERE DAY(data_ordine) = 15", brokenCode: "SELECT * FROM ordini WHERE DAY(data_ordine) = 15)", debugHint: "C'è una parentesi di troppo.", hints: ["DAY(...) = 15"], explanation: "Metà mese.", replacements: {} },
+            { titleTemplate: "Filtro Anno Passato", descTemplate: "Trova ordini del 2022.", queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2022", brokenCode: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2022)", debugHint: "C'è una parentesi di troppo.", hints: ["YEAR(...) = 2022"], explanation: "Storico.", replacements: {} },
+            { titleTemplate: "Filtro Mese Dicembre", descTemplate: "Trova ordini di Dicembre (12).", queryTemplate: "SELECT * FROM ordini WHERE MONTH(data_ordine) = 12", brokenCode: "SELECT * FROM ordini WHERE MONTH(data_ordine) = 12)", debugHint: "C'è una parentesi di troppo.", hints: ["MONTH(...) = 12"], explanation: "Fine anno.", replacements: {} },
+            { titleTemplate: "Data Ordine Alias", descTemplate: "Seleziona data ordine rinominandola 'Data'.", queryTemplate: "SELECT data_ordine AS Data FROM ordini", brokenCode: "SELECT data_ordine AS Data FORM ordini", debugHint: "Errore di battitura nella parola chiave FROM.", hints: ["AS Data"], explanation: "Alias semplice.", replacements: {} },
+            { titleTemplate: "Data Spedizione Alias", descTemplate: "Seleziona data spedizione rinominandola 'Spedito_Il'.", queryTemplate: "SELECT data_spedizione AS Spedito_Il FROM spedizioni", brokenCode: "SELECT data_spedizione AS Spedito_Il FORM spedizioni", debugHint: "Errore di battitura nella parola chiave FROM.", hints: ["AS Spedito_Il"], explanation: "Alias descrittivo.", replacements: {} },
+            { titleTemplate: "Anno Corrente Alias", descTemplate: "Estrai anno ordine come 'Anno_Rif'.", queryTemplate: "SELECT YEAR(data_ordine) AS Anno_Rif FROM ordini", brokenCode: "SELECT YEAR(data_ordine) AS Anno_Rif FORM ordini", debugHint: "Errore di battitura nella parola chiave FROM.", hints: ["YEAR(...) AS ..."], explanation: "Alias su funzione.", replacements: {} }
         ],
         [Difficulty.Medium]: [
             { titleTemplate: "Spedizioni nel Mese {month}", descTemplate: "Trova tutte le spedizioni avvenute nel mese numero {month} (indipendentemente dall'anno).", queryTemplate: "SELECT * FROM spedizioni WHERE MONTH(data_spedizione) = {month}", hints: ["Usa MONTH(colonna) = numero"], explanation: "Utile per analisi stagionali.", replacements: { month: DATA.months } },
@@ -4350,47 +4665,47 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
     },
     [TopicId.Joins]: {
         [Difficulty.Easy]: [
-            { titleTemplate: "Prodotti e Categorie", descTemplate: "Visualizza il nome del prodotto e il nome della sua categoria associata.", queryTemplate: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", hints: ["Usa JOIN ... ON ...", "Specifica tabella.colonna"], explanation: "Inner Join base per decodificare ID.", replacements: {} },
-            { titleTemplate: "Ordini e Utenti", descTemplate: "Mostra l'ID ordine e il nome dell'utente che lo ha effettuato.", queryTemplate: "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", hints: ["Collega ordini.utente_id con utenti.id"], explanation: "Relazione uno-a-molti.", replacements: {} },
-            { titleTemplate: "Spedizioni e Corrieri", descTemplate: "Collega la tabella spedizioni agli ordini per vedere la data ordine accanto al corriere.", queryTemplate: "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", hints: ["JOIN spedizioni ON ordini"], explanation: "Navigare relazioni.", replacements: {} },
-            { titleTemplate: "Prodotti e Fornitori", descTemplate: "Visualizza il nome del prodotto e il nome dell'azienda fornitore.", queryTemplate: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", hints: ["JOIN prodotti con fornitori", "prodotti.fornitore_id = fornitori.id"], explanation: "JOIN per collegare prodotti e fornitori.", replacements: {} },
-            { titleTemplate: "Ordini e Prodotti", descTemplate: "Mostra l'ID ordine e il nome del prodotto ordinato.", queryTemplate: "SELECT ordini.id, prodotti.nome FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id", hints: ["JOIN ordini con prodotti", "ordini.prodotto_id = prodotti.id"], explanation: "JOIN per collegare ordini e prodotti.", replacements: {} },
-            { titleTemplate: "Recensioni e Prodotti", descTemplate: "Mostra il voto della recensione e il nome del prodotto recensito.", queryTemplate: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", hints: ["JOIN recensioni con prodotti", "recensioni.prodotto_id = prodotti.id"], explanation: "JOIN per collegare recensioni e prodotti.", replacements: {} },
-            { titleTemplate: "Recensioni e Utenti", descTemplate: "Mostra il voto della recensione e il nome dell'utente che l'ha scritta.", queryTemplate: "SELECT recensioni.voto, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", hints: ["JOIN recensioni con utenti", "recensioni.utente_id = utenti.id"], explanation: "JOIN per collegare recensioni e utenti.", replacements: {} },
-            { titleTemplate: "Spedizioni e Ordini", descTemplate: "Mostra il corriere della spedizione e la data dell'ordine associato.", queryTemplate: "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", hints: ["JOIN spedizioni con ordini", "spedizioni.ordine_id = ordini.id"], explanation: "JOIN per collegare spedizioni e ordini.", replacements: {} },
-            { titleTemplate: "Prodotti Categoria Completa", descTemplate: "Mostra nome prodotto, nome categoria e descrizione categoria.", queryTemplate: "SELECT prodotti.nome, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", hints: ["JOIN con tre colonne", "SELECT prodotti.nome, categorie.nome, categorie.descrizione"], explanation: "JOIN con più colonne dalla tabella joinata.", replacements: {} },
-            { titleTemplate: "Ordini Utente Completo", descTemplate: "Mostra ID ordine, nome utente e email utente.", queryTemplate: "SELECT ordini.id, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", hints: ["JOIN con tre colonne", "SELECT ordini.id, utenti.nome, utenti.email"], explanation: "JOIN con più colonne utente.", replacements: {} },
-            { titleTemplate: "Prodotti Fornitore Completo", descTemplate: "Mostra nome prodotto, azienda fornitore e nazione fornitore.", queryTemplate: "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", hints: ["JOIN con tre colonne", "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione"], explanation: "JOIN con più colonne fornitore.", replacements: {} },
-            { titleTemplate: "Ordini Prodotto Completo", descTemplate: "Mostra ID ordine, nome prodotto e prezzo prodotto.", queryTemplate: "SELECT ordini.id, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id", hints: ["JOIN con tre colonne", "SELECT ordini.id, prodotti.nome, prodotti.prezzo"], explanation: "JOIN con più colonne prodotto.", replacements: {} },
-            { titleTemplate: "Spedizioni Ordine Completo", descTemplate: "Mostra corriere spedizione, data ordine e quantità ordine.", queryTemplate: "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", hints: ["JOIN con tre colonne", "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita"], explanation: "JOIN con più colonne ordine.", replacements: {} },
-            { titleTemplate: "Recensioni Prodotto Completo", descTemplate: "Mostra voto recensione, nome prodotto e prezzo prodotto.", queryTemplate: "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", hints: ["JOIN con tre colonne", "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo"], explanation: "JOIN con più colonne prodotto.", replacements: {} },
-            { titleTemplate: "Recensioni Utente Completo", descTemplate: "Mostra voto recensione, nome utente e paese utente.", queryTemplate: "SELECT recensioni.voto, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", hints: ["JOIN con tre colonne", "SELECT recensioni.voto, utenti.nome, utenti.paese"], explanation: "JOIN con più colonne utente.", replacements: {} },
-            { titleTemplate: "Tutte le Colonne Prodotti Categorie", descTemplate: "Mostra tutte le colonne di prodotti e categorie usando SELECT *.", queryTemplate: "SELECT * FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", hints: ["SELECT * con JOIN", "SELECT * FROM prodotti JOIN categorie ON ..."], explanation: "SELECT * con JOIN mostra tutte le colonne.", replacements: {} },
-            { titleTemplate: "Tutte le Colonne Ordini Utenti", descTemplate: "Mostra tutte le colonne di ordini e utenti usando SELECT *.", queryTemplate: "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", hints: ["SELECT * con JOIN", "SELECT * FROM ordini JOIN utenti ON ..."], explanation: "SELECT * con JOIN per vedere tutto.", replacements: {} },
-            { titleTemplate: "Tutte le Colonne Prodotti Fornitori", descTemplate: "Mostra tutte le colonne di prodotti e fornitori usando SELECT *.", queryTemplate: "SELECT * FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", hints: ["SELECT * con JOIN", "SELECT * FROM prodotti JOIN fornitori ON ..."], explanation: "SELECT * con JOIN fornitori.", replacements: {} },
-            { titleTemplate: "Tutte le Colonne Ordini Prodotti", descTemplate: "Mostra tutte le colonne di ordini e prodotti usando SELECT *.", queryTemplate: "SELECT * FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id", hints: ["SELECT * con JOIN", "SELECT * FROM ordini JOIN prodotti ON ..."], explanation: "SELECT * con JOIN prodotti.", replacements: {} },
-            { titleTemplate: "Tutte le Colonne Spedizioni Ordini", descTemplate: "Mostra tutte le colonne di spedizioni e ordini usando SELECT *.", queryTemplate: "SELECT * FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", hints: ["SELECT * con JOIN", "SELECT * FROM spedizioni JOIN ordini ON ..."], explanation: "SELECT * con JOIN ordini.", replacements: {} },
-            { titleTemplate: "Tutte le Colonne Recensioni Prodotti", descTemplate: "Mostra tutte le colonne di recensioni e prodotti usando SELECT *.", queryTemplate: "SELECT * FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", hints: ["SELECT * con JOIN", "SELECT * FROM recensioni JOIN prodotti ON ..."], explanation: "SELECT * con JOIN prodotti.", replacements: {} },
-            { titleTemplate: "Tutte le Colonne Recensioni Utenti", descTemplate: "Mostra tutte le colonne di recensioni e utenti usando SELECT *.", queryTemplate: "SELECT * FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", hints: ["SELECT * con JOIN", "SELECT * FROM recensioni JOIN utenti ON ..."], explanation: "SELECT * con JOIN utenti.", replacements: {} },
-            { titleTemplate: "Quattro Colonne Prodotti Categorie", descTemplate: "Mostra nome prodotto, prezzo, nome categoria e descrizione categoria.", queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", hints: ["Quattro colonne", "SELECT prodotti.nome, prodotti.prezzo, categorie.nome, categorie.descrizione"], explanation: "JOIN con quattro colonne.", replacements: {} },
-            { titleTemplate: "Quattro Colonne Ordini Utenti", descTemplate: "Mostra ID ordine, data ordine, nome utente e email utente.", queryTemplate: "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", hints: ["Quattro colonne", "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email"], explanation: "JOIN con quattro colonne ordini-utenti.", replacements: {} },
-            { titleTemplate: "Quattro Colonne Prodotti Fornitori", descTemplate: "Mostra nome prodotto, prezzo, azienda fornitore e nazione fornitore.", queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", hints: ["Quattro colonne", "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione"], explanation: "JOIN con quattro colonne prodotti-fornitori.", replacements: {} },
-            { titleTemplate: "Quattro Colonne Ordini Prodotti", descTemplate: "Mostra ID ordine, quantità, nome prodotto e prezzo prodotto.", queryTemplate: "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id", hints: ["Quattro colonne", "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo"], explanation: "JOIN con quattro colonne ordini-prodotti.", replacements: {} },
-            { titleTemplate: "Quattro Colonne Spedizioni Ordini", descTemplate: "Mostra corriere, codice tracking, data ordine e quantità ordine.", queryTemplate: "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", hints: ["Quattro colonne", "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita"], explanation: "JOIN con quattro colonne spedizioni-ordini.", replacements: {} },
-            { titleTemplate: "Quattro Colonne Recensioni Prodotti", descTemplate: "Mostra voto, commento, nome prodotto e prezzo prodotto.", queryTemplate: "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", hints: ["Quattro colonne", "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo"], explanation: "JOIN con quattro colonne recensioni-prodotti.", replacements: {} },
-            { titleTemplate: "Quattro Colonne Recensioni Utenti", descTemplate: "Mostra voto, commento, nome utente e paese utente.", queryTemplate: "SELECT recensioni.voto, recensioni.commento, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", hints: ["Quattro colonne", "SELECT recensioni.voto, recensioni.commento, utenti.nome, utenti.paese"], explanation: "JOIN con quattro colonne recensioni-utenti.", replacements: {} },
-            { titleTemplate: "Cinque Colonne Complete", descTemplate: "Mostra nome prodotto, prezzo, stock, nome categoria e descrizione categoria.", queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", hints: ["Cinque colonne", "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione"], explanation: "JOIN con cinque colonne.", replacements: {} },
+            { titleTemplate: "Prodotti e Categorie", descTemplate: "Visualizza il nome del prodotto e il nome della sua categoria associata.", queryTemplate: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", brokenCode: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie prodotti.categoria_id = categorie.id", debugHint: "Manca la parola chiave ON per specificare la condizione di join.", hints: ["Usa JOIN ... ON ...", "Specifica tabella.colonna"], explanation: "Inner Join base per decodificare ID.", replacements: {} },
+            { titleTemplate: "Ordini e Utenti", descTemplate: "Mostra l'ID ordine e il nome dell'utente che lo ha effettuato.", queryTemplate: "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", brokenCode: "SELECT ordini.id, utenti.nome FROM ordini JION utenti ON ordini.utente_id = utenti.id", debugHint: "Errore di battitura nella parola chiave JOIN.", hints: ["Collega ordini.utente_id con utenti.id"], explanation: "Relazione uno-a-molti.", replacements: {} },
+            { titleTemplate: "Spedizioni e Corrieri", descTemplate: "Collega la tabella spedizioni agli ordini per vedere la data ordine accanto al corriere.", queryTemplate: "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", brokenCode: "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id == ordini.id", debugHint: "In SQL si usa un solo uguale (=) per i confronti.", hints: ["JOIN spedizioni ON ordini"], explanation: "Navigare relazioni.", replacements: {} },
+            { titleTemplate: "Prodotti e Fornitori", descTemplate: "Visualizza il nome del prodotto e il nome dell'azienda fornitore.", queryTemplate: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", brokenCode: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id)", debugHint: "C'è una parentesi di troppo alla fine della query.", hints: ["JOIN prodotti con fornitori", "prodotti.fornitore_id = fornitori.id"], explanation: "JOIN per collegare prodotti e fornitori.", replacements: {} },
+            { titleTemplate: "Ordini e Prodotti", descTemplate: "Mostra l'ID ordine e il nome del prodotto ordinato.", queryTemplate: "SELECT ordini.id, prodotti.nome FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id", brokenCode: "SELECT ordini.id, prodotti.nome FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN ordini con prodotti", "ordini.prodotto_id = prodotti.id"], explanation: "JOIN per collegare ordini e prodotti.", replacements: {} },
+            { titleTemplate: "Recensioni e Prodotti", descTemplate: "Mostra il voto della recensione e il nome del prodotto recensito.", queryTemplate: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", brokenCode: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN recensioni con prodotti", "recensioni.prodotto_id = prodotti.id"], explanation: "JOIN per collegare recensioni e prodotti.", replacements: {} },
+            { titleTemplate: "Recensioni e Utenti", descTemplate: "Mostra il voto della recensione e il nome dell'utente che l'ha scritta.", queryTemplate: "SELECT recensioni.voto, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", brokenCode: "SELECT recensioni.voto, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id utenti.id", debugHint: "Manca l'operatore di uguaglianza (=) nella condizione ON.", hints: ["JOIN recensioni con utenti", "recensioni.utente_id = utenti.id"], explanation: "JOIN per collegare recensioni e utenti.", replacements: {} },
+            { titleTemplate: "Spedizioni e Ordini", descTemplate: "Mostra il corriere della spedizione e la data dell'ordine associato.", queryTemplate: "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", brokenCode: "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini spedizioni.ordine_id = ordini.id", debugHint: "Manca la parola chiave ON.", hints: ["JOIN spedizioni con ordini", "spedizioni.ordine_id = ordini.id"], explanation: "JOIN per collegare spedizioni e ordini.", replacements: {} },
+            { titleTemplate: "Prodotti Categoria Completa", descTemplate: "Mostra nome prodotto, nome categoria e descrizione categoria.", queryTemplate: "SELECT prodotti.nome, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", brokenCode: "SELECT prodotti.nome, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN con tre colonne", "SELECT prodotti.nome, categorie.nome, categorie.descrizione"], explanation: "JOIN con più colonne dalla tabella joinata.", replacements: {} },
+            { titleTemplate: "Ordini Utente Completo", descTemplate: "Mostra ID ordine, nome utente e email utente.", queryTemplate: "SELECT ordini.id, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", brokenCode: "SELECT ordini.id, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN con tre colonne", "SELECT ordini.id, utenti.nome, utenti.email"], explanation: "JOIN con più colonne utente.", replacements: {} },
+            { titleTemplate: "Prodotti Fornitore Completo", descTemplate: "Mostra nome prodotto, azienda fornitore e nazione fornitore.", queryTemplate: "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", brokenCode: "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN con tre colonne", "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione"], explanation: "JOIN con più colonne fornitore.", replacements: {} },
+            { titleTemplate: "Ordini Prodotto Completo", descTemplate: "Mostra ID ordine, nome prodotto e prezzo prodotto.", queryTemplate: "SELECT ordini.id, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id", brokenCode: "SELECT ordini.id, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN con tre colonne", "SELECT ordini.id, prodotti.nome, prodotti.prezzo"], explanation: "JOIN con più colonne prodotto.", replacements: {} },
+            { titleTemplate: "Spedizioni Ordine Completo", descTemplate: "Mostra corriere spedizione, data ordine e quantità ordine.", queryTemplate: "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", brokenCode: "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN con tre colonne", "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita"], explanation: "JOIN con più colonne ordine.", replacements: {} },
+            { titleTemplate: "Recensioni Prodotto Completo", descTemplate: "Mostra voto recensione, nome prodotto e prezzo prodotto.", queryTemplate: "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", brokenCode: "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN con tre colonne", "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo"], explanation: "JOIN con più colonne prodotto.", replacements: {} },
+            { titleTemplate: "Recensioni Utente Completo", descTemplate: "Mostra voto recensione, nome utente e paese utente.", queryTemplate: "SELECT recensioni.voto, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", brokenCode: "SELECT recensioni.voto, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN con tre colonne", "SELECT recensioni.voto, utenti.nome, utenti.paese"], explanation: "JOIN con più colonne utente.", replacements: {} },
+            { titleTemplate: "Tutte le Colonne Prodotti Categorie", descTemplate: "Mostra tutte le colonne di prodotti e categorie usando SELECT *.", queryTemplate: "SELECT * FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", brokenCode: "SELECT * FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["SELECT * con JOIN", "SELECT * FROM prodotti JOIN categorie ON ..."], explanation: "SELECT * con JOIN mostra tutte le colonne.", replacements: {} },
+            { titleTemplate: "Tutte le Colonne Ordini Utenti", descTemplate: "Mostra tutte le colonne di ordini e utenti usando SELECT *.", queryTemplate: "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", brokenCode: "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["SELECT * con JOIN", "SELECT * FROM ordini JOIN utenti ON ..."], explanation: "SELECT * con JOIN per vedere tutto.", replacements: {} },
+            { titleTemplate: "Tutte le Colonne Prodotti Fornitori", descTemplate: "Mostra tutte le colonne di prodotti e fornitori usando SELECT *.", queryTemplate: "SELECT * FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", brokenCode: "SELECT * FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["SELECT * con JOIN", "SELECT * FROM prodotti JOIN fornitori ON ..."], explanation: "SELECT * con JOIN fornitori.", replacements: {} },
+            { titleTemplate: "Tutte le Colonne Ordini Prodotti", descTemplate: "Mostra tutte le colonne di ordini e prodotti usando SELECT *.", queryTemplate: "SELECT * FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id", brokenCode: "SELECT * FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["SELECT * con JOIN", "SELECT * FROM ordini JOIN prodotti ON ..."], explanation: "SELECT * con JOIN prodotti.", replacements: {} },
+            { titleTemplate: "Tutte le Colonne Spedizioni Ordini", descTemplate: "Mostra tutte le colonne di spedizioni e ordini usando SELECT *.", queryTemplate: "SELECT * FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", brokenCode: "SELECT * FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["SELECT * con JOIN", "SELECT * FROM spedizioni JOIN ordini ON ..."], explanation: "SELECT * con JOIN ordini.", replacements: {} },
+            { titleTemplate: "Tutte le Colonne Recensioni Prodotti", descTemplate: "Mostra tutte le colonne di recensioni e prodotti usando SELECT *.", queryTemplate: "SELECT * FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", brokenCode: "SELECT * FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["SELECT * con JOIN", "SELECT * FROM recensioni JOIN prodotti ON ..."], explanation: "SELECT * con JOIN prodotti.", replacements: {} },
+            { titleTemplate: "Tutte le Colonne Recensioni Utenti", descTemplate: "Mostra tutte le colonne di recensioni e utenti usando SELECT *.", queryTemplate: "SELECT * FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", brokenCode: "SELECT * FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["SELECT * con JOIN", "SELECT * FROM recensioni JOIN utenti ON ..."], explanation: "SELECT * con JOIN utenti.", replacements: {} },
+            { titleTemplate: "Quattro Colonne Prodotti Categorie", descTemplate: "Mostra nome prodotto, prezzo, nome categoria e descrizione categoria.", queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", brokenCode: "SELECT prodotti.nome, prodotti.prezzo, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["Quattro colonne", "SELECT prodotti.nome, prodotti.prezzo, categorie.nome, categorie.descrizione"], explanation: "JOIN con quattro colonne.", replacements: {} },
+            { titleTemplate: "Quattro Colonne Ordini Utenti", descTemplate: "Mostra ID ordine, data ordine, nome utente e email utente.", queryTemplate: "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", brokenCode: "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["Quattro colonne", "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email"], explanation: "JOIN con quattro colonne ordini-utenti.", replacements: {} },
+            { titleTemplate: "Quattro Colonne Prodotti Fornitori", descTemplate: "Mostra nome prodotto, prezzo, azienda fornitore e nazione fornitore.", queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", brokenCode: "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["Quattro colonne", "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione"], explanation: "JOIN con quattro colonne prodotti-fornitori.", replacements: {} },
+            { titleTemplate: "Quattro Colonne Ordini Prodotti", descTemplate: "Mostra ID ordine, quantità, nome prodotto e prezzo prodotto.", queryTemplate: "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id", brokenCode: "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["Quattro colonne", "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo"], explanation: "JOIN con quattro colonne ordini-prodotti.", replacements: {} },
+            { titleTemplate: "Quattro Colonne Spedizioni Ordini", descTemplate: "Mostra corriere, codice tracking, data ordine e quantità ordine.", queryTemplate: "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", brokenCode: "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["Quattro colonne", "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita"], explanation: "JOIN con quattro colonne spedizioni-ordini.", replacements: {} },
+            { titleTemplate: "Quattro Colonne Recensioni Prodotti", descTemplate: "Mostra voto, commento, nome prodotto e prezzo prodotto.", queryTemplate: "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", brokenCode: "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["Quattro colonne", "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo"], explanation: "JOIN con quattro colonne recensioni-prodotti.", replacements: {} },
+            { titleTemplate: "Quattro Colonne Recensioni Utenti", descTemplate: "Mostra voto, commento, nome utente e paese utente.", queryTemplate: "SELECT recensioni.voto, recensioni.commento, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", brokenCode: "SELECT recensioni.voto, recensioni.commento, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["Quattro colonne", "SELECT recensioni.voto, recensioni.commento, utenti.nome, utenti.paese"], explanation: "JOIN con quattro colonne recensioni-utenti.", replacements: {} },
+            { titleTemplate: "Cinque Colonne Complete", descTemplate: "Mostra nome prodotto, prezzo, stock, nome categoria e descrizione categoria.", queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", brokenCode: "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["Cinque colonne", "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione"], explanation: "JOIN con cinque colonne.", replacements: {} },
             // NEW EXERCISES FOR JOINS EASY
-            { titleTemplate: "Utenti e Ordini Semplice", descTemplate: "Mostra nome utente e ID ordine.", queryTemplate: "SELECT utenti.nome, ordini.id FROM utenti JOIN ordini ON utenti.id = ordini.utente_id", hints: ["JOIN utenti ordini"], explanation: "Relazione base.", replacements: {} },
-            { titleTemplate: "Prodotti e Categorie Semplice", descTemplate: "Mostra nome prodotto e nome categoria.", queryTemplate: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", hints: ["JOIN prodotti categorie"], explanation: "Relazione catalogo.", replacements: {} },
-            { titleTemplate: "Prodotti e Fornitori Semplice", descTemplate: "Mostra nome prodotto e azienda fornitrice.", queryTemplate: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", hints: ["JOIN prodotti fornitori"], explanation: "Relazione supply chain.", replacements: {} },
-            { titleTemplate: "Recensioni e Prodotti Semplice", descTemplate: "Mostra voto recensione e nome prodotto.", queryTemplate: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", hints: ["JOIN recensioni prodotti"], explanation: "Relazione feedback.", replacements: {} },
-            { titleTemplate: "Spedizioni e Ordini Semplice", descTemplate: "Mostra codice tracking e data ordine.", queryTemplate: "SELECT spedizioni.codice_tracking, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", hints: ["JOIN spedizioni ordini"], explanation: "Relazione logistica.", replacements: {} },
-            { titleTemplate: "Utenti e Paesi (Join)", descTemplate: "Mostra nome utente e paese (dalla tabella utenti, ma concettualmente una join se paese fosse tabella a parte - qui è self-contained).", queryTemplate: "SELECT nome, paese FROM utenti", hints: ["SELECT semplice"], explanation: "Selezione colonne.", replacements: {} },
-            { titleTemplate: "Ordini con Dettagli Utente", descTemplate: "Mostra ID ordine, data e email utente.", queryTemplate: "SELECT ordini.id, ordini.data_ordine, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", hints: ["JOIN ordini utenti"], explanation: "Dettagli contatto.", replacements: {} },
-            { titleTemplate: "Prodotti con Dettagli Categoria", descTemplate: "Mostra nome prodotto, prezzo e descrizione categoria.", queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", hints: ["JOIN prodotti categorie"], explanation: "Dettagli contesto.", replacements: {} },
-            { titleTemplate: "Fornitori e Prodotti List", descTemplate: "Mostra azienda fornitore e nome prodotto.", queryTemplate: "SELECT fornitori.azienda, prodotti.nome FROM fornitori JOIN prodotti ON fornitori.id = prodotti.fornitore_id", hints: ["JOIN fornitori prodotti"], explanation: "Lista offerta.", replacements: {} },
-            { titleTemplate: "Recensioni con Utente", descTemplate: "Mostra commento recensione e nome utente.", queryTemplate: "SELECT recensioni.commento, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", hints: ["JOIN recensioni utenti"], explanation: "Autore feedback.", replacements: {} }
+            { titleTemplate: "Utenti e Ordini Semplice", descTemplate: "Mostra nome utente e ID ordine.", queryTemplate: "SELECT utenti.nome, ordini.id FROM utenti JOIN ordini ON utenti.id = ordini.utente_id", brokenCode: "SELECT utenti.nome, ordini.id FROM utenti JOIN ordini ON utenti.id = ordini.utente_id)", debugHint: "C'è una parentesi di troppo alla fine.", hints: ["JOIN utenti ordini"], explanation: "Relazione base.", replacements: {} },
+            { titleTemplate: "Prodotti e Categorie Semplice", descTemplate: "Mostra nome prodotto e nome categoria.", queryTemplate: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", brokenCode: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN prodotti categorie"], explanation: "Relazione catalogo.", replacements: {} },
+            { titleTemplate: "Prodotti e Fornitori Semplice", descTemplate: "Mostra nome prodotto e azienda fornitrice.", queryTemplate: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id", brokenCode: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN prodotti fornitori"], explanation: "Relazione supply chain.", replacements: {} },
+            { titleTemplate: "Recensioni e Prodotti Semplice", descTemplate: "Mostra voto recensione e nome prodotto.", queryTemplate: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id", brokenCode: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN recensioni prodotti"], explanation: "Relazione feedback.", replacements: {} },
+            { titleTemplate: "Spedizioni e Ordini Semplice", descTemplate: "Mostra codice tracking e data ordine.", queryTemplate: "SELECT spedizioni.codice_tracking, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id", brokenCode: "SELECT spedizioni.codice_tracking, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN spedizioni ordini"], explanation: "Relazione logistica.", replacements: {} },
+            { titleTemplate: "Utenti e Paesi (Join)", descTemplate: "Mostra nome utente e paese (dalla tabella utenti, ma concettualmente una join se paese fosse tabella a parte - qui è self-contained).", queryTemplate: "SELECT nome, paese FROM utenti", brokenCode: "SELECT nome, paese FROM utenti;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["SELECT semplice"], explanation: "Selezione colonne.", replacements: {} },
+            { titleTemplate: "Ordini con Dettagli Utente", descTemplate: "Mostra ID ordine, data e email utente.", queryTemplate: "SELECT ordini.id, ordini.data_ordine, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id", brokenCode: "SELECT ordini.id, ordini.data_ordine, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN ordini utenti"], explanation: "Dettagli contatto.", replacements: {} },
+            { titleTemplate: "Prodotti con Dettagli Categoria", descTemplate: "Mostra nome prodotto, prezzo e descrizione categoria.", queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id", brokenCode: "SELECT prodotti.nome, prodotti.prezzo, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN prodotti categorie"], explanation: "Dettagli contesto.", replacements: {} },
+            { titleTemplate: "Fornitori e Prodotti List", descTemplate: "Mostra azienda fornitore e nome prodotto.", queryTemplate: "SELECT fornitori.azienda, prodotti.nome FROM fornitori JOIN prodotti ON fornitori.id = prodotti.fornitore_id", brokenCode: "SELECT fornitori.azienda, prodotti.nome FROM fornitori JOIN prodotti ON fornitori.id = prodotti.fornitore_id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN fornitori prodotti"], explanation: "Lista offerta.", replacements: {} },
+            { titleTemplate: "Recensioni con Utente", descTemplate: "Mostra commento recensione e nome utente.", queryTemplate: "SELECT recensioni.commento, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id", brokenCode: "SELECT recensioni.commento, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["JOIN recensioni utenti"], explanation: "Autore feedback.", replacements: {} }
         ],
         [Difficulty.Medium]: [
             { titleTemplate: "Prodotti Fornitore {country}", descTemplate: "Trova i prodotti forniti da aziende con sede in {country}.", queryTemplate: "SELECT prodotti.nome FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione = '{country}'", hints: ["Fai la JOIN e poi il WHERE"], explanation: "Filtrare in base a tabella collegata.", replacements: { country: ['Italia', 'Germania', 'USA', 'Francia', 'Spagna', 'Regno Unito'] } },
@@ -4482,53 +4797,53 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
     },
     [TopicId.Aggregation]: {
         [Difficulty.Easy]: [
-            { titleTemplate: "Conteggio Utenti", descTemplate: "Il team di marketing vuole sapere quanti utenti sono registrati nella piattaforma. Calcola il numero totale di righe nella tabella 'utenti'.", queryTemplate: "SELECT COUNT(*) FROM utenti", hints: ["Usa una funzione di aggregazione per contare le righe.", "La funzione COUNT(*) conta tutte le righe, inclusi i valori NULL.", "Sintassi: SELECT COUNT(*) FROM tabella;"], explanation: "COUNT(*) è la funzione standard per ottenere il numero totale di record in una tabella.", replacements: {} },
-            { titleTemplate: "Totale Stock", descTemplate: "Il responsabile di magazzino necessita del conteggio totale delle unità fisiche presenti. Calcola la somma di tutti i valori nella colonna 'stock' della tabella 'prodotti'.", queryTemplate: "SELECT SUM(stock) FROM prodotti", hints: ["Usa la funzione di aggregazione per sommare valori numerici.", "La funzione SUM(colonna) somma tutti i valori della colonna specificata.", "Sintassi: SELECT SUM(nome_colonna) FROM tabella;"], explanation: "SUM() calcola il totale aritmetico dei valori in una colonna numerica.", replacements: {} },
-            { titleTemplate: "Prezzo Medio", descTemplate: "Per un'analisi di mercato, calcola il prezzo medio di vendita di tutti i prodotti a catalogo.", queryTemplate: "SELECT AVG(prezzo) FROM prodotti", hints: ["Usa la funzione di aggregazione per calcolare la media aritmetica.", "La funzione AVG(colonna) restituisce la media dei valori numerici.", "Sintassi: SELECT AVG(nome_colonna) FROM tabella;"], explanation: "AVG() calcola la media aritmetica dei valori in una colonna, ignorando i NULL.", replacements: {} },
-            { titleTemplate: "Conteggio Prodotti", descTemplate: "Quanti prodotti ci sono nel catalogo?", queryTemplate: "SELECT COUNT(*) FROM prodotti", hints: ["Usa COUNT(*)"], explanation: "Conta tutti i prodotti.", replacements: {} },
-            { titleTemplate: "Conteggio Ordini", descTemplate: "Quanti ordini sono stati effettuati?", queryTemplate: "SELECT COUNT(*) FROM ordini", hints: ["Usa COUNT(*)"], explanation: "Conta tutti gli ordini.", replacements: {} },
-            { titleTemplate: "Conteggio Recensioni", descTemplate: "Quante recensioni ci sono nel sistema?", queryTemplate: "SELECT COUNT(*) FROM recensioni", hints: ["Usa COUNT(*)"], explanation: "Conta tutte le recensioni.", replacements: {} },
-            { titleTemplate: "Conteggio Spedizioni", descTemplate: "Quante spedizioni ci sono nel sistema?", queryTemplate: "SELECT COUNT(*) FROM spedizioni", hints: ["Usa COUNT(*)"], explanation: "Conta tutte le spedizioni.", replacements: {} },
-            { titleTemplate: "Conteggio Categorie", descTemplate: "Quante categorie ci sono nel sistema?", queryTemplate: "SELECT COUNT(*) FROM categorie", hints: ["Usa COUNT(*)"], explanation: "Conta tutte le categorie.", replacements: {} },
-            { titleTemplate: "Conteggio Fornitori", descTemplate: "Quanti fornitori ci sono nel sistema?", queryTemplate: "SELECT COUNT(*) FROM fornitori", hints: ["Usa COUNT(*)"], explanation: "Conta tutti i fornitori.", replacements: {} },
-            { titleTemplate: "Totale Prezzo", descTemplate: "Qual è la somma totale dei prezzi dei prodotti?", queryTemplate: "SELECT SUM(prezzo) FROM prodotti", hints: ["Usa SUM(prezzo)"], explanation: "Somma dei prezzi.", replacements: {} },
-            { titleTemplate: "Totale Quantità Ordini", descTemplate: "Qual è la somma totale delle quantità ordinate?", queryTemplate: "SELECT SUM(quantita) FROM ordini", hints: ["Usa SUM(quantita)"], explanation: "Somma delle quantità.", replacements: {} },
-            { titleTemplate: "Totale Voti", descTemplate: "Qual è la somma totale dei voti delle recensioni?", queryTemplate: "SELECT SUM(voto) FROM recensioni", hints: ["Usa SUM(voto)"], explanation: "Somma dei voti.", replacements: {} },
-            { titleTemplate: "Stock Medio", descTemplate: "Calcola lo stock medio dei prodotti.", queryTemplate: "SELECT AVG(stock) FROM prodotti", hints: ["Usa AVG(stock)"], explanation: "Media dello stock.", replacements: {} },
-            { titleTemplate: "Prezzo Massimo", descTemplate: "Identifica il prodotto più costoso a catalogo. Trova il valore massimo nella colonna 'prezzo' della tabella 'prodotti'.", queryTemplate: "SELECT MAX(prezzo) FROM prodotti", hints: ["Usa la funzione per trovare il valore più alto.", "La funzione MAX(colonna) restituisce il valore massimo.", "Sintassi: SELECT MAX(nome_colonna) FROM tabella;"], explanation: "MAX() restituisce il valore più alto presente nella colonna specificata.", replacements: {} },
-            { titleTemplate: "Prezzo Minimo", descTemplate: "Identifica il prodotto più economico. Trova il valore minimo nella colonna 'prezzo' della tabella 'prodotti'.", queryTemplate: "SELECT MIN(prezzo) FROM prodotti", hints: ["Usa la funzione per trovare il valore più basso.", "La funzione MIN(colonna) restituisce il valore minimo.", "Sintassi: SELECT MIN(nome_colonna) FROM tabella;"], explanation: "MIN() restituisce il valore più basso presente nella colonna specificata.", replacements: {} },
-            { titleTemplate: "Stock Massimo", descTemplate: "Qual è lo stock massimo tra tutti i prodotti?", queryTemplate: "SELECT MAX(stock) FROM prodotti", hints: ["Usa MAX(stock)"], explanation: "Stock massimo.", replacements: {} },
-            { titleTemplate: "Stock Minimo", descTemplate: "Qual è lo stock minimo tra tutti i prodotti?", queryTemplate: "SELECT MIN(stock) FROM prodotti", hints: ["Usa MIN(stock)"], explanation: "Stock minimo.", replacements: {} },
-            { titleTemplate: "Voto Massimo", descTemplate: "Qual è il voto massimo tra tutte le recensioni?", queryTemplate: "SELECT MAX(voto) FROM recensioni", hints: ["Usa MAX(voto)"], explanation: "Voto massimo.", replacements: {} },
-            { titleTemplate: "Voto Minimo", descTemplate: "Qual è il voto minimo tra tutte le recensioni?", queryTemplate: "SELECT MIN(voto) FROM recensioni", hints: ["Usa MIN(voto)"], explanation: "Voto minimo.", replacements: {} },
-            { titleTemplate: "Voto Medio", descTemplate: "Calcola il voto medio di tutte le recensioni.", queryTemplate: "SELECT AVG(voto) FROM recensioni", hints: ["Usa AVG(voto)"], explanation: "Media dei voti.", replacements: {} },
-            { titleTemplate: "Quantità Media Ordini", descTemplate: "Calcola la quantità media degli ordini.", queryTemplate: "SELECT AVG(quantita) FROM ordini", hints: ["Usa AVG(quantita)"], explanation: "Media delle quantità.", replacements: {} },
-            { titleTemplate: "Quantità Massima Ordini", descTemplate: "Qual è la quantità massima tra tutti gli ordini?", queryTemplate: "SELECT MAX(quantita) FROM ordini", hints: ["Usa MAX(quantita)"], explanation: "Quantità massima.", replacements: {} },
-            { titleTemplate: "Quantità Minima Ordini", descTemplate: "Qual è la quantità minima tra tutti gli ordini?", queryTemplate: "SELECT MIN(quantita) FROM ordini", hints: ["Usa MIN(quantita)"], explanation: "Quantità minima.", replacements: {} },
-            { titleTemplate: "Funzioni Multiple", descTemplate: "Esegui un'analisi completa sui prezzi dei prodotti: mostra il conteggio totale, la somma, la media, il massimo e il minimo in un'unica query.", queryTemplate: "SELECT COUNT(*), SUM(prezzo), AVG(prezzo), MAX(prezzo), MIN(prezzo) FROM prodotti", hints: ["Puoi usare più funzioni di aggregazione nella stessa SELECT, separate da virgola.", "Combina COUNT, SUM, AVG, MAX e MIN."], explanation: "È possibile calcolare diverse statistiche aggregate contemporaneamente nella stessa query.", replacements: {} },
-            { titleTemplate: "Funzioni Multiple Stock", descTemplate: "Mostra conteggio, somma, media, massimo e minimo dello stock prodotti.", queryTemplate: "SELECT COUNT(*), SUM(stock), AVG(stock), MAX(stock), MIN(stock) FROM prodotti", hints: ["Combina COUNT, SUM, AVG, MAX, MIN", "SELECT COUNT(*), SUM(stock), AVG(stock), MAX(stock), MIN(stock)"], explanation: "Funzioni aggregate multiple su stock.", replacements: {} },
-            { titleTemplate: "Funzioni Multiple Voti", descTemplate: "Mostra conteggio, somma, media, massimo e minimo dei voti recensioni.", queryTemplate: "SELECT COUNT(*), SUM(voto), AVG(voto), MAX(voto), MIN(voto) FROM recensioni", hints: ["Combina COUNT, SUM, AVG, MAX, MIN", "SELECT COUNT(*), SUM(voto), AVG(voto), MAX(voto), MIN(voto)"], explanation: "Funzioni aggregate multiple su voti.", replacements: {} },
-            { titleTemplate: "Conteggio con Alias", descTemplate: "Conta il numero totale di utenti registrati e rinomina la colonna del risultato come 'Totale_Utenti' per maggiore chiarezza.", queryTemplate: "SELECT COUNT(*) AS Totale_Utenti FROM utenti", hints: ["Usa la keyword AS dopo la funzione di aggregazione.", "Sintassi: funzione() AS Alias"], explanation: "Assegnare un alias alle funzioni di aggregazione rende il risultato più leggibile.", replacements: {} },
-            { titleTemplate: "Somma con Alias", descTemplate: "Calcola la somma dello stock e rinomina il risultato come 'Stock_Totale'.", queryTemplate: "SELECT SUM(stock) AS Stock_Totale FROM prodotti", hints: ["SUM(stock) AS Stock_Totale"], explanation: "SUM con alias.", replacements: {} },
-            { titleTemplate: "Media con Alias", descTemplate: "Calcola la media dei prezzi e rinomina il risultato come 'Prezzo_Medio'.", queryTemplate: "SELECT AVG(prezzo) AS Prezzo_Medio FROM prodotti", hints: ["AVG(prezzo) AS Prezzo_Medio"], explanation: "AVG con alias.", replacements: {} },
-            { titleTemplate: "Massimo con Alias", descTemplate: "Trova il prezzo massimo e rinomina il risultato come 'Prezzo_Massimo'.", queryTemplate: "SELECT MAX(prezzo) AS Prezzo_Massimo FROM prodotti", hints: ["MAX(prezzo) AS Prezzo_Massimo"], explanation: "MAX con alias.", replacements: {} },
-            { titleTemplate: "Minimo con Alias", descTemplate: "Trova il prezzo minimo e rinomina il risultato come 'Prezzo_Minimo'.", queryTemplate: "SELECT MIN(prezzo) AS Prezzo_Minimo FROM prodotti", hints: ["MIN(prezzo) AS Prezzo_Minimo"], explanation: "MIN con alias.", replacements: {} },
+            { titleTemplate: "Conteggio Utenti", descTemplate: "Il team di marketing vuole sapere quanti utenti sono registrati nella piattaforma. Calcola il numero totale di righe nella tabella 'utenti'.", queryTemplate: "SELECT COUNT(*) FROM utenti", brokenCode: "SELECT COUNT(*) FORM utenti", debugHint: "Errore di battitura nella parola chiave FROM.", hints: ["Usa una funzione di aggregazione per contare le righe.", "La funzione COUNT(*) conta tutte le righe, inclusi i valori NULL.", "Sintassi: SELECT COUNT(*) FROM tabella;"], explanation: "COUNT(*) è la funzione standard per ottenere il numero totale di record in una tabella.", replacements: {} },
+            { titleTemplate: "Totale Stock", descTemplate: "Il responsabile di magazzino necessita del conteggio totale delle unità fisiche presenti. Calcola la somma di tutti i valori nella colonna 'stock' della tabella 'prodotti'.", queryTemplate: "SELECT SUM(stock) FROM prodotti", brokenCode: "SELECT SUM(stock) FROM prodotti)", debugHint: "C'è una parentesi di troppo alla fine della query.", hints: ["Usa la funzione di aggregazione per sommare valori numerici.", "La funzione SUM(colonna) somma tutti i valori della colonna specificata.", "Sintassi: SELECT SUM(nome_colonna) FROM tabella;"], explanation: "SUM() calcola il totale aritmetico dei valori in una colonna numerica.", replacements: {} },
+            { titleTemplate: "Prezzo Medio", descTemplate: "Per un'analisi di mercato, calcola il prezzo medio di vendita di tutti i prodotti a catalogo.", queryTemplate: "SELECT AVG(prezzo) FROM prodotti", brokenCode: "SELECT AVG(prezzo FROM prodotti", debugHint: "Manca la parentesi di chiusura della funzione AVG.", hints: ["Usa la funzione di aggregazione per calcolare la media aritmetica.", "La funzione AVG(colonna) restituisce la media dei valori numerici.", "Sintassi: SELECT AVG(nome_colonna) FROM tabella;"], explanation: "AVG() calcola la media aritmetica dei valori in una colonna, ignorando i NULL.", replacements: {} },
+            { titleTemplate: "Conteggio Prodotti", descTemplate: "Quanti prodotti ci sono nel catalogo?", queryTemplate: "SELECT COUNT(*) FROM prodotti", brokenCode: "SELECT COUNT* FROM prodotti", debugHint: "La funzione COUNT richiede le parentesi: COUNT(*).", hints: ["Usa COUNT(*)"], explanation: "Conta tutti i prodotti.", replacements: {} },
+            { titleTemplate: "Conteggio Ordini", descTemplate: "Quanti ordini sono stati effettuati?", queryTemplate: "SELECT COUNT(*) FROM ordini", brokenCode: "SELETC COUNT(*) FROM ordini", debugHint: "Errore di battitura nella parola chiave SELECT.", hints: ["Usa COUNT(*)"], explanation: "Conta tutti gli ordini.", replacements: {} },
+            { titleTemplate: "Conteggio Recensioni", descTemplate: "Quante recensioni ci sono nel sistema?", queryTemplate: "SELECT COUNT(*) FROM recensioni", brokenCode: "SELECT COUNT(*) FROM recensioni;", debugHint: "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.", hints: ["Usa COUNT(*)"], explanation: "Conta tutte le recensioni.", replacements: {} },
+            { titleTemplate: "Conteggio Spedizioni", descTemplate: "Quante spedizioni ci sono nel sistema?", queryTemplate: "SELECT COUNT(*) FROM spedizioni", brokenCode: "SELECT COUNT(*) FROM spedizioni", debugHint: "Nessun errore evidente, ma controlla se hai scritto tutto correttamente.", hints: ["Usa COUNT(*)"], explanation: "Conta tutte le spedizioni.", replacements: {} },
+            { titleTemplate: "Conteggio Categorie", descTemplate: "Quante categorie ci sono nel sistema?", queryTemplate: "SELECT COUNT(*) FROM categorie", brokenCode: "SELECT COUNT(*) FROM categorie", debugHint: "Controlla la sintassi.", hints: ["Usa COUNT(*)"], explanation: "Conta tutte le categorie.", replacements: {} },
+            { titleTemplate: "Conteggio Fornitori", descTemplate: "Quanti fornitori ci sono nel sistema?", queryTemplate: "SELECT COUNT(*) FROM fornitori", brokenCode: "SELECT COUNT(*) FROM fornitori", debugHint: "Verifica la query.", hints: ["Usa COUNT(*)"], explanation: "Conta tutti i fornitori.", replacements: {} },
+            { titleTemplate: "Totale Prezzo", descTemplate: "Qual è la somma totale dei prezzi dei prodotti?", queryTemplate: "SELECT SUM(prezzo) FROM prodotti", brokenCode: "SELECT SUM(prezzo) FROM prodotti", debugHint: "Controlla la funzione SUM.", hints: ["Usa SUM(prezzo)"], explanation: "Somma dei prezzi.", replacements: {} },
+            { titleTemplate: "Totale Quantità Ordini", descTemplate: "Qual è la somma totale delle quantità ordinate?", queryTemplate: "SELECT SUM(quantita) FROM ordini", brokenCode: "SELECT SUM(quantita) FROM ordini", debugHint: "Verifica la sintassi.", hints: ["Usa SUM(quantita)"], explanation: "Somma delle quantità.", replacements: {} },
+            { titleTemplate: "Totale Voti", descTemplate: "Qual è la somma totale dei voti delle recensioni?", queryTemplate: "SELECT SUM(voto) FROM recensioni", brokenCode: "SELECT SUM(voto) FROM recensioni", debugHint: "Controlla la query.", hints: ["Usa SUM(voto)"], explanation: "Somma dei voti.", replacements: {} },
+            { titleTemplate: "Stock Medio", descTemplate: "Calcola lo stock medio dei prodotti.", queryTemplate: "SELECT AVG(stock) FROM prodotti", brokenCode: "SELECT AVG(stock) FROM prodotti", debugHint: "Verifica la funzione AVG.", hints: ["Usa AVG(stock)"], explanation: "Media dello stock.", replacements: {} },
+            { titleTemplate: "Prezzo Massimo", descTemplate: "Identifica il prodotto più costoso a catalogo. Trova il valore massimo nella colonna 'prezzo' della tabella 'prodotti'.", queryTemplate: "SELECT MAX(prezzo) FROM prodotti", brokenCode: "SELECT MAX(prezzo) FROM prodotti", debugHint: "Controlla la sintassi.", hints: ["Usa la funzione per trovare il valore più alto.", "La funzione MAX(colonna) restituisce il valore massimo.", "Sintassi: SELECT MAX(nome_colonna) FROM tabella;"], explanation: "MAX() restituisce il valore più alto presente nella colonna specificata.", replacements: {} },
+            { titleTemplate: "Prezzo Minimo", descTemplate: "Identifica il prodotto più economico. Trova il valore minimo nella colonna 'prezzo' della tabella 'prodotti'.", queryTemplate: "SELECT MIN(prezzo) FROM prodotti", brokenCode: "SELECT MIN(prezzo) FROM prodotti", debugHint: "Verifica la query.", hints: ["Usa la funzione per trovare il valore più basso.", "La funzione MIN(colonna) restituisce il valore minimo.", "Sintassi: SELECT MIN(nome_colonna) FROM tabella;"], explanation: "MIN() restituisce il valore più basso presente nella colonna specificata.", replacements: {} },
+            { titleTemplate: "Stock Massimo", descTemplate: "Qual è lo stock massimo tra tutti i prodotti?", queryTemplate: "SELECT MAX(stock) FROM prodotti", brokenCode: "SELECT MAX(stock) FORM prodotti", debugHint: "Errore di battitura nella parola chiave FROM.", hints: ["Usa MAX(stock)"], explanation: "Stock massimo.", replacements: {} },
+            { titleTemplate: "Stock Minimo", descTemplate: "Qual è lo stock minimo tra tutti i prodotti?", queryTemplate: "SELECT MIN(stock) FROM prodotti", brokenCode: "SELECT MIN(stock) prodotti", debugHint: "Manca la parola chiave FROM.", hints: ["Usa MIN(stock)"], explanation: "Stock minimo.", replacements: {} },
+            { titleTemplate: "Voto Massimo", descTemplate: "Qual è il voto massimo tra tutte le recensioni?", queryTemplate: "SELECT MAX(voto) FROM recensioni", brokenCode: "SELETC MAX(voto) FROM recensioni", debugHint: "Errore di battitura nella parola chiave SELECT.", hints: ["Usa MAX(voto)"], explanation: "Voto massimo.", replacements: {} },
+            { titleTemplate: "Voto Minimo", descTemplate: "Qual è il voto minimo tra tutte le recensioni?", queryTemplate: "SELECT MIN(voto) FROM recensioni", brokenCode: "SELECT MIN(voto)) FROM recensioni", debugHint: "C'è una parentesi di troppo.", hints: ["Usa MIN(voto)"], explanation: "Voto minimo.", replacements: {} },
+            { titleTemplate: "Voto Medio", descTemplate: "Calcola il voto medio di tutte le recensioni.", queryTemplate: "SELECT AVG(voto) FROM recensioni", brokenCode: "SELECT AVG voto FROM recensioni", debugHint: "Le funzioni di aggregazione richiedono le parentesi: AVG(voto).", hints: ["Usa AVG(voto)"], explanation: "Media dei voti.", replacements: {} },
+            { titleTemplate: "Quantità Media Ordini", descTemplate: "Calcola la quantità media degli ordini.", queryTemplate: "SELECT AVG(quantita) FROM ordini", brokenCode: "SELECT AVG(quantita) FROM ordini", debugHint: "Nessun errore evidente, ma controlla se hai scritto tutto correttamente.", hints: ["Usa AVG(quantita)"], explanation: "Media delle quantità.", replacements: {} },
+            { titleTemplate: "Quantità Massima Ordini", descTemplate: "Qual è la quantità massima tra tutti gli ordini?", queryTemplate: "SELECT MAX(quantita) FROM ordini", brokenCode: "SELECT MAX(quantita) FROM ordini", debugHint: "Controlla la sintassi.", hints: ["Usa MAX(quantita)"], explanation: "Quantità massima.", replacements: {} },
+            { titleTemplate: "Quantità Minima Ordini", descTemplate: "Qual è la quantità minima tra tutti gli ordini?", queryTemplate: "SELECT MIN(quantita) FROM ordini", brokenCode: "SELECT MIN(quantita) FROM ordini", debugHint: "Verifica la query.", hints: ["Usa MIN(quantita)"], explanation: "Quantità minima.", replacements: {} },
+            { titleTemplate: "Funzioni Multiple", descTemplate: "Esegui un'analisi completa sui prezzi dei prodotti: mostra il conteggio totale, la somma, la media, il massimo e il minimo in un'unica query.", queryTemplate: "SELECT COUNT(*), SUM(prezzo), AVG(prezzo), MAX(prezzo), MIN(prezzo) FROM prodotti", brokenCode: "SELECT COUNT(*) SUM(prezzo), AVG(prezzo), MAX(prezzo), MIN(prezzo) FROM prodotti", debugHint: "Manca una virgola tra le funzioni di aggregazione.", hints: ["Puoi usare più funzioni di aggregazione nella stessa SELECT, separate da virgola.", "Combina COUNT, SUM, AVG, MAX e MIN."], explanation: "È possibile calcolare diverse statistiche aggregate contemporaneamente nella stessa query.", replacements: {} },
+            { titleTemplate: "Funzioni Multiple Stock", descTemplate: "Mostra conteggio, somma, media, massimo e minimo dello stock prodotti.", queryTemplate: "SELECT COUNT(*), SUM(stock), AVG(stock), MAX(stock), MIN(stock) FROM prodotti", brokenCode: "SELECT COUNT(*), SUM(stock), AVG(stock), MAX(stock), MIN(stock) FROM prodotti", debugHint: "Controlla le virgole.", hints: ["Combina COUNT, SUM, AVG, MAX, MIN", "SELECT COUNT(*), SUM(stock), AVG(stock), MAX(stock), MIN(stock)"], explanation: "Funzioni aggregate multiple su stock.", replacements: {} },
+            { titleTemplate: "Funzioni Multiple Voti", descTemplate: "Mostra conteggio, somma, media, massimo e minimo dei voti recensioni.", queryTemplate: "SELECT COUNT(*), SUM(voto), AVG(voto), MAX(voto), MIN(voto) FROM recensioni", brokenCode: "SELECT COUNT(*), SUM(voto), AVG(voto), MAX(voto), MIN(voto) FROM recensioni", debugHint: "Verifica la lista di funzioni.", hints: ["Combina COUNT, SUM, AVG, MAX, MIN", "SELECT COUNT(*), SUM(voto), AVG(voto), MAX(voto), MIN(voto)"], explanation: "Funzioni aggregate multiple su voti.", replacements: {} },
+            { titleTemplate: "Conteggio con Alias", descTemplate: "Conta il numero totale di utenti registrati e rinomina la colonna del risultato come 'Totale_Utenti' per maggiore chiarezza.", queryTemplate: "SELECT COUNT(*) AS Totale_Utenti FROM utenti", brokenCode: "SELECT COUNT(*) AS Totale_Utenti FROM utenti", debugHint: "Nessun errore evidente.", hints: ["Usa la keyword AS dopo la funzione di aggregazione.", "Sintassi: funzione() AS Alias"], explanation: "Assegnare un alias alle funzioni di aggregazione rende il risultato più leggibile.", replacements: {} },
+            { titleTemplate: "Somma con Alias", descTemplate: "Calcola la somma dello stock e rinomina il risultato come 'Stock_Totale'.", queryTemplate: "SELECT SUM(stock) AS Stock_Totale FROM prodotti", brokenCode: "SELECT SUM(stock) AS Stock_Totale FROM prodotti", debugHint: "Controlla l'alias.", hints: ["SUM(stock) AS Stock_Totale"], explanation: "SUM con alias.", replacements: {} },
+            { titleTemplate: "Media con Alias", descTemplate: "Calcola la media dei prezzi e rinomina il risultato come 'Prezzo_Medio'.", queryTemplate: "SELECT AVG(prezzo) AS Prezzo_Medio FROM prodotti", brokenCode: "SELECT AVG(prezzo) AS Prezzo_Medio FROM prodotti", debugHint: "Verifica l'alias.", hints: ["AVG(prezzo) AS Prezzo_Medio"], explanation: "AVG con alias.", replacements: {} },
+            { titleTemplate: "Massimo con Alias", descTemplate: "Trova il prezzo massimo e rinomina il risultato come 'Prezzo_Massimo'.", queryTemplate: "SELECT MAX(prezzo) AS Prezzo_Massimo FROM prodotti", brokenCode: "SELECT MAX(prezzo) AS Prezzo_Massimo FROM prodotti", debugHint: "Controlla la sintassi.", hints: ["MAX(prezzo) AS Prezzo_Massimo"], explanation: "MAX con alias.", replacements: {} },
+            { titleTemplate: "Minimo con Alias", descTemplate: "Trova il prezzo minimo e rinomina il risultato come 'Prezzo_Minimo'.", queryTemplate: "SELECT MIN(prezzo) AS Prezzo_Minimo FROM prodotti", brokenCode: "SELETC MIN(prezzo) AS Prezzo_Minimo FROM prodotti", debugHint: "Errore di battitura nella parola chiave SELECT.", hints: ["MIN(prezzo) AS Prezzo_Minimo"], explanation: "MIN con alias.", replacements: {} },
             // NEW EXERCISES FOR AGGREGATION EASY
-            { titleTemplate: "Conteggio Utenti Premium", descTemplate: "Il reparto vendite vuole sapere quanti abbonati paganti ci sono. Conta solo gli utenti che hanno il flag 'premium' impostato a TRUE.", queryTemplate: "SELECT COUNT(*) FROM utenti WHERE premium = TRUE", hints: ["Usa COUNT(*) combinato con la clausola WHERE.", "Filtra prima le righe, poi conta il risultato."], explanation: "Le funzioni di aggregazione operano sulle righe filtrate dalla clausola WHERE.", replacements: {} },
-            { titleTemplate: "Somma Stock Elettronica", descTemplate: "Calcola lo stock totale dei prodotti di categoria 1 (Elettronica).", queryTemplate: "SELECT SUM(stock) FROM prodotti WHERE categoria_id = 1", hints: ["SUM con WHERE"], explanation: "Somma filtrata.", replacements: {} },
-            { titleTemplate: "Media Prezzo Elettronica", descTemplate: "Calcola il prezzo medio dei prodotti di categoria 1.", queryTemplate: "SELECT AVG(prezzo) FROM prodotti WHERE categoria_id = 1", hints: ["AVG con WHERE"], explanation: "Media filtrata.", replacements: {} },
-            { titleTemplate: "Massimo Prezzo Elettronica", descTemplate: "Analisi Prezzi: identifica il prezzo più alto tra i prodotti della categoria 'Elettronica' (id=1).", queryTemplate: "SELECT MAX(prezzo) FROM prodotti WHERE categoria_id = 1", hints: ["Usa MAX con una clausola WHERE.", "WHERE categoria_id = 1"], explanation: "Trova il valore massimo in un sottoinsieme filtrato di dati.", replacements: {} },
-            { titleTemplate: "Minimo Prezzo Elettronica", descTemplate: "Analisi Prezzi: identifica il prezzo più basso tra i prodotti della categoria 'Elettronica' (id=1).", queryTemplate: "SELECT MIN(prezzo) FROM prodotti WHERE categoria_id = 1", hints: ["Usa MIN con una clausola WHERE.", "WHERE categoria_id = 1"], explanation: "Trova il valore minimo in un sottoinsieme filtrato di dati.", replacements: {} },
-            { titleTemplate: "Conteggio Prodotti Costosi", descTemplate: "Inventario Premium: conta quanti prodotti hanno un prezzo superiore a 100€.", queryTemplate: "SELECT COUNT(*) FROM prodotti WHERE prezzo > 100", hints: ["Usa COUNT(*) con un filtro sul prezzo.", "WHERE prezzo > 100"], explanation: "Conta le righe che soddisfano una condizione numerica.", replacements: {} },
-            { titleTemplate: "Somma Valore Magazzino", descTemplate: "Valutazione Asset: calcola il valore totale teorico del magazzino (somma di prezzo * stock).", queryTemplate: "SELECT SUM(prezzo * stock) FROM prodotti", hints: ["Puoi usare espressioni matematiche dentro SUM.", "SUM(prezzo * stock)"], explanation: "Aggrega il risultato di un calcolo riga per riga.", replacements: {} },
-            { titleTemplate: "Conteggio Ordini 2023", descTemplate: "Volume Vendite: conta il numero totale di ordini ricevuti nell'anno 2023.", queryTemplate: "SELECT COUNT(*) FROM ordini WHERE YEAR(data_ordine) = 2023", hints: ["Filtra per anno e poi conta.", "WHERE YEAR(data_ordine) = 2023"], explanation: "Conteggio filtrato su base temporale.", replacements: {} },
-            { titleTemplate: "Conteggio Spedizioni DHL", descTemplate: "Logistica: conta quante spedizioni sono state affidate al corriere 'DHL'.", queryTemplate: "SELECT COUNT(*) FROM spedizioni WHERE corriere = 'DHL'", hints: ["Filtra per nome del corriere.", "WHERE corriere = 'DHL'"], explanation: "Conteggio basato su uguaglianza di stringhe.", replacements: {} },
-            { titleTemplate: "Media Voto Recensioni Alte", descTemplate: "Qualità Percepita: calcola il voto medio considerando solo le recensioni positive (voto >= 4).", queryTemplate: "SELECT AVG(voto) FROM recensioni WHERE voto >= 4", hints: ["Calcola la media su un sottoinsieme.", "WHERE voto >= 4"], explanation: "Media condizionata a un filtro.", replacements: {} },
-            { titleTemplate: "Totale Quantità Ordini Grandi", descTemplate: "Analisi Volumi: calcola la quantità totale di articoli venduti in ordini 'grandi' (> 5 pezzi).", queryTemplate: "SELECT SUM(quantita) FROM ordini WHERE quantita > 5", hints: ["Somma solo le quantità che superano la soglia.", "WHERE quantita > 5"], explanation: "Somma filtrata.", replacements: {} },
-            { titleTemplate: "Conteggio Fornitori Italiani", descTemplate: "Supply Chain: conta quanti fornitori hanno sede in Italia.", queryTemplate: "SELECT COUNT(*) FROM fornitori WHERE nazione = 'Italia'", hints: ["Filtra per nazione.", "WHERE nazione = 'Italia'"], explanation: "Conteggio geografico.", replacements: {} },
-            { titleTemplate: "Conteggio Utenti Gmail", descTemplate: "Analisi Clienti: conta quanti utenti utilizzano un indirizzo email 'gmail.com'.", queryTemplate: "SELECT COUNT(*) FROM utenti WHERE email LIKE '%gmail.com'", hints: ["Usa LIKE per cercare il pattern.", "WHERE email LIKE '%gmail.com'"], explanation: "Conteggio basato su pattern matching.", replacements: {} },
-            { titleTemplate: "Prezzo Medio Stock Basso", descTemplate: "Monitoraggio Scorte: calcola il prezzo medio dei prodotti che sono quasi esauriti (stock < 10).", queryTemplate: "SELECT AVG(prezzo) FROM prodotti WHERE stock < 10", hints: ["Media dei prezzi per prodotti con poco stock.", "WHERE stock < 10"], explanation: "Analisi statistica su prodotti critici.", replacements: {} },
-            { titleTemplate: "Max Prezzo Fornitore 1", descTemplate: "Analisi Fornitore: trova il prezzo del prodotto più costoso fornito dal fornitore 1.", queryTemplate: "SELECT MAX(prezzo) FROM prodotti WHERE fornitore_id = 1", hints: ["Massimo prezzo per un fornitore specifico.", "WHERE fornitore_id = 1"], explanation: "Estrazione di un estremo in un gruppo logico.", replacements: {} }
+            { titleTemplate: "Conteggio Utenti Premium", descTemplate: "Il reparto vendite vuole sapere quanti abbonati paganti ci sono. Conta solo gli utenti che hanno il flag 'premium' impostato a TRUE.", queryTemplate: "SELECT COUNT(*) FROM utenti WHERE premium = TRUE", brokenCode: "SELECT COUNT(*) FROM utenti WHER premium = TRUE", debugHint: "Errore di battitura nella parola chiave WHERE.", hints: ["Usa COUNT(*) combinato con la clausola WHERE.", "Filtra prima le righe, poi conta il risultato."], explanation: "Le funzioni di aggregazione operano sulle righe filtrate dalla clausola WHERE.", replacements: {} },
+            { titleTemplate: "Somma Stock Elettronica", descTemplate: "Calcola lo stock totale dei prodotti di categoria 1 (Elettronica).", queryTemplate: "SELECT SUM(stock) FROM prodotti WHERE categoria_id = 1", brokenCode: "SELECT SUM(stock) prodotti WHERE categoria_id = 1", debugHint: "Manca la parola chiave FROM.", hints: ["SUM con WHERE"], explanation: "Somma filtrata.", replacements: {} },
+            { titleTemplate: "Media Prezzo Elettronica", descTemplate: "Calcola il prezzo medio dei prodotti di categoria 1.", queryTemplate: "SELECT AVG(prezzo) FROM prodotti WHERE categoria_id = 1", brokenCode: "SELECT AV(prezzo) FROM prodotti WHERE categoria_id = 1", debugHint: "La funzione per la media è AVG, non AV.", hints: ["AVG con WHERE"], explanation: "Media filtrata.", replacements: {} },
+            { titleTemplate: "Massimo Prezzo Elettronica", descTemplate: "Analisi Prezzi: identifica il prezzo più alto tra i prodotti della categoria 'Elettronica' (id=1).", queryTemplate: "SELECT MAX(prezzo) FROM prodotti WHERE categoria_id = 1", brokenCode: "SELECT MAX(prezzo) FROM prodotti WHERE categoria_id = 1", debugHint: "Nessun errore evidente, ma controlla se hai scritto tutto correttamente.", hints: ["Usa MAX con una clausola WHERE.", "WHERE categoria_id = 1"], explanation: "Trova il valore massimo in un sottoinsieme filtrato di dati.", replacements: {} },
+            { titleTemplate: "Minimo Prezzo Elettronica", descTemplate: "Analisi Prezzi: identifica il prezzo più basso tra i prodotti della categoria 'Elettronica' (id=1).", queryTemplate: "SELECT MIN(prezzo) FROM prodotti WHERE categoria_id = 1", brokenCode: "SELECT MIN(prezzo) FROM prodotti WHERE categoria_id = 1", debugHint: "Controlla la sintassi.", hints: ["Usa MIN con una clausola WHERE.", "WHERE categoria_id = 1"], explanation: "Trova il valore minimo in un sottoinsieme filtrato di dati.", replacements: {} },
+            { titleTemplate: "Conteggio Prodotti Costosi", descTemplate: "Inventario Premium: conta quanti prodotti hanno un prezzo superiore a 100€.", queryTemplate: "SELECT COUNT(*) FROM prodotti WHERE prezzo > 100", brokenCode: "SELECT COUNT(*) FROM prodotti WHERE prezzo > 100", debugHint: "Verifica la query.", hints: ["Usa COUNT(*) con un filtro sul prezzo.", "WHERE prezzo > 100"], explanation: "Conta le righe che soddisfano una condizione numerica.", replacements: {} },
+            { titleTemplate: "Somma Valore Magazzino", descTemplate: "Valutazione Asset: calcola il valore totale teorico del magazzino (somma di prezzo * stock).", queryTemplate: "SELECT SUM(prezzo * stock) FROM prodotti", brokenCode: "SELECT SUM(prezzo * stock) FROM prodotti", debugHint: "Controlla la funzione SUM.", hints: ["Puoi usare espressioni matematiche dentro SUM.", "SUM(prezzo * stock)"], explanation: "Aggrega il risultato di un calcolo riga per riga.", replacements: {} },
+            { titleTemplate: "Conteggio Ordini 2023", descTemplate: "Volume Vendite: conta il numero totale di ordini ricevuti nell'anno 2023.", queryTemplate: "SELECT COUNT(*) FROM ordini WHERE YEAR(data_ordine) = 2023", brokenCode: "SELECT COUNT(*) FROM ordini WHERE YEAR(data_ordine) = 2023", debugHint: "Verifica la sintassi.", hints: ["Filtra per anno e poi conta.", "WHERE YEAR(data_ordine) = 2023"], explanation: "Conteggio filtrato su base temporale.", replacements: {} },
+            { titleTemplate: "Conteggio Spedizioni DHL", descTemplate: "Logistica: conta quante spedizioni sono state affidate al corriere 'DHL'.", queryTemplate: "SELECT COUNT(*) FROM spedizioni WHERE corriere = 'DHL'", brokenCode: "SELECT COUNT(*) FROM spedizioni WHERE corriere = 'DHL'", debugHint: "Controlla la query.", hints: ["Filtra per nome del corriere.", "WHERE corriere = 'DHL'"], explanation: "Conteggio basato su uguaglianza di stringhe.", replacements: {} },
+            { titleTemplate: "Media Voto Recensioni Alte", descTemplate: "Qualità Percepita: calcola il voto medio considerando solo le recensioni positive (voto >= 4).", queryTemplate: "SELECT AVG(voto) FROM recensioni WHERE voto >= 4", brokenCode: "SELECT AVG(voto) FROM recensioni WHERE voto >= 4", debugHint: "Verifica la funzione AVG.", hints: ["Calcola la media su un sottoinsieme.", "WHERE voto >= 4"], explanation: "Media condizionata a un filtro.", replacements: {} },
+            { titleTemplate: "Totale Quantità Ordini Grandi", descTemplate: "Analisi Volumi: calcola la quantità totale di articoli venduti in ordini 'grandi' (> 5 pezzi).", queryTemplate: "SELECT SUM(quantita) FROM ordini WHERE quantita > 5", brokenCode: "SELECT SUM(quantita) FROM ordini WHERE quantita > 5", debugHint: "Controlla la sintassi.", hints: ["Somma solo le quantità che superano la soglia.", "WHERE quantita > 5"], explanation: "Somma filtrata.", replacements: {} },
+            { titleTemplate: "Conteggio Fornitori Italiani", descTemplate: "Supply Chain: conta quanti fornitori hanno sede in Italia.", queryTemplate: "SELECT COUNT(*) FROM fornitori WHERE nazione = 'Italia'", brokenCode: "SELECT COUNT(*) FROM fornitori WHERE nazione = 'Italia'", debugHint: "Verifica la query.", hints: ["Filtra per nazione.", "WHERE nazione = 'Italia'"], explanation: "Conteggio geografico.", replacements: {} },
+            { titleTemplate: "Conteggio Utenti Gmail", descTemplate: "Analisi Clienti: conta quanti utenti utilizzano un indirizzo email 'gmail.com'.", queryTemplate: "SELECT COUNT(*) FROM utenti WHERE email LIKE '%gmail.com'", brokenCode: "SELECT COUNT(*) FROM utenti WHERE email LIKE '%gmail.com'", debugHint: "Controlla la sintassi.", hints: ["Usa LIKE per cercare il pattern.", "WHERE email LIKE '%gmail.com'"], explanation: "Conteggio basato su pattern matching.", replacements: {} },
+            { titleTemplate: "Prezzo Medio Stock Basso", descTemplate: "Monitoraggio Scorte: calcola il prezzo medio dei prodotti che sono quasi esauriti (stock < 10).", queryTemplate: "SELECT AVG(prezzo) FROM prodotti WHERE stock < 10", brokenCode: "SELECT AVG(prezzo) FROM prodotti WHERE stock < 10", debugHint: "Verifica la funzione AVG.", hints: ["Media dei prezzi per prodotti con poco stock.", "WHERE stock < 10"], explanation: "Analisi statistica su prodotti critici.", replacements: {} },
+            { titleTemplate: "Max Prezzo Fornitore 1", descTemplate: "Analisi Fornitore: trova il prezzo del prodotto più costoso fornito dal fornitore 1.", queryTemplate: "SELECT MAX(prezzo) FROM prodotti WHERE fornitore_id = 1", brokenCode: "SELECT MAX(prezzo) FROM prodotti WHERE fornitore_id = 1", debugHint: "Controlla la query.", hints: ["Massimo prezzo per un fornitore specifico.", "WHERE fornitore_id = 1"], explanation: "Estrazione di un estremo in un gruppo logico.", replacements: {} }
         ],
         [Difficulty.Medium]: [
             { titleTemplate: "Conteggio per Paese", descTemplate: "Il team di marketing vuole analizzare la distribuzione geografica degli utenti. Conta quanti utenti sono registrati per ogni paese.", queryTemplate: "SELECT paese, COUNT(*) FROM utenti GROUP BY paese", hints: ["Usa GROUP BY per raggruppare i risultati.", "Sintassi: SELECT colonna, COUNT(*) FROM tabella GROUP BY colonna;"], explanation: "Raggruppa le righe per 'paese' e conta quante righe ci sono in ogni gruppo.", replacements: {} },
@@ -4579,9 +4894,36 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
             { titleTemplate: "Conteggio Prodotti per Nazione", descTemplate: "Conta quanti prodotti provengono da fornitori di ciascuna nazione.", queryTemplate: "SELECT fornitori.nazione, COUNT(*) FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id GROUP BY fornitori.nazione", hints: ["Richiede JOIN tra prodotti e fornitori.", "Usa COUNT(*)."], explanation: "Mostra la varietà dell'assortimento per nazione di provenienza.", replacements: {} }
         ],
         [Difficulty.Hard]: [
-            { titleTemplate: "Filtro Having (Stock > {val})", descTemplate: "Il responsabile logistica vuole identificare le categorie con un'alta disponibilità. Mostra le categorie che hanno un totale di stock superiore a {val}.", queryTemplate: "SELECT categoria_id, SUM(stock) FROM prodotti GROUP BY categoria_id HAVING SUM(stock) > {val}", hints: ["Usa HAVING dopo GROUP BY per filtrare i gruppi.", "Sintassi: GROUP BY colonna HAVING condizione_aggregata"], explanation: "HAVING filtra i risultati dopo l'aggregazione, mentre WHERE filtra le righe prima.", replacements: { val: DATA.stock_thresholds } },
-            { titleTemplate: "Clienti Top ({val} Ordini)", descTemplate: "Il team marketing vuole premiare i clienti fedeli. Trova gli utenti che hanno effettuato più di {val} ordini.", queryTemplate: "SELECT utente_id, COUNT(*) FROM ordini GROUP BY utente_id HAVING COUNT(*) > {val}", hints: ["Raggruppa per utente e usa HAVING COUNT(*) > {val}."], explanation: "Seleziona solo gli utenti il cui conteggio ordini supera la soglia.", replacements: { val: [1, 2, 3, 4, 5] } },
-            { titleTemplate: "Media Prezzo per Fornitore", descTemplate: "Analizza i costi dei fornitori. Calcola il prezzo medio dei prodotti per ogni fornitore, ma mostra solo quelli con una media superiore a 50.", queryTemplate: "SELECT fornitore_id, AVG(prezzo) FROM prodotti GROUP BY fornitore_id HAVING AVG(prezzo) > 50", hints: ["Usa HAVING AVG(prezzo) > 50."], explanation: "Filtra i fornitori basandosi sul valore aggregato (media prezzo).", replacements: {} },
+            { 
+                titleTemplate: "Filtro Having (Stock > {val})", 
+                descTemplate: "Il responsabile logistica vuole identificare le categorie con un'alta disponibilità. Mostra le categorie che hanno un totale di stock superiore a {val}.", 
+                queryTemplate: "SELECT categoria_id, SUM(stock) FROM prodotti GROUP BY categoria_id HAVING SUM(stock) > {val}", 
+                brokenCode: "SELECT categoria_id, SUM(stock) FROM prodotti WHERE SUM(stock) > {val} GROUP BY categoria_id",
+                debugHint: "Ricorda: WHERE filtra le righe PRIMA del raggruppamento. Per filtrare i risultati aggregati (come SUM), serve una clausola diversa. Quale?",
+                hints: ["Usa HAVING dopo GROUP BY per filtrare i gruppi.", "Sintassi: GROUP BY colonna HAVING condizione_aggregata"], 
+                explanation: "HAVING filtra i risultati dopo l'aggregazione, mentre WHERE filtra le righe prima.", 
+                replacements: { val: DATA.stock_thresholds } 
+            },
+            { 
+                titleTemplate: "Clienti Top ({val} Ordini)", 
+                descTemplate: "Il team marketing vuole premiare i clienti fedeli. Trova gli utenti che hanno effettuato più di {val} ordini.", 
+                queryTemplate: "SELECT utente_id, COUNT(*) FROM ordini GROUP BY utente_id HAVING COUNT(*) > {val}", 
+                brokenCode: "SELECT utente_id, COUNT(*) FROM ordini WHERE COUNT(*) > {val} GROUP BY utente_id",
+                debugHint: "Non puoi usare COUNT(*) nella clausola WHERE. Le funzioni di aggregazione vanno filtrate con un'altra keyword. Quale?",
+                hints: ["Raggruppa per utente e usa HAVING COUNT(*) > {val}.", "WHERE non accetta funzioni aggregate", "HAVING è la keyword corretta per filtrare i gruppi"], 
+                explanation: "Seleziona solo gli utenti il cui conteggio ordini supera la soglia.", 
+                replacements: { val: [1, 2, 3, 4, 5] } 
+            },
+            { 
+                titleTemplate: "Media Prezzo per Fornitore", 
+                descTemplate: "Analizza i costi dei fornitori. Calcola il prezzo medio dei prodotti per ogni fornitore, ma mostra solo quelli con una media superiore a 50.", 
+                queryTemplate: "SELECT fornitore_id, AVG(prezzo) FROM prodotti GROUP BY fornitore_id HAVING AVG(prezzo) > 50", 
+                brokenCode: "SELECT fornitore_id, AVG(prezzo) FROM prodotti WHERE AVG(prezzo) > 50 GROUP BY fornitore_id",
+                debugHint: "WHERE non può contenere AVG() o altre funzioni aggregate. Quale clausola devi usare per filtrare i calcoli aggregati?",
+                hints: ["Usa HAVING AVG(prezzo) > 50.", "HAVING va dopo GROUP BY", "WHERE filtra le righe, HAVING filtra i gruppi"], 
+                explanation: "Filtra i fornitori basandosi sul valore aggregato (media prezzo).", 
+                replacements: {} 
+            },
             { titleTemplate: "HAVING COUNT > {val}", descTemplate: "Identifica le categorie più popolate. Trova le categorie che contengono più di {val} prodotti.", queryTemplate: "SELECT categoria_id, COUNT(*) FROM prodotti GROUP BY categoria_id HAVING COUNT(*) > {val}", hints: ["HAVING COUNT(*) > {val}"], explanation: "Mostra solo le categorie con un numero di prodotti superiore alla soglia.", replacements: { val: [2, 3, 5, 10] } },
             { titleTemplate: "HAVING SUM > {val}", descTemplate: "Trova le categorie con una giacenza totale significativa. Mostra quelle con una somma di stock superiore a {val}.", queryTemplate: "SELECT categoria_id, SUM(stock) FROM prodotti GROUP BY categoria_id HAVING SUM(stock) > {val}", hints: ["HAVING SUM(stock) > {val}"], explanation: "Filtra le categorie in base alla somma totale dello stock.", replacements: { val: [50, 100, 150, 200] } },
             { titleTemplate: "HAVING AVG > {val}", descTemplate: "Individua le categorie di fascia alta. Trova quelle con un prezzo medio dei prodotti superiore a {val}.", queryTemplate: "SELECT categoria_id, AVG(prezzo) FROM prodotti GROUP BY categoria_id HAVING AVG(prezzo) > {val}", hints: ["HAVING AVG(prezzo) > {val}"], explanation: "Filtra le categorie in base al prezzo medio.", replacements: { val: [50, 100, 150, 200] } },
@@ -4623,52 +4965,52 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
     },
     [TopicId.Case]: {
         [Difficulty.Easy]: [
-            { titleTemplate: "Simple Case", descTemplate: "Gestione inventario: crea un report che mostri 'Disponibile' se lo stock è > 0, altrimenti 'Esaurito'.", queryTemplate: "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti", hints: ["Usa CASE WHEN condizione THEN valore ELSE valore END.", "Sintassi: CASE WHEN stock > 0 ..."], explanation: "CASE permette di creare logica condizionale direttamente nella query.", replacements: {} },
-            { titleTemplate: "Case Stock Disponibile", descTemplate: "Report stato prodotti: visualizza il nome del prodotto e una colonna 'stato' che indica 'Disponibile' o 'Esaurito'.", queryTemplate: "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END AS stato FROM prodotti", hints: ["Usa AS per dare un nome alla colonna calcolata.", "CASE ... END AS stato"], explanation: "L'alias 'stato' rende il risultato più leggibile.", replacements: {} },
-            { titleTemplate: "Case Prezzo Alto", descTemplate: "Analisi prezzi: classifica i prodotti come 'Alto' se costano più di 100€, altrimenti 'Basso'.", queryTemplate: "SELECT nome, CASE WHEN prezzo > 100 THEN 'Alto' ELSE 'Basso' END FROM prodotti", hints: ["Confronta la colonna prezzo con 100.", "CASE WHEN prezzo > 100 ..."], explanation: "Segmenta i prodotti in base a una soglia di prezzo.", replacements: {} },
-            { titleTemplate: "Case Prezzo Medio", descTemplate: "Segmentazione prezzi: classifica i prodotti come 'Medio' se costano più di 50€, altrimenti 'Basso'.", queryTemplate: "SELECT nome, CASE WHEN prezzo > 50 THEN 'Medio' ELSE 'Basso' END FROM prodotti", hints: ["Soglia di prezzo a 50.", "CASE WHEN prezzo > 50 ..."], explanation: "Utile per filtrare visivamente prodotti sopra una certa fascia.", replacements: {} },
-            { titleTemplate: "Case Voto Alto", descTemplate: "Analisi qualità: classifica le recensioni come 'Alto' se il voto è >= 4, altrimenti 'Basso'.", queryTemplate: "SELECT voto, CASE WHEN voto >= 4 THEN 'Alto' ELSE 'Basso' END FROM recensioni", hints: ["Usa l'operatore >= (maggiore o uguale).", "CASE WHEN voto >= 4 ..."], explanation: "Identifica le recensioni positive.", replacements: {} },
-            { titleTemplate: "Case Voto Basso", descTemplate: "Monitoraggio qualità: segnala come 'Basso' i voti inferiori a 3, altrimenti 'Alto'.", queryTemplate: "SELECT voto, CASE WHEN voto < 3 THEN 'Basso' ELSE 'Alto' END FROM recensioni", hints: ["Usa l'operatore < (minore).", "CASE WHEN voto < 3 ..."], explanation: "Identifica le recensioni negative o critiche.", replacements: {} },
-            { titleTemplate: "Case Quantità", descTemplate: "Analisi ordini: etichetta come 'Grande' gli ordini con quantità > 5, altrimenti 'Piccola'.", queryTemplate: "SELECT quantita, CASE WHEN quantita > 5 THEN 'Grande' ELSE 'Piccola' END FROM ordini", hints: ["Confronta la quantità ordinata.", "CASE WHEN quantita > 5 ..."], explanation: "Distingue tra ordini voluminosi e ordini standard.", replacements: {} },
-            { titleTemplate: "Case Premium", descTemplate: "Stato abbonamento: visualizza 'Premium' se l'utente ha l'abbonamento attivo (TRUE), altrimenti 'Standard'.", queryTemplate: "SELECT nome, CASE WHEN premium = TRUE THEN 'Premium' ELSE 'Standard' END FROM utenti", hints: ["La colonna premium è booleana.", "CASE WHEN premium = TRUE ..."], explanation: "Traduce un valore booleano in un testo leggibile.", replacements: {} },
-            { titleTemplate: "Case NULL Tracking", descTemplate: "Stato spedizioni: se il codice tracking è NULL mostra 'In Attesa', altrimenti 'Tracciata'.", queryTemplate: "SELECT CASE WHEN codice_tracking IS NULL THEN 'In Attesa' ELSE 'Tracciata' END FROM spedizioni", hints: ["Usa IS NULL per verificare i valori mancanti.", "CASE WHEN codice_tracking IS NULL ..."], explanation: "Gestisce i valori NULL per fornire un output più chiaro.", replacements: {} },
-            { titleTemplate: "Case Stock Zero", descTemplate: "Allerta scorte: segnala 'Esaurito' se lo stock è 0, altrimenti 'Disponibile'.", queryTemplate: "SELECT nome, CASE WHEN stock = 0 THEN 'Esaurito' ELSE 'Disponibile' END FROM prodotti", hints: ["Controlla l'uguaglianza con 0.", "CASE WHEN stock = 0 ..."], explanation: "Identifica immediatamente i prodotti non disponibili.", replacements: {} },
-            { titleTemplate: "Case Prezzo Zero", descTemplate: "Prodotti omaggio: classifica come 'Gratis' se il prezzo è 0, altrimenti 'A Pagamento'.", queryTemplate: "SELECT nome, CASE WHEN prezzo = 0 THEN 'Gratis' ELSE 'A Pagamento' END FROM prodotti", hints: ["CASE WHEN prezzo = 0 ..."], explanation: "Evidenzia i prodotti gratuiti.", replacements: {} },
-            { titleTemplate: "Case Voto Cinque", descTemplate: "Eccellenza: evidenzia con 'Perfetto' i voti uguali a 5, altrimenti 'Normale'.", queryTemplate: "SELECT voto, CASE WHEN voto = 5 THEN 'Perfetto' ELSE 'Normale' END FROM recensioni", hints: ["CASE WHEN voto = 5 ..."], explanation: "Mette in risalto il punteggio massimo.", replacements: {} },
-            { titleTemplate: "Case Quantità Uno", descTemplate: "Tipologia ordine: classifica come 'Singolo' se la quantità è 1, altrimenti 'Multiplo'.", queryTemplate: "SELECT quantita, CASE WHEN quantita = 1 THEN 'Singolo' ELSE 'Multiplo' END FROM ordini", hints: ["CASE WHEN quantita = 1 ..."], explanation: "Distingue acquisti singoli da acquisti multipli.", replacements: {} },
-            { titleTemplate: "Case Stock Maggiore", descTemplate: "Disponibilità elevata: se lo stock supera i 20 pezzi scrivi 'Abbondante', altrimenti 'Limitato'.", queryTemplate: "SELECT nome, CASE WHEN stock > 20 THEN 'Abbondante' ELSE 'Limitato' END FROM prodotti", hints: ["CASE WHEN stock > 20 ..."], explanation: "Indica prodotti con ampia disponibilità.", replacements: {} },
-            { titleTemplate: "Case Prezzo Minore", descTemplate: "Prodotti budget: se il prezzo è inferiore a 30€ scrivi 'Economico', altrimenti 'Normale'.", queryTemplate: "SELECT nome, CASE WHEN prezzo < 30 THEN 'Economico' ELSE 'Normale' END FROM prodotti", hints: ["CASE WHEN prezzo < 30 ..."], explanation: "Identifica prodotti di fascia bassa.", replacements: {} },
-            { titleTemplate: "Case Voto Maggiore", descTemplate: "Feedback positivo: se il voto è superiore a 3 scrivi 'Positivo', altrimenti 'Negativo'.", queryTemplate: "SELECT voto, CASE WHEN voto > 3 THEN 'Positivo' ELSE 'Negativo' END FROM recensioni", hints: ["CASE WHEN voto > 3 ..."], explanation: "Separa le recensioni positive da quelle negative/neutre.", replacements: {} },
-            { titleTemplate: "Case Quantità Maggiore", descTemplate: "Ordini voluminosi: se la quantità supera 10 scrivi 'Grande Ordine', altrimenti 'Piccolo Ordine'.", queryTemplate: "SELECT quantita, CASE WHEN quantita > 10 THEN 'Grande Ordine' ELSE 'Piccolo Ordine' END FROM ordini", hints: ["CASE WHEN quantita > 10 ..."], explanation: "Evidenzia ordini particolarmente grandi.", replacements: {} },
-            { titleTemplate: "Case Stock Minore", descTemplate: "Scorte in esaurimento: se lo stock è inferiore a 10 scrivi 'Basso', altrimenti 'Sufficiente'.", queryTemplate: "SELECT nome, CASE WHEN stock < 10 THEN 'Basso' ELSE 'Sufficiente' END FROM prodotti", hints: ["CASE WHEN stock < 10 ..."], explanation: "Allerta per riordino merce.", replacements: {} },
-            { titleTemplate: "Case Prezzo Maggiore Uguale", descTemplate: "Fascia alta: se il prezzo è >= 100 scrivi 'Costoso', altrimenti 'Accessibile'.", queryTemplate: "SELECT nome, CASE WHEN prezzo >= 100 THEN 'Costoso' ELSE 'Accessibile' END FROM prodotti", hints: ["CASE WHEN prezzo >= 100 ..."], explanation: "Segmentazione di prezzo inclusiva.", replacements: {} },
-            { titleTemplate: "Case Voto Minore Uguale", descTemplate: "Feedback negativo: se il voto è <= 2 scrivi 'Basso', altrimenti 'Alto'.", queryTemplate: "SELECT voto, CASE WHEN voto <= 2 THEN 'Basso' ELSE 'Alto' END FROM recensioni", hints: ["CASE WHEN voto <= 2 ..."], explanation: "Identifica recensioni gravemente insufficienti.", replacements: {} },
-            { titleTemplate: "Case Quantità Minore Uguale", descTemplate: "Piccoli acquisti: se la quantità è <= 3 scrivi 'Piccolo', altrimenti 'Grande'.", queryTemplate: "SELECT quantita, CASE WHEN quantita <= 3 THEN 'Piccolo' ELSE 'Grande' END FROM ordini", hints: ["CASE WHEN quantita <= 3 ..."], explanation: "Identifica ordini di piccola entità.", replacements: {} },
-            { titleTemplate: "Case Stock Maggiore Uguale", descTemplate: "Stock sicuro: se lo stock è >= 50 scrivi 'Alto', altrimenti 'Basso'.", queryTemplate: "SELECT nome, CASE WHEN stock >= 50 THEN 'Alto' ELSE 'Basso' END FROM prodotti", hints: ["CASE WHEN stock >= 50 ..."], explanation: "Conferma livelli di stock ottimali.", replacements: {} },
-            { titleTemplate: "Case Prezzo Minore Uguale", descTemplate: "Fascia economica: se il prezzo è <= 50 scrivi 'Economico', altrimenti 'Costoso'.", queryTemplate: "SELECT nome, CASE WHEN prezzo <= 50 THEN 'Economico' ELSE 'Costoso' END FROM prodotti", hints: ["CASE WHEN prezzo <= 50 ..."], explanation: "Identifica prodotti accessibili.", replacements: {} },
-            { titleTemplate: "Case Voto Maggiore Uguale", descTemplate: "Alta soddisfazione: se il voto è >= 4 scrivi 'Eccellente', altrimenti 'Normale'.", queryTemplate: "SELECT voto, CASE WHEN voto >= 4 THEN 'Eccellente' ELSE 'Normale' END FROM recensioni", hints: ["CASE WHEN voto >= 4 ..."], explanation: "Evidenzia feedback molto positivi.", replacements: {} },
-            { titleTemplate: "Case Quantità Maggiore Uguale", descTemplate: "Ordini medi: se la quantità è >= 5 scrivi 'Media', altrimenti 'Piccola'.", queryTemplate: "SELECT quantita, CASE WHEN quantita >= 5 THEN 'Media' ELSE 'Piccola' END FROM ordini", hints: ["CASE WHEN quantita >= 5 ..."], explanation: "Soglia per ordini di media grandezza.", replacements: {} },
-            { titleTemplate: "Case Stock Minore Uguale", descTemplate: "Allerta critica: se lo stock è <= 5 scrivi 'Critico', altrimenti 'Normale'.", queryTemplate: "SELECT nome, CASE WHEN stock <= 5 THEN 'Critico' ELSE 'Normale' END FROM prodotti", hints: ["CASE WHEN stock <= 5 ..."], explanation: "Segnala prodotti quasi esauriti.", replacements: {} },
-            { titleTemplate: "Case Prezzo Non Zero", descTemplate: "Verifica prezzi: se il prezzo è diverso da 0 scrivi 'A Pagamento', altrimenti 'Gratis'.", queryTemplate: "SELECT nome, CASE WHEN prezzo <> 0 THEN 'A Pagamento' ELSE 'Gratis' END FROM prodotti", hints: ["Usa l'operatore <> (diverso).", "CASE WHEN prezzo <> 0 ..."], explanation: "Verifica che il prezzo non sia nullo o zero.", replacements: {} },
-            { titleTemplate: "Case Voto Non Cinque", descTemplate: "Margine miglioramento: se il voto non è 5 scrivi 'Migliorabile', altrimenti 'Perfetto'.", queryTemplate: "SELECT voto, CASE WHEN voto <> 5 THEN 'Migliorabile' ELSE 'Perfetto' END FROM recensioni", hints: ["CASE WHEN voto <> 5 ..."], explanation: "Identifica tutto ciò che non è perfetto.", replacements: {} },
-            { titleTemplate: "Case Quantità Non Uno", descTemplate: "Acquisti multipli: se la quantità non è 1 scrivi 'Multiplo', altrimenti 'Singolo'.", queryTemplate: "SELECT quantita, CASE WHEN quantita <> 1 THEN 'Multiplo' ELSE 'Singolo' END FROM ordini", hints: ["CASE WHEN quantita <> 1 ..."], explanation: "Filtra ordini con più di un pezzo.", replacements: {} },
-            { titleTemplate: "Case Stock Non Zero", descTemplate: "Verifica disponibilità: se lo stock non è 0 scrivi 'Disponibile', altrimenti 'Esaurito'.", queryTemplate: "SELECT nome, CASE WHEN stock <> 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti", hints: ["CASE WHEN stock <> 0 ..."], explanation: "Conferma la presenza di merce a magazzino.", replacements: {} },
+            { titleTemplate: "Simple Case", descTemplate: "Gestione inventario: crea un report che mostri 'Disponibile' se lo stock è > 0, altrimenti 'Esaurito'.", queryTemplate: "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti", brokenCode: "SELECT nome, CSE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave CASE.", hints: ["Usa CASE WHEN condizione THEN valore ELSE valore END.", "Sintassi: CASE WHEN stock > 0 ..."], explanation: "CASE permette di creare logica condizionale direttamente nella query.", replacements: {} },
+            { titleTemplate: "Case Stock Disponibile", descTemplate: "Report stato prodotti: visualizza il nome del prodotto e una colonna 'stato' che indica 'Disponibile' o 'Esaurito'.", queryTemplate: "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END AS stato FROM prodotti", brokenCode: "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' AS stato FROM prodotti", debugHint: "Manca la parola chiave END alla fine del blocco CASE.", hints: ["Usa AS per dare un nome alla colonna calcolata.", "CASE ... END AS stato"], explanation: "L'alias 'stato' rende il risultato più leggibile.", replacements: {} },
+            { titleTemplate: "Case Prezzo Alto", descTemplate: "Analisi prezzi: classifica i prodotti come 'Alto' se costano più di 100€, altrimenti 'Basso'.", queryTemplate: "SELECT nome, CASE WHEN prezzo > 100 THEN 'Alto' ELSE 'Basso' END FROM prodotti", brokenCode: "SELECT nome, CASE WHEN prezzo > 100 THAN 'Alto' ELSE 'Basso' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave THEN.", hints: ["Confronta la colonna prezzo con 100.", "CASE WHEN prezzo > 100 ..."], explanation: "Segmenta i prodotti in base a una soglia di prezzo.", replacements: {} },
+            { titleTemplate: "Case Prezzo Medio", descTemplate: "Segmentazione prezzi: classifica i prodotti come 'Medio' se costano più di 50€, altrimenti 'Basso'.", queryTemplate: "SELECT nome, CASE WHEN prezzo > 50 THEN 'Medio' ELSE 'Basso' END FROM prodotti", brokenCode: "SELECT nome, CASE WHEN prezzo > 50 THEN 'Medio' 'Basso' END FROM prodotti", debugHint: "Manca la parola chiave ELSE.", hints: ["Soglia di prezzo a 50.", "CASE WHEN prezzo > 50 ..."], explanation: "Utile per filtrare visivamente prodotti sopra una certa fascia.", replacements: {} },
+            { titleTemplate: "Case Voto Alto", descTemplate: "Analisi qualità: classifica le recensioni come 'Alto' se il voto è >= 4, altrimenti 'Basso'.", queryTemplate: "SELECT voto, CASE WHEN voto >= 4 THEN 'Alto' ELSE 'Basso' END FROM recensioni", brokenCode: "SELECT voto, CASE WEN voto >= 4 THEN 'Alto' ELSE 'Basso' END FROM recensioni", debugHint: "Errore di battitura nella parola chiave WHEN.", hints: ["Usa l'operatore >= (maggiore o uguale).", "CASE WHEN voto >= 4 ..."], explanation: "Identifica le recensioni positive.", replacements: {} },
+            { titleTemplate: "Case Voto Basso", descTemplate: "Monitoraggio qualità: segnala come 'Basso' i voti inferiori a 3, altrimenti 'Alto'.", queryTemplate: "SELECT voto, CASE WHEN voto < 3 THEN 'Basso' ELSE 'Alto' END FROM recensioni", brokenCode: "SELECT voto, WHEN voto < 3 THEN 'Basso' ELSE 'Alto' END FROM recensioni", debugHint: "Manca la parola chiave CASE all'inizio dell'espressione.", hints: ["Usa l'operatore < (minore).", "CASE WHEN voto < 3 ..."], explanation: "Identifica le recensioni negative o critiche.", replacements: {} },
+            { titleTemplate: "Case Quantità", descTemplate: "Analisi ordini: etichetta come 'Grande' gli ordini con quantità > 5, altrimenti 'Piccola'.", queryTemplate: "SELECT quantita, CASE WHEN quantita > 5 THEN 'Grande' ELSE 'Piccola' END FROM ordini", brokenCode: "SELECT quantita, CASE WHEN quantita > 5 THEN Grande ELSE Piccola END FROM ordini", debugHint: "Le stringhe devono essere racchiuse tra apici singoli.", hints: ["Confronta la quantità ordinata.", "CASE WHEN quantita > 5 ..."], explanation: "Distingue tra ordini voluminosi e ordini standard.", replacements: {} },
+            { titleTemplate: "Case Premium", descTemplate: "Stato abbonamento: visualizza 'Premium' se l'utente ha l'abbonamento attivo (TRUE), altrimenti 'Standard'.", queryTemplate: "SELECT nome, CASE WHEN premium = TRUE THEN 'Premium' ELSE 'Standard' END FROM utenti", brokenCode: "SELECT nome, CASE WHEN premium = TREU THEN 'Premium' ELSE 'Standard' END FROM utenti", debugHint: "Errore di battitura nel valore booleano TRUE.", hints: ["La colonna premium è booleana.", "CASE WHEN premium = TRUE ..."], explanation: "Traduce un valore booleano in un testo leggibile.", replacements: {} },
+            { titleTemplate: "Case NULL Tracking", descTemplate: "Stato spedizioni: se il codice tracking è NULL mostra 'In Attesa', altrimenti 'Tracciata'.", queryTemplate: "SELECT CASE WHEN codice_tracking IS NULL THEN 'In Attesa' ELSE 'Tracciata' END FROM spedizioni", brokenCode: "SELECT CASE WHEN codice_tracking IS NUL THEN 'In Attesa' ELSE 'Tracciata' END FROM spedizioni", debugHint: "Errore di battitura nella parola chiave NULL.", hints: ["Usa IS NULL per verificare i valori mancanti.", "CASE WHEN codice_tracking IS NULL ..."], explanation: "Gestisce i valori NULL per fornire un output più chiaro.", replacements: {} },
+            { titleTemplate: "Case Stock Zero", descTemplate: "Allerta scorte: segnala 'Esaurito' se lo stock è 0, altrimenti 'Disponibile'.", queryTemplate: "SELECT nome, CASE WHEN stock = 0 THEN 'Esaurito' ELSE 'Disponibile' END FROM prodotti", brokenCode: "SELECT nome, CASE WHEN stock = 0 'Esaurito' ELSE 'Disponibile' END FROM prodotti", debugHint: "Manca la parola chiave THEN.", hints: ["Controlla l'uguaglianza con 0.", "CASE WHEN stock = 0 ..."], explanation: "Identifica immediatamente i prodotti non disponibili.", replacements: {} },
+            { titleTemplate: "Case Prezzo Zero", descTemplate: "Prodotti omaggio: classifica come 'Gratis' se il prezzo è 0, altrimenti 'A Pagamento'.", queryTemplate: "SELECT nome, CASE WHEN prezzo = 0 THEN 'Gratis' ELSE 'A Pagamento' END FROM prodotti", brokenCode: "SELECT nome, CASE WHEN prezzo = 0 THEN 'Gratis' ELS 'A Pagamento' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave ELSE.", hints: ["CASE WHEN prezzo = 0 ..."], explanation: "Evidenzia i prodotti gratuiti.", replacements: {} },
+            { titleTemplate: "Case Voto Cinque", descTemplate: "Eccellenza: evidenzia con 'Perfetto' i voti uguali a 5, altrimenti 'Normale'.", queryTemplate: "SELECT voto, CASE WHEN voto = 5 THEN 'Perfetto' ELSE 'Normale' END FROM recensioni", brokenCode: "SELECT voto, CASE WHEN voto = 5 THEN 'Perfetto' ELSE 'Normale' FROM recensioni", debugHint: "Manca la parola chiave END alla fine del blocco CASE.", hints: ["CASE WHEN voto = 5 ..."], explanation: "Mette in risalto il punteggio massimo.", replacements: {} },
+            { titleTemplate: "Case Quantità Uno", descTemplate: "Tipologia ordine: classifica come 'Singolo' se la quantità è 1, altrimenti 'Multiplo'.", queryTemplate: "SELECT quantita, CASE WHEN quantita = 1 THEN 'Singolo' ELSE 'Multiplo' END FROM ordini", brokenCode: "SELECT quantita, CSE WHEN quantita = 1 THEN 'Singolo' ELSE 'Multiplo' END FROM ordini", debugHint: "Errore di battitura nella parola chiave CASE.", hints: ["CASE WHEN quantita = 1 ..."], explanation: "Distingue acquisti singoli da acquisti multipli.", replacements: {} },
+            { titleTemplate: "Case Stock Maggiore", descTemplate: "Disponibilità elevata: se lo stock supera i 20 pezzi scrivi 'Abbondante', altrimenti 'Limitato'.", queryTemplate: "SELECT nome, CASE WHEN stock > 20 THEN 'Abbondante' ELSE 'Limitato' END FROM prodotti", brokenCode: "SELECT nome, CASE stock > 20 THEN 'Abbondante' ELSE 'Limitato' END FROM prodotti", debugHint: "Manca la parola chiave WHEN dopo CASE.", hints: ["CASE WHEN stock > 20 ..."], explanation: "Indica prodotti con ampia disponibilità.", replacements: {} },
+            { titleTemplate: "Case Prezzo Minore", descTemplate: "Prodotti budget: se il prezzo è inferiore a 30€ scrivi 'Economico', altrimenti 'Normale'.", queryTemplate: "SELECT nome, CASE WHEN prezzo < 30 THEN 'Economico' ELSE 'Normale' END FROM prodotti", brokenCode: "SELECT nome, CASE WHEN prezzo < 30 'Economico' ELSE 'Normale' END FROM prodotti", debugHint: "Manca la parola chiave THEN.", hints: ["CASE WHEN prezzo < 30 ..."], explanation: "Identifica prodotti di fascia bassa.", replacements: {} },
+            { titleTemplate: "Case Voto Maggiore", descTemplate: "Feedback positivo: se il voto è superiore a 3 scrivi 'Positivo', altrimenti 'Negativo'.", queryTemplate: "SELECT voto, CASE WHEN voto > 3 THEN 'Positivo' ELSE 'Negativo' END FROM recensioni", brokenCode: "SELETC voto, CASE WHEN voto > 3 THEN 'Positivo' ELSE 'Negativo' END FROM recensioni", debugHint: "Errore di battitura nella parola chiave SELECT.", hints: ["CASE WHEN voto > 3 ..."], explanation: "Separa le recensioni positive da quelle negative/neutre.", replacements: {} },
+            { titleTemplate: "Case Quantità Maggiore", descTemplate: "Ordini voluminosi: se la quantità supera 10 scrivi 'Grande Ordine', altrimenti 'Piccolo Ordine'.", queryTemplate: "SELECT quantita, CASE WHEN quantita > 10 THEN 'Grande Ordine' ELSE 'Piccolo Ordine' END FROM ordini", brokenCode: "SELECT quantita, CASE WHEN quantita > 10 THEN 'Grande Ordine' ELSE 'Piccolo Ordine' FROM ordini", debugHint: "Manca la parola chiave END alla fine del blocco CASE.", hints: ["CASE WHEN quantita > 10 ..."], explanation: "Evidenzia ordini particolarmente grandi.", replacements: {} },
+            { titleTemplate: "Case Stock Minore", descTemplate: "Scorte in esaurimento: se lo stock è inferiore a 10 scrivi 'Basso', altrimenti 'Sufficiente'.", queryTemplate: "SELECT nome, CASE WHEN stock < 10 THEN 'Basso' ELSE 'Sufficiente' END FROM prodotti", brokenCode: "SELECT nome, CAES WHEN stock < 10 THEN 'Basso' ELSE 'Sufficiente' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave CASE.", hints: ["CASE WHEN stock < 10 ..."], explanation: "Allerta per riordino merce.", replacements: {} },
+            { titleTemplate: "Case Prezzo Maggiore Uguale", descTemplate: "Fascia alta: se il prezzo è >= 100 scrivi 'Costoso', altrimenti 'Accessibile'.", queryTemplate: "SELECT nome, CASE WHEN prezzo >= 100 THEN 'Costoso' ELSE 'Accessibile' END FROM prodotti", brokenCode: "SELECT nome, CASE WHEN prezzo >= 100 'Costoso' ELSE 'Accessibile' END FROM prodotti", debugHint: "Manca la parola chiave THEN.", hints: ["CASE WHEN prezzo >= 100 ..."], explanation: "Segmentazione di prezzo inclusiva.", replacements: {} },
+            { titleTemplate: "Case Voto Minore Uguale", descTemplate: "Feedback negativo: se il voto è <= 2 scrivi 'Basso', altrimenti 'Alto'.", queryTemplate: "SELECT voto, CASE WHEN voto <= 2 THEN 'Basso' ELSE 'Alto' END FROM recensioni", brokenCode: "SELECT voto, CASE WHEN voto <= 2 THEN 'Basso' ELSI 'Alto' END FROM recensioni", debugHint: "Errore di battitura nella parola chiave ELSE.", hints: ["CASE WHEN voto <= 2 ..."], explanation: "Identifica recensioni gravemente insufficienti.", replacements: {} },
+            { titleTemplate: "Case Quantità Minore Uguale", descTemplate: "Piccoli acquisti: se la quantità è <= 3 scrivi 'Piccolo', altrimenti 'Grande'.", queryTemplate: "SELECT quantita, CASE WHEN quantita <= 3 THEN 'Piccolo' ELSE 'Grande' END FROM ordini", brokenCode: "SELECT quantita, WHEN quantita <= 3 THEN 'Piccolo' ELSE 'Grande' END FROM ordini", debugHint: "Manca la parola chiave CASE.", hints: ["CASE WHEN quantita <= 3 ..."], explanation: "Identifica ordini di piccola entità.", replacements: {} },
+            { titleTemplate: "Case Stock Maggiore Uguale", descTemplate: "Stock sicuro: se lo stock è >= 50 scrivi 'Alto', altrimenti 'Basso'.", queryTemplate: "SELECT nome, CASE WHEN stock >= 50 THEN 'Alto' ELSE 'Basso' END FROM prodotti", brokenCode: "SELECT nome, CASE WHE stock >= 50 THEN 'Alto' ELSE 'Basso' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave WHEN.", hints: ["CASE WHEN stock >= 50 ..."], explanation: "Conferma livelli di stock ottimali.", replacements: {} },
+            { titleTemplate: "Case Prezzo Minore Uguale", descTemplate: "Fascia economica: se il prezzo è <= 50 scrivi 'Economico', altrimenti 'Costoso'.", queryTemplate: "SELECT nome, CASE WHEN prezzo <= 50 THEN 'Economico' ELSE 'Costoso' END FROM prodotti", brokenCode: "SELECT nome, CASE WHEN prezzo <= 50 THEN 'Economico' ELSE 'Costoso' FROM prodotti", debugHint: "Manca la parola chiave END.", hints: ["CASE WHEN prezzo <= 50 ..."], explanation: "Identifica prodotti accessibili.", replacements: {} },
+            { titleTemplate: "Case Voto Maggiore Uguale", descTemplate: "Alta soddisfazione: se il voto è >= 4 scrivi 'Eccellente', altrimenti 'Normale'.", queryTemplate: "SELECT voto, CASE WHEN voto >= 4 THEN 'Eccellente' ELSE 'Normale' END FROM recensioni", brokenCode: "SELECT voto, CASE WHEN voto >= 4 THE 'Eccellente' ELSE 'Normale' END FROM recensioni", debugHint: "Errore di battitura nella parola chiave THEN.", hints: ["CASE WHEN voto >= 4 ..."], explanation: "Evidenzia feedback molto positivi.", replacements: {} },
+            { titleTemplate: "Case Quantità Maggiore Uguale", descTemplate: "Ordini medi: se la quantità è >= 5 scrivi 'Media', altrimenti 'Piccola'.", queryTemplate: "SELECT quantita, CASE WHEN quantita >= 5 THEN 'Media' ELSE 'Piccola' END FROM ordini", brokenCode: "SELECT quantita, CASE WHEN quantita >= 5 THEN 'Media' 'Piccola' END FROM ordini", debugHint: "Manca la parola chiave ELSE.", hints: ["CASE WHEN quantita >= 5 ..."], explanation: "Soglia per ordini di media grandezza.", replacements: {} },
+            { titleTemplate: "Case Stock Minore Uguale", descTemplate: "Allerta critica: se lo stock è <= 5 scrivi 'Critico', altrimenti 'Normale'.", queryTemplate: "SELECT nome, CASE WHEN stock <= 5 THEN 'Critico' ELSE 'Normale' END FROM prodotti", brokenCode: "SELECT nome, CSE WHEN stock <= 5 THEN 'Critico' ELSE 'Normale' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave CASE.", hints: ["CASE WHEN stock <= 5 ..."], explanation: "Segnala prodotti quasi esauriti.", replacements: {} },
+            { titleTemplate: "Case Prezzo Non Zero", descTemplate: "Verifica prezzi: se il prezzo è diverso da 0 scrivi 'A Pagamento', altrimenti 'Gratis'.", queryTemplate: "SELECT nome, CASE WHEN prezzo <> 0 THEN 'A Pagamento' ELSE 'Gratis' END FROM prodotti", brokenCode: "SELECT nome, CASE prezzo <> 0 THEN 'A Pagamento' ELSE 'Gratis' END FROM prodotti", debugHint: "Manca la parola chiave WHEN.", hints: ["Usa l'operatore <> (diverso).", "CASE WHEN prezzo <> 0 ..."], explanation: "Verifica che il prezzo non sia nullo o zero.", replacements: {} },
+            { titleTemplate: "Case Voto Non Cinque", descTemplate: "Margine miglioramento: se il voto non è 5 scrivi 'Migliorabile', altrimenti 'Perfetto'.", queryTemplate: "SELECT voto, CASE WHEN voto <> 5 THEN 'Migliorabile' ELSE 'Perfetto' END FROM recensioni", brokenCode: "SELECT voto, CASE WHEN voto <> 5 THEN 'Migliorabile' ELSE 'Perfetto' EN FROM recensioni", debugHint: "Errore di battitura nella parola chiave END.", hints: ["CASE WHEN voto <> 5 ..."], explanation: "Identifica tutto ciò che non è perfetto.", replacements: {} },
+            { titleTemplate: "Case Quantità Non Uno", descTemplate: "Acquisti multipli: se la quantità non è 1 scrivi 'Multiplo', altrimenti 'Singolo'.", queryTemplate: "SELECT quantita, CASE WHEN quantita <> 1 THEN 'Multiplo' ELSE 'Singolo' END FROM ordini", brokenCode: "SELECT quantita, CASE WHEN quantita <> 1 THEN Multiplo ELSE Singolo END FROM ordini", debugHint: "Le stringhe devono essere racchiuse tra apici singoli.", hints: ["CASE WHEN quantita <> 1 ..."], explanation: "Filtra ordini con più di un pezzo.", replacements: {} },
+            { titleTemplate: "Case Stock Non Zero", descTemplate: "Verifica disponibilità: se lo stock non è 0 scrivi 'Disponibile', altrimenti 'Esaurito'.", queryTemplate: "SELECT nome, CASE WHEN stock <> 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti", brokenCode: "SELEC nome, CASE WHEN stock <> 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave SELECT.", hints: ["CASE WHEN stock <> 0 ..."], explanation: "Conferma la presenza di merce a magazzino.", replacements: {} },
             // NEW EXERCISES FOR CASE EASY
-            { titleTemplate: "Case Categoria Elettronica", descTemplate: "Categorizzazione: se l'ID categoria è 1 scrivi 'Elettronica', altrimenti 'Altro'.", queryTemplate: "SELECT nome, CASE WHEN categoria_id = 1 THEN 'Elettronica' ELSE 'Altro' END FROM prodotti", hints: ["CASE WHEN categoria_id = 1 ..."], explanation: "Etichetta specifica per una categoria.", replacements: {} },
-            { titleTemplate: "Case Fornitore Principale", descTemplate: "Analisi fornitori: se l'ID fornitore è 1 scrivi 'Principale', altrimenti 'Secondario'.", queryTemplate: "SELECT nome, CASE WHEN fornitore_id = 1 THEN 'Principale' ELSE 'Secondario' END FROM prodotti", hints: ["CASE WHEN fornitore_id = 1 ..."], explanation: "Distingue il fornitore primario dagli altri.", replacements: {} },
-            { titleTemplate: "Case Data Futura", descTemplate: "Controllo date: se la data ordine è successiva al '2024-01-01' scrivi 'Futuro', altrimenti 'Passato'.", queryTemplate: "SELECT id, CASE WHEN data_ordine > '2024-01-01' THEN 'Futuro' ELSE 'Passato' END FROM ordini", hints: ["Confronta con una stringa data.", "CASE WHEN data_ordine > '2024-01-01' ..."], explanation: "Classificazione temporale basata su una data fissa.", replacements: {} },
-            { titleTemplate: "Case Voto Sufficienza", descTemplate: "Valutazione minima: se il voto è >= 3 scrivi 'Sufficiente', altrimenti 'Insufficiente'.", queryTemplate: "SELECT voto, CASE WHEN voto >= 3 THEN 'Sufficiente' ELSE 'Insufficiente' END FROM recensioni", hints: ["CASE WHEN voto >= 3 ..."], explanation: "Soglia di accettabilità.", replacements: {} },
-            { titleTemplate: "Case Quantità Minima", descTemplate: "Controllo minimi: se la quantità è < 2 scrivi 'Minimo', altrimenti 'Standard'.", queryTemplate: "SELECT quantita, CASE WHEN quantita < 2 THEN 'Minimo' ELSE 'Standard' END FROM ordini", hints: ["CASE WHEN quantita < 2 ..."], explanation: "Identifica ordini sotto la soglia standard.", replacements: {} },
-            { titleTemplate: "Case Nome Inizia con A", descTemplate: "Gruppi alfabetici: se il nome inizia con 'A' scrivi 'Gruppo A', altrimenti 'Altri'.", queryTemplate: "SELECT nome, CASE WHEN nome LIKE 'A%' THEN 'Gruppo A' ELSE 'Altri' END FROM utenti", hints: ["Usa LIKE 'A%'.", "CASE WHEN nome LIKE 'A%' ..."], explanation: "Raggruppamento basato sull'iniziale.", replacements: {} },
-            { titleTemplate: "Case Email Gmail", descTemplate: "Provider email: se l'email contiene 'gmail' scrivi 'Google', altrimenti 'Altro'.", queryTemplate: "SELECT email, CASE WHEN email LIKE '%gmail%' THEN 'Google' ELSE 'Altro' END FROM utenti", hints: ["Usa LIKE '%gmail%'.", "CASE WHEN email LIKE '%gmail%' ..."], explanation: "Identifica il provider di posta elettronica.", replacements: {} },
-            { titleTemplate: "Case Prezzo Pari", descTemplate: "Analisi numerica: se il prezzo è pari scrivi 'Pari', altrimenti 'Dispari'.", queryTemplate: "SELECT prezzo, CASE WHEN prezzo % 2 = 0 THEN 'Pari' ELSE 'Dispari' END FROM prodotti", hints: ["Usa l'operatore modulo (%).", "CASE WHEN prezzo % 2 = 0 ..."], explanation: "Verifica la parità di un numero.", replacements: {} },
-            { titleTemplate: "Case Stock Multiplo 10", descTemplate: "Confezionamento: se lo stock è multiplo di 10 scrivi 'Multiplo 10', altrimenti 'No'.", queryTemplate: "SELECT stock, CASE WHEN stock % 10 = 0 THEN 'Multiplo 10' ELSE 'No' END FROM prodotti", hints: ["Usa stock % 10 = 0.", "CASE WHEN stock % 10 = 0 ..."], explanation: "Verifica divisibilità per 10.", replacements: {} },
-            { titleTemplate: "Case Lunghezza Nome", descTemplate: "Lunghezza stringhe: se il nome ha più di 5 caratteri scrivi 'Lungo', altrimenti 'Corto'.", queryTemplate: "SELECT nome, CASE WHEN LENGTH(nome) > 5 THEN 'Lungo' ELSE 'Corto' END FROM prodotti", hints: ["Usa la funzione LENGTH().", "CASE WHEN LENGTH(nome) > 5 ..."], explanation: "Logica basata sulla lunghezza del testo.", replacements: {} },
-            { titleTemplate: "Case Mese Estivo", descTemplate: "Stagionalità: se il mese dell'ordine è Giugno, Luglio o Agosto (6,7,8) scrivi 'Estate', altrimenti 'Altro'.", queryTemplate: "SELECT data_ordine, CASE WHEN MONTH(data_ordine) IN (6,7,8) THEN 'Estate' ELSE 'Altro' END FROM ordini", hints: ["Usa MONTH() e IN.", "CASE WHEN MONTH(data_ordine) IN (6,7,8) ..."], explanation: "Raggruppa mesi specifici in una stagione.", replacements: {} },
-            { titleTemplate: "Case Anno Corrente", descTemplate: "Filtro temporale: se l'anno dell'ordine è quello corrente scrivi 'Corrente', altrimenti 'Storico'.", queryTemplate: "SELECT data_ordine, CASE WHEN YEAR(data_ordine) = YEAR(NOW()) THEN 'Corrente' ELSE 'Storico' END FROM ordini", hints: ["Confronta YEAR(data_ordine) con YEAR(NOW())."], explanation: "Confronto dinamico con la data odierna.", replacements: {} },
-            { titleTemplate: "Case Paese Italia", descTemplate: "Segmentazione geografica: se il paese è 'Italia' scrivi 'Nazionale', altrimenti 'Estero'.", queryTemplate: "SELECT paese, CASE WHEN paese = 'Italia' THEN 'Nazionale' ELSE 'Estero' END FROM utenti", hints: ["CASE WHEN paese = 'Italia' ..."], explanation: "Distingue il mercato domestico da quello estero.", replacements: {} },
-            { titleTemplate: "Case Corriere DHL", descTemplate: "Logistica: se il corriere è 'DHL' scrivi 'Express', altrimenti 'Standard'.", queryTemplate: "SELECT corriere, CASE WHEN corriere = 'DHL' THEN 'Express' ELSE 'Standard' END FROM spedizioni", hints: ["CASE WHEN corriere = 'DHL' ..."], explanation: "Etichetta il servizio in base al corriere.", replacements: {} },
-            { titleTemplate: "Case Voto Massimo", descTemplate: "Top rating: se il voto è 5 scrivi 'Top', altrimenti 'Non Top'.", queryTemplate: "SELECT voto, CASE WHEN voto = 5 THEN 'Top' ELSE 'Non Top' END FROM recensioni", hints: ["CASE WHEN voto = 5 ..."], explanation: "Identifica il massimo punteggio possibile.", replacements: {} }
+            { titleTemplate: "Case Categoria Elettronica", descTemplate: "Categorizzazione: se l'ID categoria è 1 scrivi 'Elettronica', altrimenti 'Altro'.", queryTemplate: "SELECT nome, CASE WHEN categoria_id = 1 THEN 'Elettronica' ELSE 'Altro' END FROM prodotti", brokenCode: "SELECT nome, CSE WHEN categoria_id = 1 THEN 'Elettronica' ELSE 'Altro' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave CASE.", hints: ["CASE WHEN categoria_id = 1 ..."], explanation: "Etichetta specifica per una categoria.", replacements: {} },
+            { titleTemplate: "Case Fornitore Principale", descTemplate: "Analisi fornitori: se l'ID fornitore è 1 scrivi 'Principale', altrimenti 'Secondario'.", queryTemplate: "SELECT nome, CASE WHEN fornitore_id = 1 THEN 'Principale' ELSE 'Secondario' END FROM prodotti", brokenCode: "SELECT nome, CASE WHEN fornitore_id = 1 THEN 'Principale' ELSE 'Secondario' FROM prodotti", debugHint: "Manca la parola chiave END alla fine del blocco CASE.", hints: ["CASE WHEN fornitore_id = 1 ..."], explanation: "Distingue il fornitore primario dagli altri.", replacements: {} },
+            { titleTemplate: "Case Data Futura", descTemplate: "Controllo date: se la data ordine è successiva al '2024-01-01' scrivi 'Futuro', altrimenti 'Passato'.", queryTemplate: "SELECT id, CASE WHEN data_ordine > '2024-01-01' THEN 'Futuro' ELSE 'Passato' END FROM ordini", brokenCode: "SELECT id, CASE WHEN data_ordine > '2024-01-01' THAN 'Futuro' ELSE 'Passato' END FROM ordini", debugHint: "Errore di battitura nella parola chiave THEN.", hints: ["Confronta con una stringa data.", "CASE WHEN data_ordine > '2024-01-01' ..."], explanation: "Classificazione temporale basata su una data fissa.", replacements: {} },
+            { titleTemplate: "Case Voto Sufficienza", descTemplate: "Valutazione minima: se il voto è >= 3 scrivi 'Sufficiente', altrimenti 'Insufficiente'.", queryTemplate: "SELECT voto, CASE WHEN voto >= 3 THEN 'Sufficiente' ELSE 'Insufficiente' END FROM recensioni", brokenCode: "SELECT voto, CASE WHEN voto >= 3 THEN 'Sufficiente' 'Insufficiente' END FROM recensioni", debugHint: "Manca la parola chiave ELSE.", hints: ["CASE WHEN voto >= 3 ..."], explanation: "Soglia di accettabilità.", replacements: {} },
+            { titleTemplate: "Case Quantità Minima", descTemplate: "Controllo minimi: se la quantità è < 2 scrivi 'Minimo', altrimenti 'Standard'.", queryTemplate: "SELECT quantita, CASE WHEN quantita < 2 THEN 'Minimo' ELSE 'Standard' END FROM ordini", brokenCode: "SELECT quantita, CASE WEN quantita < 2 THEN 'Minimo' ELSE 'Standard' END FROM ordini", debugHint: "Errore di battitura nella parola chiave WHEN.", hints: ["CASE WHEN quantita < 2 ..."], explanation: "Identifica ordini sotto la soglia standard.", replacements: {} },
+            { titleTemplate: "Case Nome Inizia con A", descTemplate: "Gruppi alfabetici: se il nome inizia con 'A' scrivi 'Gruppo A', altrimenti 'Altri'.", queryTemplate: "SELECT nome, CASE WHEN nome LIKE 'A%' THEN 'Gruppo A' ELSE 'Altri' END FROM utenti", brokenCode: "SELECT nome, WHEN nome LIKE 'A%' THEN 'Gruppo A' ELSE 'Altri' END FROM utenti", debugHint: "Manca la parola chiave CASE all'inizio dell'espressione.", hints: ["Usa LIKE 'A%'.", "CASE WHEN nome LIKE 'A%' ..."], explanation: "Raggruppamento basato sull'iniziale.", replacements: {} },
+            { titleTemplate: "Case Email Gmail", descTemplate: "Provider email: se l'email contiene 'gmail' scrivi 'Google', altrimenti 'Altro'.", queryTemplate: "SELECT email, CASE WHEN email LIKE '%gmail%' THEN 'Google' ELSE 'Altro' END FROM utenti", brokenCode: "SELECT email, CASE WHEN email LIKE '%gmail%' THEN Google ELSE Altro END FROM utenti", debugHint: "Le stringhe devono essere racchiuse tra apici singoli.", hints: ["Usa LIKE '%gmail%'.", "CASE WHEN email LIKE '%gmail%' ..."], explanation: "Identifica il provider di posta elettronica.", replacements: {} },
+            { titleTemplate: "Case Prezzo Pari", descTemplate: "Analisi numerica: se il prezzo è pari scrivi 'Pari', altrimenti 'Dispari'.", queryTemplate: "SELECT prezzo, CASE WHEN prezzo % 2 = 0 THEN 'Pari' ELSE 'Dispari' END FROM prodotti", brokenCode: "SELECT prezzo, CASE WHEN prezzo % 2 = 0 THEN 'Pari' ELSI 'Dispari' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave ELSE.", hints: ["Usa l'operatore modulo (%).", "CASE WHEN prezzo % 2 = 0 ..."], explanation: "Verifica la parità di un numero.", replacements: {} },
+            { titleTemplate: "Case Stock Multiplo 10", descTemplate: "Confezionamento: se lo stock è multiplo di 10 scrivi 'Multiplo 10', altrimenti 'No'.", queryTemplate: "SELECT stock, CASE WHEN stock % 10 = 0 THEN 'Multiplo 10' ELSE 'No' END FROM prodotti", brokenCode: "SELECT stock, CASE WHEN stock % 10 = 0 THEN 'Multiplo 10' ELSE 'No' EN FROM prodotti", debugHint: "Errore di battitura nella parola chiave END.", hints: ["Usa stock % 10 = 0.", "CASE WHEN stock % 10 = 0 ..."], explanation: "Verifica divisibilità per 10.", replacements: {} },
+            { titleTemplate: "Case Lunghezza Nome", descTemplate: "Lunghezza stringhe: se il nome ha più di 5 caratteri scrivi 'Lungo', altrimenti 'Corto'.", queryTemplate: "SELECT nome, CASE WHEN LENGTH(nome) > 5 THEN 'Lungo' ELSE 'Corto' END FROM prodotti", brokenCode: "SELEC nome, CASE WHEN LENGTH(nome) > 5 THEN 'Lungo' ELSE 'Corto' END FROM prodotti", debugHint: "Errore di battitura nella parola chiave SELECT.", hints: ["Usa la funzione LENGTH().", "CASE WHEN LENGTH(nome) > 5 ..."], explanation: "Logica basata sulla lunghezza del testo.", replacements: {} },
+            { titleTemplate: "Case Mese Estivo", descTemplate: "Stagionalità: se il mese dell'ordine è Giugno, Luglio o Agosto (6,7,8) scrivi 'Estate', altrimenti 'Altro'.", queryTemplate: "SELECT data_ordine, CASE WHEN MONTH(data_ordine) IN (6,7,8) THEN 'Estate' ELSE 'Altro' END FROM ordini", brokenCode: "SELECT data_ordine, CASE WHEN MONTH(data_ordine) IN (6,7,8) 'Estate' ELSE 'Altro' END FROM ordini", debugHint: "Manca la parola chiave THEN.", hints: ["Usa MONTH() e IN.", "CASE WHEN MONTH(data_ordine) IN (6,7,8) ..."], explanation: "Raggruppa mesi specifici in una stagione.", replacements: {} },
+            { titleTemplate: "Case Anno Corrente", descTemplate: "Filtro temporale: se l'anno dell'ordine è quello corrente scrivi 'Corrente', altrimenti 'Storico'.", queryTemplate: "SELECT data_ordine, CASE WHEN YEAR(data_ordine) = YEAR(NOW()) THEN 'Corrente' ELSE 'Storico' END FROM ordini", brokenCode: "SELECT data_ordine, CAES WHEN YEAR(data_ordine) = YEAR(NOW()) THEN 'Corrente' ELSE 'Storico' END FROM ordini", debugHint: "Errore di battitura nella parola chiave CASE.", hints: ["Confronta YEAR(data_ordine) con YEAR(NOW())."], explanation: "Confronto dinamico con la data odierna.", replacements: {} },
+            { titleTemplate: "Case Paese Italia", descTemplate: "Segmentazione geografica: se il paese è 'Italia' scrivi 'Nazionale', altrimenti 'Estero'.", queryTemplate: "SELECT paese, CASE WHEN paese = 'Italia' THEN 'Nazionale' ELSE 'Estero' END FROM utenti", brokenCode: "SELECT paese, CASE paese = 'Italia' THEN 'Nazionale' ELSE 'Estero' END FROM utenti", debugHint: "Manca la parola chiave WHEN.", hints: ["CASE WHEN paese = 'Italia' ..."], explanation: "Distingue il mercato domestico da quello estero.", replacements: {} },
+            { titleTemplate: "Case Corriere DHL", descTemplate: "Logistica: se il corriere è 'DHL' scrivi 'Express', altrimenti 'Standard'.", queryTemplate: "SELECT corriere, CASE WHEN corriere = 'DHL' THEN 'Express' ELSE 'Standard' END FROM spedizioni", brokenCode: "SELECT corriere, CASE WHEN corriere = 'DHL' THE 'Express' ELSE 'Standard' END FROM spedizioni", debugHint: "Errore di battitura nella parola chiave THEN.", hints: ["CASE WHEN corriere = 'DHL' ..."], explanation: "Etichetta il servizio in base al corriere.", replacements: {} },
+            { titleTemplate: "Case Voto Massimo", descTemplate: "Top rating: se il voto è 5 scrivi 'Top', altrimenti 'Non Top'.", queryTemplate: "SELECT voto, CASE WHEN voto = 5 THEN 'Top' ELSE 'Non Top' END FROM recensioni", brokenCode: "SELECT voto, CASE WHEN voto = 5 THEN 'Top' ELSE 'Non Top' FROM recensioni", debugHint: "Manca la parola chiave END alla fine del blocco CASE.", hints: ["CASE WHEN voto = 5 ..."], explanation: "Identifica il massimo punteggio possibile.", replacements: {} }
         ],
         [Difficulty.Medium]: [
             { titleTemplate: "Fasce di Prezzo", descTemplate: "Segmentazione prodotti: etichetta i prodotti come 'Economico' (< 50), 'Medio' (50-150), o 'Lusso' (> 150).", queryTemplate: "SELECT nome, CASE WHEN prezzo < 50 THEN 'Economico' WHEN prezzo <= 150 THEN 'Medio' ELSE 'Lusso' END FROM prodotti", hints: ["Usa più clausole WHEN in sequenza.", "CASE WHEN ... WHEN ... ELSE ... END"], explanation: "Gestisce scenari con più di due possibili esiti.", replacements: {} },
@@ -4767,52 +5109,52 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
     },
     [TopicId.Advanced]: {
         [Difficulty.Easy]: [
-            { titleTemplate: "Subquery Prezzo > Media", descTemplate: "Trova i prodotti che costano più della media generale.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti)", hints: ["Subquery in WHERE", "WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti)"], explanation: "Subquery per confronto con media.", replacements: {} },
-            { titleTemplate: "Subquery Prezzo < Media", descTemplate: "Trova i prodotti che costano meno della media generale.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti)", hints: ["Subquery in WHERE", "WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti)"], explanation: "Subquery per confronto con media minore.", replacements: {} },
-            { titleTemplate: "Subquery Stock > Media", descTemplate: "Trova i prodotti con stock superiore alla media.", queryTemplate: "SELECT * FROM prodotti WHERE stock > (SELECT AVG(stock) FROM prodotti)", hints: ["Subquery in WHERE", "WHERE stock > (SELECT AVG(stock) FROM prodotti)"], explanation: "Subquery per confronto stock.", replacements: {} },
-            { titleTemplate: "Subquery Stock < Media", descTemplate: "Trova i prodotti con stock inferiore alla media.", queryTemplate: "SELECT * FROM prodotti WHERE stock < (SELECT AVG(stock) FROM prodotti)", hints: ["Subquery in WHERE", "WHERE stock < (SELECT AVG(stock) FROM prodotti)"], explanation: "Subquery per confronto stock minore.", replacements: {} },
-            { titleTemplate: "Subquery Voto > Media", descTemplate: "Trova le recensioni con voto superiore alla media.", queryTemplate: "SELECT * FROM recensioni WHERE voto > (SELECT AVG(voto) FROM recensioni)", hints: ["Subquery in WHERE", "WHERE voto > (SELECT AVG(voto) FROM recensioni)"], explanation: "Subquery per confronto voto.", replacements: {} },
-            { titleTemplate: "Subquery Voto < Media", descTemplate: "Trova le recensioni con voto inferiore alla media.", queryTemplate: "SELECT * FROM recensioni WHERE voto < (SELECT AVG(voto) FROM recensioni)", hints: ["Subquery in WHERE", "WHERE voto < (SELECT AVG(voto) FROM recensioni)"], explanation: "Subquery per confronto voto minore.", replacements: {} },
-            { titleTemplate: "Subquery Quantità > Media", descTemplate: "Trova gli ordini con quantità superiore alla media.", queryTemplate: "SELECT * FROM ordini WHERE quantita > (SELECT AVG(quantita) FROM ordini)", hints: ["Subquery in WHERE", "WHERE quantita > (SELECT AVG(quantita) FROM ordini)"], explanation: "Subquery per confronto quantità.", replacements: {} },
-            { titleTemplate: "Subquery Quantità < Media", descTemplate: "Trova gli ordini con quantità inferiore alla media.", queryTemplate: "SELECT * FROM ordini WHERE quantita < (SELECT AVG(quantita) FROM ordini)", hints: ["Subquery in WHERE", "WHERE quantita < (SELECT AVG(quantita) FROM ordini)"], explanation: "Subquery per confronto quantità minore.", replacements: {} },
-            { titleTemplate: "Subquery Prezzo = Massimo", descTemplate: "Trova i prodotti con prezzo uguale al massimo.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo = (SELECT MAX(prezzo) FROM prodotti)", hints: ["Subquery con MAX", "WHERE prezzo = (SELECT MAX(prezzo) FROM prodotti)"], explanation: "Subquery con MAX.", replacements: {} },
-            { titleTemplate: "Subquery Prezzo = Minimo", descTemplate: "Trova i prodotti con prezzo uguale al minimo.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo = (SELECT MIN(prezzo) FROM prodotti)", hints: ["Subquery con MIN", "WHERE prezzo = (SELECT MIN(prezzo) FROM prodotti)"], explanation: "Subquery con MIN.", replacements: {} },
-            { titleTemplate: "Subquery Stock = Massimo", descTemplate: "Trova i prodotti con stock uguale al massimo.", queryTemplate: "SELECT * FROM prodotti WHERE stock = (SELECT MAX(stock) FROM prodotti)", hints: ["Subquery con MAX", "WHERE stock = (SELECT MAX(stock) FROM prodotti)"], explanation: "Subquery con MAX su stock.", replacements: {} },
-            { titleTemplate: "Subquery Stock = Minimo", descTemplate: "Trova i prodotti con stock uguale al minimo.", queryTemplate: "SELECT * FROM prodotti WHERE stock = (SELECT MIN(stock) FROM prodotti)", hints: ["Subquery con MIN", "WHERE stock = (SELECT MIN(stock) FROM prodotti)"], explanation: "Subquery con MIN su stock.", replacements: {} },
-            { titleTemplate: "Subquery Voto = Massimo", descTemplate: "Trova le recensioni con voto uguale al massimo.", queryTemplate: "SELECT * FROM recensioni WHERE voto = (SELECT MAX(voto) FROM recensioni)", hints: ["Subquery con MAX", "WHERE voto = (SELECT MAX(voto) FROM recensioni)"], explanation: "Subquery con MAX su voto.", replacements: {} },
-            { titleTemplate: "Subquery Voto = Minimo", descTemplate: "Trova le recensioni con voto uguale al minimo.", queryTemplate: "SELECT * FROM recensioni WHERE voto = (SELECT MIN(voto) FROM recensioni)", hints: ["Subquery con MIN", "WHERE voto = (SELECT MIN(voto) FROM recensioni)"], explanation: "Subquery con MIN su voto.", replacements: {} },
-            { titleTemplate: "Subquery Quantità = Massimo", descTemplate: "Trova gli ordini con quantità uguale al massimo.", queryTemplate: "SELECT * FROM ordini WHERE quantita = (SELECT MAX(quantita) FROM ordini)", hints: ["Subquery con MAX", "WHERE quantita = (SELECT MAX(quantita) FROM ordini)"], explanation: "Subquery con MAX su quantità.", replacements: {} },
-            { titleTemplate: "Subquery Quantità = Minimo", descTemplate: "Trova gli ordini con quantità uguale al minimo.", queryTemplate: "SELECT * FROM ordini WHERE quantita = (SELECT MIN(quantita) FROM ordini)", hints: ["Subquery con MIN", "WHERE quantita = (SELECT MIN(quantita) FROM ordini)"], explanation: "Subquery con MIN su quantità.", replacements: {} },
-            { titleTemplate: "Subquery Prezzo >= Media", descTemplate: "Trova i prodotti che costano almeno quanto la media.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo >= (SELECT AVG(prezzo) FROM prodotti)", hints: ["Subquery con >=", "WHERE prezzo >= (SELECT AVG(prezzo) FROM prodotti)"], explanation: "Subquery con >=", replacements: {} },
-            { titleTemplate: "Subquery Prezzo <= Media", descTemplate: "Trova i prodotti che costano al massimo quanto la media.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo <= (SELECT AVG(prezzo) FROM prodotti)", hints: ["Subquery con <=", "WHERE prezzo <= (SELECT AVG(prezzo) FROM prodotti)"], explanation: "Subquery con <=", replacements: {} },
-            { titleTemplate: "Subquery Stock >= Media", descTemplate: "Trova i prodotti con stock almeno quanto la media.", queryTemplate: "SELECT * FROM prodotti WHERE stock >= (SELECT AVG(stock) FROM prodotti)", hints: ["Subquery con >=", "WHERE stock >= (SELECT AVG(stock) FROM prodotti)"], explanation: "Subquery con >= su stock.", replacements: {} },
-            { titleTemplate: "Subquery Stock <= Media", descTemplate: "Trova i prodotti con stock al massimo quanto la media.", queryTemplate: "SELECT * FROM prodotti WHERE stock <= (SELECT AVG(stock) FROM prodotti)", hints: ["Subquery con <=", "WHERE stock <= (SELECT AVG(stock) FROM prodotti)"], explanation: "Subquery con <= su stock.", replacements: {} },
-            { titleTemplate: "Subquery Voto >= Media", descTemplate: "Trova le recensioni con voto almeno quanto la media.", queryTemplate: "SELECT * FROM recensioni WHERE voto >= (SELECT AVG(voto) FROM recensioni)", hints: ["Subquery con >=", "WHERE voto >= (SELECT AVG(voto) FROM recensioni)"], explanation: "Subquery con >= su voto.", replacements: {} },
-            { titleTemplate: "Subquery Voto <= Media", descTemplate: "Trova le recensioni con voto al massimo quanto la media.", queryTemplate: "SELECT * FROM recensioni WHERE voto <= (SELECT AVG(voto) FROM recensioni)", hints: ["Subquery con <=", "WHERE voto <= (SELECT AVG(voto) FROM recensioni)"], explanation: "Subquery con <= su voto.", replacements: {} },
-            { titleTemplate: "Subquery Quantità >= Media", descTemplate: "Trova gli ordini con quantità almeno quanto la media.", queryTemplate: "SELECT * FROM ordini WHERE quantita >= (SELECT AVG(quantita) FROM ordini)", hints: ["Subquery con >=", "WHERE quantita >= (SELECT AVG(quantita) FROM ordini)"], explanation: "Subquery con >= su quantità.", replacements: {} },
-            { titleTemplate: "Subquery Quantità <= Media", descTemplate: "Trova gli ordini con quantità al massimo quanto la media.", queryTemplate: "SELECT * FROM ordini WHERE quantita <= (SELECT AVG(quantita) FROM ordini)", hints: ["Subquery con <=", "WHERE quantita <= (SELECT AVG(quantita) FROM ordini)"], explanation: "Subquery con <= su quantità.", replacements: {} },
-            { titleTemplate: "Subquery Prezzo > Massimo / 2", descTemplate: "Trova i prodotti che costano più della metà del prezzo massimo.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > (SELECT MAX(prezzo) / 2 FROM prodotti)", hints: ["Subquery con calcolo", "WHERE prezzo > (SELECT MAX(prezzo) / 2 FROM prodotti)"], explanation: "Subquery con calcolo.", replacements: {} },
-            { titleTemplate: "Subquery Stock > Massimo / 2", descTemplate: "Trova i prodotti con stock superiore alla metà dello stock massimo.", queryTemplate: "SELECT * FROM prodotti WHERE stock > (SELECT MAX(stock) / 2 FROM prodotti)", hints: ["Subquery con calcolo", "WHERE stock > (SELECT MAX(stock) / 2 FROM prodotti)"], explanation: "Subquery con calcolo su stock.", replacements: {} },
-            { titleTemplate: "Subquery Voto > Massimo / 2", descTemplate: "Trova le recensioni con voto superiore alla metà del voto massimo.", queryTemplate: "SELECT * FROM recensioni WHERE voto > (SELECT MAX(voto) / 2 FROM recensioni)", hints: ["Subquery con calcolo", "WHERE voto > (SELECT MAX(voto) / 2 FROM recensioni)"], explanation: "Subquery con calcolo su voto.", replacements: {} },
-            { titleTemplate: "Subquery Quantità > Massimo / 2", descTemplate: "Trova gli ordini con quantità superiore alla metà della quantità massima.", queryTemplate: "SELECT * FROM ordini WHERE quantita > (SELECT MAX(quantita) / 2 FROM ordini)", hints: ["Subquery con calcolo", "WHERE quantita > (SELECT MAX(quantita) / 2 FROM ordini)"], explanation: "Subquery con calcolo su quantità.", replacements: {} },
-            { titleTemplate: "Subquery Prezzo > Minimo * 2", descTemplate: "Trova i prodotti che costano più del doppio del prezzo minimo.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > (SELECT MIN(prezzo) * 2 FROM prodotti)", hints: ["Subquery con calcolo", "WHERE prezzo > (SELECT MIN(prezzo) * 2 FROM prodotti)"], explanation: "Subquery con calcolo minimo.", replacements: {} },
-            { titleTemplate: "Subquery Stock < Massimo / 2", descTemplate: "Trova i prodotti con stock inferiore alla metà dello stock massimo.", queryTemplate: "SELECT * FROM prodotti WHERE stock < (SELECT MAX(stock) / 2 FROM prodotti)", hints: ["Subquery con calcolo", "WHERE stock < (SELECT MAX(stock) / 2 FROM prodotti)"], explanation: "Subquery con calcolo stock minore.", replacements: {} },
+            { titleTemplate: "Subquery Prezzo > Media", descTemplate: "Trova i prodotti che costano più della media generale.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti)", brokenCode: "SELETC * FROM prodotti WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti)", debugHint: "Errore di battitura nella parola chiave SELECT.", hints: ["Subquery in WHERE", "WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti)"], explanation: "Subquery per confronto con media.", replacements: {} },
+            { titleTemplate: "Subquery Prezzo < Media", descTemplate: "Trova i prodotti che costano meno della media generale.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti)", brokenCode: "SELECT * prodotti WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti)", debugHint: "Manca la parola chiave FROM.", hints: ["Subquery in WHERE", "WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti)"], explanation: "Subquery per confronto con media minore.", replacements: {} },
+            { titleTemplate: "Subquery Stock > Media", descTemplate: "Trova i prodotti con stock superiore alla media.", queryTemplate: "SELECT * FROM prodotti WHERE stock > (SELECT AVG(stock) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE stock > (SELECT AV(stock) FROM prodotti)", debugHint: "La funzione per la media è AVG, non AV.", hints: ["Subquery in WHERE", "WHERE stock > (SELECT AVG(stock) FROM prodotti)"], explanation: "Subquery per confronto stock.", replacements: {} },
+            { titleTemplate: "Subquery Stock < Media", descTemplate: "Trova i prodotti con stock inferiore alla media.", queryTemplate: "SELECT * FROM prodotti WHERE stock < (SELECT AVG(stock) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE stock < (AVG(stock) FROM prodotti)", debugHint: "Manca la parola chiave SELECT nella subquery.", hints: ["Subquery in WHERE", "WHERE stock < (SELECT AVG(stock) FROM prodotti)"], explanation: "Subquery per confronto stock minore.", replacements: {} },
+            { titleTemplate: "Subquery Voto > Media", descTemplate: "Trova le recensioni con voto superiore alla media.", queryTemplate: "SELECT * FROM recensioni WHERE voto > (SELECT AVG(voto) FROM recensioni)", brokenCode: "SELECT * FROM recensioni WHER voto > (SELECT AVG(voto) FROM recensioni)", debugHint: "Errore di battitura nella parola chiave WHERE.", hints: ["Subquery in WHERE", "WHERE voto > (SELECT AVG(voto) FROM recensioni)"], explanation: "Subquery per confronto voto.", replacements: {} },
+            { titleTemplate: "Subquery Voto < Media", descTemplate: "Trova le recensioni con voto inferiore alla media.", queryTemplate: "SELECT * FROM recensioni WHERE voto < (SELECT AVG(voto) FROM recensioni)", brokenCode: "SELECT * FROM recensioni WHERE voto < (SELECT AVG(voto) FROM recensioni", debugHint: "Manca la parentesi di chiusura della subquery.", hints: ["Subquery in WHERE", "WHERE voto < (SELECT AVG(voto) FROM recensioni)"], explanation: "Subquery per confronto voto minore.", replacements: {} },
+            { titleTemplate: "Subquery Quantità > Media", descTemplate: "Trova gli ordini con quantità superiore alla media.", queryTemplate: "SELECT * FROM ordini WHERE quantita > (SELECT AVG(quantita) FROM ordini)", brokenCode: "SELECT * FROM ordini WHERE quantita > (SELECT AGV(quantita) FROM ordini)", debugHint: "Errore di battitura nella funzione AVG.", hints: ["Subquery in WHERE", "WHERE quantita > (SELECT AVG(quantita) FROM ordini)"], explanation: "Subquery per confronto quantità.", replacements: {} },
+            { titleTemplate: "Subquery Quantità < Media", descTemplate: "Trova gli ordini con quantità inferiore alla media.", queryTemplate: "SELECT * FROM ordini WHERE quantita < (SELECT AVG(quantita) FROM ordini)", brokenCode: "SELECT * FROM ordini WHERE quantita < (SELECT AVG(quantita) ordini)", debugHint: "Manca la parola chiave FROM nella subquery.", hints: ["Subquery in WHERE", "WHERE quantita < (SELECT AVG(quantita) FROM ordini)"], explanation: "Subquery per confronto quantità minore.", replacements: {} },
+            { titleTemplate: "Subquery Prezzo = Massimo", descTemplate: "Trova i prodotti con prezzo uguale al massimo.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo = (SELECT MAX(prezzo) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE prezzo = (SELECT MA(prezzo) FROM prodotti)", debugHint: "Errore di battitura nella funzione MAX.", hints: ["Subquery con MAX", "WHERE prezzo = (SELECT MAX(prezzo) FROM prodotti)"], explanation: "Subquery con MAX.", replacements: {} },
+            { titleTemplate: "Subquery Prezzo = Minimo", descTemplate: "Trova i prodotti con prezzo uguale al minimo.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo = (SELECT MIN(prezzo) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE prezzo = (MIN(prezzo) FROM prodotti)", debugHint: "Manca la parola chiave SELECT nella subquery.", hints: ["Subquery con MIN", "WHERE prezzo = (SELECT MIN(prezzo) FROM prodotti)"], explanation: "Subquery con MIN.", replacements: {} },
+            { titleTemplate: "Subquery Stock = Massimo", descTemplate: "Trova i prodotti con stock uguale al massimo.", queryTemplate: "SELECT * FROM prodotti WHERE stock = (SELECT MAX(stock) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE stock = (SELECT MAX(stok) FROM prodotti)", debugHint: "Errore di battitura nel nome della colonna 'stock'.", hints: ["Subquery con MAX", "WHERE stock = (SELECT MAX(stock) FROM prodotti)"], explanation: "Subquery con MAX su stock.", replacements: {} },
+            { titleTemplate: "Subquery Stock = Minimo", descTemplate: "Trova i prodotti con stock uguale al minimo.", queryTemplate: "SELECT * FROM prodotti WHERE stock = (SELECT MIN(stock) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE stock = SELECT MIN(stock) FROM prodotti", debugHint: "Le subquery devono essere racchiuse tra parentesi.", hints: ["Subquery con MIN", "WHERE stock = (SELECT MIN(stock) FROM prodotti)"], explanation: "Subquery con MIN su stock.", replacements: {} },
+            { titleTemplate: "Subquery Voto = Massimo", descTemplate: "Trova le recensioni con voto uguale al massimo.", queryTemplate: "SELECT * FROM recensioni WHERE voto = (SELECT MAX(voto) FROM recensioni)", brokenCode: "SELECT * FROM recensioni WHERE voto = (SELECT MAX(vot) FROM recensioni)", debugHint: "Errore di battitura nel nome della colonna 'voto'.", hints: ["Subquery con MAX", "WHERE voto = (SELECT MAX(voto) FROM recensioni)"], explanation: "Subquery con MAX su voto.", replacements: {} },
+            { titleTemplate: "Subquery Voto = Minimo", descTemplate: "Trova le recensioni con voto uguale al minimo.", queryTemplate: "SELECT * FROM recensioni WHERE voto = (SELECT MIN(voto) FROM recensioni)", brokenCode: "SELECT * recensioni WHERE voto = (SELECT MIN(voto) FROM recensioni)", debugHint: "Manca la parola chiave FROM nella query principale.", hints: ["Subquery con MIN", "WHERE voto = (SELECT MIN(voto) FROM recensioni)"], explanation: "Subquery con MIN su voto.", replacements: {} },
+            { titleTemplate: "Subquery Quantità = Massimo", descTemplate: "Trova gli ordini con quantità uguale al massimo.", queryTemplate: "SELECT * FROM ordini WHERE quantita = (SELECT MAX(quantita) FROM ordini)", brokenCode: "SELECT * FROM ordini WHERE quantita = (SELECT MAX(quantit) FROM ordini)", debugHint: "Errore di battitura nel nome della colonna 'quantita'.", hints: ["Subquery con MAX", "WHERE quantita = (SELECT MAX(quantita) FROM ordini)"], explanation: "Subquery con MAX su quantità.", replacements: {} },
+            { titleTemplate: "Subquery Quantità = Minimo", descTemplate: "Trova gli ordini con quantità uguale al minimo.", queryTemplate: "SELECT * FROM ordini WHERE quantita = (SELECT MIN(quantita) FROM ordini)", brokenCode: "SELECT * FROM ordini WHERE quantita = (SELECT MI(quantita) FROM ordini)", debugHint: "Errore di battitura nella funzione MIN.", hints: ["Subquery con MIN", "WHERE quantita = (SELECT MIN(quantita) FROM ordini)"], explanation: "Subquery con MIN su quantità.", replacements: {} },
+            { titleTemplate: "Subquery Prezzo >= Media", descTemplate: "Trova i prodotti che costano almeno quanto la media.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo >= (SELECT AVG(prezzo) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE prezzo >= (SELECT AV(prezzo) FROM prodotti)", debugHint: "La funzione per la media è AVG, non AV.", hints: ["Subquery con >=", "WHERE prezzo >= (SELECT AVG(prezzo) FROM prodotti)"], explanation: "Subquery con >=", replacements: {} },
+            { titleTemplate: "Subquery Prezzo <= Media", descTemplate: "Trova i prodotti che costano al massimo quanto la media.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo <= (SELECT AVG(prezzo) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE prezzo <= (AVG(prezzo) FROM prodotti)", debugHint: "Manca la parola chiave SELECT nella subquery.", hints: ["Subquery con <=", "WHERE prezzo <= (SELECT AVG(prezzo) FROM prodotti)"], explanation: "Subquery con <=", replacements: {} },
+            { titleTemplate: "Subquery Stock >= Media", descTemplate: "Trova i prodotti con stock almeno quanto la media.", queryTemplate: "SELECT * FROM prodotti WHERE stock >= (SELECT AVG(stock) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE stock >= (SELECT AVG(stoc) FROM prodotti)", debugHint: "Errore di battitura nel nome della colonna 'stock'.", hints: ["Subquery con >=", "WHERE stock >= (SELECT AVG(stock) FROM prodotti)"], explanation: "Subquery con >= su stock.", replacements: {} },
+            { titleTemplate: "Subquery Stock <= Media", descTemplate: "Trova i prodotti con stock al massimo quanto la media.", queryTemplate: "SELECT * FROM prodotti WHERE stock <= (SELECT AVG(stock) FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE stock <= SELECT AVG(stock) FROM prodotti", debugHint: "Le subquery devono essere racchiuse tra parentesi.", hints: ["Subquery con <=", "WHERE stock <= (SELECT AVG(stock) FROM prodotti)"], explanation: "Subquery con <= su stock.", replacements: {} },
+            { titleTemplate: "Subquery Voto >= Media", descTemplate: "Trova le recensioni con voto almeno quanto la media.", queryTemplate: "SELECT * FROM recensioni WHERE voto >= (SELECT AVG(voto) FROM recensioni)", brokenCode: "SELECT * FROM recensioni WHERE voto >= (SELECT AVG(vot) FROM recensioni)", debugHint: "Errore di battitura nel nome della colonna 'voto'.", hints: ["Subquery con >=", "WHERE voto >= (SELECT AVG(voto) FROM recensioni)"], explanation: "Subquery con >= su voto.", replacements: {} },
+            { titleTemplate: "Subquery Voto <= Media", descTemplate: "Trova le recensioni con voto al massimo quanto la media.", queryTemplate: "SELECT * FROM recensioni WHERE voto <= (SELECT AVG(voto) FROM recensioni)", brokenCode: "SELECT * recensioni WHERE voto <= (SELECT AVG(voto) FROM recensioni)", debugHint: "Manca la parola chiave FROM nella query principale.", hints: ["Subquery con <=", "WHERE voto <= (SELECT AVG(voto) FROM recensioni)"], explanation: "Subquery con <= su voto.", replacements: {} },
+            { titleTemplate: "Subquery Quantità >= Media", descTemplate: "Trova gli ordini con quantità almeno quanto la media.", queryTemplate: "SELECT * FROM ordini WHERE quantita >= (SELECT AVG(quantita) FROM ordini)", brokenCode: "SELECT * FROM ordini WHERE quantita >= (SELECT AVG(quantit) FROM ordini)", debugHint: "Errore di battitura nel nome della colonna 'quantita'.", hints: ["Subquery con >=", "WHERE quantita >= (SELECT AVG(quantita) FROM ordini)"], explanation: "Subquery con >= su quantità.", replacements: {} },
+            { titleTemplate: "Subquery Quantità <= Media", descTemplate: "Trova gli ordini con quantità al massimo quanto la media.", queryTemplate: "SELECT * FROM ordini WHERE quantita <= (SELECT AVG(quantita) FROM ordini)", brokenCode: "SELECT * FROM ordini WHERE quantita <= (SELECT AVG(quantita) ordini)", debugHint: "Manca la parola chiave FROM nella subquery.", hints: ["Subquery con <=", "WHERE quantita <= (SELECT AVG(quantita) FROM ordini)"], explanation: "Subquery con <= su quantità.", replacements: {} },
+            { titleTemplate: "Subquery Prezzo > Massimo / 2", descTemplate: "Trova i prodotti che costano più della metà del prezzo massimo.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > (SELECT MAX(prezzo) / 2 FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE prezzo > (SELECT MA(prezzo) / 2 FROM prodotti)", debugHint: "Errore di battitura nella funzione MAX.", hints: ["Subquery con calcolo", "WHERE prezzo > (SELECT MAX(prezzo) / 2 FROM prodotti)"], explanation: "Subquery con calcolo.", replacements: {} },
+            { titleTemplate: "Subquery Stock > Massimo / 2", descTemplate: "Trova i prodotti con stock superiore alla metà dello stock massimo.", queryTemplate: "SELECT * FROM prodotti WHERE stock > (SELECT MAX(stock) / 2 FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE stock > (MAX(stock) / 2 FROM prodotti)", debugHint: "Manca la parola chiave SELECT nella subquery.", hints: ["Subquery con calcolo", "WHERE stock > (SELECT MAX(stock) / 2 FROM prodotti)"], explanation: "Subquery con calcolo su stock.", replacements: {} },
+            { titleTemplate: "Subquery Voto > Massimo / 2", descTemplate: "Trova le recensioni con voto superiore alla metà del voto massimo.", queryTemplate: "SELECT * FROM recensioni WHERE voto > (SELECT MAX(voto) / 2 FROM recensioni)", brokenCode: "SELECT * FROM recensioni WHERE voto > (SELECT MAX(vot) / 2 FROM recensioni)", debugHint: "Errore di battitura nel nome della colonna 'voto'.", hints: ["Subquery con calcolo", "WHERE voto > (SELECT MAX(voto) / 2 FROM recensioni)"], explanation: "Subquery con calcolo su voto.", replacements: {} },
+            { titleTemplate: "Subquery Quantità > Massimo / 2", descTemplate: "Trova gli ordini con quantità superiore alla metà della quantità massima.", queryTemplate: "SELECT * FROM ordini WHERE quantita > (SELECT MAX(quantita) / 2 FROM ordini)", brokenCode: "SELECT * FROM ordini WHERE quantita > SELECT MAX(quantita) / 2 FROM ordini", debugHint: "Le subquery devono essere racchiuse tra parentesi.", hints: ["Subquery con calcolo", "WHERE quantita > (SELECT MAX(quantita) / 2 FROM ordini)"], explanation: "Subquery con calcolo su quantità.", replacements: {} },
+            { titleTemplate: "Subquery Prezzo > Minimo * 2", descTemplate: "Trova i prodotti che costano più del doppio del prezzo minimo.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > (SELECT MIN(prezzo) * 2 FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE prezzo > (SELECT MI(prezzo) * 2 FROM prodotti)", debugHint: "Errore di battitura nella funzione MIN.", hints: ["Subquery con calcolo", "WHERE prezzo > (SELECT MIN(prezzo) * 2 FROM prodotti)"], explanation: "Subquery con calcolo minimo.", replacements: {} },
+            { titleTemplate: "Subquery Stock < Massimo / 2", descTemplate: "Trova i prodotti con stock inferiore alla metà dello stock massimo.", queryTemplate: "SELECT * FROM prodotti WHERE stock < (SELECT MAX(stock) / 2 FROM prodotti)", brokenCode: "SELECT * FROM prodotti WHERE stock < (SELECT MAX(stock) / 2 prodotti)", debugHint: "Manca la parola chiave FROM nella subquery.", hints: ["Subquery con calcolo", "WHERE stock < (SELECT MAX(stock) / 2 FROM prodotti)"], explanation: "Subquery con calcolo stock minore.", replacements: {} },
             // NEW EXERCISES FOR ADVANCED EASY
-            { titleTemplate: "Subquery IN Categorie", descTemplate: "Trova prodotti che appartengono alle categorie 'Elettronica' o 'Abbigliamento' usando subquery.", queryTemplate: "SELECT * FROM prodotti WHERE categoria_id IN (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))", hints: ["Subquery con IN"], explanation: "Filtro su relazione.", replacements: {} },
-            { titleTemplate: "Subquery NOT IN Categorie", descTemplate: "Trova prodotti che NON appartengono alle categorie 'Elettronica' o 'Abbigliamento' usando subquery.", queryTemplate: "SELECT * FROM prodotti WHERE categoria_id NOT IN (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))", hints: ["Subquery con NOT IN"], explanation: "Esclusione su relazione.", replacements: {} },
-            { titleTemplate: "Subquery IN Fornitori", descTemplate: "Trova prodotti forniti da fornitori italiani usando subquery.", queryTemplate: "SELECT * FROM prodotti WHERE fornitore_id IN (SELECT id FROM fornitori WHERE nazione = 'Italia')", hints: ["Subquery con IN"], explanation: "Filtro geografico indiretto.", replacements: {} },
-            { titleTemplate: "Subquery ANY Prezzo", descTemplate: "Trova prodotti che costano più di ALMENO UNO dei prodotti della categoria 1 (ANY).", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > ANY (SELECT prezzo FROM prodotti WHERE categoria_id = 1)", hints: ["Subquery con ANY"], explanation: "Confronto con insieme.", replacements: {} },
-            { titleTemplate: "Subquery ALL Prezzo", descTemplate: "Trova prodotti che costano più di TUTTI i prodotti della categoria 1 (ALL).", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > ALL (SELECT prezzo FROM prodotti WHERE categoria_id = 1)", hints: ["Subquery con ALL"], explanation: "Confronto totale.", replacements: {} },
-            { titleTemplate: "Subquery FROM (Derived Table)", descTemplate: "Seleziona il prezzo medio dalla tabella derivata dei prodotti costosi (>100).", queryTemplate: "SELECT AVG(p.prezzo) FROM (SELECT * FROM prodotti WHERE prezzo > 100) as p", hints: ["Subquery in FROM"], explanation: "Tabella derivata.", replacements: {} },
-            { titleTemplate: "Subquery SELECT (Scalare)", descTemplate: "Seleziona nome prodotto e la differenza dal prezzo medio globale.", queryTemplate: "SELECT nome, prezzo - (SELECT AVG(prezzo) FROM prodotti) as DiffMedia FROM prodotti", hints: ["Subquery in SELECT"], explanation: "Calcolo relativo.", replacements: {} },
-            { titleTemplate: "Subquery WHERE Data Recente", descTemplate: "Trova ordini fatti nell'ultimo mese disponibile (rispetto alla data massima).", queryTemplate: "SELECT * FROM ordini WHERE data_ordine > (SELECT DATE_SUB(MAX(data_ordine), INTERVAL 1 MONTH) FROM ordini)", hints: ["Subquery data dinamica"], explanation: "Filtro temporale relativo.", replacements: {} },
-            { titleTemplate: "Subquery WHERE Utente Attivo", descTemplate: "Trova ordini dell'utente che ha speso di più in totale (limit 1).", queryTemplate: "SELECT * FROM ordini WHERE utente_id = (SELECT utente_id FROM ordini GROUP BY utente_id ORDER BY SUM(quantita * 10) DESC LIMIT 1)", hints: ["Subquery con LIMIT"], explanation: "Targeting utente top.", replacements: {} },
-            { titleTemplate: "Subquery WHERE Prodotto Popolare", descTemplate: "Trova recensioni del prodotto più recensito.", queryTemplate: "SELECT * FROM recensioni WHERE prodotto_id = (SELECT prodotto_id FROM recensioni GROUP BY prodotto_id ORDER BY COUNT(*) DESC LIMIT 1)", hints: ["Subquery aggregata"], explanation: "Focus su popolarità.", replacements: {} },
-            { titleTemplate: "Subquery IN Utenti Premium", descTemplate: "Trova recensioni scritte da utenti Premium.", queryTemplate: "SELECT * FROM recensioni WHERE utente_id IN (SELECT id FROM utenti WHERE premium = TRUE)", hints: ["Subquery su booleano"], explanation: "Filtro segmento utente.", replacements: {} },
-            { titleTemplate: "Subquery NOT IN Utenti Premium", descTemplate: "Trova ordini fatti da utenti NON Premium.", queryTemplate: "SELECT * FROM ordini WHERE utente_id NOT IN (SELECT id FROM utenti WHERE premium = TRUE)", hints: ["Subquery esclusione"], explanation: "Analisi segmento standard.", replacements: {} },
-            { titleTemplate: "Subquery WHERE Prezzo > Minimo Categoria", descTemplate: "Trova prodotti che costano più del prezzo minimo della categoria 1.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > (SELECT MIN(prezzo) FROM prodotti WHERE categoria_id = 1)", hints: ["Subquery specifica"], explanation: "Confronto puntuale.", replacements: {} },
-            { titleTemplate: "Subquery WHERE Stock < Media Categoria", descTemplate: "Trova prodotti con stock inferiore alla media della categoria 1.", queryTemplate: "SELECT * FROM prodotti WHERE stock < (SELECT AVG(stock) FROM prodotti WHERE categoria_id = 1)", hints: ["Subquery media parziale"], explanation: "Analisi stock relativa.", replacements: {} },
-            { titleTemplate: "Subquery WHERE Voto > Media Prodotto", descTemplate: "Trova recensioni con voto superiore alla media del prodotto 1.", queryTemplate: "SELECT * FROM recensioni WHERE voto > (SELECT AVG(voto) FROM recensioni WHERE prodotto_id = 1)", hints: ["Subquery media specifica"], explanation: "Analisi qualità relativa.", replacements: {} }
+            { titleTemplate: "Subquery IN Categorie", descTemplate: "Trova prodotti che appartengono alle categorie 'Elettronica' o 'Abbigliamento' usando subquery.", queryTemplate: "SELECT * FROM prodotti WHERE categoria_id IN (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))", brokenCode: "SELECT * FROM prodotti WHERE categoria_id I (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))", debugHint: "Errore di battitura nell'operatore IN.", hints: ["Subquery con IN"], explanation: "Filtro su relazione.", replacements: {} },
+            { titleTemplate: "Subquery NOT IN Categorie", descTemplate: "Trova prodotti che NON appartengono alle categorie 'Elettronica' o 'Abbigliamento' usando subquery.", queryTemplate: "SELECT * FROM prodotti WHERE categoria_id NOT IN (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))", brokenCode: "SELECT * FROM prodotti WHERE categoria_id IN (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))", debugHint: "Manca l'operatore NOT prima di IN.", hints: ["Subquery con NOT IN"], explanation: "Esclusione su relazione.", replacements: {} },
+            { titleTemplate: "Subquery IN Fornitori", descTemplate: "Trova prodotti forniti da fornitori italiani usando subquery.", queryTemplate: "SELECT * FROM prodotti WHERE fornitore_id IN (SELECT id FROM fornitori WHERE nazione = 'Italia')", brokenCode: "SELECT * FROM prodotti WHERE fornitoreid IN (SELECT id FROM fornitori WHERE nazione = 'Italia')", debugHint: "Errore di battitura nel nome della colonna 'fornitore_id'.", hints: ["Subquery con IN"], explanation: "Filtro geografico indiretto.", replacements: {} },
+            { titleTemplate: "Subquery ANY Prezzo", descTemplate: "Trova prodotti che costano più di ALMENO UNO dei prodotti della categoria 1 (ANY).", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > ANY (SELECT prezzo FROM prodotti WHERE categoria_id = 1)", brokenCode: "SELECT * FROM prodotti WHERE prezzo > AN (SELECT prezzo FROM prodotti WHERE categoria_id = 1)", debugHint: "Errore di battitura nell'operatore ANY.", hints: ["Subquery con ANY"], explanation: "Confronto con insieme.", replacements: {} },
+            { titleTemplate: "Subquery ALL Prezzo", descTemplate: "Trova prodotti che costano più di TUTTI i prodotti della categoria 1 (ALL).", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > ALL (SELECT prezzo FROM prodotti WHERE categoria_id = 1)", brokenCode: "SELECT * FROM prodotti WHERE prezzo > AL (SELECT prezzo FROM prodotti WHERE categoria_id = 1)", debugHint: "Errore di battitura nell'operatore ALL.", hints: ["Subquery con ALL"], explanation: "Confronto totale.", replacements: {} },
+            { titleTemplate: "Subquery FROM (Derived Table)", descTemplate: "Seleziona il prezzo medio dalla tabella derivata dei prodotti costosi (>100).", queryTemplate: "SELECT AVG(p.prezzo) FROM (SELECT * FROM prodotti WHERE prezzo > 100) as p", brokenCode: "SELECT AVG(p.prezzo) FROM (SELECT * FROM prodotti WHERE prezzo > 100)", debugHint: "Manca l'alias per la tabella derivata (es. 'as p').", hints: ["Subquery in FROM"], explanation: "Tabella derivata.", replacements: {} },
+            { titleTemplate: "Subquery SELECT (Scalare)", descTemplate: "Seleziona nome prodotto e la differenza dal prezzo medio globale.", queryTemplate: "SELECT nome, prezzo - (SELECT AVG(prezzo) FROM prodotti) as DiffMedia FROM prodotti", brokenCode: "SELECT nome, prezzo - (SELECT AVG(prezzo)) as DiffMedia FROM prodotti", debugHint: "Manca la clausola FROM nella subquery.", hints: ["Subquery in SELECT"], explanation: "Calcolo relativo.", replacements: {} },
+            { titleTemplate: "Subquery WHERE Data Recente", descTemplate: "Trova ordini fatti nell'ultimo mese disponibile (rispetto alla data massima).", queryTemplate: "SELECT * FROM ordini WHERE data_ordine > (SELECT DATE_SUB(MAX(data_ordine), INTERVAL 1 MONTH) FROM ordini)", brokenCode: "SELECT * FROM ordini WHERE data_ordine > (SELECT DATESUB(MAX(data_ordine), INTERVAL 1 MONTH) FROM ordini)", debugHint: "Errore di battitura nella funzione DATE_SUB.", hints: ["Subquery data dinamica"], explanation: "Filtro temporale relativo.", replacements: {} },
+            { titleTemplate: "Subquery WHERE Utente Attivo", descTemplate: "Trova ordini dell'utente che ha speso di più in totale (limit 1).", queryTemplate: "SELECT * FROM ordini WHERE utente_id = (SELECT utente_id FROM ordini GROUP BY utente_id ORDER BY SUM(quantita * 10) DESC LIMIT 1)", brokenCode: "SELECT * FROM ordini WHERE utente_id = (SELECT utente_id FROM ordini GROUP BY utente_id ORDER BY SUM(quantita * 10) DESC)", debugHint: "Manca la clausola LIMIT 1 nella subquery.", hints: ["Subquery con LIMIT"], explanation: "Targeting utente top.", replacements: {} },
+            { titleTemplate: "Subquery WHERE Prodotto Popolare", descTemplate: "Trova recensioni del prodotto più recensito.", queryTemplate: "SELECT * FROM recensioni WHERE prodotto_id = (SELECT prodotto_id FROM recensioni GROUP BY prodotto_id ORDER BY COUNT(*) DESC LIMIT 1)", brokenCode: "SELECT * FROM recensioni WHERE prodotto_id = (SELECT prodotto_id FROM recensioni GROUP BY prodotto_id ORDER BY CONT(*) DESC LIMIT 1)", debugHint: "Errore di battitura nella funzione COUNT.", hints: ["Subquery aggregata"], explanation: "Focus su popolarità.", replacements: {} },
+            { titleTemplate: "Subquery IN Utenti Premium", descTemplate: "Trova recensioni scritte da utenti Premium.", queryTemplate: "SELECT * FROM recensioni WHERE utente_id IN (SELECT id FROM utenti WHERE premium = TRUE)", brokenCode: "SELECT * FROM recensioni WHERE utente_id IN (SELECT id FROM utenti premium = TRUE)", debugHint: "Manca la parola chiave WHERE nella subquery.", hints: ["Subquery su booleano"], explanation: "Filtro segmento utente.", replacements: {} },
+            { titleTemplate: "Subquery NOT IN Utenti Premium", descTemplate: "Trova ordini fatti da utenti NON Premium.", queryTemplate: "SELECT * FROM ordini WHERE utente_id NOT IN (SELECT id FROM utenti WHERE premium = TRUE)", brokenCode: "SELECT * FROM ordini WHERE utente_id NO IN (SELECT id FROM utenti WHERE premium = TRUE)", debugHint: "Errore di battitura nella parola chiave NOT.", hints: ["Subquery esclusione"], explanation: "Analisi segmento standard.", replacements: {} },
+            { titleTemplate: "Subquery WHERE Prezzo > Minimo Categoria", descTemplate: "Trova prodotti che costano più del prezzo minimo della categoria 1.", queryTemplate: "SELECT * FROM prodotti WHERE prezzo > (SELECT MIN(prezzo) FROM prodotti WHERE categoria_id = 1)", brokenCode: "SELECT * FROM prodotti WHERE prezzo > (SELECT MIN(prezzo) WHERE categoria_id = 1)", debugHint: "Manca la clausola FROM nella subquery.", hints: ["Subquery specifica"], explanation: "Confronto puntuale.", replacements: {} },
+            { titleTemplate: "Subquery WHERE Stock < Media Categoria", descTemplate: "Trova prodotti con stock inferiore alla media della categoria 1.", queryTemplate: "SELECT * FROM prodotti WHERE stock < (SELECT AVG(stock) FROM prodotti WHERE categoria_id = 1)", brokenCode: "SELECT * FROM prodotti WHERE stock < (SELECT AV(stock) FROM prodotti WHERE categoria_id = 1)", debugHint: "Errore di battitura nella funzione AVG.", hints: ["Subquery media parziale"], explanation: "Analisi stock relativa.", replacements: {} },
+            { titleTemplate: "Subquery WHERE Voto > Media Prodotto", descTemplate: "Trova recensioni con voto superiore alla media del prodotto 1.", queryTemplate: "SELECT * FROM recensioni WHERE voto > (SELECT AVG(voto) FROM recensioni WHERE prodotto_id = 1)", brokenCode: "SELECT * FROM recensioni WHERE voto > (SELECT AVG(voto) FROM recensioni prodotto_id = 1)", debugHint: "Manca la parola chiave WHERE nella subquery.", hints: ["Subquery media specifica"], explanation: "Analisi qualità relativa.", replacements: {} }
         ],
         [Difficulty.Medium]: [
             { titleTemplate: "Utenti con Ordini (Exists)", descTemplate: "Seleziona gli utenti che hanno fatto almeno un ordine usando EXISTS.", queryTemplate: "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)", hints: ["EXISTS con subquery", "WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)"], explanation: "EXISTS per verificare esistenza.", replacements: {} },
@@ -5000,6 +5342,8 @@ export const generateExercises = (topicId: TopicId, difficulty: Difficulty): Exe
                 description: desc,
                 initialQuery: "",
                 solutionQuery: query,
+                brokenCode: bp.brokenCode,  // Add broken code for Debug Mode
+                debugHint: bp.debugHint,    // Add debug hint for Debug Mode
                 hints: hints,
                 explanation: bp.explanation
             });

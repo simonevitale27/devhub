@@ -147,13 +147,17 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     setShowStatsModal(false); // Close stats modal on new content load
 
     try {
+      // Initialize database for both Gym and Debug modes
+      initDatabase(difficulty);
+      
       if (practiceMode === PracticeMode.Type) {
-        const newExercises = generateCopyCodeSnippets(difficulty);
+        // Debug Mode - use standard exercises which have brokenCode and debugHint
+        const newExercises = generateExercises(currentTopicId, difficulty);
         setExercises(newExercises || []);
         setCurrentExerciseIndex(0);
         setIsDbReady(true);
       } else {
-        initDatabase(difficulty);
+        // Gym Mode - use standard exercises
         const newExercises = generateExercises(currentTopicId, difficulty);
         setExercises(newExercises || []);
         setCurrentExerciseIndex(0);
@@ -243,28 +247,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     setShowErrorExplanation(false);
     setShowStatsModal(false); // Close stats modal on new run
 
-    // TYPE MODE validation (copy mode)
-    if (practiceMode === PracticeMode.Type && exercise) {
-      const normUser = sqlCode.trim().replace(/\s+/g, " ").toLowerCase();
-      const normSol = exercise.solutionQuery
-        .trim()
-        .replace(/\s+/g, " ")
-        .toLowerCase();
-
-      const isCorrect = normUser === normSol;
-
-      setValidation({
-        isCorrect: isCorrect,
-        userRowCount: 0,
-        expectedRowCount: 0,
-        message: isCorrect
-          ? "Corretto! Codice copiato perfettamente."
-          : "Attenzione: ci sono differenze.",
-      });
-      return;
-    }
-
-    // GYM MODE execution
+    // Execute the query for both Gym and Debug modes
     const res = runQuery(sqlCode);
     setUserResult(res);
 
@@ -280,8 +263,8 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
       });
     }
 
-    // Validate if in Gym mode
-    if (isGymMode && exercise) {
+    // Validate if in Gym or Debug mode
+    if (exercise) {
       if (exercise.solutionQuery) {
         const solutionRes = runQuery(exercise.solutionQuery);
         // Normalize solution data to always be an array
@@ -700,10 +683,19 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                     </div>
                   )}
                   {showSolution && (
-                    <div className="bg-purple-950/30 border-l-2 border-purple-500/50 p-4 rounded-r-lg text-sm shadow-lg">
+                    <div className="bg-purple-950/30 border-l-2 border-purple-500/50 p-4 rounded-r-lg text-sm shadow-lg relative group">
                       <strong className="text-purple-400 block text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
                         <Unlock size={14} /> Soluzione
                       </strong>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(exercise?.solutionQuery || "");
+                        }}
+                        className="absolute top-2 right-2 p-1.5 bg-purple-500/20 hover:bg-purple-500/40 text-purple-300 rounded transition-colors opacity-0 group-hover:opacity-100"
+                        title="Copia soluzione"
+                      >
+                        <Code size={14} />
+                      </button>
                       <code className="font-mono text-purple-200 block bg-black/30 p-3 rounded border border-purple-500/20 select-all">
                         {exercise?.solutionQuery}
                       </code>
@@ -789,7 +781,16 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                       </button>
 
                       {showSolution && (
-                        <div className="bg-purple-950/20 border border-purple-500/20 rounded-lg p-4 animate-in slide-in-from-top-2">
+                        <div className="bg-purple-950/20 border border-purple-500/20 rounded-lg p-4 animate-in slide-in-from-top-2 relative group">
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(exercise?.solutionQuery || "");
+                            }}
+                            className="absolute top-2 right-2 p-1.5 bg-purple-500/20 hover:bg-purple-500/40 text-purple-300 rounded transition-colors opacity-0 group-hover:opacity-100"
+                            title="Copia soluzione"
+                          >
+                            <Code size={14} />
+                          </button>
                           <code className="font-mono text-sm text-purple-200 block whitespace-pre-wrap">
                             {exercise?.solutionQuery}
                           </code>
@@ -798,8 +799,9 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                     </div>
                   </div>
                 </div>
-                <div className="w-1/2 flex flex-col bg-[#0f172a]">
-                  <div className="bg-slate-900/50 p-2 border-b border-slate-800 flex justify-end">
+                <div className="w-1/2 flex flex-col bg-[#0f172a] min-h-0">
+                  {/* Toolbar */}
+                  <div className="bg-slate-900/50 p-2 border-b border-slate-800 flex justify-end shrink-0">
                     <button
                       onClick={handleRun}
                       className="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-md shadow-lg shadow-purple-900/20 flex items-center gap-2 transition-all active:scale-95"
@@ -807,20 +809,58 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                       <Play size={14} /> VERIFICA
                     </button>
                   </div>
-                  <div className="flex-1 relative bg-[#0f172a]">
+                  
+                  {/* Editor Area */}
+                  <div className="flex-shrink min-h-[250px] relative bg-[#0f172a] border-b border-slate-800">
                     <CodeEditor
                       value={sqlCode}
                       onChange={setSqlCode}
                       onRun={handleRun}
                     />
                   </div>
+                  
+                  {/* Results Area */}
+                  <div className="flex-1 overflow-hidden relative bg-[#0b1120] flex flex-col min-h-0">
+                    {userResult?.success ? (
+                      <div className="flex-1 overflow-hidden flex flex-col">
+                        <div className="p-2 bg-slate-900/50 text-xs font-bold text-slate-400 border-b border-slate-800 flex items-center gap-2 shrink-0">
+                          <TableIcon size={14} />
+                          RISULTATO QUERY
+                        </div>
+                        <div className="flex-1 overflow-hidden">
+                          <ResultsTable
+                            data={
+                              Array.isArray(userResult.data)
+                                ? userResult.data
+                                : userResult.data
+                                ? [userResult.data]
+                                : []
+                            }
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      !userResult?.error && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700 select-none pointer-events-none">
+                          <div className="w-20 h-20 rounded-full bg-slate-800/30 flex items-center justify-center mb-4 border border-slate-800">
+                            <Layers size={32} className="opacity-30" />
+                          </div>
+                          <span className="text-xs uppercase tracking-[0.2em] opacity-40 font-bold">
+                            Risultati Query
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+
+                  {/* Validation Message */}
                   {validation && (
                     <div
                       className={`p-3 border-t border-slate-800 ${
                         validation.isCorrect
                           ? "bg-emerald-900/20 text-emerald-400"
                           : "bg-red-900/20 text-red-400"
-                      } text-sm font-bold flex items-center gap-2 animate-in slide-in-from-bottom-2`}
+                      } text-sm font-bold flex items-center gap-2 animate-in slide-in-from-bottom-2 shrink-0`}
                     >
                       {validation.isCorrect ? (
                         <CheckCircle2 size={18} />
@@ -1017,24 +1057,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                   )}
                   <div className="flex-1 overflow-hidden relative bg-[#0b1120] flex flex-col">
                     {userResult?.success ? (
-                      validation &&
-                      !validation.isCorrect &&
-                      expectedResult.length > 0 ? (
-                        // Show diff view when results don't match
-                        <div className="h-full w-full">
-                          <ResultDiff
-                            userResult={
-                              Array.isArray(userResult.data)
-                                ? userResult.data
-                                : userResult.data
-                                ? [userResult.data]
-                                : []
-                            }
-                            expectedResult={expectedResult}
-                          />
-                        </div>
-                      ) : (
-                        // Show normal results - clean table only
+                      // Always show normal results table
                         <div className="flex-1 overflow-hidden flex flex-col">
                           {/* Toolbar with CSV Download and Stats Button */}
                           <div className="p-2 border-b border-slate-800 bg-slate-900/50 flex justify-end gap-2">
@@ -1080,7 +1103,6 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                             </ErrorBoundary>
                           </div>
                         </div>
-                      )
                     ) : (
                       !userResult?.error && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700 select-none pointer-events-none">
