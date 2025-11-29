@@ -824,6 +824,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                   
                   {/* Results Area */}
                   <div className="flex-1 overflow-hidden relative bg-[#0b1120] flex flex-col min-h-0">
+                    {/* BUG FIX 1: Always show results table for valid SQL, regardless of validation */}
                     {userResult?.success ? (
                       <div className="flex-1 overflow-hidden flex flex-col">
                         <div className="p-2 bg-slate-900/50 text-xs font-bold text-slate-400 border-b border-slate-800 flex items-center gap-2 shrink-0">
@@ -1059,8 +1060,9 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                     </div>
                   )}
                   <div className="flex-1 overflow-hidden relative bg-[#0b1120] flex flex-col">
+                    {/* BUG FIX 1: Always show results table for valid SQL, regardless of validation */}
                     {userResult?.success ? (
-                      // Always show normal results table
+                      // Show results table whenever query executed successfully (even if results don't match expected)
                         <div className="flex-1 overflow-hidden flex flex-col">
                           {/* Toolbar with CSV Download and Stats Button */}
                           <div className="p-2 border-b border-slate-800 bg-slate-900/50 flex justify-end gap-2">

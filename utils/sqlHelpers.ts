@@ -60,21 +60,30 @@ export const generateMermaidER = (schemas: TableSchema[]): string => {
 };
 
 /**
- * Normalize a single row: convert all values to strings for consistent comparison
+ * Normalize a single row: convert all values to lowercase trimmed strings for consistent comparison
+ * Handles null/undefined, booleans, numbers, and strings uniformly
  */
 const normalizeRow = (row: any): any => {
   const normalized: any = {};
   for (const key in row) {
     const value = row[key];
-    // Convert to string, handling null/undefined/boolean consistently
-    if (value === null || value === undefined) {
+    
+    // Handle null/undefined/empty string all as empty
+    if (value === null || value === undefined || value === '') {
       normalized[key] = '';
-    } else if (typeof value === 'boolean') {
-      normalized[key] = value ? 'true' : 'false';
-    } else if (typeof value === 'number') {
-      normalized[key] = String(value);
-    } else {
-      normalized[key] = String(value).trim();
+    } 
+    // Convert booleans to '0' or '1' for numeric comparison compatibility
+    else if (typeof value === 'boolean') {
+      normalized[key] = value ? '1' : '0';
+    } 
+    // Convert numbers to string, handling decimals consistently
+    else if (typeof value === 'number') {
+      // Round to avoid floating point precision issues
+      normalized[key] = Number.isInteger(value) ? String(value) : value.toFixed(2);
+    } 
+    // Convert strings: trim and lowercase for case-insensitive comparison
+    else {
+      normalized[key] = String(value).trim().toLowerCase();
     }
   }
   return normalized;
@@ -82,18 +91,20 @@ const normalizeRow = (row: any): any => {
 
 /**
  * Sort rows deterministically based on all column values
+ * Uses normalized string comparison for stability
  */
 const sortRows = (rows: any[]): any[] => {
   if (rows.length === 0) return rows;
   
   return [...rows].sort((a, b) => {
-    const keysA = Object.keys(a).sort();
-    const keysB = Object.keys(b).sort();
+    // Get all keys from both objects and sort them
+    const allKeys = Array.from(new Set([...Object.keys(a), ...Object.keys(b)])).sort();
     
-    // Compare all columns in order
-    for (const key of keysA) {
-      const valA = String(a[key] ?? '');
-      const valB = String(b[key] ?? '');
+    // Compare all columns in sorted order
+    for (const key of allKeys) {
+      const valA = String(a[key] ?? '').toLowerCase();
+      const valB = String(b[key] ?? '').toLowerCase();
+      
       if (valA < valB) return -1;
       if (valA > valB) return 1;
     }
@@ -103,7 +114,12 @@ const sortRows = (rows: any[]): any[] => {
 
 /**
  * Compare two result sets and return differences
- * Now with normalization and order-agnostic comparison
+ * Now with improved normalization and order-agnostic comparison
+ * 
+ * BUG FIX: This function normalizes values (lowercase, trim, type conversion) and sorts 
+ * rows deterministically before comparison, making it completely order-agnostic and 
+ * type-agnostic. Query results with the same data in different row orders or with 
+ * minor type/case differences will match correctly.
  */
 export const compareResults = (userRows: any[], expectedRows: any[]): DiffResult => {
   const missingRows: any[] = [];
@@ -123,12 +139,18 @@ export const compareResults = (userRows: any[], expectedRows: any[]): DiffResult
     hasExtraColumns = extraColumns.length > 0;
   }
 
-  // Normalize and sort both result sets
+  // Normalize and sort both result sets for accurate comparison
   const normalizedUser = userRows.map(normalizeRow);
   const normalizedExpected = expectedRows.map(normalizeRow);
   
   const sortedUser = sortRows(normalizedUser);
   const sortedExpected = sortRows(normalizedExpected);
+
+  // Debug logging (only in development)
+  if (process.env.NODE_ENV === 'development' && sortedUser.length > 0 && sortedExpected.length > 0) {
+    console.log('[compareResults] User first row:', sortedUser[0]);
+    console.log('[compareResults] Expected first row:', sortedExpected[0]);
+  }
 
   // Find missing rows (in expected but not in user)
   sortedExpected.forEach(expectedRow => {
@@ -136,8 +158,12 @@ export const compareResults = (userRows: any[], expectedRows: any[]): DiffResult
     const expectedCols = Object.keys(expectedRow);
     
     const found = sortedUser.some(userRow => {
-      // Compare only the expected columns
-      return expectedCols.every(col => userRow[col] === expectedRow[col]);
+      // Compare only the expected columns (ignore extra user columns)
+      return expectedCols.every(col => {
+        const userVal = userRow[col];
+        const expectedVal = expectedRow[col];
+        return userVal === expectedVal;
+      });
     });
     
     if (!found) {
@@ -150,8 +176,12 @@ export const compareResults = (userRows: any[], expectedRows: any[]): DiffResult
     const expectedCols = expectedRows.length > 0 ? Object.keys(expectedRows[0]) : [];
     
     const found = sortedExpected.some(expectedRow => {
-      // Compare only the expected columns
-      return expectedCols.every(col => userRow[col] === expectedRow[col]);
+      // Compare only the expected columns (ignore extra user columns)
+      return expectedCols.every(col => {
+        const userVal = userRow[col];
+        const expectedVal = expectedRow[col];
+        return userVal === expectedVal;
+      });
     });
     
     if (!found) {
@@ -159,19 +189,8 @@ export const compareResults = (userRows: any[], expectedRows: any[]): DiffResult
     }
   });
 
-  // Find different cells (not really needed with normalized comparison, but keep for compatibility)
-  const minLength = Math.min(sortedUser.length, sortedExpected.length);
-  for (let i = 0; i < minLength; i++) {
-    const userRow = sortedUser[i];
-    const expectedRow = sortedExpected[i];
-    
-    const expectedCols = Object.keys(expectedRow);
-    expectedCols.forEach(col => {
-      if (userRow[col] !== expectedRow[col]) {
-        differentCells.push({ rowIndex: i, column: col });
-      }
-    });
-  }
+  // Note: differentCells not used anymore since we use set-based comparison,
+  // but keeping for API compatibility
 
   return { missingRows, extraRows, differentCells, hasExtraColumns, extraColumns };
 };
