@@ -104,11 +104,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
   const shadowActive = isGymMode
     ? "shadow-blue-600/20"
     : "shadow-purple-600/20";
-  const bgThemeLight = isGymMode ? "bg-blue-500/10" : "bg-purple-500/10";
+  const bgThemeLight = isGymMode ? "bg-blue-500/5" : "bg-purple-500/5"; // Reduced opacity for cleaner look
   const borderThemeLight = isGymMode
     ? "border-blue-500/20"
     : "border-purple-500/20";
-  const bgThemeGradient = isGymMode ? "from-blue-900/30" : "from-purple-900/30";
+  const bgThemeGradient = isGymMode ? "from-blue-900/20" : "from-purple-900/20"; // Reduced opacity
   const focusBorderTheme = isGymMode
     ? "focus:border-blue-500/50"
     : "focus:border-purple-500/50";
@@ -371,7 +371,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
 
   return (
     <div
-      className={`flex h-screen bg-dark-bg text-slate-200 font-sans overflow-hidden animate-in fade-in zoom-in-95 duration-500 ${selectionClass} selection:text-white`}
+      className={`flex h-screen bg-dark-bg text-slate-200 font-sans overflow-hidden ${selectionClass} selection:text-white`}
     >
       {/* LEFT SIDEBAR */}
       {isGymMode && (
@@ -523,7 +523,10 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
       )}
 
       {/* MAIN AREA */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#0f172a]">
+      <main 
+        key={practiceMode} // Trigger animation on mode change
+        className={`flex-1 flex flex-col min-w-0 bg-[#0f172a] animate-in slide-in-from-${isGymMode ? 'left' : 'right'}-10 fade-in duration-500 ease-out`}
+      >
         <header className="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-[#0f172a]/95 backdrop-blur z-10">
           <div className="flex items-center gap-4 w-full">
             {!isGymMode && (
@@ -537,33 +540,33 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
             )}
 
             {/* SLIDING PILL FOR MODE */}
-            <div className="relative flex bg-slate-900 rounded-lg p-1 border border-slate-800 w-36 shadow-inner">
+            <div className="relative flex bg-slate-900/80 rounded-xl p-1.5 border border-slate-800 w-48 shadow-inner backdrop-blur-sm">
               <div
-                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded shadow-lg shadow-black/50 transition-all duration-500 ease-in-out ${
+                className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] rounded-lg shadow-lg shadow-black/20 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${
                   isGymMode
-                    ? "left-1 bg-blue-600"
-                    : "left-[calc(50%+0px)] translate-x-0 bg-purple-600"
+                    ? "left-1.5 bg-gradient-to-br from-blue-500 to-blue-600"
+                    : "left-[calc(50%+0px)] translate-x-0 bg-gradient-to-br from-purple-500 to-purple-600"
                 }`}
               ></div>
               <button
                 onClick={() => setPracticeMode(PracticeMode.Solve)}
-                className={`relative z-10 flex-1 text-xs font-bold py-1 rounded transition-colors text-center flex items-center justify-center gap-2 ${
+                className={`relative z-10 flex-1 text-[11px] font-black tracking-wider py-2 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase ${
                   isGymMode
-                    ? "text-white"
-                    : "text-slate-400 hover:text-slate-300"
+                    ? "text-white text-shadow-sm"
+                    : "text-slate-500 hover:text-slate-300"
                 }`}
               >
-                <Dumbbell size={12} /> GYM
+                <Dumbbell size={14} strokeWidth={2.5} /> GYM
               </button>
               <button
                 onClick={() => setPracticeMode(PracticeMode.Type)}
-                className={`relative z-10 flex-1 text-xs font-bold py-1 rounded transition-colors text-center flex items-center justify-center gap-2 ${
+                className={`relative z-10 flex-1 text-[11px] font-black tracking-wider py-2 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase ${
                   !isGymMode
-                    ? "text-white"
-                    : "text-slate-400 hover:text-slate-300"
+                    ? "text-white text-shadow-sm"
+                    : "text-slate-500 hover:text-slate-300"
                 }`}
               >
-                <Bug size={12} /> DEBUG
+                <Bug size={14} strokeWidth={2.5} /> DEBUG
               </button>
             </div>
 
