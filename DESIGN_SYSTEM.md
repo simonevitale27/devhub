@@ -42,6 +42,7 @@
 | **Stealth Glass** | `bg-[#121212]/60 backdrop-blur-xl` | Sidebar, Pannelli, Modal |
 | **Transparent Glass** | `bg-[#121212]/40 backdrop-blur-xl` | Homepage Cards (High Transparency) |
 | **Liquid Glass** | `bg-gradient-to-b ... shadow-inset` | Bottoni Attivi (Gym, Debug, Difficulty) |
+| **Liquid Glass 3D** | `bg-gradient-to-b ... shadow-lg` | Bottoni Esplora Tabella, Sidebar Active Topic |
 | **Recessed Glass** | `bg-black/20 ring-1 ring-black/20 inset` | Editor, Input (Incassati) |
 | **No Border** | `border-none` | **NESSUN BORDO VISIBILE** |
 | **Separation** | Solo sfondo leggermente più chiaro + blur | Nessuna ombra/ring visibile |
@@ -228,6 +229,45 @@ font-outfit: 'Outfit', sans-serif;      /* Titoli speciali, headings */
 </button>
 ```
 
+#### Bottone Liquid Glass 3D (Esplora Tabella)
+
+```html
+<button class="
+  w-full flex items-center justify-center gap-2 
+  px-4 py-3 
+  bg-gradient-to-b from-blue-500/30 to-blue-600/5 
+  backdrop-blur-xl 
+  border border-white/10 
+  shadow-[0_0_15px_rgba(59,130,246,0.4)_inset] shadow-lg shadow-blue-500/20 
+  rounded-lg 
+  text-blue-300 hover:text-blue-200 
+  text-sm font-semibold 
+  transition-all duration-300 
+  hover:from-blue-500/40 hover:to-blue-600/10 
+  hover:shadow-[0_0_20px_rgba(59,130,246,0.5)_inset] 
+  active:scale-95
+">
+  <Maximize2 size={14} />
+  Esplora Tabella
+</button>
+```
+
+#### Bottone Accordion Tabella (Chiuso)
+
+```html
+<button class="
+  w-full px-4 py-3 
+  flex items-center justify-between 
+  bg-[#121212]/60 backdrop-blur-xl 
+  hover:bg-white/5 
+  shadow-lg shadow-black/40
+  rounded-lg 
+  transition-all duration-300
+">
+  <!-- Content -->
+</button>
+```
+
 #### Bottone Liquid Glass Minimal (Shuffle/History)
 
 ```html
@@ -322,7 +362,7 @@ font-outfit: 'Outfit', sans-serif;      /* Titoli speciali, headings */
 <!-- Overlay -->
 <div class="
   fixed inset-0 z-50 
-  bg-black/70 backdrop-blur-sm 
+  bg-black/60 backdrop-blur-md 
   flex items-center justify-center 
   p-8 
   animate-in fade-in duration-200
@@ -334,7 +374,7 @@ font-outfit: 'Outfit', sans-serif;      /* Titoli speciali, headings */
     border border-slate-700 
     rounded-xl 
     shadow-2xl 
-    w-full max-w-5xl max-h-[90vh] 
+    w-full max-w-5xl max-h-[85vh] 
     overflow-hidden
     animate-in zoom-in-95 duration-300
   ">
@@ -367,7 +407,7 @@ font-outfit: 'Outfit', sans-serif;      /* Titoli speciali, headings */
 
 **Caratteristiche:**
 
-- Overlay scuro: `bg-black/70 backdrop-blur-sm`
+- Overlay scuro: `bg-black/60 backdrop-blur-md`
 - Background modal: `bg-[#0b1120]`
 - Border radius: `rounded-xl`
 - Header gradient: `bg-gradient-to-r from-blue-900/20 to-transparent`
@@ -708,10 +748,20 @@ transition-transform duration-500  /* Per scale/rotate effects */
 " />
 ```
 
-#### 3D Active Shadow (Topic List)
+#### 3D Active Shadow (Topic List & Accordion)
 
 ```html
 <div class="shadow-lg shadow-black/40">
+```
+
+#### Liquid Glass 3D Effect (Selected Topic)
+
+```html
+<div class="
+  bg-gradient-to-b from-blue-500/30 to-blue-600/5 
+  border border-white/5 
+  shadow-[0_0_15px_rgba(59,130,246,0.3)_inset] shadow-blue-500/20
+">
 ```
 
 #### Click Rotation (Shuffle)
