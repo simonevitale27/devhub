@@ -42,7 +42,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <main className="flex-1 flex flex-col items-center justify-center px-6 relative z-10 pb-40">
 
                 <div className="text-center mb-16 relative">
-                    <h1 className="text-5xl md:text-7xl font-bold font-outfit text-white tracking-tight animate-float drop-shadow-2xl">
+                    <h1 className="text-5xl md:text-7xl font-marker text-white tracking-tight animate-float drop-shadow-2xl">
                         MASTER YOUR <br />
                         <span className="text-blue-500">STACK</span>
                     </h1>
@@ -53,7 +53,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* SQL GYM CARD */}
                     <button
                         onClick={() => onNavigate(Page.SqlGym)}
-                            className="group relative h-64 bg-[#121212]/60 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-black/50 border border-white/5 hover:shadow-blue-500/20"
+                            className="group relative h-64 bg-[#121212]/40 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-black/50 border border-white/10 hover:shadow-blue-500/20"
                     >
                         <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 mb-4 group-hover:scale-110 transition-transform duration-500">
                             <Database size={28} strokeWidth={1.5} />
@@ -67,7 +67,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* DATALAB CARD */}
                     <button
                         onClick={() => onNavigate(Page.DataLab)}
-                        className="group relative h-64 bg-[#121212]/60 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-black/50 border border-white/5 hover:shadow-emerald-500/20"
+                        className="group relative h-64 bg-[#121212]/40 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-black/50 border border-white/10 hover:shadow-emerald-500/20"
                     >
                         <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 mb-4 group-hover:scale-110 transition-transform duration-500">
                             <Code2 size={28} strokeWidth={1.5} />
