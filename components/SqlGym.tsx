@@ -397,7 +397,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
       <div className="flex flex-1 gap-5">
       {/* LEFT SIDEBAR */}
       {isGymMode && (
-        <aside className="w-64 bg-[#121212]/60 backdrop-blur-xl rounded-3xl flex flex-col shrink-0 z-20 h-[calc(100vh-2.5rem)] mt-7 ml-6">
+        <aside className="w-64 bg-[#121212]/60 backdrop-blur-xl rounded-3xl flex flex-col shrink-0 z-20 h-[calc(100vh-3.25rem)] mt-7 ml-6">
           <div className="h-16 flex items-center px-4 gap-2">
             <button
               onClick={onBack}
@@ -534,7 +534,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
 
       {/* DB PANEL */}
       {isGymMode && showDbPanel && (
-        <div className="w-80 bg-[#121212]/60 backdrop-blur-xl rounded-2xl shrink-0 flex flex-col z-30 h-[calc(100vh-2.5rem)] mt-7 mb-3 animate-in slide-in-from-left duration-200">
+        <div className="w-80 bg-[#121212]/60 backdrop-blur-xl rounded-2xl shrink-0 flex flex-col z-30 h-[calc(100vh-3.25rem)] mt-7 mb-3 animate-in slide-in-from-left duration-200">
           <div className="p-4 font-bold text-sm flex items-center gap-2 text-slate-300">
             <Layers size={16} className={textActive} /> Schema Database
           </div>
@@ -568,10 +568,10 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
       {/* MAIN AREA */}
       <main
         key={practiceMode} // Trigger animation on mode change
-        className={`flex-1 flex flex-col min-w-0 animate-in slide-in-from-${isGymMode ? 'left' : 'right'}-10 fade-in duration-500 ease-out h-full`}
+        className={`flex-1 flex flex-col min-w-0 animate-in slide-in-from-${isGymMode ? 'left' : 'right'}-10 fade-in duration-500 ease-out h-full pr-6 ${!isGymMode ? 'pl-6' : ''}`}
       >
-        <header className="h-16 flex items-center justify-between px-6 mt-4 mb-1 z-10 shrink-0">
-          <div className="flex items-center gap-4 w-full">
+        <header className="h-16 flex items-center justify-between mt-4 mb-1 z-10 shrink-0">
+          <div className="flex items-center gap-2 w-full">
             {!isGymMode && (
               <button
                 onClick={onBack}
@@ -613,8 +613,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
               </button>
             </div>
 
+            {/* SEPARATOR */}
+            <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-1"></div>
+
             {/* SLIDING PILL FOR DIFFICULTY - NOW COLORED */}
-            <div className="relative flex bg-[#121212]/60 backdrop-blur-xl rounded-xl p-1.5 ml-4 shadow-lg shadow-black/20">
+            <div className="relative flex bg-[#121212]/60 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
               <div
                 className={`absolute top-1.5 bottom-1.5 rounded-lg shadow-lg transition-all duration-300 ease-out ${
                   difficulty === Difficulty.Easy
@@ -639,8 +642,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
               ))}
             </div>
 
+            {/* SEPARATOR */}
+            <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-1"></div>
+
             {/* EXERCISE COUNTER */}
-            <div className="flex items-center bg-[#121212]/60 backdrop-blur-xl rounded-xl p-1.5 ml-4 shadow-lg shadow-black/20">
+            <div className="flex items-center bg-[#121212]/60 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
               <button
                 onClick={handlePrevExercise}
                 disabled={currentExerciseIndex === 0}
@@ -683,7 +689,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
         {/* CONTENT */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
           {isGymMode && exercise && (
-            <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl px-6 py-4 shrink-0 relative overflow-hidden mx-6 mb-3">
+            <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl px-6 py-4 shrink-0 relative overflow-hidden mb-3">
               <div
                 className={`absolute top-0 left-0 w-1 h-full ${bgActive} shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-colors duration-500`}
               ></div>
@@ -748,7 +754,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
           )}
 
           {/* EDITOR AREA */}
-          <div className="flex-1 flex min-h-0 px-6 pb-6 gap-4">
+          <div className="flex-1 flex min-h-0 pb-6 gap-4">
             {!isGymMode && exercise ? (
               // DEBUG MODE SPLIT
               <>
