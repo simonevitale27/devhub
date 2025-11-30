@@ -34,15 +34,18 @@
 | **Orange** | `#f97316` / `orange-500` | Difficoltà Media |
 | **Red** | `#ef4444` / `red-500` | Difficoltà Hard, Angular Lab (placeholder) |
 
-### Colori di Background
+### Colori di Background (Deep Black / High Contrast)
 
 | Colore | HEX / Tailwind | Utilizzo |
 |--------|----------------|----------|
-| **Dark BG** | `#0f172a` / `slate-900` | Background principale dell'app |
-| **Dark Surface** | `#0b1120` | Sidebar, panels, cards scure |
-| **Dark Surface Alt** | `#1e293b` / `slate-800` | Componenti elevati, modali |
-| **Dark Border** | `#334155` / `slate-700` | Bordi principali |
-| **Dark Border Subtle** | `#1e293b` / `slate-800` | Bordi più sottili |
+| **Pure Black** | `#000000` / `bg-black` | Background principale (Assoluto) |
+| **Stealth Glass** | `bg-[#121212]/60 backdrop-blur-xl` | Card, Sidebar, Pannelli |
+| **Recessed Glass** | `bg-black/20 ring-1 ring-black/20 inset` | Editor, Input (Incassati) |
+| **No Border** | `border-none` | **NESSUN BORDO VISIBILE** |
+| **Separation** | Solo sfondo leggermente più chiaro + blur | Nessuna ombra/ring visibile |
+| **Primary Text** | `#ffffff` / `white` | Headings, Titoli |
+| **Body Text** | `#94a3b8` / `slate-400` | Testo secondario |
+| **Accent** | `#3b82f6` / `blue-500` | Pulsanti primari, Link |
 
 ### Colori di Stato
 
@@ -143,7 +146,10 @@ font-outfit: 'Outfit', sans-serif;      /* Titoli speciali, headings */
 
 **Caratteristiche:**
 
-- Background: `bg-blue-600`
+- **Background**: `bg-[radial-gradient...]`
+- **Surface**: `bg-white/5 backdrop-blur-2xl`
+- **Separation**: `shadow-2xl ring-1 ring-white/10 inset`
+- **Radius**: `rounded-3xl`
 - Hover: `hover:bg-blue-500`
 - Padding: `px-4 py-2`
 - Border radius: `rounded-lg` (8px)
@@ -771,17 +777,29 @@ Per dare profondità agli elementi:
 <div class="backdrop-blur-md">
 ```
 
-### Glassmorphism
+### Stealth Glass (Pure Black Minimal Style)
+
+Il design si basa su **nero assoluto** e vetro scurissimo quasi invisibile. **NESSUN BORDO, NESSUNA OMBRA.**
 
 Combina:
 
-- `bg-{color}/40` (background semitrasparente)
-- `backdrop-blur-md`
-- `border border-{color}`
+- `bg-[#121212]/60` (vetro molto scuro, semitrasparente)
+- `backdrop-blur-xl` (blur per separazione)
+- `border-none` (zero bordi visibili)
+- Nessuna ombra, nessun ring
+
+**Pattern:**
+
+- Sfondo App: `bg-black` (Nero Puro, nessun gradiente)
+- Card/Pannelli: `bg-[#121212]/60 backdrop-blur-xl rounded-3xl`
+- Editor: `bg-black/20 ring-1 ring-black/20 inset rounded-xl` (Incassato)
+- Modali: `bg-[#121212]/60 backdrop-blur-xl max-w-5xl my-8`
+- Spacing: `gap-4` o `gap-5` (ridotto)
 
 ### Responsive
 
 - Usa `md:` breakpoint per layout desktop (es: `text-7xl md:text-8xl`)
+
 - Grid responsive: `grid-cols-1 md:grid-cols-2`
 
 ---
@@ -791,11 +809,12 @@ Combina:
 ### Colori Veloci
 
 ```text
-Primary Blue:  bg-blue-600 / text-blue-400
-Emerald:       bg-emerald-600 / text-emerald-400
-Purple:        bg-purple-600 / text-purple-400
-Dark BG:       bg-[#0f172a]
-Dark Surface:  bg-[#0b1120]
+Primary Blue:   bg-blue-600 / text-blue-400
+Emerald:        bg-emerald-600 / text-emerald-400
+Purple:         bg-purple-600 / text-purple-400
+Main BG:        bg-slate-950 (#020617)
+Glass Surface:  bg-slate-900/70 backdrop-blur-md
+Glass Border:   border-white/10
 ```
 
 ### Spacing Veloce

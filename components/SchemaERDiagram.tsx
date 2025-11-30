@@ -10,9 +10,9 @@ interface SchemaERDiagramProps {
 const SchemaERDiagram: React.FC<SchemaERDiagramProps> = ({ schemas, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#0f172a] border border-slate-700 rounded-xl shadow-2xl w-[90%] max-w-5xl max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200">
+      <div className="bg-[#121212]/60 backdrop-blur-xl rounded-3xl flex flex-col h-full overflow-hidden w-full max-w-4xl my-8 shadow-2xl shadow-black/20">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-800">
+        <div className="flex items-center justify-between p-6 bg-[#0a0a0a]/80 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-600/20 rounded-lg border border-blue-500/30">
               <Table className="text-blue-400" size={24} />
@@ -32,12 +32,12 @@ const SchemaERDiagram: React.FC<SchemaERDiagramProps> = ({ schemas, onClose }) =
         </div>
 
         {/* Content - Table List */}
-        <div className="flex-1 overflow-auto p-6 bg-[#0b1120] custom-scrollbar">
+        <div className="flex-1 overflow-auto p-6 custom-scrollbar">
           <div className="space-y-6">
             {schemas.map((schema, idx) => (
               <div
                 key={schema.tableName}
-                className="bg-slate-900/50 border border-slate-800 rounded-lg p-5 hover:border-slate-700 transition-colors"
+                className="bg-[#121212]/60 backdrop-blur-xl rounded-lg p-5 hover:bg-[#181818]/60 transition-colors"
               >
                 {/* Table Header */}
                 <div className="flex items-center gap-3 mb-4">
@@ -96,7 +96,7 @@ const SchemaERDiagram: React.FC<SchemaERDiagramProps> = ({ schemas, onClose }) =
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-800 bg-[#0f172a] flex justify-between items-center">
+        <div className="p-4 bg-[#0a0a0a]/95 backdrop-blur flex justify-between items-center">
           <p className="text-xs text-slate-500">
             <span className="font-semibold text-amber-400">PK</span> = Primary Key | <span className="font-semibold text-purple-400">FK</span> = Foreign Key
           </p>

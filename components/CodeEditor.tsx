@@ -29,9 +29,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange, onRun }) => {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="w-full h-full bg-[#0f172a] text-emerald-400 p-6 outline-none resize-none leading-relaxed border-none placeholder-slate-700 focus:ring-0"
+        placeholder="Scrivi la tua query SQL qui..."
+        className="w-full h-full bg-transparent p-4 font-mono text-sm text-slate-100 outline-none resize-none"
         spellCheck={false}
-        placeholder="-- Scrivi la tua query SQL qui..."
       />
       <div className="absolute bottom-4 right-6 text-xs text-slate-600 bg-slate-800/80 px-2 py-1 rounded border border-slate-700 pointer-events-none select-none opacity-0 group-hover:opacity-100 transition-opacity">
         Run: Ctrl + Enter

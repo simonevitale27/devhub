@@ -22,19 +22,18 @@ const DevHubLogo = ({ className, size = 24 }: { className?: string, size?: numbe
 
 const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     return (
-        <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans flex flex-col relative overflow-hidden">
+        <div className="min-h-screen bg-transparent text-slate-200 font-sans flex flex-col relative overflow-hidden">
 
             {/* BACKGROUND LOGO WATERMARK */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] overflow-hidden">
                 <Hexagon size={800} className="text-slate-400 animate-spin-slow origin-center" strokeWidth={0.5} />
             </div>
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen"></div>
+            {/* Removed light beams for pure black stealth look */}
 
             {/* Navbar */}
             <nav className="h-24 px-8 md:px-16 flex items-center justify-between relative z-20">
                 <DevHubLogo size={32} className="text-2xl text-white" />
-                <div className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] border border-slate-800 px-3 py-1 rounded-full">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md px-3 py-1 rounded-full ring-1 ring-white/10 shadow-lg">
                     Beta v1.0
                 </div>
             </nav>
@@ -54,7 +53,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* SQL GYM CARD */}
                     <button
                         onClick={() => onNavigate(Page.SqlGym)}
-                        className="group relative h-64 bg-slate-900/40 backdrop-blur-md border border-slate-800 hover:border-blue-500/50 rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/10 active:scale-95"
+                            className="group relative h-64 bg-[#121212]/60 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 hover:bg-[#181818]/60"
                     >
                         <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 mb-4 group-hover:scale-110 transition-transform duration-500 shadow-inner border border-blue-500/20">
                             <Database size={28} strokeWidth={1.5} />
@@ -70,7 +69,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* DATALAB CARD */}
                     <button
                         onClick={() => onNavigate(Page.DataLab)}
-                        className="group relative h-64 bg-slate-900/40 backdrop-blur-md border border-slate-800 hover:border-emerald-500/50 rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/10 active:scale-95"
+                        className="group relative h-64 bg-white/5 backdrop-blur-2xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-black/20 hover:shadow-emerald-500/20 ring-1 ring-white/10 hover:ring-white/20 hover:bg-white/10"
                     >
                         <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 mb-4 group-hover:scale-110 transition-transform duration-500 shadow-inner border border-emerald-500/20">
                             <Code2 size={28} strokeWidth={1.5} />
@@ -86,7 +85,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* PYTHON GYM CARD (Placeholder) */}
                     <button
                         disabled
-                        className="group relative h-64 bg-slate-900/20 backdrop-blur-sm border border-slate-800/50 rounded-3xl p-8 flex flex-col items-center justify-center text-center opacity-70 cursor-not-allowed"
+                        className="group relative h-64 bg-white/5 backdrop-blur-sm rounded-3xl p-8 flex flex-col items-center justify-center text-center opacity-50 cursor-not-allowed ring-1 ring-white/5"
                     >
                         <div className="absolute top-4 right-4 px-2 py-1 bg-slate-800 text-[9px] font-bold text-slate-400 uppercase tracking-wider rounded">Coming Soon</div>
                         <div className="w-16 h-16 bg-slate-800/50 rounded-2xl flex items-center justify-center text-slate-600 mb-4 border border-slate-700">
@@ -101,7 +100,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* ANGULAR GYM CARD (Active but Disabled) */}
                     <button
                         disabled
-                        className="group relative h-64 bg-slate-900/40 backdrop-blur-md border border-slate-800 rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-default"
+                        className="group relative h-64 bg-white/5 backdrop-blur-2xl rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-default ring-1 ring-white/10 shadow-2xl shadow-black/20"
                     >
                         <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mb-4 shadow-inner border border-red-500/20">
                             <Braces size={28} strokeWidth={1.5} />

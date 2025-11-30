@@ -23,7 +23,7 @@ const ResultStats: React.FC<ResultStatsProps> = ({ data, query }) => {
 
       {/* Stats Cards Section */}
       {showCards && (
-        <div className="p-4 bg-slate-900/30 rounded-lg border border-slate-700">
+        <div className="p-4 bg-zinc-900/40 backdrop-blur-xl rounded-lg border border-white/5">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp size={16} className="text-blue-400" />
             <h3 className="text-sm font-bold text-slate-300">Statistiche Colonne</h3>

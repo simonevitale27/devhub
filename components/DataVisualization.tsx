@@ -173,7 +173,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ data, solutionQue
   };
 
   return (
-    <div className="border-t border-slate-800 bg-[#0f172a] p-4">
+    <div className="mt-4 pt-4 border-t border-white/5 flex justify-end bg-slate-950/80 backdrop-blur p-4">
       <div className="flex items-center gap-2 mb-4">
         {chartConfig.type === 'bar' ? (
           <BarChart3 size={18} className="text-blue-400" />

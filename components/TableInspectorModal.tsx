@@ -42,11 +42,11 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
       onClick={onClose}
     >
       <div 
-        className="relative bg-[#0b1120] border border-slate-700 rounded-xl shadow-2xl w-full max-w-6xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
+        className="relative bg-[#121212]/60 backdrop-blur-xl rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 my-8 shadow-2xl shadow-black/20"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-blue-900/20 to-transparent">
+        <div className="flex items-center justify-between px-6 py-4 bg-[#0a0a0a]/80 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-bold text-white">
               {tableName}
@@ -65,7 +65,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
         </div>
 
         {/* Search Bar */}
-        <div className="px-6 py-3 border-b border-slate-700 bg-slate-900/30">
+        <div className="px-6 py-3 bg-[#0a0a0a]/60 backdrop-blur-sm">
           <div className="relative">
             <Search 
               size={16} 
@@ -76,7 +76,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
               placeholder="Cerca nei risultati..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg text-sm py-2.5 pl-10 pr-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:bg-slate-800 transition-all"
+              className="w-full bg-[#0a0a0a]/80 backdrop-blur-sm rounded-lg text-sm py-2.5 pl-10 pr-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:bg-[#0a0a0a] transition-all"
             />
             {searchTerm && (
               <button
@@ -91,8 +91,8 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
         </div>
 
         {/* Table Body - Scrollable */}
-        <div className="flex-1 overflow-auto p-4 bg-[#0f172a] custom-scrollbar">
-          <div className="rounded-lg border border-slate-700 overflow-hidden shadow-lg">
+        <div className="flex-1 overflow-auto p-4 custom-scrollbar">
+                <div className="bg-black/20 ring-1 ring-black/20 inset rounded-2xl overflow-hidden flex-1 flex flex-col min-h-0">
             <table className="w-full text-sm text-left text-slate-300">
               {/* Fixed Header */}
               <thead className="bg-slate-900 text-slate-200 sticky top-0 z-10 shadow-md">
@@ -141,12 +141,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
                   </tr>
                 ) : (
                   filteredData.map((row, idx) => (
-                    <tr 
-                      key={idx} 
-                      className={`border-b border-slate-800/50 hover:bg-blue-900/10 transition-colors ${
-                        idx % 2 === 0 ? 'bg-slate-900/30' : 'bg-slate-900/50'
-                      }`}
-                    >
+                    <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       {schema.columns.map((col) => (
                         <td 
                           key={col.name} 
@@ -170,7 +165,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
         </div>
 
         {/* Footer Info */}
-        <div className="px-6 py-3 border-t border-slate-700 bg-slate-900/50 text-xs text-slate-500">
+        <div className="px-6 py-3 bg-[#0a0a0a]/80 backdrop-blur-sm text-xs text-slate-500">
           {searchTerm ? (
             <>
               Mostrando <span className="text-blue-400 font-semibold">{filteredRows}</span> di {totalRows} righe • Schema: {schema.columns.length} colonne
