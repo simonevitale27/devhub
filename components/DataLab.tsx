@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, CheckCircle2, Cpu, Zap, FileCode, AlertTriangle, X } from 'lucide-react';
+import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, CheckCircle2, Cpu, Zap, FileCode, AlertTriangle, X, Eye } from 'lucide-react';
 import { CsvData } from '../types';
 import { parseCsvFile, loadCsvToAlaSQL, executeQuery } from '../utils/csvParser';
 import { analyzeCode } from '../services/mockAiService';
@@ -92,10 +92,10 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     };
 
     return (
-        <div className="flex h-screen bg-transparent text-slate-200 font-sans overflow-hidden">
+        <div className="flex h-screen bg-transparent text-slate-200 font-sans overflow-hidden selection:bg-emerald-500 selection:text-white">
             
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0 pl-6 pr-6">
+            <div className="flex-1 flex flex-col min-w-0 pl-6 pr-6 h-full">
                 
                 {/* Header */}
                 <div className="h-16 flex items-center justify-between mt-4 mb-1 z-10 shrink-0">
@@ -124,12 +124,14 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                 {/* Content Area with Scroll */}
                 <div className="flex-1 overflow-y-auto pb-6 custom-scrollbar">
-                    <div className="space-y-4">
+                    <div className="space-y-6">
 
                         {/* CSV UPLOAD SECTION */}
-                        <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl p-6 border border-white/5 shadow-lg shadow-black/20">
+                        <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl p-6 shadow-lg shadow-black/20 relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-colors duration-500"></div>
+                            
                             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <Upload size={14} />
+                                <Upload size={14} className="text-emerald-500" />
                                 Carica Dati CSV
                             </h3>
 
@@ -138,18 +140,20 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     onDrop={handleDrop}
                                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                                     onDragLeave={() => setIsDragging(false)}
-                                    className={`border-2 border-dashed rounded-xl p-12 text-center transition-all ${
+                                    className={`border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 ${
                                         isDragging 
-                                            ? 'border-emerald-500 bg-emerald-500/10' 
-                                            : 'border-slate-700/50 hover:border-slate-600 bg-black/20'
+                                            ? 'border-emerald-500 bg-emerald-500/10 scale-[1.02]' 
+                                            : 'border-slate-700/50 hover:border-emerald-500/50 bg-black/20 hover:bg-black/30'
                                     }`}
                                 >
-                                    <Upload className="mx-auto mb-4 text-slate-500" size={48} strokeWidth={1} />
-                                    <p className="text-slate-400 mb-2">Trascina un file CSV qui</p>
-                                    <p className="text-xs text-slate-600 mb-4">oppure</p>
+                                    <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center transition-all duration-500 ${isDragging ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800/50 text-slate-500'}`}>
+                                        <Upload size={32} strokeWidth={1.5} />
+                                    </div>
+                                    <p className="text-slate-300 font-medium mb-2">Trascina un file CSV qui</p>
+                                    <p className="text-xs text-slate-500 mb-6">oppure seleziona dal computer</p>
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="px-6 py-2 bg-gradient-to-b from-emerald-500/30 to-emerald-600/5 backdrop-blur-xl border border-white/5 shadow-[0_0_15px_rgba(16,185,129,0.2)_inset] shadow-emerald-500/10 text-emerald-300 hover:from-emerald-500/40 hover:to-emerald-600/10 font-bold rounded-lg transition-all active:scale-95"
+                                        className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 transition-all active:scale-95 border border-white/10"
                                     >
                                         Scegli File
                                     </button>
@@ -160,44 +164,50 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         onChange={handleFileSelect}
                                         className="hidden"
                                     />
-                                    <p className="text-xs text-slate-600 mt-4">Max 10MB</p>
+                                    <p className="text-[10px] text-slate-600 mt-4 uppercase tracking-widest">Max 10MB • UTF-8</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
+                                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     {/* CSV Info */}
-                                    <div className="bg-black/20 rounded-xl p-4 ring-1 ring-black/20 inset">
-                                        <div className="flex items-start justify-between mb-3">
+                                    <div className="bg-black/20 rounded-xl p-4 ring-1 ring-black/20 inset flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                                                <FileSpreadsheet size={20} />
+                                            </div>
                                             <div>
                                                 <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">File Caricato</div>
-                                                <div className="text-white font-bold mt-1">{csvData.fileName}</div>
+                                                <div className="text-white font-bold">{csvData.fileName}</div>
                                             </div>
-                                            <button
-                                                onClick={handleClearData}
-                                                className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
-                                                title="Rimuovi file"
-                                            >
-                                                <X size={16} />
-                                            </button>
-                                        </div>
-                                        <div className="flex gap-6 text-sm">
-                                            <div>
-                                                <span className="text-slate-500">Righe:</span>
-                                                <span className="text-emerald-400 font-bold ml-2">{csvData.rowCount}</span>
-                                            </div>
-                                            <div>
-                                                <span className="text-slate-500">Colonne:</span>
-                                                <span className="text-emerald-400 font-bold ml-2">{csvData.headers.length}</span>
+                                            <div className="h-8 w-px bg-white/5 mx-2"></div>
+                                            <div className="flex gap-6 text-sm">
+                                                <div>
+                                                    <span className="text-slate-500 text-xs uppercase tracking-wider block">Righe</span>
+                                                    <span className="text-emerald-400 font-mono font-bold">{csvData.rowCount}</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-slate-500 text-xs uppercase tracking-wider block">Colonne</span>
+                                                    <span className="text-emerald-400 font-mono font-bold">{csvData.headers.length}</span>
+                                                </div>
                                             </div>
                                         </div>
+                                        <button
+                                            onClick={handleClearData}
+                                            className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors group"
+                                            title="Rimuovi file"
+                                        >
+                                            <X size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+                                        </button>
                                     </div>
 
                                     {/* Preview */}
                                     <div>
-                                        <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">Preview (primi 5 righi)</div>
-                                        <div className="bg-black/20 rounded-xl ring-1 ring-black/20 inset overflow-x-auto">
+                                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                                            <Eye size={12} /> Preview (primi 5 righi)
+                                        </div>
+                                        <div className="bg-black/20 rounded-xl ring-1 ring-black/20 inset overflow-x-auto custom-scrollbar">
                                             <table className="w-full text-xs">
                                                 <thead>
-                                                    <tr className="border-b border-slate-800">
+                                                    <tr className="border-b border-white/5 bg-white/5">
                                                         {csvData.headers.map((header, i) => (
                                                             <th key={i} className="text-left p-3 font-bold text-emerald-400 whitespace-nowrap">
                                                                 {header}
@@ -205,12 +215,12 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                         ))}
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody className="divide-y divide-white/5">
                                                     {csvData.rows.slice(0, 5).map((row, i) => (
-                                                        <tr key={i} className="border-b border-slate-800/50 hover:bg-slate-800/30">
+                                                        <tr key={i} className="hover:bg-white/5 transition-colors">
                                                             {row.map((cell, j) => (
-                                                                <td key={j} className="p-3 text-slate-300 whitespace-nowrap">
-                                                                    {cell !== null && cell !== undefined ? String(cell) : '-'}
+                                                                <td key={j} className="p-3 text-slate-300 whitespace-nowrap font-mono">
+                                                                    {cell !== null && cell !== undefined ? String(cell) : <span className="text-slate-600">-</span>}
                                                                 </td>
                                                             ))}
                                                         </tr>
@@ -224,25 +234,27 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                         </div>
 
                         {/* SQL EDITOR SECTION */}
-                        <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl p-6 border border-white/5 shadow-lg shadow-black/20">
+                        <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl p-6 shadow-lg shadow-black/20 relative overflow-hidden">
+                             <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-colors duration-500"></div>
+                            
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                    <Code2 size={14} />
+                                    <Code2 size={14} className="text-blue-500" />
                                     Editor SQL
                                 </h3>
                                 {csvData && (
-                                    <div className="text-xs text-blue-400 bg-blue-900/20 border border-blue-900/50 rounded px-2 py-1">
-                                        Tabella: <code className="font-bold">my_data</code>
+                                    <div className="text-xs text-blue-300 bg-blue-500/10 border border-blue-500/20 rounded px-2 py-1 font-mono">
+                                        FROM <span className="font-bold text-blue-400">my_data</span>
                                     </div>
                                 )}
                             </div>
 
-                            <div className="bg-black/20 rounded-xl ring-1 ring-black/20 inset overflow-hidden mb-4">
+                            <div className="bg-[#0b1120] rounded-xl border border-white/5 shadow-inner overflow-hidden mb-4 group focus-within:border-blue-500/50 transition-colors">
                                 <textarea
                                     value={sqlQuery}
                                     onChange={(e) => setSqlQuery(e.target.value)}
                                     placeholder="Scrivi la tua query SQL qui..."
-                                    className="w-full h-32 bg-transparent p-4 font-mono text-sm text-slate-100 outline-none resize-none"
+                                    className="w-full h-32 bg-transparent p-4 font-mono text-sm text-blue-100 outline-none resize-none placeholder-slate-600"
                                     spellCheck={false}
                                 />
                             </div>
@@ -251,7 +263,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 <button
                                     onClick={handleExecuteQuery}
                                     disabled={isExecuting || !csvData}
-                                    className="px-6 py-2 bg-gradient-to-b from-emerald-500/30 to-emerald-600/5 backdrop-blur-xl border border-white/5 shadow-[0_0_15px_rgba(16,185,129,0.2)_inset] shadow-emerald-500/10 text-emerald-300 hover:from-emerald-500/40 hover:to-emerald-600/10 font-bold rounded-lg transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none border border-white/10"
                                 >
                                     {isExecuting ? 'Esecuzione...' : 'Esegui Query'}
                                     {!isExecuting && <Play size={14} fill="currentColor" />}
@@ -261,7 +273,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                         {/* ERROR MESSAGE */}
                         {error && (
-                            <div className="bg-red-900/20 border border-red-900/50 rounded-xl p-4 flex items-start gap-3 shadow-lg">
+                            <div className="bg-red-900/20 border border-red-900/50 rounded-xl p-4 flex items-start gap-3 shadow-lg animate-in slide-in-from-top-2">
                                 <AlertCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
                                 <div className="flex-1">
                                     <div className="text-sm font-bold text-red-400 mb-1">Errore</div>
@@ -272,20 +284,21 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                         {/* QUERY RESULTS */}
                         {queryResult && queryResult.length > 0 && (
-                            <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl p-6 border border-white/5 shadow-lg shadow-black/20">
+                            <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl p-6 shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-1 h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] transition-colors duration-500"></div>
                                 <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                    <TrendingUp size={14} />
+                                    <TrendingUp size={14} className="text-purple-500" />
                                     Risultati ({queryResult.length} {queryResult.length === 1 ? 'riga' : 'righe'})
                                 </h3>
-                                <div className="bg-black/20 rounded-xl ring-1 ring-black/20 inset overflow-x-auto">
+                                <div className="bg-black/20 rounded-xl ring-1 ring-black/20 inset overflow-x-auto custom-scrollbar">
                                     <ResultsTable data={queryResult} />
                                 </div>
                             </div>
                         )}
 
                         {queryResult && queryResult.length === 0 && (
-                            <div className="bg-amber-900/20 border border-amber-900/50 rounded-xl p-4 text-center">
-                                <p className="text-amber-400 text-sm">La query è stata eseguita correttamente ma non ha restituito risultati.</p>
+                            <div className="bg-amber-900/20 border border-amber-900/50 rounded-xl p-4 text-center animate-in fade-in">
+                                <p className="text-amber-400 text-sm font-medium">La query è stata eseguita correttamente ma non ha restituito risultati.</p>
                             </div>
                         )}
 
@@ -295,9 +308,9 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
             {/* AI COACH SIDEBAR */}
             {showAiCoach && (
-                <div className="w-96 bg-[#121212]/60 backdrop-blur-xl flex flex-col overflow-hidden mt-7 mb-3 mr-6 rounded-3xl z-20 h-[calc(100vh-3.25rem)] shadow-2xl animate-in slide-in-from-right duration-300">
-                    <div className="h-16 flex items-center px-6 border-b border-white/5">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                <div className="w-96 bg-[#121212]/60 backdrop-blur-xl flex flex-col overflow-hidden mt-7 mb-3 mr-6 rounded-3xl z-20 h-[calc(100vh-3.25rem)] shadow-2xl border border-white/5 animate-in slide-in-from-right duration-300">
+                    <div className="h-16 flex items-center px-6 border-b border-white/5 bg-white/5">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
                             <Cpu size={14} className="text-purple-500" />
                             AI Coach
                         </span>
@@ -308,9 +321,12 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                                 
                                 {/* Score Header */}
-                                <div className="bg-slate-900/50 rounded-xl p-5 border border-slate-800">
+                                <div className="bg-slate-900/50 rounded-xl p-5 border border-slate-800 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                                        <Cpu size={64} />
+                                    </div>
                                     <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Valutazione</div>
-                                    <div className="flex items-baseline gap-2">
+                                    <div className="flex items-baseline gap-2 relative z-10">
                                         <div className={`text-4xl font-mono font-bold ${
                                             aiAnalysis.score >= 7 ? 'text-emerald-400' : 
                                             aiAnalysis.score >= 5 ? 'text-amber-400' : 'text-red-400'
@@ -319,7 +335,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         </div>
                                         <div className="text-lg text-slate-600">/10</div>
                                     </div>
-                                    <div className={`text-sm font-bold mt-2 ${
+                                    <div className={`text-sm font-bold mt-2 relative z-10 ${
                                         aiAnalysis.verdict === 'Funziona' ? 'text-emerald-400' : 
                                         aiAnalysis.verdict === 'Non funziona' ? 'text-red-400' : 'text-amber-400'
                                     }`}>
@@ -331,7 +347,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 <div className="space-y-4">
                                     
                                     {/* Correctness */}
-                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800">
+                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-blue-500/30 transition-colors">
                                         <h4 className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase mb-2">
                                             <CheckCircle2 size={12}/> Correttezza
                                         </h4>
@@ -341,7 +357,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     </div>
 
                                     {/* Style */}
-                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800">
+                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-pink-500/30 transition-colors">
                                         <h4 className="flex items-center gap-2 text-xs font-bold text-pink-400 uppercase mb-2">
                                             <FileCode size={12}/> Stile
                                         </h4>
@@ -351,7 +367,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     </div>
 
                                     {/* Efficiency */}
-                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800">
+                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-amber-500/30 transition-colors">
                                         <h4 className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase mb-2">
                                             <Cpu size={12}/> Efficienza
                                         </h4>
@@ -361,7 +377,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     </div>
 
                                     {/* Alternative */}
-                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800">
+                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-emerald-500/30 transition-colors">
                                         <h4 className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase mb-2">
                                             <Zap size={12}/> Alternativa
                                         </h4>
