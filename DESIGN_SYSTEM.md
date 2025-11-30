@@ -39,7 +39,9 @@
 | Colore | HEX / Tailwind | Utilizzo |
 |--------|----------------|----------|
 | **Pure Black** | `#000000` / `bg-black` | Background principale (Assoluto) |
-| **Stealth Glass** | `bg-[#121212]/60 backdrop-blur-xl` | Card, Sidebar, Pannelli |
+| **Stealth Glass** | `bg-[#121212]/60 backdrop-blur-xl` | Sidebar, Pannelli, Modal |
+| **Transparent Glass** | `bg-[#121212]/40 backdrop-blur-xl` | Homepage Cards (High Transparency) |
+| **Liquid Glass** | `bg-gradient-to-b ... shadow-inset` | Bottoni Attivi (Gym, Debug, Difficulty) |
 | **Recessed Glass** | `bg-black/20 ring-1 ring-black/20 inset` | Editor, Input (Incassati) |
 | **No Border** | `border-none` | **NESSUN BORDO VISIBILE** |
 | **Separation** | Solo sfondo leggermente più chiaro + blur | Nessuna ombra/ring visibile |
@@ -209,7 +211,46 @@ font-outfit: 'Outfit', sans-serif;      /* Titoli speciali, headings */
 >
   Coming Soon
 </button>
+#### Bottone Liquid Glass (Gym/Debug/Difficulty)
+
+```html
+<button class="
+  relative z-10 
+  px-4 py-2 
+  bg-gradient-to-b from-blue-500/30 to-blue-600/5 
+  backdrop-blur-xl 
+  border border-white/5 
+  shadow-[0_0_15px_rgba(59,130,246,0.2)_inset] shadow-blue-500/10
+  rounded-lg 
+  transition-all duration-300
+">
+  GYM MODE
+</button>
 ```
+
+#### Bottone Liquid Glass Minimal (Shuffle/History)
+
+```html
+<button class="
+  py-2 px-3 
+  bg-[#121212]/60 backdrop-blur-xl 
+  hover:bg-white/5 
+  rounded-lg 
+  transition-all 
+  shadow-md shadow-black/20
+  group
+">
+  <Shuffle class="group-active:rotate-180 transition-transform duration-500" />
+</button>
+```
+
+**Caratteristiche:**
+
+- **Gradient**: `bg-gradient-to-b from-color/30 to-color/5` (Profondità verticale)
+- **Inner Glow**: `shadow-[0_0_15px_rgba(color,0.2)_inset]` (Luce interna)
+- **Minimal Border**: `border-white/5` (Contorno quasi invisibile)
+- **Backdrop**: `backdrop-blur-xl` (Effetto vetro)
+- **Shadow**: `shadow-color/10` (Ombra esterna leggerissima)
 
 ### Card
 
@@ -217,15 +258,15 @@ font-outfit: 'Outfit', sans-serif;      /* Titoli speciali, headings */
 
 ```html
 <div class="
-  bg-slate-900/40 
-  backdrop-blur-md 
-  border border-slate-800 hover:border-blue-500/50 
+  bg-[#121212]/40 
+  backdrop-blur-xl 
+  ring-1 ring-inset ring-white/5 
   rounded-3xl 
   p-8 
   transition-all duration-500 
   hover:scale-105 
-  hover:shadow-2xl hover:shadow-blue-500/10 
-  active:scale-95
+  hover:bg-[#121212]/50
+  hover:ring-blue-500/20
 ">
   <!-- Contenuto card -->
 </div>
@@ -623,6 +664,8 @@ font-outfit: 'Outfit', sans-serif;      /* Titoli speciali, headings */
 - **Icon button size**: `p-2` con iconSize={18}
 - **Icon in cards**: Size 24-28
 - **Sidebar width**: `w-64` (256px)
+- **Sidebar Top Margin**: `mt-7` (Allineamento perfetto con header buttons)
+- **Sidebar Height**: `h-[calc(100vh-2.5rem)]` (Allineamento bottom con content)
 - **AI Coach sidebar**: `w-96` (384px)
 
 ---
@@ -658,10 +701,23 @@ transition-transform duration-500  /* Per scale/rotate effects */
 #### Icon Rotation
 
 ```html
+```html
 <ChevronRight class="
   transition-transform duration-300 
   group-hover:rotate-90
 " />
+```
+
+#### 3D Active Shadow (Topic List)
+
+```html
+<div class="shadow-lg shadow-black/40">
+```
+
+#### Click Rotation (Shuffle)
+
+```html
+<Shuffle class="group-active:rotate-180 transition-transform duration-500" />
 ```
 
 ### Animazioni Custom

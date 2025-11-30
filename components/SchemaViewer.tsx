@@ -3,16 +3,15 @@ import React, { useState } from 'react';
 import { TableSchema } from '../types';
 import { Table as TableIcon, ChevronRight, ChevronDown, Eye, Columns, Hash, Type as TypeIcon, Calendar, ToggleLeft, Maximize2 } from 'lucide-react';
 import { getTablePreview } from '../services/sqlService';
-import TableInspectorModal from './TableInspectorModal';
 
 interface SchemaViewerProps {
   schemas: TableSchema[];
+  onInspect?: (schema: TableSchema) => void;
 }
 
-const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas }) => {
+const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas, onInspect }) => {
   const [expandedTable, setExpandedTable] = useState<string | null>(null);
   const [previewData, setPreviewData] = useState<any[]>([]);
-  const [inspectorTable, setInspectorTable] = useState<TableSchema | null>(null);
 
   const handleExpand = (tableName: string) => {
     if (expandedTable === tableName) {
@@ -41,7 +40,11 @@ const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas }) => {
             {/* Table Header */}
             <button 
                 onClick={() => handleExpand(schema.tableName)}
-                className={`w-full px-4 py-3 flex items-center justify-between transition-all duration-300 ${isExpanded ? 'bg-[#0a0a0a]/80' : 'hover:bg-[#0a0a0a]/40'}`}
+                className={`w-full px-4 py-3 flex items-center justify-between transition-all duration-300 rounded-lg ${
+                  isExpanded 
+                    ? 'bg-gradient-to-b from-blue-500/30 to-blue-600/5 backdrop-blur-xl border border-white/5 shadow-[0_0_15px_rgba(59,130,246,0.2)_inset] shadow-blue-500/10' 
+                    : 'bg-[#121212]/60 backdrop-blur-xl hover:bg-white/5 shadow-lg shadow-black/40'
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div className={`p-1.5 rounded-md transition-all duration-300 ${isExpanded ? 'bg-blue-600/20 text-blue-400 scale-110' : 'bg-[#1a1a1a] text-slate-400 scale-100'}`}>
@@ -115,8 +118,8 @@ const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas }) => {
                 {/* Explore Table Button */}
                 <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-200">
                   <button
-                    onClick={() => setInspectorTable(schema)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600/20 hover:bg-blue-600/30 backdrop-blur-sm rounded-lg text-blue-300 hover:text-blue-200 text-sm font-semibold transition-all duration-200 active:scale-95 border border-blue-500/30 hover:border-blue-500/50"
+                    onClick={() => onInspect?.(schema)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-b from-blue-500/30 to-blue-600/5 backdrop-blur-xl border border-white/10 shadow-[0_0_15px_rgba(59,130,246,0.4)_inset] shadow-lg shadow-blue-500/20 rounded-lg text-blue-300 hover:text-blue-200 text-sm font-semibold transition-all duration-300 hover:from-blue-500/40 hover:to-blue-600/10 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)_inset] active:scale-95"
                   >
                     <Maximize2 size={14} />
                     Esplora Tabella
@@ -129,14 +132,7 @@ const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas }) => {
         );
       })}
 
-      {/* Inspector Modal */}
-      {inspectorTable && (
-        <TableInspectorModal
-          tableName={inspectorTable.tableName}
-          schema={inspectorTable}
-          onClose={() => setInspectorTable(null)}
-        />
-      )}
+
     </div>
   );
 };

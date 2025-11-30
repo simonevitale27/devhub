@@ -42,22 +42,22 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
       onClick={onClose}
     >
       <div 
-        className="relative bg-[#121212]/60 backdrop-blur-xl rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 my-8 shadow-2xl shadow-black/20"
+        className="relative bg-[#121212]/60 backdrop-blur-xl rounded-2xl w-full max-w-7xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 my-8 shadow-2xl shadow-black/20"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-[#0a0a0a]/80 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-b from-[#0a0a0a]/80 to-transparent backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-bold text-white">
               {tableName}
             </h2>
-            <span className="px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">
+            <span className="px-3 py-1 bg-gradient-to-b from-blue-500/30 to-blue-600/5 backdrop-blur-xl shadow-[0_0_15px_rgba(59,130,246,0.2)_inset] text-blue-300 text-xs font-bold rounded-full">
               {totalRows} {totalRows === 1 ? 'row' : 'rows'}
             </span>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+            className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
             aria-label="Chiudi"
           >
             <X size={20} />
@@ -65,26 +65,26 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
         </div>
 
         {/* Search Bar */}
-        <div className="px-6 py-3 bg-[#0a0a0a]/60 backdrop-blur-sm">
+        <div className="px-6 py-4 bg-[#0a0a0a]/60 backdrop-blur-sm">
           <div className="relative">
             <Search 
-              size={16} 
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+              size={18} 
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"
             />
             <input
               type="text"
               placeholder="Cerca nei risultati..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#0a0a0a]/80 backdrop-blur-sm rounded-lg text-sm py-2.5 pl-10 pr-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:bg-[#0a0a0a] transition-all"
+              className="w-full bg-[#0a0a0a]/80 backdrop-blur-xl border border-blue-500/30 rounded-xl text-sm py-3 pl-12 pr-10 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/60 focus:bg-[#0a0a0a] transition-all shadow-[0_0_20px_rgba(59,130,246,0.1)]"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
                 aria-label="Cancella ricerca"
               >
-                <X size={14} />
+                <X size={16} />
               </button>
             )}
           </div>
@@ -106,7 +106,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
                         <span>{col.name}</span>
                         {col.isPrimaryKey && (
                           <span 
-                            className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-500/20 border border-amber-500/50 rounded text-[10px] font-bold text-amber-300"
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-500/20 rounded text-[10px] font-bold text-amber-300"
                             title="Primary Key"
                           >
                             <Key size={10} />
@@ -115,7 +115,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
                         )}
                         {col.isForeignKey && (
                           <span 
-                            className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-500/20 border border-blue-500/50 rounded text-[10px] font-bold text-blue-300"
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-500/20 rounded text-[10px] font-bold text-blue-300"
                             title="Foreign Key"
                           >
                             <Link size={10} />

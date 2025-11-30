@@ -9,8 +9,8 @@ interface SchemaERDiagramProps {
 
 const SchemaERDiagram: React.FC<SchemaERDiagramProps> = ({ schemas, onClose }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#121212]/60 backdrop-blur-xl rounded-3xl flex flex-col h-full overflow-hidden w-full max-w-4xl my-8 shadow-2xl shadow-black/20">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-[#121212]/60 backdrop-blur-xl rounded-3xl flex flex-col max-h-[85vh] overflow-hidden w-full max-w-4xl my-8 shadow-2xl shadow-black/20">
         {/* Header */}
         <div className="flex items-center justify-between p-6 bg-[#0a0a0a]/80 backdrop-blur-sm">
           <div className="flex items-center gap-3">

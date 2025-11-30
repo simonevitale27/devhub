@@ -112,10 +112,10 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                     
                     <button
                         onClick={() => setShowAiCoach(!showAiCoach)}
-                        className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+                        className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
                             showAiCoach 
-                                ? 'bg-purple-600 text-white' 
-                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                ? 'bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] text-purple-300' 
+                                : 'bg-[#121212]/60 backdrop-blur-xl text-slate-400 hover:bg-white/5'
                         }`}
                     >
                         {showAiCoach ? 'Nascondi' : 'Mostra'} AI Coach
@@ -149,7 +149,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     <p className="text-xs text-slate-600 mb-4">oppure</p>
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-md transition-colors"
+                                        className="px-4 py-2 bg-gradient-to-b from-emerald-500/30 to-emerald-600/5 backdrop-blur-xl shadow-[0_0_15px_rgba(16,185,129,0.2)_inset] text-emerald-300 hover:from-emerald-500/40 hover:to-emerald-600/10 font-bold rounded-lg transition-all"
                                     >
                                         Scegli File
                                     </button>
@@ -249,7 +249,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             <button
                                 onClick={handleExecuteQuery}
                                 disabled={isExecuting || !csvData}
-                                className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg shadow-lg shadow-emerald-900/20 transition-all flex items-center justify-center gap-2"
+                                className="w-full py-3 bg-gradient-to-b from-emerald-500/30 to-emerald-600/5 backdrop-blur-xl shadow-[0_0_15px_rgba(16,185,129,0.2)_inset] disabled:opacity-50 disabled:cursor-not-allowed text-emerald-300 hover:from-emerald-500/40 hover:to-emerald-600/10 font-bold rounded-lg transition-all flex items-center justify-center gap-2"
                             >
                                 {isExecuting ? 'Esecuzione...' : 'Esegui Query'}
                                 {!isExecuting && <Play size={16} />}
