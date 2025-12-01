@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown } from 'lucide-react';
+import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import alasql from 'alasql';
@@ -28,6 +28,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     const [showTableInspector, setShowTableInspector] = useState(false);
     const [selectedTableForInspector, setSelectedTableForInspector] = useState<string | null>(null);
     const [showStatsModal, setShowStatsModal] = useState(false);
+    const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Filter & Sort State
@@ -237,10 +238,6 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
     // Execute SQL query
     const handleExecuteQuery = async () => {
-        if (tables.size === 0) {
-            setError('Carica almeno un file CSV per eseguire query.');
-            return;
-        }
         if (!sqlQuery.trim()) {
             setError('Inserisci una query SQL valida.');
             return;
@@ -251,9 +248,20 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         setQueryResult(null);
 
         try {
-            const result = executeQuery(sqlQuery);
+            let result = executeQuery(sqlQuery);
+            
+            // Handle multi-statement results (e.g. CREATE; INSERT; SELECT)
+            // If result contains arrays, it means it's a list of results from multiple queries
+            // We want to display the last actual dataset (array of rows)
+            if (Array.isArray(result) && result.length > 0 && result.some(r => Array.isArray(r))) {
+                const lastDataset = [...result].reverse().find(r => Array.isArray(r));
+                if (lastDataset) {
+                    result = lastDataset;
+                }
+            }
+            
             setQueryResult(result);
-            setFilteredResult(result);
+            setFilteredResult(null); // Reset filters
             setSearchQuery(''); // Reset search when new query is executed
         } catch (err: any) {
             setError(err.message || 'Errore nell\'esecuzione della query.');
@@ -511,252 +519,334 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
     // Generate PDF Report
     const generatePDF = () => {
-        if (!queryResult || queryResult.length === 0) return;
-
-        const doc = new jsPDF();
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
+        // Use filteredResult if available (includes filters), otherwise queryResult
+        const dataToExport = filteredResult || queryResult;
         
-        // --- COLORS ---
-        const colors = {
-            primary: [59, 130, 246], // Blue 500 (Replaces Emerald)
-            blue: [59, 130, 246], // Blue 500 (DevHub Brand)
-            darkBg: [0, 0, 0], // Pure Black
-            textLight: [248, 250, 252], // Slate 50
-            textDark: [51, 65, 85], // Slate 700
-            textMuted: [148, 163, 184], // Slate 400
-            cardBg: [248, 250, 252], // Slate 50
-            cardBorder: [226, 232, 240] // Slate 200
-        };
+        if (!dataToExport || dataToExport.length === 0) {
+            alert('Nessun dato da esportare. Esegui una query prima.');
+            return;
+        }
 
-        // --- HEADER SECTION ---
-        // Dark Background Strip
-        doc.setFillColor(colors.darkBg[0], colors.darkBg[1], colors.darkBg[2]);
-        doc.rect(0, 0, pageWidth, 40, 'F');
-
-        // Logo Drawing: Blue Hexagon with Dot
-        const drawLogo = (x: number, y: number, size: number) => {
-            doc.setDrawColor(colors.blue[0], colors.blue[1], colors.blue[2]);
-            doc.setLineWidth(2.5); // Thicker lines
+        try {
+            const doc = new jsPDF();
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
             
-            // Hexagon
-            const angle = Math.PI / 3;
-            const points: [number, number][] = [];
-            for (let i = 0; i < 6; i++) {
-                points.push([
-                    x + size * Math.cos(i * angle),
-                    y + size * Math.sin(i * angle)
-                ]);
-            }
+            // --- COLORS ---
+            const colors = {
+                primary: [59, 130, 246], // Blue 500 (Replaces Emerald)
+                blue: [59, 130, 246], // Blue 500 (DevHub Brand)
+                darkBg: [0, 0, 0], // Pure Black
+                textLight: [248, 250, 252], // Slate 50
+                textDark: [51, 65, 85], // Slate 700
+                textMuted: [148, 163, 184], // Slate 400
+                cardBg: [248, 250, 252], // Slate 50
+                cardBorder: [226, 232, 240] // Slate 200
+            };
+
+            // --- HEADER SECTION ---
+            // Dark Background Strip
+            doc.setFillColor(colors.darkBg[0], colors.darkBg[1], colors.darkBg[2]);
+            doc.rect(0, 0, pageWidth, 40, 'F');
+
+            // Logo Drawing: Blue Hexagon with Dot
+            const drawLogo = (x: number, y: number, size: number) => {
+                doc.setDrawColor(colors.blue[0], colors.blue[1], colors.blue[2]);
+                doc.setLineWidth(2.5); // Thicker lines
+                
+                // Hexagon
+                const angle = Math.PI / 3;
+                const points: [number, number][] = [];
+                for (let i = 0; i < 6; i++) {
+                    points.push([
+                        x + size * Math.cos(i * angle),
+                        y + size * Math.sin(i * angle)
+                    ]);
+                }
+                
+                for (let i = 0; i < 6; i++) {
+                    const next = (i + 1) % 6;
+                    doc.line(points[i][0], points[i][1], points[next][0], points[next][1]);
+                }
+                
+                // Center Dot
+                doc.setFillColor(colors.blue[0], colors.blue[1], colors.blue[2]);
+                doc.circle(x, y, 2, 'F'); // Slightly larger dot
+            };
+
+            drawLogo(25, 20, 8);
+
+            // Title: DEV (White) HUB (Blue)
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
             
-            for (let i = 0; i < 6; i++) {
-                const next = (i + 1) % 6;
-                doc.line(points[i][0], points[i][1], points[next][0], points[next][1]);
-            }
+            doc.setTextColor(255, 255, 255);
+            doc.text('DEV', 40, 22);
             
-            // Center Dot
-            doc.setFillColor(colors.blue[0], colors.blue[1], colors.blue[2]);
-            doc.circle(x, y, 2, 'F'); // Slightly larger dot
-        };
+            const devWidth = doc.getTextWidth('DEV');
+            doc.setTextColor(colors.blue[0], colors.blue[1], colors.blue[2]);
+            doc.text('HUB', 40 + devWidth, 22);
 
-        drawLogo(25, 20, 8);
-
-        // Title: DEV (White) HUB (Blue)
-        doc.setFontSize(24);
-        doc.setFont('helvetica', 'bold');
-        
-        doc.setTextColor(255, 255, 255);
-        doc.text('DEV', 40, 22);
-        
-        const devWidth = doc.getTextWidth('DEV');
-        doc.setTextColor(colors.blue[0], colors.blue[1], colors.blue[2]);
-        doc.text('HUB', 40 + devWidth, 22);
-
-        // Metadata (Right aligned)
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('it-IT', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric'
-        });
-        const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-        doc.text(dateStr, pageWidth - 15, 18, { align: 'right' });
-        doc.text(timeStr, pageWidth - 15, 24, { align: 'right' });
-
-        let yPosition = 55;
-        
-        // --- STATISTICS SECTION ---
-        if (queryResult.length >= 2) {
-            const columns = Object.keys(queryResult[0]);
-            const numericColumns = columns.filter(col => {
-                return queryResult.every(row => 
-                    row[col] === null || row[col] === undefined || !isNaN(Number(row[col]))
-                );
+            // Metadata (Right aligned)
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('it-IT', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric'
             });
+            const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
             
-            if (numericColumns.length > 0) {
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+            doc.text(dateStr, pageWidth - 15, 18, { align: 'right' });
+            doc.text(timeStr, pageWidth - 15, 24, { align: 'right' });
+
+            let yPosition = 55;
+            
+            // --- STATISTICS SECTION ---
+            if (dataToExport.length > 0) {
+                const columns = Object.keys(dataToExport[0]);
+                const numericColumns = columns.filter(col => {
+                    return dataToExport.every(row => 
+                        row[col] === null || row[col] === undefined || !isNaN(Number(row[col]))
+                    );
+                });
+                
+                if (numericColumns.length > 0) {
+                    doc.setFontSize(12);
+                    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('STATISTICHE RAPIDE', 15, yPosition);
+                    
+                    // Decorative line under title
+                    doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                    doc.setLineWidth(0.5);
+                    doc.line(15, yPosition + 2, 60, yPosition + 2);
+                    
+                    yPosition += 10;
+                    
+                    // Calculate stats
+                    const statsData = numericColumns.slice(0, 4).map(col => {
+                        const values = dataToExport
+                            .map(row => Number(row[col]))
+                            .filter(val => !isNaN(val));
+                        
+                        if (values.length === 0) return null;
+                        
+                        const sum = values.reduce((a, b) => a + b, 0);
+                        const avg = sum / values.length;
+                        const min = Math.min(...values);
+                        const max = Math.max(...values);
+                        
+                        return {
+                            col,
+                            avg: avg.toLocaleString('it-IT', { maximumFractionDigits: 2 }),
+                            min: min.toLocaleString('it-IT'),
+                            max: max.toLocaleString('it-IT'),
+                            sum: sum.toLocaleString('it-IT', { maximumFractionDigits: 2 })
+                        };
+                    }).filter(Boolean);
+                    
+                    // Draw Cards
+                    if (statsData.length > 0) {
+                        const cardWidth = 85;
+                        const cardHeight = 35; // Increased height for better spacing
+                        const gap = 10;
+                        
+                        statsData.forEach((stat, index) => {
+                            if (stat) {
+                                const colIndex = index % 2;
+                                const rowIndex = Math.floor(index / 2);
+                                const xPos = 15 + (colIndex * (cardWidth + gap));
+                                const yPos = yPosition + (rowIndex * (cardHeight + gap));
+                                
+                                // Card Background
+                                doc.setFillColor(colors.cardBg[0], colors.cardBg[1], colors.cardBg[2]);
+                                doc.setDrawColor(colors.cardBorder[0], colors.cardBorder[1], colors.cardBorder[2]);
+                                doc.roundedRect(xPos, yPos, cardWidth, cardHeight, 2, 2, 'FD');
+                                
+                                // Accent Border (Left)
+                                doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                                doc.rect(xPos, yPos, 3, cardHeight, 'F'); // Thicker accent
+                                
+                                // --- Content Layout ---
+                                const contentX = xPos + 8;
+                                
+                                // Label (Top Left)
+                                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+                                doc.setFontSize(7);
+                                doc.setFont('helvetica', 'bold');
+                                doc.text(stat.col.toUpperCase(), contentX, yPos + 8);
+                                
+                                // Main Value (Average) - Large & Bold
+                                doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+                                doc.setFontSize(14);
+                                doc.text(stat.avg, contentX, yPos + 20);
+                                
+                                // Sub-label "Media" below value
+                                doc.setFontSize(7);
+                                doc.setFont('helvetica', 'normal');
+                                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+                                doc.text('Media', contentX, yPos + 26);
+
+                                // Secondary Stats (Right Side)
+                                const rightX = xPos + cardWidth - 8;
+                                
+                                doc.setFontSize(7);
+                                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+                                
+                                // Min
+                                doc.text('Min', rightX, yPos + 14, { align: 'right' });
+                                doc.setFontSize(9);
+                                doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+                                doc.text(stat.min, rightX, yPos + 20, { align: 'right' });
+                                
+                                // Max
+                                doc.setFontSize(7);
+                                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+                                doc.text('Max', rightX, yPos + 26, { align: 'right' });
+                                doc.setFontSize(9);
+                                doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+                                doc.text(stat.max, rightX, yPos + 32, { align: 'right' });
+                            }
+                        });
+                        
+                        yPosition += Math.ceil(statsData.length / 2) * (cardHeight + gap) + 15;
+                    }
+                }
+            }
+            
+                // --- TABLE SECTION ---
+            try {
                 doc.setFontSize(12);
                 doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
                 doc.setFont('helvetica', 'bold');
-                doc.text('STATISTICHE RAPIDE', 15, yPosition);
+                doc.text('DATI QUERY', 15, yPosition);
                 
-                // Decorative line under title
+                // Decorative line
                 doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
                 doc.setLineWidth(0.5);
-                doc.line(15, yPosition + 2, 60, yPosition + 2);
+                doc.line(15, yPosition + 2, 45, yPosition + 2);
                 
-                yPosition += 10;
+                yPosition += 8;
                 
-                // Calculate stats
-                const statsData = numericColumns.slice(0, 4).map(col => {
-                    const values = queryResult
-                        .map(row => Number(row[col]))
-                        .filter(val => !isNaN(val));
-                    
-                    if (values.length === 0) return null;
-                    
-                    const sum = values.reduce((a, b) => a + b, 0);
-                    const avg = sum / values.length;
-                    const min = Math.min(...values);
-                    const max = Math.max(...values);
-                    
-                    return {
-                        col,
-                        avg: avg.toLocaleString('it-IT', { maximumFractionDigits: 2 }),
-                        min: min.toLocaleString('it-IT'),
-                        max: max.toLocaleString('it-IT'),
-                        sum: sum.toLocaleString('it-IT', { maximumFractionDigits: 2 })
-                    };
-                }).filter(Boolean);
+                const tableColumns = Object.keys(dataToExport[0]).map(key => ({
+                    header: key,
+                    dataKey: key
+                }));
                 
-                // Draw Cards
-                if (statsData.length > 0) {
-                    const cardWidth = 85;
-                    const cardHeight = 35; // Increased height for better spacing
-                    const gap = 10;
-                    
-                    statsData.forEach((stat, index) => {
-                        if (stat) {
-                            const colIndex = index % 2;
-                            const rowIndex = Math.floor(index / 2);
-                            const xPos = 15 + (colIndex * (cardWidth + gap));
-                            const yPos = yPosition + (rowIndex * (cardHeight + gap));
-                            
-                            // Card Background
-                            doc.setFillColor(colors.cardBg[0], colors.cardBg[1], colors.cardBg[2]);
-                            doc.setDrawColor(colors.cardBorder[0], colors.cardBorder[1], colors.cardBorder[2]);
-                            doc.roundedRect(xPos, yPos, cardWidth, cardHeight, 2, 2, 'FD');
-                            
-                            // Accent Border (Left)
-                            doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-                            doc.rect(xPos, yPos, 3, cardHeight, 'F'); // Thicker accent
-                            
-                            // --- Content Layout ---
-                            const contentX = xPos + 8;
-                            
-                            // Label (Top Left)
-                            doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-                            doc.setFontSize(7);
-                            doc.setFont('helvetica', 'bold');
-                            doc.text(stat.col.toUpperCase(), contentX, yPos + 8);
-                            
-                            // Main Value (Average) - Large & Bold
-                            doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-                            doc.setFontSize(14);
-                            doc.text(stat.avg, contentX, yPos + 20);
-                            
-                            // Sub-label "Media" below value
-                            doc.setFontSize(7);
-                            doc.setFont('helvetica', 'normal');
-                            doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-                            doc.text('Media', contentX, yPos + 26);
+                // Explicit usage of autoTable
+                autoTable(doc, {
+                    startY: yPosition,
+                    columns: tableColumns,
+                    body: dataToExport,
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 3,
+                        textColor: [51, 65, 85], // Slate 700
+                        lineColor: [226, 232, 240], // Slate 200
+                        lineWidth: 0.1,
+                    },
+                    headStyles: {
+                        fillColor: [59, 130, 246], // Blue 500 (Replaces Emerald)
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'left',
+                    },
+                    alternateRowStyles: {
+                        fillColor: [248, 250, 252], // Slate 50
+                    },
+                    margin: { left: 15, right: 15 },
+                });
 
-                            // Secondary Stats (Right Side)
-                            const rightX = xPos + cardWidth - 8;
-                            
-                            // Min
-                            doc.text(`Min: ${stat.min}`, rightX, yPos + 10, { align: 'right' });
-                            
-                            // Max
-                            doc.text(`Max: ${stat.max}`, rightX, yPos + 16, { align: 'right' });
-                            
-                            // Sum (Colored)
-                            doc.setTextColor(colors.blue[0], colors.blue[1], colors.blue[2]);
-                            doc.setFont('helvetica', 'bold');
-                            doc.text(`Σ ${stat.sum}`, rightX, yPos + 26, { align: 'right' });
-                        }
-                    });
-                    
-                    yPosition += Math.ceil(statsData.length / 2) * (cardHeight + gap) + 10;
-                }
+            } catch (tableError) {
+                console.error('Error generating table:', tableError);
+                doc.text('Errore nella generazione della tabella: ' + (tableError as any).message, 15, yPosition + 10);
             }
-        }
-        
-        // --- DATA TABLE SECTION ---
-        doc.setFontSize(12);
-        doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-        doc.setFont('helvetica', 'bold');
-        doc.text('DATI QUERY', 15, yPosition);
-        
-        // Decorative line
-        doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-        doc.setLineWidth(0.5);
-        doc.line(15, yPosition + 2, 45, yPosition + 2);
-        
-        yPosition += 8;
-        
-        const tableColumns = Object.keys(queryResult[0]).map(key => ({
-            header: key,
-            dataKey: key
-        }));
-        
-        autoTable(doc, {
-            startY: yPosition,
-            columns: tableColumns,
-            body: queryResult,
-            styles: {
-                fontSize: 9,
-                cellPadding: 3,
-                textColor: [51, 65, 85], // Slate 700
-                lineColor: [226, 232, 240], // Slate 200
-                lineWidth: 0.1,
-            },
-            headStyles: {
-                fillColor: [59, 130, 246], // Blue 500 (Replaces Emerald)
-                textColor: [255, 255, 255],
-                fontStyle: 'bold',
-                halign: 'left',
-            },
-            alternateRowStyles: {
-                fillColor: [248, 250, 252], // Slate 50
-            },
-            margin: { left: 15, right: 15 },
-        });
-        
-        // --- FOOTER ---
-        const pageCount = (doc as any).internal.getNumberOfPages();
-        for(let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            const footerY = pageHeight - 10;
             
-            // Separator line
-            doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-            doc.setLineWidth(0.5);
-            doc.line(15, footerY - 5, pageWidth - 15, footerY - 5);
+            // --- FOOTER ---
+            const pageCount = (doc as any).internal.getNumberOfPages();
+            for(let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                const footerY = pageHeight - 10;
+                
+                // Separator line
+                doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                doc.setLineWidth(0.5);
+                doc.line(15, footerY - 5, pageWidth - 15, footerY - 5);
+                
+                doc.setFontSize(8);
+                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+                doc.text('Generated by DevHub - Serverless SQL', 15, footerY);
+                doc.text(`Pagina ${i} di ${pageCount}`, pageWidth - 15, footerY, { align: 'right' });
+            }
             
-            doc.setFontSize(8);
-            doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-            doc.text('Generated by DevHub - Serverless SQL', 15, footerY);
-            doc.text(`Pagina ${i} di ${pageCount}`, pageWidth - 15, footerY, { align: 'right' });
+            // Save PDF using Blob and Link (More robust than doc.save)
+            const filename = `DevHub_Report_${new Date().getTime()}.pdf`;
+            const pdfBlob = doc.output('blob');
+            const url = URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            console.log('PDF download triggered manually for:', filename);
+
+        } catch (err: any) {
+            console.error('Error generating PDF:', err);
+            alert('Errore nella generazione del PDF: ' + err.message);
         }
+    };
+
+    // Generate CSV Export
+    const generateCSV = () => {
+        const dataToExport = filteredResult || queryResult;
         
-        // Save PDF
-        const filename = `DevHub_Report_${new Date().getTime()}.pdf`;
-        doc.save(filename);
+        if (!dataToExport || dataToExport.length === 0) {
+            alert('Nessun dato da esportare. Esegui una query prima.');
+            return;
+        }
+
+        try {
+            // Get headers
+            const headers = Object.keys(dataToExport[0]);
+            
+            // Create CSV content
+            const csvContent = [
+                headers.join(','), // Header row
+                ...dataToExport.map(row => 
+                    headers.map(header => {
+                        const cell = row[header] === null || row[header] === undefined ? '' : row[header];
+                        // Escape quotes and wrap in quotes if contains comma or quote
+                        const stringCell = String(cell);
+                        if (stringCell.includes(',') || stringCell.includes('"') || stringCell.includes('\n')) {
+                            return `"${stringCell.replace(/"/g, '""')}"`;
+                        }
+                        return stringCell;
+                    }).join(',')
+                )
+            ].join('\n');
+            
+            // Create Blob and Download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `DevHub_Export_${new Date().getTime()}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            setIsDownloadMenuOpen(false);
+        } catch (err: any) {
+            console.error('Error generating CSV:', err);
+            alert('Errore nella generazione del CSV: ' + err.message);
+        }
     };
 
     return (
@@ -896,9 +986,9 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             <div className="flex justify-end">
                                 <button
                                     onClick={handleExecuteQuery}
-                                    disabled={isExecuting || tables.size === 0}
+                                    disabled={isExecuting}
                                     className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg ${
-                                        isExecuting || tables.size === 0
+                                        isExecuting
                                             ? 'bg-[#0a0a0a]/80 text-slate-400 shadow-black/20'
                                             : 'bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 active:bg-emerald-500/20 active:text-emerald-300 active:shadow-[0_0_15px_rgba(16,185,129,0.3)_inset] active:shadow-emerald-500/20 active:scale-95'
                                     }`}
@@ -977,14 +1067,39 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 <FileSpreadsheet size={12} />
                                                 Salva come Tabella
                                             </button>
-                                            <button
-                                                onClick={generatePDF}
-                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-emerald-500/30 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
-                                                title="Scarica report PDF professionale"
-                                            >
-                                                <FileDown size={12} />
-                                                Scarica PDF
-                                            </button>
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
+                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-emerald-500/30 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    title="Scarica risultati"
+                                                >
+                                                    <FileDown size={12} />
+                                                    Scarica
+                                                    <ChevronDown size={12} className={`transition-transform duration-200 ${isDownloadMenuOpen ? 'rotate-180' : ''}`} />
+                                                </button>
+                                                
+                                                {isDownloadMenuOpen && (
+                                                    <div className="absolute top-full right-0 mt-2 w-36 bg-[#121212]/90 backdrop-blur-xl border border-white/10 rounded-xl shadow-xl shadow-black/50 overflow-hidden z-50 flex flex-col py-1">
+                                                        <button
+                                                            onClick={() => {
+                                                                generatePDF();
+                                                                setIsDownloadMenuOpen(false);
+                                                            }}
+                                                            className="px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                                        >
+                                                            <FileDown size={12} className="text-red-400" />
+                                                            Scarica PDF
+                                                        </button>
+                                                        <button
+                                                            onClick={generateCSV}
+                                                            className="px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                                        >
+                                                            <FileSpreadsheet size={12} className="text-emerald-400" />
+                                                            Scarica CSV
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                             <button
                                                 onClick={() => setShowStatsModal(true)}
                                                 className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-purple-500/30 hover:text-purple-300 shadow-lg shadow-black/20 active:scale-95"

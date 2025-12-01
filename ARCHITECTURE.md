@@ -180,6 +180,32 @@ const handleCsvUpload = (parsedData: CsvData) => {
 }
 ```
 
+### Client-Side Export (PDF & CSV)
+
+DevHub implementa un sistema di esportazione **100% client-side**, senza generare file sul server:
+
+#### 1. PDF Generation (jsPDF + AutoTable)
+
+- **Rendering**: Il PDF viene disegnato programmaticamente in memoria.
+- **Dati**: Le tabelle vengono renderizzate usando `jspdf-autotable`.
+- **Download**: Viene generato un `Blob` e scaricato tramite un link temporaneo (`URL.createObjectURL`).
+
+#### 2. CSV Export
+
+- **Parsing**: I dati JSON vengono convertiti in stringhe CSV.
+- **Encoding**: Gestione corretta di caratteri speciali e newline.
+- **Download**: Blob `text/csv` creato al volo.
+
+```typescript
+// Esempio Architetturale Export
+const generateExport = (data) => {
+  const blob = new Blob([data], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  // ... trigger download ...
+  URL.revokeObjectURL(url); // Cleanup memoria
+};
+```
+
 ---
 
 ## 📁 Struttura Cartelle

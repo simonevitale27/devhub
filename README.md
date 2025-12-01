@@ -13,6 +13,7 @@
 - **Infinite SQL Gym**: 100+ exercises covering SELECT, JOINs, Aggregations, Subqueries, and advanced SQL patterns
 - **Debug Mode**: Simulation of troubleshooting scenarios with intentionally broken queries to practice error resolution
 - **Data Sandbox**: Import your CSV files (Drag & Drop) and query them locally with SQL - no server required
+- **Professional Reporting**: Export query results as **PDF Reports** (with stats & charts) or **CSV** files
 - **Insight Tools**: Automatic analysis of query results with statistics (Avg, Min, Max) and interactive Table Inspector
 - **Zero Latency**: All queries execute instantly in-browser - perfect for rapid iteration and learning
 
