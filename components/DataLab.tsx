@@ -11,6 +11,15 @@ import ResultStats from './ResultStats';
 import TableManagerSidebar, { TableData } from './TableManagerSidebar';
 import DataVisualization from './DataVisualization';
 import { useDebounce } from '../utils/useDebounce';
+import HealthReportModal from './HealthReportModal';
+import { analyzeTableHealth, DataHealthReport } from '../utils/dataHealthCheck';
+import GhostText from './GhostText';
+import PythonPanel from './PythonPanel';
+import EditorToggle from './EditorToggle';
+import { getGhostSuggestion, applyGhostSuggestion, GhostSuggestion, TableInfo } from '../utils/ghostTextSuggestions';
+import { sqlToPandas } from '../utils/sqlToPandas';
+import { formatSQL } from '../utils/formatSQL';
+import { formatPythonCode } from '../utils/formatPython';
 
 interface DataLabProps {
     onBack: () => void;
@@ -31,6 +40,11 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Health Check State
+    const [showHealthModal, setShowHealthModal] = useState(false);
+    const [healthReport, setHealthReport] = useState<DataHealthReport | null>(null);
+    const [healthTableName, setHealthTableName] = useState<string | null>(null);
+
     // Filter & Sort State
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [activeFilterColumn, setActiveFilterColumn] = useState<string | null>(null);
@@ -39,6 +53,11 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
     // Debounce search query to avoid excessive re-renders during typing
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+    // Ghost Text & Python Panel State
+    const [ghostSuggestion, setGhostSuggestion] = useState<GhostSuggestion | null>(null);
+    const [showPythonPanel, setShowPythonPanel] = useState(false);
+    const [pythonCode, setPythonCode] = useState('');
 
     // Get unique values for a column - memoized and LIMITED for performance
     const getUniqueValues = useCallback((column: string): string[] => {
@@ -248,23 +267,17 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         setQueryResult(null);
 
         try {
-            let result = executeQuery(sqlQuery);
-            
-            // Handle multi-statement results (e.g. CREATE; INSERT; SELECT)
-            // If result contains arrays, it means it's a list of results from multiple queries
-            // We want to display the last actual dataset (array of rows)
-            if (Array.isArray(result) && result.length > 0 && result.some(r => Array.isArray(r))) {
-                const lastDataset = [...result].reverse().find(r => Array.isArray(r));
-                if (lastDataset) {
-                    result = lastDataset;
-                }
-            }
-            
+            const result = executeQuery(sqlQuery);
             setQueryResult(result);
-            setFilteredResult(null); // Reset filters
-            setSearchQuery(''); // Reset search when new query is executed
+            setFilteredResult(null); // Reset filters when new query is executed
+            setFilters({});
+            setSortConfig(null);
+            setSearchQuery('');
+            
         } catch (err: any) {
-            setError(err.message || 'Errore nell\'esecuzione della query.');
+            setError(err.message || 'Errore durante l\'esecuzione della query');
+            setQueryResult(null);
+            setFilteredResult(null);
         } finally {
             setIsExecuting(false);
         }
@@ -395,15 +408,19 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     };
 
     // Drop column
+    // Drop column
     const handleDropColumn = (tableName: string, columnName: string) => {
+        console.log('handleDropColumn called:', { tableName, columnName });
         try {
             dropColumnInAlaSQL(tableName, columnName);
+            console.log('dropColumnInAlaSQL succeeded');
 
             setTables(prev => {
                 const newMap = new Map<string, TableData>(prev);
                 const tableData = newMap.get(tableName);
                 if (tableData) {
                     const newHeaders = tableData.headers.filter(h => h !== columnName);
+                    console.log('Updating table headers:', { old: tableData.headers, new: newHeaders });
                     newMap.set(tableName, {
                         ...tableData,
                         headers: newHeaders
@@ -411,8 +428,39 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 }
                 return newMap;
             });
+            console.log('handleDropColumn completed successfully');
         } catch (err: any) {
+            console.error('handleDropColumn error:', err);
             setError(err.message);
+        }
+    };
+
+    // Handle Health Check
+    const handleHealthCheck = (tableName: string) => {
+        try {
+            const tableData = tables.get(tableName);
+            if (!tableData) {
+                setError('Tabella non trovata');
+                return;
+            }
+
+            // Get data from AlaSQL
+            const data = alasql(`SELECT * FROM ${tableName}`);
+
+            if (!data || data.length === 0) {
+                setError('Nessun dato da analizzare');
+                return;
+            }
+
+            // Analyze data
+            const report = analyzeTableHealth(data, tableData.headers);
+
+            // Show modal
+            setHealthReport(report);
+            setHealthTableName(tableName);
+            setShowHealthModal(true);
+        } catch (err: any) {
+            setError(`Errore durante l'analisi: ${err.message}`);
         }
     };
 
@@ -523,12 +571,25 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         const dataToExport = filteredResult || queryResult;
         
         if (!dataToExport || dataToExport.length === 0) {
-            alert('Nessun dato da esportare. Esegui una query prima.');
+            setError('Nessun dato da esportare.');
             return;
         }
 
         try {
-            const doc = new jsPDF();
+        let doc: any;
+        try {
+                doc = new jsPDF();
+                console.log('generatePDF: jsPDF initialized');
+            } catch (e) {
+                console.warn('new jsPDF() failed, trying default export', e);
+                try {
+                    doc = new (jsPDF as any).default();
+                } catch (e2) {
+                    setError('CRITICAL ERROR: Failed to initialize jsPDF. ' + (e as any).message);
+                    return;
+                }
+            }
+
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             
@@ -759,6 +820,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                     },
                     margin: { left: 15, right: 15 },
                 });
+                console.log('generatePDF: Table generated');
 
             } catch (tableError) {
                 console.error('Error generating table:', tableError);
@@ -782,23 +844,16 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 doc.text(`Pagina ${i} di ${pageCount}`, pageWidth - 15, footerY, { align: 'right' });
             }
             
-            // Save PDF using Blob and Link (More robust than doc.save)
-            const filename = `DevHub_Report_${new Date().getTime()}.pdf`;
-            const pdfBlob = doc.output('blob');
-            const url = URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
             
-            console.log('PDF download triggered manually for:', filename);
-
+            // Save PDF directly (most reliable method)
+            const filename = `DevHub_Report_${new Date().getTime()}.pdf`;
+            doc.save(filename);
+            console.log('generatePDF: File saved as', filename);
+            
+            
         } catch (err: any) {
             console.error('Error generating PDF:', err);
-            alert('Errore nella generazione del PDF: ' + err.message);
+            setError('Errore nella generazione del PDF: ' + err.message);
         }
     };
 
@@ -807,7 +862,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         const dataToExport = filteredResult || queryResult;
         
         if (!dataToExport || dataToExport.length === 0) {
-            alert('Nessun dato da esportare. Esegui una query prima.');
+            setError('Nessun dato da esportare.');
             return;
         }
 
@@ -831,21 +886,23 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 )
             ].join('\n');
             
-            // Create Blob and Download
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
+            
+            // Use data URL for maximum browser compatibility
+            const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
             const link = document.createElement('a');
-            link.href = url;
+            link.href = dataUrl;
             link.download = `DevHub_Export_${new Date().getTime()}.csv`;
+            link.style.display = 'none';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            URL.revokeObjectURL(url);
             
             setIsDownloadMenuOpen(false);
+            console.log('generateCSV: Download completed');
+            
         } catch (err: any) {
             console.error('Error generating CSV:', err);
-            alert('Errore nella generazione del CSV: ' + err.message);
+            setError('Errore nella generazione del CSV: ' + err.message);
         }
     };
 
@@ -882,6 +939,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             onInsertColumn={handleInsertColumn}
                             onRenameColumn={handleRenameColumn}
                             onDeleteColumn={handleDropColumn}
+                            onHealthCheck={handleHealthCheck}
                         />
                     </div>
 
@@ -929,83 +987,146 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             </div>
                         </div>
 
-                        {/* SQL EDITOR SECTION (70% of column height) */}
+                        {/* SQL EDITOR / PYTHON PANEL SECTION (70% of column height) */}
+                        {/* SQL EDITOR / PYTHON PANEL SECTION (70% of column height) */}
                         <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex flex-col min-h-0">
                             <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
                             
+                            {/* Persistent Header */}
                             <div className="flex items-center justify-between mb-3 flex-shrink-0">
-                                <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                                    <Code2 size={12} className="text-slate-400" />
-                                    Editor SQL
-                                </h3>
-                                {tables.size > 0 && (
-                                    <div className="text-xs text-slate-400 bg-white/5 border border-white/10 rounded px-2 py-0.5 font-mono">
-                                        {tables.size} {tables.size === 1 ? 'tab' : 'tabs'}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="flex-1 bg-black/40 rounded-xl border border-white/10 shadow-inner overflow-hidden mb-3 group focus-within:border-white/20 transition-colors min-h-0">
-                                <textarea
-                                    ref={textareaRef}
-                                    value={sqlQuery}
-                                    onChange={(e) => setSqlQuery(e.target.value)}
-                                    placeholder="Scrivi la tua query qui..."
-                                    className="w-full h-32 bg-transparent p-4 font-mono text-sm text-slate-300 outline-none resize-none placeholder-slate-600"
-                                    spellCheck={false}
-                                    onKeyDown={(e) => {
-                                        // SQL Autocomplete on Tab
-                                        if (e.key === 'Tab') {
-                                            e.preventDefault();
-                                            const textarea = e.currentTarget;
-                                            const cursorPos = textarea.selectionStart;
-                                            const textBeforeCursor = sqlQuery.slice(0, cursorPos).toLowerCase();
-                                            
-                                            // Get last word before cursor
-                                            const words = textBeforeCursor.split(/\s+/);
-                                            const lastWord = words[words.length - 1] || '';
-                                            
-                                            // SQL Keywords to autocomplete
-                                            const keywords = ['SELECT', 'FROM', 'WHERE', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'AND', 'OR', 'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT', 'DISTINCT', 'AS', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP', 'SUM', 'AVG', 'COUNT', 'MAX', 'MIN'];
-                                            
-                                            const match = keywords.find(kw => kw.toLowerCase().startsWith(lastWord));
-                                            
-                                            if (match && lastWord.length > 0 && lastWord.length < match.length) {
-                                                const completion = match.slice(lastWord.length);
-                                                const newValue = sqlQuery.slice(0, cursorPos) + completion + sqlQuery.slice(cursorPos);
-                                                setSqlQuery(newValue);
-                                                setTimeout(() => {
-                                                    textarea.selectionStart = textarea.selectionEnd = cursorPos + completion.length;
-                                                }, 0);
+                                <EditorToggle
+                                    activeEditor={showPythonPanel ? 'python' : 'sql'}
+                                    onToggle={(editor) => {
+                                        if (editor === 'python') {
+                                            // ON-DEMAND TRANSLATION: Only translate when switching to Python
+                                            const translation = sqlToPandas(sqlQuery);
+                                            if (translation.error) {
+                                                console.warn('Python translation error:', translation.error);
                                             }
+                                            const fullCode = translation.imports.join('\n') + '\n\n' + translation.code;
+                                            setPythonCode(fullCode);
+                                            setShowPythonPanel(true);
+                                        } else {
+                                            setShowPythonPanel(false);
                                         }
                                     }}
                                 />
+                                <div className="flex items-center gap-2">
+                                    {tables.size > 0 && (
+                                        <div className="text-xs text-slate-400 bg-white/5 border border-white/10 rounded px-2 py-0.5 font-mono">
+                                            {tables.size} {tables.size === 1 ? 'tab' : 'tabs'}
+                                        </div>
+                                    )}
+                                    <button
+                                        onClick={() => {
+                                            if (showPythonPanel) {
+                                                const formatted = formatPythonCode(pythonCode);
+                                                setPythonCode(formatted);
+                                            } else {
+                                                const formatted = formatSQL(sqlQuery);
+                                                setSqlQuery(formatted);
+                                            }
+                                        }}
+                                        className="px-3 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg shadow-black/20 active:scale-95"
+                                        title="Formatta codice"
+                                    >
+                                        <Code2 size={12} />
+                                        Formatta
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={handleExecuteQuery}
-                                    disabled={isExecuting}
-                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg ${
-                                        isExecuting
-                                            ? 'bg-[#0a0a0a]/80 text-slate-400 shadow-black/20'
-                                            : 'bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 active:bg-emerald-500/20 active:text-emerald-300 active:shadow-[0_0_15px_rgba(16,185,129,0.3)_inset] active:shadow-emerald-500/20 active:scale-95'
-                                    }`}
-                                >
-                                    {isExecuting ? (
-                                        <>
-                                            <div className="w-3.5 h-3.5 border-2 border-slate-400/30 border-t-slate-400 rounded-full animate-spin"></div>
-                                            Esecuzione...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Play size={12} fill="currentColor" />
-                                            Esegui Query
-                                        </>
-                                    )}
-                                </button>
-                            </div>
+                            {/* Content Area */}
+                            {showPythonPanel ? (
+                                <PythonPanel 
+                                    code={pythonCode}
+                                />
+                            ) : (
+                                <>
+                                    <div className="flex-1 bg-black/40 rounded-xl border border-white/10 shadow-inner overflow-hidden mb-3 relative group focus-within:border-white/20 transition-colors min-h-0">
+                                        <textarea
+                                            ref={textareaRef}
+                                            value={sqlQuery}
+                                            onChange={(e) => {
+                                                const newValue = e.target.value;
+                                                setSqlQuery(newValue);
+                                                
+                                                // Generate ghost text suggestion
+                                                const cursorPos = e.target.selectionStart;
+                                                const tableInfos: TableInfo[] = Array.from(tables.entries()).map(([tableName, t]) => ({
+                                                    tableName: tableName,
+                                                    columns: t.headers
+                                                }));
+                                                
+                                                const suggestion = getGhostSuggestion(newValue, cursorPos, tableInfos);
+                                                setGhostSuggestion(suggestion);
+                                            }}
+                                            placeholder="Scrivi la tua query qui..."
+                                            className="w-full h-32 bg-transparent p-4 font-mono text-sm text-slate-300 outline-none resize-none placeholder-slate-600 relative z-10"
+                                            spellCheck={false}
+                                            onKeyDown={(e) => {
+                                                // Accept ghost suggestion on TAB
+                                                if (e.key === 'Tab' && ghostSuggestion) {
+                                                    e.preventDefault();
+                                                    const textarea = e.currentTarget;
+                                                    const cursorPos = textarea.selectionStart;
+                                                    const result = applyGhostSuggestion(sqlQuery, cursorPos, ghostSuggestion);
+                                                    setSqlQuery(result.newQuery);
+                                                    setGhostSuggestion(null);
+                                                    
+                                                    setTimeout(() => {
+                                                        textarea.selectionStart = textarea.selectionEnd = result.newCursorPosition;
+                                                    }, 0);
+                                                }
+                                            }}
+                                            onClick={() => {
+                                                // Update ghost suggestion on click (cursor position change)
+                                                const textarea = textareaRef.current;
+                                                if (textarea) {
+                                                    const cursorPos = textarea.selectionStart;
+                                                    const tableInfos: TableInfo[] = Array.from(tables.entries()).map(([tableName, t]) => ({
+                                                        tableName: tableName,
+                                                        columns: t.headers
+                                                    }));
+                                                    const suggestion = getGhostSuggestion(sqlQuery, cursorPos, tableInfos);
+                                                    setGhostSuggestion(suggestion);
+                                                }
+                                            }}
+                                        />
+                                        {/* Ghost Text Overlay */}
+                                        {ghostSuggestion && (
+                                            <GhostText 
+                                                suggestion={ghostSuggestion.text} 
+                                                textareaRef={textareaRef}
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div className="flex justify-end">
+                                        <button
+                                            onClick={handleExecuteQuery}
+                                            disabled={isExecuting}
+                                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg ${
+                                                isExecuting
+                                                    ? 'bg-[#0a0a0a]/80 text-slate-400 shadow-black/20'
+                                                    : 'bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 active:bg-emerald-500/20 active:text-emerald-300 active:shadow-[0_0_15px_rgba(16,185,129,0.3)_inset] active:shadow-emerald-500/20 active:scale-95'
+                                            }`}
+                                        >
+                                            {isExecuting ? (
+                                                <>
+                                                    <div className="w-3.5 h-3.5 border-2 border-slate-400/30 border-t-slate-400 rounded-full animate-spin"></div>
+                                                    Esecuzione...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Play size={12} fill="currentColor" />
+                                                    Esegui Query
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                     </div>
@@ -1053,7 +1174,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                     setSortConfig(null);
                                                     setError(null);
                                                 }}
-                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-red-500/30 hover:text-red-300 shadow-lg shadow-black/20 active:scale-95"
+                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-red-300 shadow-lg shadow-black/20 active:scale-95"
                                                 title="Reset risultati e query"
                                             >
                                                 <X size={12} />
@@ -1061,7 +1182,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                             </button>
                                             <button
                                                 onClick={() => setShowSaveModal(true)}
-                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-blue-500/30 hover:text-blue-300 shadow-lg shadow-black/20 active:scale-95"
+                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
                                                 title="Salva come nuova tabella"
                                             >
                                                 <FileSpreadsheet size={12} />
@@ -1070,7 +1191,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                             <div className="relative">
                                                 <button
                                                     onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
-                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-emerald-500/30 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-blue-300 shadow-lg shadow-black/20 active:scale-95"
                                                     title="Scarica risultati"
                                                 >
                                                     <FileDown size={12} />
@@ -1102,7 +1223,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                             </div>
                                             <button
                                                 onClick={() => setShowStatsModal(true)}
-                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-purple-500/30 hover:text-purple-300 shadow-lg shadow-black/20 active:scale-95"
+                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-purple-300 shadow-lg shadow-black/20 active:scale-95"
                                                 title="Visualizza statistiche dettagliate"
                                             >
                                                 <BarChart3 size={12} />
@@ -1378,6 +1499,18 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                     </div>
                 </div>
             )}
+
+            {/* Health Report Modal */}
+            <HealthReportModal
+                isOpen={showHealthModal}
+                onClose={() => {
+                    setShowHealthModal(false);
+                    setHealthReport(null);
+                    setHealthTableName(null);
+                }}
+                report={healthReport}
+                tableName={healthTableName || ''}
+            />
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, Edit2, Trash2, ChevronRight, X, Hash, Type, Calendar, CheckSquare } from 'lucide-react';
+import { Table, Edit2, Trash2, ChevronRight, X, Hash, Type, Calendar, CheckSquare, Activity } from 'lucide-react';
 
 export interface TableData {
     tableName: string;
@@ -18,6 +18,7 @@ interface TableManagerSidebarProps {
     onInsertColumn: (columnName: string) => void;
     onRenameColumn: (tableName: string, oldName: string, newName: string) => void;
     onDeleteColumn: (tableName: string, columnName: string) => void;
+    onHealthCheck: (tableName: string) => void;
 }
 
 const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
@@ -27,7 +28,8 @@ const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
     onQueryTable,
     onInsertColumn,
     onRenameColumn,
-    onDeleteColumn
+    onDeleteColumn,
+    onHealthCheck
 }) => {
     const [editingTable, setEditingTable] = useState<string | null>(null);
     const [newName, setNewName] = useState('');
@@ -247,6 +249,13 @@ const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
                                         {/* Actions (always visible) */}
                                         {editingTable !== tableName && (
                                             <div className="flex items-center gap-1 transition-opacity">
+                                                <button
+                                                    onClick={() => onHealthCheck(tableName)}
+                                                    className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-900/20 rounded transition-colors"
+                                                    title="Analizza salute dati"
+                                                >
+                                                    <Activity size={12} />
+                                                </button>
                                                 <button
                                                     onClick={() => handleStartEdit(tableName)}
                                                     className="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-blue-900/20 rounded transition-colors"

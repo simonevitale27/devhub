@@ -1,0 +1,6 @@
+id,name,email,phone,signup_date,score
+1,John Doe,john@example.com,123-456-7890,2023-01-01,100
+2,Jane Smith,jane.smith@test,9876543210,2023/02/15,95
+3,Bob Jones,,555-1234,invalid-date,-10
+4,Alice Brown,alice@company.com,1234567890,2023-03-10,80
+5,John Doe,john@example.com,123-456-7890,2023-01-01,100
