@@ -1,0 +1,9 @@
+id_ordine,user_id,prodotto,importo
+101,1,Laptop,1200
+102,2,Mouse,25
+103,1,Tastiera,80
+104,3,Monitor,350
+105,2,Webcam,90
+106,4,Cuffie,120
+107,5,SSD,200
+108,1,Mousepad,15

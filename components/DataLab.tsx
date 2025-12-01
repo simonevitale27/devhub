@@ -1,61 +1,244 @@
-import React, { useState, useRef } from 'react';
-import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, CheckCircle2, Cpu, Zap, FileCode, AlertTriangle, X, Eye } from 'lucide-react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
+import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import alasql from 'alasql';
 import { CsvData } from '../types';
-import { parseCsvFile, loadCsvToAlaSQL, executeQuery } from '../utils/csvParser';
-import { analyzeCode } from '../services/mockAiService';
+import { parseCsvFile, loadCsvToAlaSQL, executeQuery, generateTableName, clearAlaSQLTable, renameTableInAlaSQL, renameColumnInAlaSQL, dropColumnInAlaSQL } from '../utils/csvParser';
 import ResultsTable from './ResultsTable';
+import TableInspectorModal from './TableInspectorModal';
+import ResultStats from './ResultStats';
+import TableManagerSidebar, { TableData } from './TableManagerSidebar';
+import DataVisualization from './DataVisualization';
+import { useDebounce } from '../utils/useDebounce';
 
 interface DataLabProps {
     onBack: () => void;
 }
 
 const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
-    const [csvData, setCsvData] = useState<CsvData | null>(null);
-    const [sqlQuery, setSqlQuery] = useState('SELECT * FROM my_data LIMIT 10');
+    const [tables, setTables] = useState<Map<string, TableData>>(new Map());
+    const [sqlQuery, setSqlQuery] = useState('');
     const [queryResult, setQueryResult] = useState<any[] | null>(null);
-    const [aiAnalysis, setAiAnalysis] = useState<any | null>(null);
+    const [filteredResult, setFilteredResult] = useState<any[] | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const [isExecuting, setIsExecuting] = useState(false);
-    const [showAiCoach, setShowAiCoach] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [showTableInspector, setShowTableInspector] = useState(false);
+    const [selectedTableForInspector, setSelectedTableForInspector] = useState<string | null>(null);
+    const [showStatsModal, setShowStatsModal] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Handle file drop
+    // Filter & Sort State
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [activeFilterColumn, setActiveFilterColumn] = useState<string | null>(null);
+    const [filters, setFilters] = useState<Record<string, Set<string>>>({});
+    const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+
+    // Debounce search query to avoid excessive re-renders during typing
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+    // Get unique values for a column - memoized and LIMITED for performance
+    const getUniqueValues = useCallback((column: string): string[] => {
+        if (!queryResult) return [];
+        
+        // OPTIMIZATION: Limit to first 5000 rows for unique value extraction
+        const sampleSize = Math.min(5000, queryResult.length);
+        const sampleData = queryResult.slice(0, sampleSize);
+        
+        const values = new Set<string>();
+        
+        for (const row of sampleData) {
+            values.add(String(row[column]));
+            // OPTIMIZATION: Stop at 100 unique values to prevent UI overload
+            if (values.size >= 100) break;
+        }
+        
+        return Array.from(values).sort();
+    }, [queryResult]);
+
+    // Apply filters and sort - memoized for performance
+    const filteredResultMemo = useMemo(() => {
+        if (!queryResult) return null;
+
+        let result = [...queryResult];
+
+        // 1. Apply Search (debounced)
+        if (debouncedSearchQuery) {
+            const lowerQuery = debouncedSearchQuery.toLowerCase();
+            result = result.filter(row =>
+                Object.values(row).some(val =>
+                    String(val).toLowerCase().includes(lowerQuery)
+                )
+            );
+        }
+
+        // 2. Apply Column Filters
+        Object.entries(filters).forEach(([col, selectedValues]) => {
+            if ((selectedValues as Set<string>).size > 0) {
+                result = result.filter(row => (selectedValues as Set<string>).has(String(row[col])));
+            }
+        });
+
+        // 3. Apply Sort
+        if (sortConfig) {
+            result.sort((a, b) => {
+                const aVal = a[sortConfig.key];
+                const bVal = b[sortConfig.key];
+                
+                if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        return result;
+    }, [queryResult, debouncedSearchQuery, filters, sortConfig]);
+
+    // Sync filteredResultMemo with state
+    React.useEffect(() => {
+        setFilteredResult(filteredResultMemo);
+    }, [filteredResultMemo]);
+
+    const handleSort = useCallback((key: string, direction: 'asc' | 'desc') => {
+        setSortConfig({ key, direction });
+    }, []);
+
+    const toggleFilterValue = useCallback((column: string, value: string) => {
+        setFilters(prev => {
+            const newFilters = { ...prev };
+            if (!newFilters[column]) {
+                const allValues = getUniqueValues(column);
+                const newSet = new Set(allValues);
+                newSet.delete(value);
+                newFilters[column] = newSet;
+            } else {
+                const newSet = new Set(newFilters[column]);
+                if (newSet.has(value)) {
+                    newSet.delete(value);
+                } else {
+                    newSet.add(value);
+                }
+                newFilters[column] = newSet;
+            }
+            return newFilters;
+        });
+    }, [getUniqueValues]);
+
+    const isFilterActive = (column: string) => !!filters[column];
+    const isValueSelected = (column: string, value: string) => {
+        if (!filters[column]) return true; // Default all selected
+        return filters[column].has(value);
+    };
+
+    const selectAllFilters = (column: string) => {
+        setFilters(prev => {
+            const newFilters = { ...prev };
+            delete newFilters[column]; // Remove entry = all selected
+            return newFilters;
+        });
+    };
+
+    const clearAllFilters = (column: string) => {
+        setFilters(prev => {
+            const newFilters = { ...prev };
+            newFilters[column] = new Set(); // Empty set = none selected
+            return newFilters;
+        });
+    };
+
+    // Process multiple CSV file uploads
+    const handleMultipleFileUpload = async (files: File[]) => {
+        setError(null);
+        
+        for (const file of files) {
+            try {
+                // Parse CSV
+                const data = await parseCsvFile(file);
+                
+                // Infer Column Types
+                const columnTypes: Record<string, 'number' | 'string' | 'date' | 'boolean'> = {};
+                
+                data.headers.forEach((header, index) => {
+                    let inferredType: 'number' | 'string' | 'date' | 'boolean' = 'string';
+                    
+                    // Find first non-empty value to infer type
+                    for (const row of data.rows) {
+                        const val = row[index];
+                        if (val !== null && val !== undefined && String(val).trim() !== '') {
+                            const strVal = String(val).trim();
+                            const lowerVal = strVal.toLowerCase();
+                            
+                            // Boolean check
+                            if (lowerVal === 'true' || lowerVal === 'false') {
+                                inferredType = 'boolean';
+                            } 
+                            // Number check
+                            else if (!isNaN(Number(strVal))) {
+                                inferredType = 'number';
+                            } 
+                            // Date check (simple)
+                            else if (!isNaN(Date.parse(strVal)) && isNaN(Number(strVal))) {
+                                inferredType = 'date';
+                            }
+                            
+                            break; // Stop after finding first valid value
+                        }
+                    }
+                    columnTypes[header] = inferredType;
+                });
+                
+                // Generate unique table name
+                const existingTableNames = Array.from(tables.keys()) as string[];
+                const tableName = generateTableName(file.name, existingTableNames);
+                
+                // Load to AlaSQL with custom table name
+                loadCsvToAlaSQL(data, tableName);
+                
+                // Create TableData object
+                const tableData: TableData = {
+                    tableName,
+                    fileName: file.name,
+                    rowCount: data.rowCount,
+                    headers: data.headers,
+                    rows: data.rows,
+                    columnTypes
+                };
+                
+                // Add to tables map
+                setTables(prev => new Map(prev).set(tableName, tableData));
+                
+            } catch (err: any) {
+                setError(`Errore nel caricamento di ${file.name}: ${err.message}`);
+            }
+        }
+    };
+
+    // Handle multiple file drop
     const handleDrop = async (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
-        const file = e.dataTransfer.files[0];
-        if (file) {
-            await handleFileUpload(file);
+        const files = Array.from(e.dataTransfer.files) as File[];
+        if (files.length > 0) {
+            await handleMultipleFileUpload(files);
         }
     };
 
-    // Handle file selection
+    // Handle multiple file selection
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            await handleFileUpload(file);
+        const files = e.target.files ? Array.from(e.target.files) as File[] : [];
+        if (files.length > 0) {
+            await handleMultipleFileUpload(files);
         }
     };
 
-    // Process CSV file upload
-    const handleFileUpload = async (file: File) => {
-        setError(null);
-        try {
-            const data = await parseCsvFile(file);
-            loadCsvToAlaSQL(data);
-            setCsvData(data);
-            setQueryResult(null);
-            setAiAnalysis(null);
-        } catch (err: any) {
-            setError(err.message);
-        }
-    };
+
 
     // Execute SQL query
     const handleExecuteQuery = async () => {
-        if (!csvData) {
-            setError('Carica prima un file CSV per eseguire query.');
+        if (tables.size === 0) {
+            setError('Carica almeno un file CSV per eseguire query.');
             return;
         }
         if (!sqlQuery.trim()) {
@@ -66,16 +249,12 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         setIsExecuting(true);
         setError(null);
         setQueryResult(null);
-        setAiAnalysis(null);
 
         try {
-            // Execute query
             const result = executeQuery(sqlQuery);
             setQueryResult(result);
-
-            // Run AI analysis on the query
-            const analysis = await analyzeCode(sqlQuery, 'SQL', `Query su tabella: ${csvData.fileName}`);
-            setAiAnalysis(analysis);
+            setFilteredResult(result);
+            setSearchQuery(''); // Reset search when new query is executed
         } catch (err: any) {
             setError(err.message || 'Errore nell\'esecuzione della query.');
         } finally {
@@ -83,215 +262,872 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         }
     };
 
-    // Clear current CSV data
-    const handleClearData = () => {
-        setCsvData(null);
-        setQueryResult(null);
-        setAiAnalysis(null);
-        setSqlQuery('SELECT * FROM my_data LIMIT 10');
+    // Filter results based on search query
+    const handleSearchResults = (search: string) => {
+        setSearchQuery(search);
+        // Filtering is now handled by useEffect
+    };
+
+    // Rename table
+    const handleRenameTable = (oldName: string, newName: string) => {
+        try {
+            // Auto-fix: replace spaces with underscores and force lowercase
+            const sanitizedNewName = newName.trim().toLowerCase().replace(/\s+/g, '_');
+            
+            if (sanitizedNewName === oldName) return;
+
+            renameTableInAlaSQL(oldName, sanitizedNewName);
+            setTables(prev => {
+                const newMap = new Map();
+                // Iterate over existing entries to preserve order
+                for (const [key, val] of prev) {
+                    if (key === oldName) {
+                        // Replace the old key with the new key, keeping the value (updated with new name)
+                        const updatedTableData: TableData = {
+                            ...val,
+                            tableName: sanitizedNewName
+                        };
+                        newMap.set(sanitizedNewName, updatedTableData);
+                    } else {
+                        newMap.set(key, val);
+                    }
+                }
+                return newMap;
+            });
+        } catch (error: any) {
+            console.error("Error renaming table:", error);
+            setError(`Errore durante la ridenominazione della tabella: ${error.message}`);
+        }
+    };
+
+    // Delete table
+    const handleDeleteTable = (tableName: string) => {
+        try {
+            // Drop from AlaSQL
+            clearAlaSQLTable(tableName);
+            
+            // Remove from tables map
+            setTables(prev => {
+                const newMap = new Map(prev);
+                newMap.delete(tableName);
+                return newMap;
+            });
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
+
+    // Insert quick query for table
+    const handleQueryTable = (tableName: string) => {
+        setSqlQuery(`SELECT * FROM ${tableName} LIMIT 10`);
+    };
+
+    // Open table inspector for specific table
+    const handleOpenTableInspector = (tableName: string) => {
+        setSelectedTableForInspector(tableName);
+        setShowTableInspector(true);
+    };
+
+    // Insert column name into editor
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    
+    const handleInsertColumn = (columnName: string) => {
+        if (textareaRef.current) {
+            const textarea = textareaRef.current;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            
+            const before = text.substring(0, start);
+            const after = text.substring(end);
+            
+            const newText = before + columnName + after;
+            setSqlQuery(newText);
+            
+            // Restore focus and cursor position
+            setTimeout(() => {
+                textarea.focus();
+                const newCursorPos = start + columnName.length;
+                textarea.setSelectionRange(newCursorPos, newCursorPos);
+            }, 0);
+        } else {
+            // Fallback if ref not available (shouldn't happen)
+            setSqlQuery(prev => prev + columnName);
+        }
+    };
+
+    // Rename column
+    const handleRenameColumn = (tableName: string, oldName: string, newName: string) => {
+        try {
+            // Sanitize new name
+            const sanitizedNewName = newName.trim().replace(/\s+/g, '_');
+            if (sanitizedNewName === oldName) return;
+
+            // Update AlaSQL
+            renameColumnInAlaSQL(tableName, oldName, sanitizedNewName);
+
+            // Update state
+            setTables(prev => {
+                const newMap = new Map<string, TableData>(prev);
+                const tableData = newMap.get(tableName);
+                if (tableData) {
+                    // Update headers
+                    const newHeaders = tableData.headers.map(h => h === oldName ? sanitizedNewName : h);
+                    
+                    newMap.set(tableName, {
+                        ...tableData,
+                        headers: newHeaders
+                    });
+                }
+                return newMap;
+            });
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
+
+    // Drop column
+    const handleDropColumn = (tableName: string, columnName: string) => {
+        try {
+            dropColumnInAlaSQL(tableName, columnName);
+
+            setTables(prev => {
+                const newMap = new Map<string, TableData>(prev);
+                const tableData = newMap.get(tableName);
+                if (tableData) {
+                    const newHeaders = tableData.headers.filter(h => h !== columnName);
+                    newMap.set(tableName, {
+                        ...tableData,
+                        headers: newHeaders
+                    });
+                }
+                return newMap;
+            });
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
+
+    // Save as Table State
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [newTableName, setNewTableName] = useState('');
+    const [saveError, setSaveError] = useState<string | null>(null);
+
+    // Handle Save as Table
+    const handleSaveTable = () => {
+        if (!newTableName.trim()) {
+            setSaveError('Inserisci un nome valido per la tabella');
+            return;
+        }
+
+        // Sanitize name
+        const sanitizedName = newTableName.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+        
+        if (tables.has(sanitizedName)) {
+            setSaveError('Esiste già una tabella con questo nome');
+            return;
+        }
+
+        const dataToSave = filteredResult || queryResult;
+
+        if (!dataToSave || dataToSave.length === 0) {
+            setSaveError('Nessun dato da salvare');
+            return;
+        }
+
+        try {
+            // 1. Create Table in AlaSQL
+            const headers = Object.keys(dataToSave[0]);
+            const columnsDef = headers.map(h => `\`${h}\``).join(', ');
+            
+            // Drop if exists (safety check, though we checked tables map)
+            clearAlaSQLTable(sanitizedName);
+            
+            alasql(`CREATE TABLE ${sanitizedName} (${columnsDef})`);
+
+            // 2. Insert Data
+            // We use the direct data assignment for speed and safety
+            if (alasql.tables[sanitizedName]) {
+                alasql.tables[sanitizedName].data = dataToSave;
+            } else {
+                throw new Error('Errore nella creazione della tabella');
+            }
+
+            // 3. Infer Types for the new table
+            const columnTypes: Record<string, 'number' | 'string' | 'date' | 'boolean'> = {};
+            headers.forEach((header, index) => {
+                let inferredType: 'number' | 'string' | 'date' | 'boolean' = 'string';
+                for (const row of dataToSave) {
+                    const val = row[header];
+                    if (val !== null && val !== undefined && String(val).trim() !== '') {
+                        const strVal = String(val).trim();
+                        const lowerVal = strVal.toLowerCase();
+                        if (lowerVal === 'true' || lowerVal === 'false') inferredType = 'boolean';
+                        else if (!isNaN(Number(strVal))) inferredType = 'number';
+                        else if (!isNaN(Date.parse(strVal)) && isNaN(Number(strVal))) inferredType = 'date';
+                        break;
+                    }
+                }
+                columnTypes[header] = inferredType;
+            });
+
+            // 4. Update Sidebar State
+            const newTableData: TableData = {
+                tableName: sanitizedName,
+                fileName: 'Generated',
+                rowCount: dataToSave.length,
+                headers: headers,
+                rows: dataToSave.map(row => Object.values(row)), // Convert to array of arrays for TableData consistency if needed, but TableData interface says rows: any[][]. 
+                // Wait, parseCsvFile returns rows as any[][]? No, parseCsvFile returns CsvData where rows is any[][].
+                // But loadCsvToAlaSQL converts it to array of objects.
+                // Let's check TableData definition in TableManagerSidebar.
+                // It says rows: any[][].
+                // But wait, queryResult is array of objects.
+                // So I need to convert queryResult (objects) to array of arrays for TableData.
+                // Actually, TableData.rows is used for... let's check. 
+                // It seems TableData.rows is NOT used for querying, only for metadata?
+                // Let's check TableManagerSidebar usage. It doesn't seem to use .rows for display, only rowCount.
+                // But to be safe, let's convert.
+            };
+            
+            // Re-map rows to array of values matching headers order
+            const rowsAsArrays = dataToSave.map(row => headers.map(h => row[h]));
+            
+            setTables(prev => new Map(prev).set(sanitizedName, {
+                ...newTableData,
+                rows: rowsAsArrays,
+                columnTypes
+            }));
+
+            // Close Modal
+            setShowSaveModal(false);
+            setNewTableName('');
+            setSaveError(null);
+
+        } catch (err: any) {
+            setSaveError(`Errore: ${err.message}`);
+        }
+    };
+
+    // Generate PDF Report
+    const generatePDF = () => {
+        if (!queryResult || queryResult.length === 0) return;
+
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        
+        // --- COLORS ---
+        const colors = {
+            primary: [59, 130, 246], // Blue 500 (Replaces Emerald)
+            blue: [59, 130, 246], // Blue 500 (DevHub Brand)
+            darkBg: [0, 0, 0], // Pure Black
+            textLight: [248, 250, 252], // Slate 50
+            textDark: [51, 65, 85], // Slate 700
+            textMuted: [148, 163, 184], // Slate 400
+            cardBg: [248, 250, 252], // Slate 50
+            cardBorder: [226, 232, 240] // Slate 200
+        };
+
+        // --- HEADER SECTION ---
+        // Dark Background Strip
+        doc.setFillColor(colors.darkBg[0], colors.darkBg[1], colors.darkBg[2]);
+        doc.rect(0, 0, pageWidth, 40, 'F');
+
+        // Logo Drawing: Blue Hexagon with Dot
+        const drawLogo = (x: number, y: number, size: number) => {
+            doc.setDrawColor(colors.blue[0], colors.blue[1], colors.blue[2]);
+            doc.setLineWidth(2.5); // Thicker lines
+            
+            // Hexagon
+            const angle = Math.PI / 3;
+            const points: [number, number][] = [];
+            for (let i = 0; i < 6; i++) {
+                points.push([
+                    x + size * Math.cos(i * angle),
+                    y + size * Math.sin(i * angle)
+                ]);
+            }
+            
+            for (let i = 0; i < 6; i++) {
+                const next = (i + 1) % 6;
+                doc.line(points[i][0], points[i][1], points[next][0], points[next][1]);
+            }
+            
+            // Center Dot
+            doc.setFillColor(colors.blue[0], colors.blue[1], colors.blue[2]);
+            doc.circle(x, y, 2, 'F'); // Slightly larger dot
+        };
+
+        drawLogo(25, 20, 8);
+
+        // Title: DEV (White) HUB (Blue)
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.text('DEV', 40, 22);
+        
+        const devWidth = doc.getTextWidth('DEV');
+        doc.setTextColor(colors.blue[0], colors.blue[1], colors.blue[2]);
+        doc.text('HUB', 40 + devWidth, 22);
+
+        // Metadata (Right aligned)
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('it-IT', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric'
+        });
+        const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+        doc.text(dateStr, pageWidth - 15, 18, { align: 'right' });
+        doc.text(timeStr, pageWidth - 15, 24, { align: 'right' });
+
+        let yPosition = 55;
+        
+        // --- STATISTICS SECTION ---
+        if (queryResult.length >= 2) {
+            const columns = Object.keys(queryResult[0]);
+            const numericColumns = columns.filter(col => {
+                return queryResult.every(row => 
+                    row[col] === null || row[col] === undefined || !isNaN(Number(row[col]))
+                );
+            });
+            
+            if (numericColumns.length > 0) {
+                doc.setFontSize(12);
+                doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+                doc.setFont('helvetica', 'bold');
+                doc.text('STATISTICHE RAPIDE', 15, yPosition);
+                
+                // Decorative line under title
+                doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                doc.setLineWidth(0.5);
+                doc.line(15, yPosition + 2, 60, yPosition + 2);
+                
+                yPosition += 10;
+                
+                // Calculate stats
+                const statsData = numericColumns.slice(0, 4).map(col => {
+                    const values = queryResult
+                        .map(row => Number(row[col]))
+                        .filter(val => !isNaN(val));
+                    
+                    if (values.length === 0) return null;
+                    
+                    const sum = values.reduce((a, b) => a + b, 0);
+                    const avg = sum / values.length;
+                    const min = Math.min(...values);
+                    const max = Math.max(...values);
+                    
+                    return {
+                        col,
+                        avg: avg.toLocaleString('it-IT', { maximumFractionDigits: 2 }),
+                        min: min.toLocaleString('it-IT'),
+                        max: max.toLocaleString('it-IT'),
+                        sum: sum.toLocaleString('it-IT', { maximumFractionDigits: 2 })
+                    };
+                }).filter(Boolean);
+                
+                // Draw Cards
+                if (statsData.length > 0) {
+                    const cardWidth = 85;
+                    const cardHeight = 35; // Increased height for better spacing
+                    const gap = 10;
+                    
+                    statsData.forEach((stat, index) => {
+                        if (stat) {
+                            const colIndex = index % 2;
+                            const rowIndex = Math.floor(index / 2);
+                            const xPos = 15 + (colIndex * (cardWidth + gap));
+                            const yPos = yPosition + (rowIndex * (cardHeight + gap));
+                            
+                            // Card Background
+                            doc.setFillColor(colors.cardBg[0], colors.cardBg[1], colors.cardBg[2]);
+                            doc.setDrawColor(colors.cardBorder[0], colors.cardBorder[1], colors.cardBorder[2]);
+                            doc.roundedRect(xPos, yPos, cardWidth, cardHeight, 2, 2, 'FD');
+                            
+                            // Accent Border (Left)
+                            doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+                            doc.rect(xPos, yPos, 3, cardHeight, 'F'); // Thicker accent
+                            
+                            // --- Content Layout ---
+                            const contentX = xPos + 8;
+                            
+                            // Label (Top Left)
+                            doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+                            doc.setFontSize(7);
+                            doc.setFont('helvetica', 'bold');
+                            doc.text(stat.col.toUpperCase(), contentX, yPos + 8);
+                            
+                            // Main Value (Average) - Large & Bold
+                            doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+                            doc.setFontSize(14);
+                            doc.text(stat.avg, contentX, yPos + 20);
+                            
+                            // Sub-label "Media" below value
+                            doc.setFontSize(7);
+                            doc.setFont('helvetica', 'normal');
+                            doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+                            doc.text('Media', contentX, yPos + 26);
+
+                            // Secondary Stats (Right Side)
+                            const rightX = xPos + cardWidth - 8;
+                            
+                            // Min
+                            doc.text(`Min: ${stat.min}`, rightX, yPos + 10, { align: 'right' });
+                            
+                            // Max
+                            doc.text(`Max: ${stat.max}`, rightX, yPos + 16, { align: 'right' });
+                            
+                            // Sum (Colored)
+                            doc.setTextColor(colors.blue[0], colors.blue[1], colors.blue[2]);
+                            doc.setFont('helvetica', 'bold');
+                            doc.text(`Σ ${stat.sum}`, rightX, yPos + 26, { align: 'right' });
+                        }
+                    });
+                    
+                    yPosition += Math.ceil(statsData.length / 2) * (cardHeight + gap) + 10;
+                }
+            }
+        }
+        
+        // --- DATA TABLE SECTION ---
+        doc.setFontSize(12);
+        doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+        doc.setFont('helvetica', 'bold');
+        doc.text('DATI QUERY', 15, yPosition);
+        
+        // Decorative line
+        doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.setLineWidth(0.5);
+        doc.line(15, yPosition + 2, 45, yPosition + 2);
+        
+        yPosition += 8;
+        
+        const tableColumns = Object.keys(queryResult[0]).map(key => ({
+            header: key,
+            dataKey: key
+        }));
+        
+        autoTable(doc, {
+            startY: yPosition,
+            columns: tableColumns,
+            body: queryResult,
+            styles: {
+                fontSize: 9,
+                cellPadding: 3,
+                textColor: [51, 65, 85], // Slate 700
+                lineColor: [226, 232, 240], // Slate 200
+                lineWidth: 0.1,
+            },
+            headStyles: {
+                fillColor: [59, 130, 246], // Blue 500 (Replaces Emerald)
+                textColor: [255, 255, 255],
+                fontStyle: 'bold',
+                halign: 'left',
+            },
+            alternateRowStyles: {
+                fillColor: [248, 250, 252], // Slate 50
+            },
+            margin: { left: 15, right: 15 },
+        });
+        
+        // --- FOOTER ---
+        const pageCount = (doc as any).internal.getNumberOfPages();
+        for(let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            const footerY = pageHeight - 10;
+            
+            // Separator line
+            doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+            doc.setLineWidth(0.5);
+            doc.line(15, footerY - 5, pageWidth - 15, footerY - 5);
+            
+            doc.setFontSize(8);
+            doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+            doc.text('Generated by DevHub - Serverless SQL', 15, footerY);
+            doc.text(`Pagina ${i} di ${pageCount}`, pageWidth - 15, footerY, { align: 'right' });
+        }
+        
+        // Save PDF
+        const filename = `DevHub_Report_${new Date().getTime()}.pdf`;
+        doc.save(filename);
     };
 
     return (
         <div className="flex h-screen bg-transparent text-slate-200 font-sans overflow-hidden selection:bg-emerald-500 selection:text-white">
             
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0 pl-6 pr-6 h-full">
+            <div className="flex-1 flex flex-col min-w-0 px-6 h-full">
                 
                 {/* Header */}
                 <div className="h-16 flex items-center justify-between mt-4 mb-1 z-10 shrink-0">
                     <div className="flex items-center gap-4">
-                        <button onClick={onBack} className="h-[42px] w-[42px] flex items-center justify-center text-slate-400 hover:text-white bg-[#121212]/60 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95">
+                        <button onClick={onBack} className="h-[42px] w-[42px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95">
                             <Home size={18} />
                         </button>
                         <h2 className="font-bold text-lg text-white flex items-center gap-2">
                             <FileSpreadsheet className="text-emerald-500"/>
                             DataLab
-                            <span className="text-xs bg-emerald-900/30 text-emerald-400 px-2 py-0.5 rounded border border-emerald-900/50">CSV Sandbox</span>
+                            <span className="text-xs bg-emerald-900/30 text-emerald-400 px-2 py-0.5 rounded border border-emerald-900/50">Multi-Table</span>
                         </h2>
                     </div>
-                    
-                    <button
-                        onClick={() => setShowAiCoach(!showAiCoach)}
-                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all shadow-lg ${
-                            showAiCoach 
-                                ? 'bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/5 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/10 text-purple-300' 
-                                : 'bg-[#121212]/60 backdrop-blur-xl text-slate-400 hover:bg-white/5 shadow-black/20'
-                        }`}
-                    >
-                        {showAiCoach ? 'Nascondi' : 'Mostra'} AI Coach
-                    </button>
                 </div>
 
-                {/* Content Area with Scroll */}
-                <div className="flex-1 overflow-y-auto pb-6 custom-scrollbar">
-                    <div className="space-y-6">
+                {/* Three-Column Layout: 25% Tables | 25% Upload/Editor | 50% Results */}
+                <div className="flex-1 flex gap-4 min-h-0 overflow-hidden">
+                    
+                    {/* LEFT COLUMN - Table Manager (25%) */}
+                    <div className="w-1/4 flex flex-col pb-6">
+                        <TableManagerSidebar
+                            tables={tables}
+                            onRenameTable={handleRenameTable}
+                            onDeleteTable={handleDeleteTable}
+                            onQueryTable={handleOpenTableInspector}
+                            onInsertColumn={handleInsertColumn}
+                            onRenameColumn={handleRenameColumn}
+                            onDeleteColumn={handleDropColumn}
+                        />
+                    </div>
 
-                        {/* CSV UPLOAD SECTION */}
-                        <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl p-6 shadow-lg shadow-black/20 relative overflow-hidden group">
-                            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-colors duration-500"></div>
+                    {/* MIDDLE COLUMN - Upload + SQL Editor (25%) */}
+                    <div className="w-1/4 flex flex-col gap-4 pb-6 h-full">
+                        
+                        {/* UPLOAD AREA (30% of column height) */}
+                        <div className="h-[30%] bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex-shrink-0">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                             
-                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <Upload size={14} className="text-emerald-500" />
-                                Carica Dati CSV
-                            </h3>
-
-                            {!csvData ? (
-                                <div
-                                    onDrop={handleDrop}
-                                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                                    onDragLeave={() => setIsDragging(false)}
-                                    className={`border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 ${
-                                        isDragging 
-                                            ? 'border-emerald-500 bg-emerald-500/10 scale-[1.02]' 
-                                            : 'border-slate-700/50 hover:border-emerald-500/50 bg-black/20 hover:bg-black/30'
-                                    }`}
-                                >
-                                    <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center transition-all duration-500 ${isDragging ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800/50 text-slate-500'}`}>
-                                        <Upload size={32} strokeWidth={1.5} />
+                            <div
+                                onDrop={handleDrop}
+                                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                                onDragLeave={() => setIsDragging(false)}
+                                className={`h-full border-2 border-dashed rounded-xl p-4 text-center transition-all duration-300 flex items-center justify-center relative overflow-hidden ${
+                                    isDragging 
+                                        ? 'border-emerald-500 bg-emerald-500/10' 
+                                        : 'border-slate-700/50 hover:border-emerald-500/50 bg-black/20'
+                                }`}
+                            >
+                                {/* Content */}
+                                <div className="relative z-10 flex flex-col items-center justify-center gap-4 w-full">
+                                    <div className="text-center">
+                                        <p className="text-base text-slate-200 font-semibold">Trascina CSV qui</p>
+                                        <p className="text-sm text-slate-400 mt-0.5">Multi-file • Max 10MB</p>
                                     </div>
-                                    <p className="text-slate-300 font-medium mb-2">Trascina un file CSV qui</p>
-                                    <p className="text-xs text-slate-500 mb-6">oppure seleziona dal computer</p>
+                                    
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 transition-all active:scale-95 border border-white/10"
+                                        className="px-5 py-2 bg-gradient-to-b from-emerald-500/30 to-emerald-600/5 backdrop-blur-xl border border-white/10 shadow-[0_0_15px_rgba(16,185,129,0.4)_inset] shadow-lg shadow-emerald-500/20 rounded-lg text-emerald-300 hover:text-emerald-200 text-sm font-bold transition-all duration-300 hover:from-emerald-500/40 hover:to-emerald-600/10 active:scale-95 flex items-center gap-2"
                                     >
+                                        <Upload size={14} />
                                         Scegli File
                                     </button>
+
                                     <input
                                         ref={fileInputRef}
                                         type="file"
                                         accept=".csv"
+                                        multiple
                                         onChange={handleFileSelect}
                                         className="hidden"
                                     />
-                                    <p className="text-[10px] text-slate-600 mt-4 uppercase tracking-widest">Max 10MB • UTF-8</p>
                                 </div>
-                            ) : (
-                                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                    {/* CSV Info */}
-                                    <div className="bg-black/20 rounded-xl p-4 ring-1 ring-black/20 inset flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
-                                                <FileSpreadsheet size={20} />
-                                            </div>
-                                            <div>
-                                                <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">File Caricato</div>
-                                                <div className="text-white font-bold">{csvData.fileName}</div>
-                                            </div>
-                                            <div className="h-8 w-px bg-white/5 mx-2"></div>
-                                            <div className="flex gap-6 text-sm">
-                                                <div>
-                                                    <span className="text-slate-500 text-xs uppercase tracking-wider block">Righe</span>
-                                                    <span className="text-emerald-400 font-mono font-bold">{csvData.rowCount}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-slate-500 text-xs uppercase tracking-wider block">Colonne</span>
-                                                    <span className="text-emerald-400 font-mono font-bold">{csvData.headers.length}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={handleClearData}
-                                            className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors group"
-                                            title="Rimuovi file"
-                                        >
-                                            <X size={18} className="group-hover:rotate-90 transition-transform duration-300" />
-                                        </button>
-                                    </div>
-
-                                    {/* Preview */}
-                                    <div>
-                                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-                                            <Eye size={12} /> Preview (primi 5 righi)
-                                        </div>
-                                        <div className="bg-black/20 rounded-xl ring-1 ring-black/20 inset overflow-x-auto custom-scrollbar">
-                                            <table className="w-full text-xs">
-                                                <thead>
-                                                    <tr className="border-b border-white/5 bg-white/5">
-                                                        {csvData.headers.map((header, i) => (
-                                                            <th key={i} className="text-left p-3 font-bold text-emerald-400 whitespace-nowrap">
-                                                                {header}
-                                                            </th>
-                                                        ))}
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-white/5">
-                                                    {csvData.rows.slice(0, 5).map((row, i) => (
-                                                        <tr key={i} className="hover:bg-white/5 transition-colors">
-                                                            {row.map((cell, j) => (
-                                                                <td key={j} className="p-3 text-slate-300 whitespace-nowrap font-mono">
-                                                                    {cell !== null && cell !== undefined ? String(cell) : <span className="text-slate-600">-</span>}
-                                                                </td>
-                                                            ))}
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                            </div>
                         </div>
 
-                        {/* SQL EDITOR SECTION */}
-                        <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl p-6 shadow-lg shadow-black/20 relative overflow-hidden">
-                             <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-colors duration-500"></div>
+                        {/* SQL EDITOR SECTION (70% of column height) */}
+                        <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex flex-col min-h-0">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
                             
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                    <Code2 size={14} className="text-blue-500" />
+                            <div className="flex items-center justify-between mb-3 flex-shrink-0">
+                                <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                    <Code2 size={12} className="text-slate-400" />
                                     Editor SQL
                                 </h3>
-                                {csvData && (
-                                    <div className="text-xs text-blue-300 bg-blue-500/10 border border-blue-500/20 rounded px-2 py-1 font-mono">
-                                        FROM <span className="font-bold text-blue-400">my_data</span>
+                                {tables.size > 0 && (
+                                    <div className="text-xs text-slate-400 bg-white/5 border border-white/10 rounded px-2 py-0.5 font-mono">
+                                        {tables.size} {tables.size === 1 ? 'tab' : 'tabs'}
                                     </div>
                                 )}
                             </div>
 
-                            <div className="bg-[#0b1120] rounded-xl border border-white/5 shadow-inner overflow-hidden mb-4 group focus-within:border-blue-500/50 transition-colors">
+                            <div className="flex-1 bg-black/40 rounded-xl border border-white/10 shadow-inner overflow-hidden mb-3 group focus-within:border-white/20 transition-colors min-h-0">
                                 <textarea
+                                    ref={textareaRef}
                                     value={sqlQuery}
                                     onChange={(e) => setSqlQuery(e.target.value)}
-                                    placeholder="Scrivi la tua query SQL qui..."
-                                    className="w-full h-32 bg-transparent p-4 font-mono text-sm text-blue-100 outline-none resize-none placeholder-slate-600"
+                                    placeholder="Scrivi la tua query qui..."
+                                    className="w-full h-32 bg-transparent p-4 font-mono text-sm text-slate-300 outline-none resize-none placeholder-slate-600"
                                     spellCheck={false}
+                                    onKeyDown={(e) => {
+                                        // SQL Autocomplete on Tab
+                                        if (e.key === 'Tab') {
+                                            e.preventDefault();
+                                            const textarea = e.currentTarget;
+                                            const cursorPos = textarea.selectionStart;
+                                            const textBeforeCursor = sqlQuery.slice(0, cursorPos).toLowerCase();
+                                            
+                                            // Get last word before cursor
+                                            const words = textBeforeCursor.split(/\s+/);
+                                            const lastWord = words[words.length - 1] || '';
+                                            
+                                            // SQL Keywords to autocomplete
+                                            const keywords = ['SELECT', 'FROM', 'WHERE', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'AND', 'OR', 'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT', 'DISTINCT', 'AS', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP', 'SUM', 'AVG', 'COUNT', 'MAX', 'MIN'];
+                                            
+                                            const match = keywords.find(kw => kw.toLowerCase().startsWith(lastWord));
+                                            
+                                            if (match && lastWord.length > 0 && lastWord.length < match.length) {
+                                                const completion = match.slice(lastWord.length);
+                                                const newValue = sqlQuery.slice(0, cursorPos) + completion + sqlQuery.slice(cursorPos);
+                                                setSqlQuery(newValue);
+                                                setTimeout(() => {
+                                                    textarea.selectionStart = textarea.selectionEnd = cursorPos + completion.length;
+                                                }, 0);
+                                            }
+                                        }
+                                    }}
                                 />
                             </div>
 
                             <div className="flex justify-end">
                                 <button
                                     onClick={handleExecuteQuery}
-                                    disabled={isExecuting || !csvData}
-                                    className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none border border-white/10"
+                                    disabled={isExecuting || tables.size === 0}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg ${
+                                        isExecuting || tables.size === 0
+                                            ? 'bg-[#0a0a0a]/80 text-slate-400 shadow-black/20'
+                                            : 'bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 active:bg-emerald-500/20 active:text-emerald-300 active:shadow-[0_0_15px_rgba(16,185,129,0.3)_inset] active:shadow-emerald-500/20 active:scale-95'
+                                    }`}
                                 >
-                                    {isExecuting ? 'Esecuzione...' : 'Esegui Query'}
-                                    {!isExecuting && <Play size={14} fill="currentColor" />}
+                                    {isExecuting ? (
+                                        <>
+                                            <div className="w-3.5 h-3.5 border-2 border-slate-400/30 border-t-slate-400 rounded-full animate-spin"></div>
+                                            Esecuzione...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Play size={12} fill="currentColor" />
+                                            Esegui Query
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
 
+                    </div>
+
+                    {/* RIGHT COLUMN - Results (50%) */}
+                    <div className="w-1/2 flex flex-col gap-4 pb-6">
+                        
                         {/* ERROR MESSAGE */}
                         {error && (
                             <div className="bg-red-900/20 border border-red-900/50 rounded-xl p-4 flex items-start gap-3 shadow-lg animate-in slide-in-from-top-2">
                                 <AlertCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
                                 <div className="flex-1">
                                     <div className="text-sm font-bold text-red-400 mb-1">Errore</div>
-                                    <div className="text-sm text-slate-300">{error}</div>
+                                    <div className="text-sm text-slate-200">{error}</div>
                                 </div>
+                                <button
+                                    onClick={() => setError(null)}
+                                    className="p-1 text-slate-400 hover:text-white rounded transition-colors"
+                                >
+                                    <X size={16} />
+                                </button>
                             </div>
                         )}
 
                         {/* QUERY RESULTS */}
                         {queryResult && queryResult.length > 0 && (
-                            <div className="bg-[#121212]/60 backdrop-blur-xl rounded-2xl p-6 shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-1 h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] transition-colors duration-500"></div>
-                                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                    <TrendingUp size={14} className="text-purple-500" />
-                                    Risultati ({queryResult.length} {queryResult.length === 1 ? 'riga' : 'righe'})
-                                </h3>
-                                <div className="bg-black/20 rounded-xl ring-1 ring-black/20 inset overflow-x-auto custom-scrollbar">
-                                    <ResultsTable data={queryResult} />
+                            <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
+                                <div className="absolute top-0 left-0 w-1 h-full bg-slate-500 shadow-[0_0_10px_rgba(100,116,139,0.5)]"></div>
+                                
+                                {/* Results Header */}
+                                <div className="px-6 py-4 border-b border-white/5">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                            <TrendingUp size={14} className="text-slate-400" />
+                                            Risultati ({filteredResult ? filteredResult.length : queryResult.length} di {queryResult.length})
+                                        </h3>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setQueryResult(null);
+                                                    setFilteredResult(null);
+                                                    setSqlQuery('');
+                                                    setSearchQuery('');
+                                                    setFilters({});
+                                                    setSortConfig(null);
+                                                    setError(null);
+                                                }}
+                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-red-500/30 hover:text-red-300 shadow-lg shadow-black/20 active:scale-95"
+                                                title="Reset risultati e query"
+                                            >
+                                                <X size={12} />
+                                                Reset
+                                            </button>
+                                            <button
+                                                onClick={() => setShowSaveModal(true)}
+                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-blue-500/30 hover:text-blue-300 shadow-lg shadow-black/20 active:scale-95"
+                                                title="Salva come nuova tabella"
+                                            >
+                                                <FileSpreadsheet size={12} />
+                                                Salva come Tabella
+                                            </button>
+                                            <button
+                                                onClick={generatePDF}
+                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-emerald-500/30 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
+                                                title="Scarica report PDF professionale"
+                                            >
+                                                <FileDown size={12} />
+                                                Scarica PDF
+                                            </button>
+                                            <button
+                                                onClick={() => setShowStatsModal(true)}
+                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 border border-white/10 hover:border-purple-500/30 hover:text-purple-300 shadow-lg shadow-black/20 active:scale-95"
+                                                title="Visualizza statistiche dettagliate"
+                                            >
+                                                <BarChart3 size={12} />
+                                                Statistiche
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Search & Filter Bar */}
+                                    <div className="flex gap-2 relative">
+                                        <div className="relative flex-1">
+                                            <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={(e) => handleSearchResults(e.target.value)}
+                                                placeholder="Cerca nei risultati..."
+                                                className="w-full px-4 py-2 pl-10 bg-black/40 border border-white/10 rounded-lg text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-white/20 transition-colors"
+                                            />
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                                                <TrendingUp size={16} />
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Filter Button */}
+                                        <div className="relative">
+                                            <div className={`h-full rounded-lg border transition-colors flex items-center ${
+                                                showFilterMenu || Object.keys(filters).length > 0
+                                                    ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
+                                                    : 'bg-black/40 border-white/10 text-slate-400 hover:bg-white/5 hover:text-slate-200'
+                                            }`}>
+                                                <button
+                                                    onClick={() => setShowFilterMenu(!showFilterMenu)}
+                                                    className="h-full px-3 flex items-center gap-2"
+                                                    title="Filtra e Ordina"
+                                                >
+                                                    <Filter size={18} />
+                                                    {Object.keys(filters).length > 0 && (
+                                                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-black">
+                                                            {Object.keys(filters).length}
+                                                        </span>
+                                                    )}
+                                                </button>
+                                                
+                                                {Object.keys(filters).length > 0 && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setFilters({});
+                                                        }}
+                                                        className="h-full px-2 border-l border-emerald-500/30 hover:bg-emerald-500/30 hover:text-emerald-200 transition-colors rounded-r-lg"
+                                                        title="Rimuovi tutti i filtri"
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            {/* Filter Popover */}
+                                            {showFilterMenu && (
+                                                <div className="absolute right-0 top-full mt-2 w-64 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl shadow-black/50 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                                                    <div className="p-3 border-b border-white/5">
+                                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Colonna</h4>
+                                                        <select
+                                                            value={activeFilterColumn || ''}
+                                                            onChange={(e) => setActiveFilterColumn(e.target.value)}
+                                                            className="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500/50"
+                                                        >
+                                                            <option value="" disabled>Seleziona colonna...</option>
+                                                            {queryResult && queryResult.length > 0 && Object.keys(queryResult[0] || {}).map(col => (
+                                                                <option key={col} value={col}>{col}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+
+                                                    {activeFilterColumn && queryResult && queryResult.length > 0 && (
+                                                        <>
+                                                            {/* Sorting */}
+                                                            <div className="p-3 border-b border-white/5 flex gap-2">
+                                                                <button
+                                                                    onClick={() => handleSort(activeFilterColumn, 'asc')}
+                                                                    className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs transition-colors ${
+                                                                        sortConfig?.key === activeFilterColumn && sortConfig.direction === 'asc'
+                                                                            ? 'bg-emerald-500/20 text-emerald-300'
+                                                                            : 'bg-white/5 text-slate-400 hover:bg-white/10'
+                                                                    }`}
+                                                                >
+                                                                    <ArrowDownAZ size={14} /> A-Z
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleSort(activeFilterColumn, 'desc')}
+                                                                    className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs transition-colors ${
+                                                                        sortConfig?.key === activeFilterColumn && sortConfig.direction === 'desc'
+                                                                            ? 'bg-emerald-500/20 text-emerald-300'
+                                                                            : 'bg-white/5 text-slate-400 hover:bg-white/10'
+                                                                    }`}
+                                                                >
+                                                                    <ArrowUpAZ size={14} /> Z-A
+                                                                </button>
+                                                            </div>
+
+                                                            {/* Values */}
+                                                            <div className="max-h-48 overflow-y-auto custom-scrollbar p-2">
+                                                                <div className="flex items-center justify-between mb-2 px-1">
+                                                                    <span className="text-xs font-bold text-slate-500">Valori</span>
+                                                                    <div className="flex gap-2">
+                                                                        <button onClick={() => selectAllFilters(activeFilterColumn)} className="text-[10px] text-emerald-400 hover:underline">Tutti</button>
+                                                                        <button onClick={() => clearAllFilters(activeFilterColumn)} className="text-[10px] text-red-400 hover:underline">Nessuno</button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    {getUniqueValues(activeFilterColumn!).map((val: string) => (
+                                                                        <button
+                                                                            key={val}
+                                                                            onClick={() => toggleFilterValue(activeFilterColumn!, val)}
+                                                                            className="w-full flex items-center gap-2 px-2 py-1 rounded hover:bg-white/5 text-left group"
+                                                                        >
+                                                                            <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors ${
+                                                                                isValueSelected(activeFilterColumn!, val)
+                                                                                    ? 'bg-emerald-500 border-emerald-500'
+                                                                                    : 'border-slate-600 group-hover:border-slate-500'
+                                                                            }`}>
+                                                                                {isValueSelected(activeFilterColumn!, val) && <CheckSquare size={10} className="text-black" />}
+                                                                                {!isValueSelected(activeFilterColumn!, val) && <Square size={10} className="text-slate-600 group-hover:text-slate-500" />}
+                                                                            </div>
+                                                                            <span className="text-xs text-slate-300 truncate">{val}</span>
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Results Table */}
+                                <div className="flex-1 overflow-auto custom-scrollbar">
+                                    <ResultsTable data={filteredResult || queryResult} />
                                 </div>
                             </div>
                         )}
@@ -302,121 +1138,131 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             </div>
                         )}
 
+                        {/* Empty state quando non ci sono risultati */}
+                        {!queryResult && !error && (
+                            <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 flex items-center justify-center">
+                                <div className="text-center text-slate-600">
+                                    <TrendingUp size={48} className="mx-auto mb-4 opacity-30" />
+                                    <p className="text-sm font-bold uppercase tracking-wider">Nessun risultato</p>
+                                    <p className="text-xs mt-1">Esegui una query sui dati caricati</p>
+                                </div>
+                            </div>
+                        )}
+
                     </div>
                 </div>
             </div>
 
-            {/* AI COACH SIDEBAR */}
-            {showAiCoach && (
-                <div className="w-96 bg-[#121212]/60 backdrop-blur-xl flex flex-col overflow-hidden mt-7 mb-3 mr-6 rounded-3xl z-20 h-[calc(100vh-3.25rem)] shadow-2xl border border-white/5 animate-in slide-in-from-right duration-300">
-                    <div className="h-16 flex items-center px-6 border-b border-white/5 bg-white/5">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                            <Cpu size={14} className="text-purple-500" />
-                            AI Coach
-                        </span>
-                    </div>
+            {/* Table Inspector Modal */}
+            {showTableInspector && selectedTableForInspector && tables.get(selectedTableForInspector) && (
+                <TableInspectorModal
+                    tableName={selectedTableForInspector}
+                    schema={{
+                        tableName: tables.get(selectedTableForInspector)!.fileName,
+                        columns: tables.get(selectedTableForInspector)!.headers.map(header => ({
+                            name: header,
+                            type: 'VARCHAR',
+                            isPrimaryKey: false,
+                            isForeignKey: false
+                        }))
+                    }}
+                    onClose={() => {
+                        setShowTableInspector(false);
+                        setSelectedTableForInspector(null);
+                    }}
+                />
+            )}
 
-                    <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-                        {aiAnalysis ? (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                                
-                                {/* Score Header */}
-                                <div className="bg-slate-900/50 rounded-xl p-5 border border-slate-800 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-4 opacity-10">
-                                        <Cpu size={64} />
-                                    </div>
-                                    <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Valutazione</div>
-                                    <div className="flex items-baseline gap-2 relative z-10">
-                                        <div className={`text-4xl font-mono font-bold ${
-                                            aiAnalysis.score >= 7 ? 'text-emerald-400' : 
-                                            aiAnalysis.score >= 5 ? 'text-amber-400' : 'text-red-400'
-                                        }`}>
-                                            {aiAnalysis.score}
-                                        </div>
-                                        <div className="text-lg text-slate-600">/10</div>
-                                    </div>
-                                    <div className={`text-sm font-bold mt-2 relative z-10 ${
-                                        aiAnalysis.verdict === 'Funziona' ? 'text-emerald-400' : 
-                                        aiAnalysis.verdict === 'Non funziona' ? 'text-red-400' : 'text-amber-400'
-                                    }`}>
-                                        {aiAnalysis.verdict}
-                                    </div>
-                                </div>
-
-                                {/* Analysis Cards */}
-                                <div className="space-y-4">
-                                    
-                                    {/* Correctness */}
-                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-blue-500/30 transition-colors">
-                                        <h4 className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase mb-2">
-                                            <CheckCircle2 size={12}/> Correttezza
-                                        </h4>
-                                        <p className="text-slate-300 text-xs leading-relaxed">
-                                            {aiAnalysis.correctness}
-                                        </p>
-                                    </div>
-
-                                    {/* Style */}
-                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-pink-500/30 transition-colors">
-                                        <h4 className="flex items-center gap-2 text-xs font-bold text-pink-400 uppercase mb-2">
-                                            <FileCode size={12}/> Stile
-                                        </h4>
-                                        <p className="text-slate-300 text-xs leading-relaxed">
-                                            {aiAnalysis.style}
-                                        </p>
-                                    </div>
-
-                                    {/* Efficiency */}
-                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-amber-500/30 transition-colors">
-                                        <h4 className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase mb-2">
-                                            <Cpu size={12}/> Efficienza
-                                        </h4>
-                                        <p className="text-slate-300 text-xs leading-relaxed">
-                                            {aiAnalysis.efficiency}
-                                        </p>
-                                    </div>
-
-                                    {/* Alternative */}
-                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-emerald-500/30 transition-colors">
-                                        <h4 className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase mb-2">
-                                            <Zap size={12}/> Alternativa
-                                        </h4>
-                                        <div className="bg-[#0b1120] p-3 rounded border border-slate-800 mt-2">
-                                            <code className="font-mono text-xs text-emerald-200 block whitespace-pre-wrap">
-                                                {aiAnalysis.alternative}
-                                            </code>
-                                        </div>
-                                    </div>
-
-                                    {/* Priorities */}
-                                    {aiAnalysis.priority && aiAnalysis.priority.length > 0 && (
-                                        <div className="bg-purple-900/10 rounded-xl p-4 border border-purple-900/30">
-                                            <h4 className="flex items-center gap-2 text-xs font-bold text-purple-400 uppercase mb-2">
-                                                <AlertTriangle size={12}/> Priorità
-                                            </h4>
-                                            <ul className="list-decimal list-inside space-y-1 text-xs text-slate-300">
-                                                {aiAnalysis.priority.map((p: string, i: number) => (
-                                                    <li key={i} className="pl-1">{p}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-
-                                </div>
-
+            {/* Stats Modal */}
+            {showStatsModal && queryResult && queryResult.length > 0 && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-[#121212]/70 backdrop-blur-xl rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col m-4 overflow-hidden">
+                        <div className="flex items-center justify-between p-6 bg-gradient-to-b from-[#0a0a0a]/80 to-transparent backdrop-blur-sm">
+                            <div className="flex items-center gap-2">
+                                <BarChart3 size={18} className="text-purple-400" />
+                                <h2 className="text-lg font-bold text-white">Statistiche Risultati Query</h2>
+                                <span className="text-xs text-slate-400">
+                                    ({queryResult.length} righe)
+                                </span>
                             </div>
-                        ) : (
-                            <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
-                                <Cpu size={48} strokeWidth={1} className="mb-4" />
-                                <p className="text-xs font-medium uppercase tracking-widest text-center">
-                                    Esegui una query per<br />ricevere feedback AI
-                                </p>
-                            </div>
-                        )}
+                            <button
+                                onClick={() => setShowStatsModal(false)}
+                                className="p-2 text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                                aria-label="Chiudi"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="p-6 overflow-auto custom-scrollbar">
+                            <ResultStats
+                                data={queryResult}
+                                query={sqlQuery}
+                            />
+                        </div>
                     </div>
                 </div>
             )}
 
+            {/* Save Table Modal */}
+            {showSaveModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-md bg-[#121212] border border-white/10 rounded-xl shadow-2xl p-6 animate-in fade-in zoom-in duration-200">
+                        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <FileSpreadsheet className="text-blue-500" size={20} />
+                            Salva come Nuova Tabella
+                        </h3>
+                        
+                        <p className="text-sm text-slate-400 mb-4">
+                            Salva i risultati correnti (inclusi filtri e ordinamento) come una nuova tabella nel workspace.
+                        </p>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-medium text-slate-500 mb-1">
+                                    Nome Tabella
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newTableName}
+                                    onChange={(e) => {
+                                        setNewTableName(e.target.value);
+                                        setSaveError(null);
+                                    }}
+                                    placeholder="es. clean_sales_data"
+                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                                    autoFocus
+                                />
+                                {saveError && (
+                                    <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                                        <AlertCircle size={10} />
+                                        {saveError}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="flex gap-2 pt-2">
+                                <button
+                                    onClick={() => {
+                                        setShowSaveModal(false);
+                                        setNewTableName('');
+                                        setSaveError(null);
+                                    }}
+                                    className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-300 text-sm font-medium rounded-lg transition-colors"
+                                >
+                                    Annulla
+                                </button>
+                                <button
+                                    onClick={handleSaveTable}
+                                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition-colors shadow-lg shadow-blue-500/20"
+                                >
+                                    Salva Tabella
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

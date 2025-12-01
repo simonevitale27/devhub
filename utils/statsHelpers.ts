@@ -98,16 +98,21 @@ export const countNulls = (data: any[], columnName: string): number => {
 
 /**
  * Analyzes all columns in the result set and generates statistics
+ * OPTIMIZED: Samples max 5000 rows for large datasets
  */
 export const analyzeResultStats = (data: any[]): ColumnStats[] => {
   if (!data || data.length < 2) return [];
 
-  const firstRow = data[0];
+  // OPTIMIZATION: Sample max 5000 rows for statistics
+  const sampleSize = Math.min(5000, data.length);
+  const sampleData = data.slice(0, sampleSize);
+  
+  const firstRow = sampleData[0];
   const columnNames = Object.keys(firstRow);
 
   return columnNames.map(columnName => {
-    const nullCount = countNulls(data, columnName);
-    const isNumeric = isNumericColumn(data, columnName);
+    const nullCount = countNulls(sampleData, columnName);
+    const isNumeric = isNumericColumn(sampleData, columnName);
 
     const stats: ColumnStats = {
       columnName,
@@ -116,11 +121,12 @@ export const analyzeResultStats = (data: any[]): ColumnStats[] => {
     };
 
     if (isNumeric) {
-      stats.numericStats = calculateNumericStats(data, columnName);
+      stats.numericStats = calculateNumericStats(sampleData, columnName);
     } else {
-      stats.textStats = calculateTextStats(data, columnName);
+      stats.textStats = calculateTextStats(sampleData, columnName);
     }
 
     return stats;
   });
 };
+

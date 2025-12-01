@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { TableSchema } from '../types';
-import { X, Key, Link, Search } from 'lucide-react';
+import { X, Key, Link, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAllTableData } from '../services/sqlService';
+import { useDebounce } from '../utils/useDebounce';
 
 interface TableInspectorModalProps {
   tableName: string;
@@ -14,15 +15,21 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
   schema, 
   onClose 
 }) => {
+  const PAGE_SIZE = 500;
+  const [currentPage, setCurrentPage] = useState(1);
+  
   // Fetch all table data
   const allData = getAllTableData(tableName);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Debounce search for performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   // Filter data based on search term (search across all columns)
   const filteredData = useMemo(() => {
-    if (!searchTerm.trim()) return allData;
+    if (!debouncedSearchTerm.trim()) return allData;
     
-    const lowerSearch = searchTerm.toLowerCase();
+    const lowerSearch = debouncedSearchTerm.toLowerCase();
     return allData.filter((row) => {
       // Check if any column value contains the search term
       return schema.columns.some((col) => {
@@ -31,7 +38,21 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
         return String(value).toLowerCase().includes(lowerSearch);
       });
     });
-  }, [allData, searchTerm, schema.columns]);
+  }, [allData, debouncedSearchTerm, schema.columns]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const endIndex = Math.min(startIndex + PAGE_SIZE, filteredData.length);
+  
+  const paginatedData = useMemo(() => {
+    return filteredData.slice(startIndex, endIndex);
+  }, [filteredData, startIndex, endIndex]);
+
+  // Reset to page 1 when search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm]);
 
   const totalRows = allData.length;
   const filteredRows = filteredData.length;
@@ -90,6 +111,34 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
           </div>
         </div>
 
+        {/* Pagination Controls */}
+        {filteredData.length > PAGE_SIZE && (
+          <div className="flex items-center justify-between px-6 py-2 bg-[#0a0a0a]/40 border-b border-white/5">
+            <div className="text-xs text-slate-400">
+              Righe {startIndex + 1}-{endIndex} di {filteredRows.toLocaleString()}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="px-3 text-xs text-slate-300">
+                {currentPage} / {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Table Body - Scrollable */}
         <div className="flex-1 overflow-auto p-4 custom-scrollbar">
                 <div className="bg-black/20 ring-1 ring-black/20 inset rounded-2xl overflow-hidden flex-1 flex flex-col min-h-0">
@@ -130,7 +179,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
 
               {/* Table Body with Striped Rows */}
               <tbody className="font-mono text-xs">
-                {filteredData.length === 0 ? (
+                {paginatedData.length === 0 ? (
                   <tr>
                     <td 
                       colSpan={schema.columns.length} 
@@ -140,14 +189,14 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
                     </td>
                   </tr>
                 ) : (
-                  filteredData.map((row, idx) => (
-                    <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  paginatedData.map((row, idx) => (
+                    <tr key={startIndex + idx} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       {schema.columns.map((col) => (
                         <td 
                           key={col.name} 
                           className="px-4 py-2.5 whitespace-nowrap"
                         >
-                          {row[col.name] === null ? (
+                          {row[col.name] === null || row[col.name] === undefined || row[col.name] === '' ? (
                             <span className="text-red-400 opacity-60 italic">NULL</span>
                           ) : (
                             <span className="text-slate-300">
@@ -181,4 +230,5 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
   );
 };
 
-export default TableInspectorModal;
+export default React.memo(TableInspectorModal);
+

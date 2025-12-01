@@ -11,15 +11,20 @@
   "dependencies": {
     "@types/papaparse": "^5.5.0",
     "alasql": "^4.9.0",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.554.0",
     "papaparse": "^5.5.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-virtualized-auto-sizer": "^1.0.26",
+    "react-window": "^2.2.3",
     "recharts": "^3.5.1",
     "sql-formatter": "^15.6.10"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"

@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { TrendingUp, Hash, Type, AlertCircle } from 'lucide-react';
 import { analyzeResultStats, ColumnStats } from '../utils/statsHelpers';
 
-import DataVisualization from './DataVisualization';
 
 interface ResultStatsProps {
   data: any[];
@@ -15,12 +14,10 @@ const ResultStats: React.FC<ResultStatsProps> = ({ data, query }) => {
   // Don't show stats if less than 2 rows (unless it's a KPI which DataVisualization handles)
   // But ResultStats logic for cards requires stats.length > 0
   const showCards = data && data.length >= 2 && stats.length > 0;
+  const isSampled = data && data.length > 5000;
 
   return (
     <div className="space-y-6">
-      {/* Charts Section */}
-      <DataVisualization data={data} solutionQuery={query} />
-
       {/* Stats Cards Section */}
       {showCards && (
         <div className="p-4 bg-zinc-900/40 backdrop-blur-xl rounded-lg border border-white/5">
@@ -28,7 +25,7 @@ const ResultStats: React.FC<ResultStatsProps> = ({ data, query }) => {
             <TrendingUp size={16} className="text-blue-400" />
             <h3 className="text-sm font-bold text-slate-300">Statistiche Colonne</h3>
             <span className="text-xs text-slate-500">
-              ({data.length} righe analizzate)
+              ({isSampled ? '5,000' : data.length} righe analizzate{isSampled && ` di ${data.length.toLocaleString()}`})
             </span>
           </div>
 

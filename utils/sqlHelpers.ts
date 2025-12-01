@@ -205,25 +205,20 @@ export const getChartConfig = (query: string, data: any[]): ChartConfig => {
   }
 
   const columns = Object.keys(data[0]);
-  const hasAggregation = detectAggregation(query);
   
-  // No aggregation detected
-  if (!hasAggregation) {
-    return { type: 'none', xKey: '', yKey: '' };
-  }
-
-  // Single Value Result (1 row, 1 column with numeric value) - show as KPI
+  // 1. Single Value Result (1 row, 1 column with numeric value) - show as KPI
   if (data.length === 1 && columns.length === 1) {
     const value = data[0][columns[0]];
     // Check if it's a numeric value
-    if (typeof value === 'number' || !isNaN(Number(value))) {
+    if (typeof value === 'number' || (!isNaN(Number(value)) && value !== '' && value !== null)) {
       return { type: 'kpi', xKey: columns[0], yKey: columns[0] };
     }
   }
   
-  // Look for common patterns with GROUP BY
+  // 2. Explicit Aggregation / GROUP BY Logic
   const hasGroupBy = query.toUpperCase().includes('GROUP BY');
-  
+  const hasAggregation = detectAggregation(query);
+
   if (hasGroupBy && columns.length >= 2) {
     // First column is typically the group, second is the aggregate
     const xKey = columns[0];
@@ -238,9 +233,37 @@ export const getChartConfig = (query: string, data: any[]): ChartConfig => {
     return { type: 'bar', xKey, yKey };
   }
 
-  // Fallback: check if we have multiple rows with aggregation (might be GROUP BY without explicit keyword)
-  if (data.length > 1 && columns.length >= 2) {
-    return { type: 'bar', xKey: columns[0], yKey: columns[1] };
+  // 3. Auto-detection for non-aggregated data (e.g. "Product Name", "Price")
+  // Look for a string column (X-axis) and a number column (Y-axis)
+  if (columns.length >= 2) {
+    // Find first string column (candidate for X-axis) - must not be numeric string
+    const stringCol = columns.find(col => {
+       const val = data[0][col];
+       return typeof val === 'string' && isNaN(Number(val));
+    });
+
+    // Find first number column (candidate for Y-axis)
+    const numberCol = columns.find(col => {
+       const val = data[0][col];
+       return (typeof val === 'number') || (!isNaN(Number(val)) && val !== '' && val !== null);
+    });
+
+    if (stringCol && numberCol) {
+       // If we have a string label and a numeric value, we can chart it!
+       return { type: 'bar', xKey: stringCol, yKey: numberCol };
+    }
+  }
+
+  // Fallback for simple 2-column numeric data (e.g. x, y coordinates)
+  if (columns.length === 2) {
+      const col1 = columns[0];
+      const col2 = columns[1];
+      const val1 = data[0][col1];
+      const val2 = data[0][col2];
+      
+      if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
+          return { type: 'bar', xKey: col1, yKey: col2 };
+      }
   }
 
   return { type: 'none', xKey: '', yKey: '' };
@@ -274,18 +297,46 @@ export const convertToCSV = (data: any[]): string => {
 
 /**
  * Download data as CSV file
+ * Improved version with better browser compatibility
  */
 export const downloadCSV = (data: any[], filename: string = 'query_results.csv') => {
+  if (!data || data.length === 0) {
+    console.warn('No data to download');
+    return;
+  }
+  
   const csv = convertToCSV(data);
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
   
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  // For browsers that support the download attribute
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    link.style.position = 'fixed';
+    link.style.left = '-9999px';
+    
+    document.body.appendChild(link);
+    
+    // Use requestAnimationFrame to ensure the link is in the DOM before clicking
+    requestAnimationFrame(() => {
+      link.click();
+      
+      // Clean up after a short delay to ensure download starts
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+    });
+  } else {
+    // Fallback for older browsers
+    const url = `data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`;
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.click();
+  }
 };
+
