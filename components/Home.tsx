@@ -8,15 +8,29 @@ interface HomeProps {
 }
 
 // Modern Minimal Logo Component
-const DevHubLogo = ({ className, size = 24 }: { className?: string, size?: number }) => (
+const DevHubLogo = ({ 
+    className, 
+    size = 24, 
+    dotClassName = "w-1.5 h-1.5", 
+    showIcon = true,
+    text = <span>DEV<span className="text-blue-500">HUB</span></span> 
+}: { 
+    className?: string, 
+    size?: number, 
+    dotClassName?: string, 
+    showIcon?: boolean,
+    text?: React.ReactNode
+}) => (
     <div className={`flex items-center gap-2 font-black tracking-tighter select-none ${className}`}>
-        <div className="relative flex items-center justify-center">
-            <Hexagon size={size} className="text-blue-600 fill-blue-600/10" strokeWidth={2.5} />
-            <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+        {showIcon && (
+            <div className="relative flex items-center justify-center">
+                <Hexagon size={size} className="text-blue-600 fill-blue-600/10" strokeWidth={2.5} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className={`${dotClassName} bg-blue-400 rounded-full animate-pulse`}></div>
+                </div>
             </div>
-        </div>
-        <span>DEV<span className="text-blue-500">HUB</span></span>
+        )}
+        {text}
     </div>
 );
 
@@ -32,7 +46,11 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
             {/* Navbar */}
             <nav className="h-24 px-8 md:px-16 flex items-center justify-between relative z-20 shrink-0">
-                <DevHubLogo size={32} className="text-2xl text-white" />
+                <DevHubLogo 
+                    size={32} 
+                    className="text-2xl text-white" 
+                    text={<span>D<span className="text-blue-500">H</span></span>}
+                />
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md px-3 py-1 rounded-full ring-1 ring-white/10 shadow-lg">
                     Beta v1.0
                 </div>
@@ -42,10 +60,10 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <main className="flex-1 flex flex-col items-center justify-center px-6 relative z-10 pb-40">
 
                 <div className="text-center mb-16 relative">
-                    <h1 className="text-5xl md:text-7xl font-marker text-white tracking-tight animate-float drop-shadow-2xl">
-                        MASTER YOUR <br />
-                        <span className="text-blue-500">STACK</span>
-                    </h1>
+                    <DevHubLogo 
+                        showIcon={false}
+                        className="text-6xl md:text-8xl text-white drop-shadow-2xl" 
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
