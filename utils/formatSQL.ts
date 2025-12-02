@@ -1,5 +1,5 @@
 /**
- * Format SQL query with proper indentation and spacing
+ * Format SQL query with proper indentation, spacing, and uppercase keywords
  */
 export function formatSQL(sql: string): string {
     if (!sql || !sql.trim()) return sql;
@@ -9,16 +9,34 @@ export function formatSQL(sql: string): string {
     // Normalize whitespace
     formatted = formatted.replace(/\s+/g, ' ');
     
-    // Add line breaks before major keywords
+    // List of SQL keywords to uppercase
     const keywords = [
+        'SELECT', 'FROM', 'WHERE', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'OUTER', 
+        'FULL', 'CROSS', 'ON', 'AND', 'OR', 'NOT', 'IN', 'EXISTS', 'BETWEEN',
+        'LIKE', 'IS', 'NULL', 'AS', 'GROUP', 'BY', 'HAVING', 'ORDER', 'ASC', 
+        'DESC', 'LIMIT', 'OFFSET', 'UNION', 'INTERSECT', 'EXCEPT', 'DISTINCT',
+        'ALL', 'ANY', 'SOME', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'INTO',
+        'VALUES', 'INSERT', 'UPDATE', 'DELETE', 'SET', 'CREATE', 'TABLE',
+        'DROP', 'ALTER', 'ADD', 'COLUMN', 'PRIMARY', 'KEY', 'FOREIGN',
+        'REFERENCES', 'INDEX', 'VIEW', 'WITH', 'RECURSIVE'
+    ];
+    
+    // Uppercase all keywords while preserving identifiers
+    keywords.forEach(keyword => {
+        const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+        formatted = formatted.replace(regex, keyword.toUpperCase());
+    });
+    
+    // Add line breaks before major keywords
+    const lineBreakKeywords = [
         'SELECT', 'FROM', 'WHERE', 'JOIN', 'INNER JOIN', 'LEFT JOIN', 
         'RIGHT JOIN', 'OUTER JOIN', 'ON', 'GROUP BY', 'HAVING', 
         'ORDER BY', 'LIMIT', 'OFFSET', 'UNION', 'INTERSECT', 'EXCEPT'
     ];
     
-    keywords.forEach(keyword => {
+    lineBreakKeywords.forEach(keyword => {
         const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
-        formatted = formatted.replace(regex, `\n${keyword}`);
+        formatted = formatted.replace(regex, `\n${keyword.toUpperCase()}`);
     });
     
     // Special handling for AND/OR in WHERE clauses

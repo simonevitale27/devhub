@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown } from 'lucide-react';
+import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown, Copy, Check, History as HistoryIcon, XCircle as XCircleIcon } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import alasql from 'alasql';
@@ -19,7 +19,7 @@ import EditorToggle from './EditorToggle';
 import { getGhostSuggestion, applyGhostSuggestion, GhostSuggestion, TableInfo } from '../utils/ghostTextSuggestions';
 import { sqlToPandas } from '../utils/sqlToPandas';
 import { formatSQL } from '../utils/formatSQL';
-import { formatPythonCode } from '../utils/formatPython';
+import { formatPythonCode, copyToClipboard } from '../utils/formatPython';
 
 interface DataLabProps {
     onBack: () => void;
@@ -58,6 +58,8 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     const [ghostSuggestion, setGhostSuggestion] = useState<GhostSuggestion | null>(null);
     const [showPythonPanel, setShowPythonPanel] = useState(false);
     const [pythonCode, setPythonCode] = useState('');
+    const [copiedCode, setCopiedCode] = useState(false);
+    const [queryHistory, setQueryHistory] = useState<string[]>([]);
 
     // Get unique values for a column - memoized and LIMITED for performance
     const getUniqueValues = useCallback((column: string): string[] => {
@@ -257,6 +259,17 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
     // Execute SQL query
     const handleExecuteQuery = async () => {
+        // Add to history before execution
+        if (sqlQuery && sqlQuery.trim()) {
+            setQueryHistory((prev) => {
+                // Remove duplicates, add to front, keep max 5
+                const newHistory = [
+                    sqlQuery,
+                    ...prev.filter((q) => q !== sqlQuery),
+                ].slice(0, 5);
+                return newHistory;
+            });
+        }
         if (!sqlQuery.trim()) {
             setError('Inserisci una query SQL valida.');
             return;
@@ -384,10 +397,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
             const sanitizedNewName = newName.trim().replace(/\s+/g, '_');
             if (sanitizedNewName === oldName) return;
 
-            // Update AlaSQL
-            renameColumnInAlaSQL(tableName, oldName, sanitizedNewName);
-
-            // Update state
+            // Update state first
             setTables(prev => {
                 const newMap = new Map<string, TableData>(prev);
                 const tableData = newMap.get(tableName);
@@ -395,9 +405,29 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                     // Update headers
                     const newHeaders = tableData.headers.map(h => h === oldName ? sanitizedNewName : h);
                     
-                    newMap.set(tableName, {
+                    // Update columnTypes map with new column name
+                    const newColumnTypes = { ...tableData.columnTypes };
+                    if (oldName in newColumnTypes) {
+                        newColumnTypes[sanitizedNewName] = newColumnTypes[oldName];
+                        delete newColumnTypes[oldName];
+                    }
+                    
+                    const updatedTableData = {
                         ...tableData,
-                        headers: newHeaders
+                        headers: newHeaders,
+                        columnTypes: newColumnTypes
+                    };
+                    
+                    newMap.set(tableName, updatedTableData);
+                    
+                    // Recreate AlaSQL table entirely from updated state
+                    clearAlaSQLTable(tableName);
+                    loadCsvToAlaSQL({
+                        tableName,
+                        fileName: updatedTableData.fileName,
+                        headers: newHeaders,
+                        rows: updatedTableData.rows,
+                        rowCount: updatedTableData.rowCount
                     });
                 }
                 return newMap;
@@ -408,29 +438,51 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     };
 
     // Drop column
-    // Drop column
     const handleDropColumn = (tableName: string, columnName: string) => {
-        console.log('handleDropColumn called:', { tableName, columnName });
         try {
-            dropColumnInAlaSQL(tableName, columnName);
-            console.log('dropColumnInAlaSQL succeeded');
-
+            // Update state first
             setTables(prev => {
                 const newMap = new Map<string, TableData>(prev);
                 const tableData = newMap.get(tableName);
                 if (tableData) {
+                    // Find column index to remove
+                    const columnIndex = tableData.headers.indexOf(columnName);
+                    
+                    // Update headers (remove deleted column)
                     const newHeaders = tableData.headers.filter(h => h !== columnName);
-                    console.log('Updating table headers:', { old: tableData.headers, new: newHeaders });
-                    newMap.set(tableName, {
+                    
+                    // Update rows (remove value at column index from each row)
+                    const newRows = tableData.rows.map(row => 
+                        row.filter((_, index) => index !== columnIndex)
+                    );
+                    
+                    // Update columnTypes (remove deleted column)
+                    const newColumnTypes = { ...tableData.columnTypes };
+                    delete newColumnTypes[columnName];
+                    
+                    const updatedTableData = {
                         ...tableData,
-                        headers: newHeaders
+                        headers: newHeaders,
+                        rows: newRows,
+                        columnTypes: newColumnTypes,
+                        rowCount: newRows.length
+                    };
+                    
+                    newMap.set(tableName, updatedTableData);
+                    
+                    // Recreate AlaSQL table entirely from updated state
+                    clearAlaSQLTable(tableName);
+                    loadCsvToAlaSQL({
+                        tableName,
+                        fileName: updatedTableData.fileName,
+                        headers: newHeaders,
+                        rows: newRows,
+                        rowCount: newRows.length
                     });
                 }
                 return newMap;
             });
-            console.log('handleDropColumn completed successfully');
         } catch (err: any) {
-            console.error('handleDropColumn error:', err);
             setError(err.message);
         }
     };
@@ -576,14 +628,18 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         }
 
         try {
-        let doc: any;
-        try {
-                doc = new jsPDF();
-                console.log('generatePDF: jsPDF initialized');
+            // Determine orientation based on number of columns
+            const numColumns = dataToExport.length > 0 ? Object.keys(dataToExport[0]).length : 0;
+            const orientation = numColumns > 6 ? 'landscape' : 'portrait';
+            
+            let doc: any;
+            try {
+                doc = new jsPDF({ orientation });
+                console.log(`generatePDF: jsPDF initialized (${orientation})`);
             } catch (e) {
                 console.warn('new jsPDF() failed, trying default export', e);
                 try {
-                    doc = new (jsPDF as any).default();
+                    doc = new (jsPDF as any).default({ orientation });
                 } catch (e2) {
                     setError('CRITICAL ERROR: Failed to initialize jsPDF. ' + (e as any).message);
                     return;
@@ -797,28 +853,41 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                     dataKey: key
                 }));
                 
-                // Explicit usage of autoTable
+                // Dynamic styling based on column count
+                const isWideTable = numColumns > 6;
+                
+                // Explicit usage of autoTable with optimized settings for wide tables
                 autoTable(doc, {
                     startY: yPosition,
                     columns: tableColumns,
                     body: dataToExport,
                     styles: {
-                        fontSize: 9,
-                        cellPadding: 3,
+                        fontSize: isWideTable ? 6 : 9,
+                        cellPadding: isWideTable ? 1.5 : 3,
                         textColor: [51, 65, 85], // Slate 700
                         lineColor: [226, 232, 240], // Slate 200
                         lineWidth: 0.1,
+                        overflow: 'linebreak',
+                        cellWidth: 'wrap',
                     },
                     headStyles: {
-                        fillColor: [59, 130, 246], // Blue 500 (Replaces Emerald)
+                        fillColor: [59, 130, 246], // Blue 500
                         textColor: [255, 255, 255],
                         fontStyle: 'bold',
                         halign: 'left',
+                        fontSize: isWideTable ? 7 : 10,
                     },
                     alternateRowStyles: {
                         fillColor: [248, 250, 252], // Slate 50
                     },
                     margin: { left: 15, right: 15 },
+                    tableWidth: 'auto',
+                    columnStyles: isWideTable ? Object.fromEntries(
+                        tableColumns.map((col, idx) => [
+                            idx,
+                            { cellWidth: 'auto', minCellWidth: 15 }
+                        ])
+                    ) : {},
                 });
                 console.log('generatePDF: Table generated');
 
@@ -999,24 +1068,35 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     onToggle={(editor) => {
                                         if (editor === 'python') {
                                             // ON-DEMAND TRANSLATION: Only translate when switching to Python
+                                            if (!sqlQuery || !sqlQuery.trim()) {
+                                                setPythonCode('# Scrivi una query SQL e premi il toggle per convertirla in Python');
+                                                setShowPythonPanel(true);
+                                                return;
+                                            }
+                                            
                                             const translation = sqlToPandas(sqlQuery);
+                                            console.log('SQL to Python translation:', {
+                                                sql: sqlQuery,
+                                                error: translation.error,
+                                                imports: translation.imports,
+                                                code: translation.code
+                                            });
+                                            
                                             if (translation.error) {
                                                 console.warn('Python translation error:', translation.error);
+                                                setPythonCode(`# Errore di traduzione: ${translation.error}\n\n${translation.code}`);
+                                            } else {
+                                                const fullCode = translation.imports.join('\n') + '\n\n' + translation.code;
+                                                setPythonCode(fullCode);
                                             }
-                                            const fullCode = translation.imports.join('\n') + '\n\n' + translation.code;
-                                            setPythonCode(fullCode);
                                             setShowPythonPanel(true);
                                         } else {
                                             setShowPythonPanel(false);
                                         }
                                     }}
                                 />
-                                <div className="flex items-center gap-2">
-                                    {tables.size > 0 && (
-                                        <div className="text-xs text-slate-400 bg-white/5 border border-white/10 rounded px-2 py-0.5 font-mono">
-                                            {tables.size} {tables.size === 1 ? 'tab' : 'tabs'}
-                                        </div>
-                                    )}
+                                <div className="flex flex-col items-end gap-2">
+                                    {/* Format Button - works in both SQL and Python modes */}
                                     <button
                                         onClick={() => {
                                             if (showPythonPanel) {
@@ -1027,11 +1107,40 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 setSqlQuery(formatted);
                                             }
                                         }}
-                                        className="px-3 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg shadow-black/20 active:scale-95"
+                                        className="w-32 px-3 py-1 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-black/20 active:scale-95"
                                         title="Formatta codice"
                                     >
                                         <Code2 size={12} />
                                         Formatta
+                                    </button>
+                                    {/* Copy Code Button - Always visible */}
+                                    <button
+                                        onClick={async () => {
+                                            const codeToCopy = showPythonPanel ? pythonCode : sqlQuery;
+                                            const success = await copyToClipboard(codeToCopy);
+                                            if (success) {
+                                                setCopiedCode(true);
+                                                setTimeout(() => setCopiedCode(false), 2000);
+                                            }
+                                        }}
+                                        className={`w-32 px-3 py-1 rounded-lg text-xs transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-black/20 active:scale-95 ${
+                                            copiedCode
+                                                ? 'bg-emerald-500/20 text-emerald-300'
+                                                : 'bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300'
+                                        }`}
+                                        title={showPythonPanel ? "Copia codice Python" : "Copia query SQL"}
+                                    >
+                                        {copiedCode ? (
+                                            <>
+                                                <Check size={12} />
+                                                Copiato!
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy size={12} />
+                                                Copy Code
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                             </div>
@@ -1065,6 +1174,13 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                             className="w-full h-32 bg-transparent p-4 font-mono text-sm text-slate-300 outline-none resize-none placeholder-slate-600 relative z-10"
                                             spellCheck={false}
                                             onKeyDown={(e) => {
+                                                // Execute query on Cmd+Enter or Ctrl+Enter
+                                                if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleExecuteQuery();
+                                                    return;
+                                                }
+                                                
                                                 // Accept ghost suggestion on TAB
                                                 if (e.key === 'Tab' && ghostSuggestion) {
                                                     e.preventDefault();
@@ -1102,7 +1218,42 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         )}
                                     </div>
 
-                                    <div className="flex justify-end">
+                                    {/* Query History */}
+                                    {/* Query History */}
+                                    {queryHistory.length > 0 && (
+                                        <div className="bg-[#121212]/70 backdrop-blur-md rounded-xl p-2 mt-2">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-300 uppercase tracking-wider">
+                                                    <HistoryIcon size={12} />
+                                                    Cronologia
+                                                </div>
+                                                <button
+                                                    onClick={() => setQueryHistory([])}
+                                                    className="text-[10px] px-1.5 py-0.5 rounded text-slate-400 hover:text-red-400 hover:bg-red-950/30 transition-colors flex items-center gap-1"
+                                                    title="Cancella cronologia"
+                                                >
+                                                    <XCircleIcon size={10} />
+                                                    Cancella
+                                                </button>
+                                            </div>
+                                            <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                                                {queryHistory.map((query, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => setSqlQuery(query)}
+                                                        className="shrink-0 max-w-[200px] text-[10px] text-left bg-[#121212]/70 backdrop-blur-xl hover:bg-white/5 text-slate-300 hover:text-slate-200 rounded-lg px-2 py-1.5 transition-all truncate font-mono shadow-sm shadow-black/20 border border-white/5"
+                                                        title={query}
+                                                    >
+                                                        {query.length > 40
+                                                            ? query.substring(0, 40) + "..."
+                                                            : query}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="flex justify-end mt-4">
                                         <button
                                             onClick={handleExecuteQuery}
                                             disabled={isExecuting}

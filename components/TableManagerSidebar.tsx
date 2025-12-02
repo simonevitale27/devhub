@@ -283,7 +283,7 @@ const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
                                                 <div key={header} className="group/col flex items-center justify-between px-2 py-1 rounded hover:bg-white/5 transition-colors">
                                                     
                                                     {editingColumn?.table === tableName && editingColumn?.col === header ? (
-                                                        <div className="flex-1 flex items-center gap-2">
+                                                        <div className="flex-1 flex flex-col gap-1.5">
                                                             <input
                                                                 type="text"
                                                                 value={newColName}
@@ -295,12 +295,30 @@ const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
                                                                     if (e.key === 'Enter') handleConfirmRenameColumn();
                                                                     if (e.key === 'Escape') handleCancelEditColumn();
                                                                 }}
-                                                                className="w-full px-1 py-0.5 bg-black/60 border border-emerald-500/50 rounded text-xs text-white font-mono focus:outline-none"
+                                                                className="w-full px-2 py-1 bg-black/60 border border-emerald-500/50 rounded text-xs text-white font-mono focus:outline-none"
                                                                 autoFocus
                                                                 onClick={(e) => e.stopPropagation()}
                                                             />
-                                                            <button onClick={handleConfirmRenameColumn} className="text-emerald-400 hover:text-emerald-300"><Edit2 size={10}/></button>
-                                                            <button onClick={handleCancelEditColumn} className="text-slate-400 hover:text-slate-300"><X size={10}/></button>
+                                                            <div className="flex gap-1">
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleConfirmRenameColumn();
+                                                                    }}
+                                                                    className="flex-1 px-2 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-[10px] rounded transition-colors"
+                                                                >
+                                                                    Salva
+                                                                </button>
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleCancelEditColumn();
+                                                                    }}
+                                                                    className="flex-1 px-2 py-1 bg-slate-700/20 hover:bg-slate-700/30 text-slate-400 text-[10px] rounded transition-colors"
+                                                                >
+                                                                    Annulla
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     ) : (
                                                         <>

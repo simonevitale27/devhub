@@ -141,7 +141,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
 
         {/* Table Body - Scrollable */}
         <div className="flex-1 overflow-auto p-4 custom-scrollbar">
-                <div className="bg-black/20 ring-1 ring-black/20 inset rounded-2xl overflow-hidden flex-1 flex flex-col min-h-0">
+                <div className="bg-black/20 ring-1 ring-black/20 inset rounded-2xl overflow-auto flex-1 flex flex-col min-h-0">
             <table className="w-full text-sm text-left text-slate-300">
               {/* Fixed Header */}
               <thead className="bg-slate-900 text-slate-200 sticky top-0 z-10 shadow-md">

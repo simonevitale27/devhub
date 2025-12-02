@@ -33,7 +33,8 @@ import {
   Bug,
 } from "lucide-react";
 import { downloadCSV, compareResults } from "../utils/sqlHelpers";
-import { format } from "sql-formatter";
+import { formatSQL } from "../utils/formatSQL";
+import { TableInfo } from "../utils/ghostTextSuggestions";
 import {
   Difficulty,
   TopicId,
@@ -203,18 +204,9 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     setShowStatsModal(false); // Close stats modal on reset
   };
 
-  const formatSQL = () => {
-    try {
-      const formatted = format(sqlCode, {
-        language: "sql",
-        tabWidth: 2,
-        keywordCase: "upper",
-      });
-      setSqlCode(formatted);
-    } catch (error) {
-      // If formatting fails, keep original code
-      console.error("Format error:", error);
-    }
+  const handleFormatSQL = () => {
+    const formatted = formatSQL(sqlCode);
+    setSqlCode(formatted);
   };
 
   const handleShuffle = () => {
@@ -378,6 +370,13 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     }
   }, [currentTopicId, filteredTopics]);
 
+  const tableInfos: TableInfo[] = useMemo(() => {
+    return DB_SCHEMAS.map(schema => ({
+      tableName: schema.tableName,
+      columns: schema.columns.map(col => col.name)
+    }));
+  }, []);
+
   if (isLoading && !exercise) {
     return (
       <div className="h-screen flex items-center justify-center bg-transparent text-slate-300">
@@ -456,7 +455,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                 return (
                   <button
                     key={topic.id}
-                    ref={(el) => (itemsRef.current[topic.id] = el)}
+                    ref={(el) => { itemsRef.current[topic.id] = el; }}
                     onClick={() => setCurrentTopicId(topic.id)}
                     className={`w-full relative group rounded-xl overflow-hidden transition-all duration-300 hover:pl-2 z-10 outline-none focus:outline-none ${
                       isActive ? "shadow-lg shadow-black/40" : "hover:bg-slate-800/50"
@@ -871,6 +870,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                       value={sqlCode}
                       onChange={setSqlCode}
                       onRun={handleRun}
+                      tables={tableInfos}
                     />
                   </div>
                 </div>
@@ -1000,9 +1000,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
 
                       {/* Format SQL Button */}
                       <button
-                        onClick={formatSQL}
+                        onClick={handleFormatSQL}
                         disabled={!sqlCode.trim()}
-                        className="px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 bg-gradient-to-b from-slate-800/50 to-slate-900/10 backdrop-blur-xl border border-white/15 shadow-[0_0_10px_rgba(255,255,255,0.05)_inset] shadow-black/20 text-slate-300 hover:text-slate-200 active:bg-gradient-to-b active:from-emerald-500/30 active:to-emerald-600/5 active:text-emerald-300 active:shadow-[0_0_15px_rgba(16,185,129,0.2)_inset] disabled:opacity-40 disabled:cursor-not-allowed"
+                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
+                          "bg-gradient-to-b from-blue-500/30 to-blue-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(59,130,246,0.2)_inset] shadow-blue-500/10 text-blue-300"
+                        } disabled:opacity-40 disabled:cursor-not-allowed`}
                         title="Formatta SQL"
                       >
                         <Sparkles size={14} />
@@ -1041,6 +1043,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                         value={sqlCode}
                         onChange={setSqlCode}
                         onRun={handleRun}
+                        tables={tableInfos}
                       />
                     </div>
 

@@ -144,17 +144,17 @@ export function loadCsvToAlaSQL(csvData: CsvData, tableName?: string): void {
         // Drop existing table if present
         clearAlaSQLTable(finalTableName);
 
-        // Create table with dynamic schema
-        const sanitizedHeaders = csvData.headers.map(h => sanitizeColumnName(h));
-        const columns = sanitizedHeaders.map(h => `\`${h}\``).join(', ');
+        // Use headers as-is (they should already be sanitized from parseCsvFile or from React state)
+        const headers = csvData.headers;
+        const columns = headers.map(h => `\`${h}\``).join(', ');
         alasql(`CREATE TABLE ${finalTableName} (${columns})`);
 
         // Insert rows directly into AlaSQL data structure for performance and safety
         // This avoids SQL injection issues and ensures keys match schema exactly
         const tableData = csvData.rows.map(row => {
             const rowObject: any = {};
-            sanitizedHeaders.forEach((header, index) => {
-                // Use the sanitized header as key
+            headers.forEach((header, index) => {
+                // Use the header as key (already sanitized)
                 rowObject[header] = row[index];
             });
             return rowObject;
@@ -316,6 +316,13 @@ export function dropColumnInAlaSQL(tableName: string, columnName: string): void 
         // Update table data directly
         if (alasql.tables[tableName]) {
             alasql.tables[tableName].data = newData;
+            
+            // Update table columns metadata if available
+            if (alasql.tables[tableName].columns) {
+                alasql.tables[tableName].columns = alasql.tables[tableName].columns.filter(
+                    (col: any) => col.columnid !== columnName
+                );
+            }
         }
     } catch (error: any) {
         throw new Error(`Errore nell'eliminazione della colonna: ${error.message}`);
