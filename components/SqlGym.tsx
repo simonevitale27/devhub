@@ -753,11 +753,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
           )}
 
           {/* EDITOR AREA */}
-          <div className="flex-1 flex min-h-0 pb-6 gap-4">
+          <div className="flex-1 grid grid-cols-2 min-h-0 pb-6 gap-4 overflow-hidden">
             {!isGymMode && exercise ? (
               // DEBUG MODE SPLIT
               <>
-                <div className="w-1/2 flex flex-col gap-4 min-h-0">
+                <div className="min-w-0 flex flex-col gap-4 min-h-0 overflow-x-hidden">
                   <div className="bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-6 shrink-0">
                     <div className="mb-4">
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider mb-3">
@@ -865,7 +865,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                   </div>
 
                   {/* Editor Area - Moved to Left Column */}
-                  <div className="flex-1 min-h-[200px] relative bg-black/20 ring-1 ring-black/20 inset rounded-2xl overflow-hidden">
+                  <div className="flex-1 min-w-0 min-h-[200px] relative bg-black/20 ring-1 ring-black/20 inset rounded-2xl overflow-hidden">
                     <CodeEditor
                       value={sqlCode}
                       onChange={setSqlCode}
@@ -876,7 +876,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                 </div>
 
                 {/* Right Column - Results Only */}
-                <div className="w-1/2 flex flex-col min-h-0 gap-4">
+                <div className="min-w-0 flex flex-col min-h-0 gap-4 overflow-x-hidden">
                    {/* Validation Message */}
                   {validation && (
                     <div
@@ -959,7 +959,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
             ) : (
               // GYM MODE SPLIT
               <>
-                <div className="w-1/2 flex flex-col relative gap-4">
+                <div className="min-w-0 flex flex-col relative gap-4 overflow-x-hidden">
                   <div className="flex items-center justify-between p-3 bg-[#121212]/70 backdrop-blur-xl rounded-2xl relative z-20 shadow-lg shadow-black/20">
                     <div className="flex items-center gap-2">
                       {/* Hint Button */}
@@ -1037,8 +1037,8 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                       </button>
                     </div>
                   </div>
-                  <div className="flex-1 relative flex flex-col min-h-0">
-                    <div className="flex-1 relative">
+                  <div className="flex-1 min-w-0 relative flex flex-col min-h-0">
+                    <div className="flex-1 min-w-0 relative">
                       <CodeEditor
                         value={sqlCode}
                         onChange={setSqlCode}
@@ -1049,7 +1049,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
 
                     {/* Query History */}
                     {queryHistory.length > 0 && (
-                      <div className="bg-[#121212]/70 backdrop-blur-md rounded-xl p-3 mt-4">
+                      <div className="bg-[#121212]/70 backdrop-blur-md rounded-xl p-3 mt-4 overflow-hidden w-full shrink-0">
                         <div className="flex items-center justify-between mb-2.5">
                           <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider">
                             <History size={14} />
@@ -1082,7 +1082,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                     )}
                   </div>
                 </div>
-                <div className="w-1/2 flex flex-col min-h-0 gap-4">
+                <div className="min-w-0 flex flex-col min-h-0 gap-4 overflow-x-hidden">
                   {validation && (
                     <>
                       <div
@@ -1144,7 +1144,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                       // Show results table whenever query executed successfully (even if results don't match expected)
                         <div className="flex-1 overflow-hidden flex flex-col">
                           {/* Toolbar with CSV Download and Stats Button */}
-                          <div className="p-2 border-b border-slate-800 bg-slate-900/50 flex justify-end gap-2">
+                          <div className="p-2 border-b border-slate-800 bg-slate-900/50 flex justify-end gap-2 shrink-0">
                             {/* Stats Button */}
                             <button
                               onClick={() => setShowStatsModal(true)}
