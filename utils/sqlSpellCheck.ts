@@ -399,8 +399,11 @@ export function detectMisspelledWords(
     
     let shouldFlag = false;
     
-    // If it's a single word (no underscores), check it directly
+    // If it's a single word (no underscores) or has only one significant part (e.g. "name_id"), check that part
     if (parts.length <= 1) {
+      // If we have a significant part, check that. Otherwise check the whole word (e.g. if all parts were short)
+      const wordToCheck = parts.length === 1 ? parts[0] : upperWord;
+
       // Check if it's similar to any known token (Keyword, Function, Italian, English)
       let isSimilarToKnownToken = false;
       
@@ -409,8 +412,8 @@ export function detectMisspelledWords(
       
       for (const token of COMMON_SQL_TOKENS) {
         // Only check if lengths are close
-        if (Math.abs(token.length - upperWord.length) <= 2) {
-          const distance = levenshteinDistance(upperWord, token);
+        if (Math.abs(token.length - wordToCheck.length) <= 2) {
+          const distance = levenshteinDistance(wordToCheck, token);
           // If distance is small (typo) AND it's not an exact match (distance > 0)
           if (distance <= 2 && distance > 0) {
             isSimilarToKnownToken = true;
