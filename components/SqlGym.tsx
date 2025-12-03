@@ -52,7 +52,7 @@ import {
 import { explainSqlError } from "../services/mockAiService";
 import { generateExercises } from "../services/exerciseGenerator";
 import SchemaViewer from "./SchemaViewer";
-import CodeEditor from "./CodeEditor";
+import SyntaxHighlightedEditor from "./SyntaxHighlightedEditor";
 import ResultsTable from "./ResultsTable";
 import ResultStats from "./ResultStats";
 import SchemaERDiagram from "./SchemaERDiagram";
@@ -96,6 +96,8 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [queryHistory, setQueryHistory] = useState<string[]>([]);
   const [inspectorTable, setInspectorTable] = useState<typeof DB_SCHEMAS[0] | null>(null);
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+  const editorRef = useRef<HTMLTextAreaElement | null>(null);
   
   // Refs for sliding effect
   const itemsRef = useRef<{ [key: string]: HTMLButtonElement | null }>({});
@@ -377,6 +379,19 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     }));
   }, []);
 
+  // Handle column click from SchemaViewer
+  const handleColumnClick = useCallback((columnName: string) => {
+    // Insert column name at current cursor position
+    const before = sqlCode.substring(0, cursorPosition);
+    const after = sqlCode.substring(cursorPosition);
+    const newCode = before + columnName + after;
+    setSqlCode(newCode);
+    
+    // Update cursor position to after the inserted column name
+    const newCursorPos = cursorPosition + columnName.length;
+    setCursorPosition(newCursorPos);
+  }, [sqlCode, cursorPosition]);
+
   if (isLoading && !exercise) {
     return (
       <div className="h-screen flex items-center justify-center bg-transparent text-slate-300">
@@ -538,7 +553,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
             <Layers size={16} className={textActive} /> Schema Database
           </div>
           <div className="flex-1 overflow-auto p-4">
-            <SchemaViewer schemas={DB_SCHEMAS} onInspect={setInspectorTable} />
+            <SchemaViewer schemas={DB_SCHEMAS} onInspect={setInspectorTable} onColumnClick={handleColumnClick} />
           </div>
         </div>
       )}
@@ -866,11 +881,12 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
 
                   {/* Editor Area - Moved to Left Column */}
                   <div className="flex-1 min-w-0 min-h-[200px] relative bg-black/20 ring-1 ring-black/20 inset rounded-2xl overflow-hidden">
-                    <CodeEditor
+                    <SyntaxHighlightedEditor
                       value={sqlCode}
                       onChange={setSqlCode}
                       onRun={handleRun}
                       tables={tableInfos}
+                      onCursorPositionChange={setCursorPosition}
                     />
                   </div>
                 </div>
@@ -1039,11 +1055,12 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                   </div>
                   <div className="flex-1 min-w-0 relative flex flex-col min-h-0">
                     <div className="flex-1 min-w-0 relative">
-                      <CodeEditor
+                      <SyntaxHighlightedEditor
                         value={sqlCode}
                         onChange={setSqlCode}
                         onRun={handleRun}
                         tables={tableInfos}
+                        onCursorPositionChange={setCursorPosition}
                       />
                     </div>
 

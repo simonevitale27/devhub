@@ -4,13 +4,14 @@
 
 ## 🎯 Elevator Pitch
 
-*A client-side SQL simulation environment built to practice Data Analysis workflows (ETL, Querying, Reporting) without backend latency. Powered by AlaSQL (in-memory DB) and React.*
+*A professional-grade, client-side SQL simulation environment built to practice Data Analysis workflows (ETL, Querying, Reporting) without backend latency. Powered by AlaSQL (in-memory DB) and React, featuring a custom-built SQL editor with real-time syntax highlighting.*
 
 ---
 
 ## ✨ Key Features
 
 - **Infinite SQL Gym**: 100+ exercises covering SELECT, JOINs, Aggregations, Subqueries, and advanced SQL patterns
+- **Advanced SQL Editor**: Real-time syntax highlighting, auto-formatting, and smart column insertion for a professional coding experience
 - **Debug Mode**: Simulation of troubleshooting scenarios with intentionally broken queries to practice error resolution
 - **Data Sandbox**: Import your CSV files (Drag & Drop) and query them locally with SQL - no server required
 - **Professional Reporting**: Export query results as **PDF Reports** (with stats & charts) or **CSV** files

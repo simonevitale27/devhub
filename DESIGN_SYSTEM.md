@@ -76,6 +76,15 @@
 | **Text Tertiary** | `#94a3b8` / `slate-400` | Testo sfumato, labels |
 | **Text Muted** | `#64748b` / `slate-500` | Placeholder, testo disabilitato |
 
+### Syntax Highlighting (SQL)
+
+| Elemento | Colore | HEX / Tailwind |
+|----------|--------|----------------|
+| **Keywords** | Green | `#4ade80` / `green-400` |
+| **Functions** | Yellow | `#fbbf24` / `amber-400` |
+| **Standard Text** | White | `#f8fafc` / `slate-50` |
+| **Ghost Text** | Muted | `#475569` / `slate-600` |
+
 ---
 
 ## 📝 Typography
@@ -437,24 +446,32 @@ font-outfit: 'Outfit', sans-serif;      /* Titoli speciali, headings */
 />
 ```
 
-#### Textarea (SQL Editor)
+#### Syntax Highlighted Editor
 
-```html
-<textarea
-  placeholder="Scrivi la tua query SQL qui..."
-  class="
-    w-full h-32 
-    bg-[#0b1120] 
-    border border-slate-700 
-    rounded-lg 
-    p-4 
-    font-mono text-sm text-purple-100 
-    outline-none 
-    resize-none
-  "
-  spellCheck={false}
-/>
+Il nuovo editor SQL utilizza una tecnica di **Overlay** per garantire performance native e highlighting in tempo reale.
+
+```tsx
+<div className="relative h-full w-full font-mono text-[15px]">
+  {/* 1. Highlight Layer (Bottom) */}
+  <div className="absolute inset-0 pointer-events-none whitespace-pre-wrap break-words text-transparent">
+    {/* HTML colorato generato via Regex */}
+  </div>
+
+  {/* 2. Input Layer (Top) */}
+  <textarea
+    className="absolute inset-0 w-full h-full bg-transparent text-transparent caret-white resize-none outline-none"
+    spellCheck={false}
+  />
+</div>
 ```
+
+**Caratteristiche:**
+
+- **Font**: `font-mono` (JetBrains Mono)
+- **Size**: `text-[15px]`
+- **Caret**: `caret-white` (cursore personalizzato)
+- **Scrollbar**: Nascosta (`scrollbar-hide`) per pulizia visiva
+- **Interaction**: Supporto nativo per selezione, copia/incolla e shortcut
 
 ### Badge & Pills
 

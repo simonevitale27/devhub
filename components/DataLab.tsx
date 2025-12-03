@@ -9,14 +9,15 @@ import ResultsTable from './ResultsTable';
 import TableInspectorModal from './TableInspectorModal';
 import ResultStats from './ResultStats';
 import TableManagerSidebar, { TableData } from './TableManagerSidebar';
+import SyntaxHighlightedEditor from './SyntaxHighlightedEditor';
 import DataVisualization from './DataVisualization';
 import { useDebounce } from '../utils/useDebounce';
 import HealthReportModal from './HealthReportModal';
 import { analyzeTableHealth, DataHealthReport } from '../utils/dataHealthCheck';
-import GhostText from './GhostText';
+
 import PythonPanel from './PythonPanel';
 import EditorToggle from './EditorToggle';
-import { getGhostSuggestion, applyGhostSuggestion, GhostSuggestion, TableInfo } from '../utils/ghostTextSuggestions';
+
 import { sqlToPandas } from '../utils/sqlToPandas';
 import { formatSQL } from '../utils/formatSQL';
 import { formatPythonCode, copyToClipboard } from '../utils/formatPython';
@@ -39,6 +40,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     const [showStatsModal, setShowStatsModal] = useState(false);
     const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [cursorPosition, setCursorPosition] = useState(0);
 
     // Health Check State
     const [showHealthModal, setShowHealthModal] = useState(false);
@@ -55,7 +57,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
     // Ghost Text & Python Panel State
-    const [ghostSuggestion, setGhostSuggestion] = useState<GhostSuggestion | null>(null);
+    // Python Panel State
     const [showPythonPanel, setShowPythonPanel] = useState(false);
     const [pythonCode, setPythonCode] = useState('');
     const [copiedCode, setCopiedCode] = useState(false);
@@ -363,31 +365,16 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     };
 
     // Insert column name into editor
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-    
+    // Insert column name into editor
     const handleInsertColumn = (columnName: string) => {
-        if (textareaRef.current) {
-            const textarea = textareaRef.current;
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const text = textarea.value;
-            
-            const before = text.substring(0, start);
-            const after = text.substring(end);
-            
-            const newText = before + columnName + after;
-            setSqlQuery(newText);
-            
-            // Restore focus and cursor position
-            setTimeout(() => {
-                textarea.focus();
-                const newCursorPos = start + columnName.length;
-                textarea.setSelectionRange(newCursorPos, newCursorPos);
-            }, 0);
-        } else {
-            // Fallback if ref not available (shouldn't happen)
-            setSqlQuery(prev => prev + columnName);
-        }
+        const before = sqlQuery.substring(0, cursorPosition);
+        const after = sqlQuery.substring(cursorPosition);
+        
+        const newText = before + columnName + after;
+        setSqlQuery(newText);
+        
+        // Update cursor position
+        setCursorPosition(cursorPosition + columnName.length);
     };
 
     // Rename column
@@ -1153,69 +1140,16 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             ) : (
                                 <>
                                     <div className="flex-1 bg-black/40 rounded-xl border border-white/10 shadow-inner overflow-hidden mb-3 relative group focus-within:border-white/20 transition-colors min-h-0">
-                                        <textarea
-                                            ref={textareaRef}
+                                        <SyntaxHighlightedEditor
                                             value={sqlQuery}
-                                            onChange={(e) => {
-                                                const newValue = e.target.value;
-                                                setSqlQuery(newValue);
-                                                
-                                                // Generate ghost text suggestion
-                                                const cursorPos = e.target.selectionStart;
-                                                const tableInfos: TableInfo[] = Array.from(tables.entries()).map(([tableName, t]) => ({
-                                                    tableName: tableName,
-                                                    columns: t.headers
-                                                }));
-                                                
-                                                const suggestion = getGhostSuggestion(newValue, cursorPos, tableInfos);
-                                                setGhostSuggestion(suggestion);
-                                            }}
-                                            placeholder="Scrivi la tua query qui..."
-                                            className="w-full h-32 bg-transparent p-4 font-mono text-sm text-slate-300 outline-none resize-none placeholder-slate-600 relative z-10"
-                                            spellCheck={false}
-                                            onKeyDown={(e) => {
-                                                // Execute query on Cmd+Enter or Ctrl+Enter
-                                                if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    handleExecuteQuery();
-                                                    return;
-                                                }
-                                                
-                                                // Accept ghost suggestion on TAB
-                                                if (e.key === 'Tab' && ghostSuggestion) {
-                                                    e.preventDefault();
-                                                    const textarea = e.currentTarget;
-                                                    const cursorPos = textarea.selectionStart;
-                                                    const result = applyGhostSuggestion(sqlQuery, cursorPos, ghostSuggestion);
-                                                    setSqlQuery(result.newQuery);
-                                                    setGhostSuggestion(null);
-                                                    
-                                                    setTimeout(() => {
-                                                        textarea.selectionStart = textarea.selectionEnd = result.newCursorPosition;
-                                                    }, 0);
-                                                }
-                                            }}
-                                            onClick={() => {
-                                                // Update ghost suggestion on click (cursor position change)
-                                                const textarea = textareaRef.current;
-                                                if (textarea) {
-                                                    const cursorPos = textarea.selectionStart;
-                                                    const tableInfos: TableInfo[] = Array.from(tables.entries()).map(([tableName, t]) => ({
-                                                        tableName: tableName,
-                                                        columns: t.headers
-                                                    }));
-                                                    const suggestion = getGhostSuggestion(sqlQuery, cursorPos, tableInfos);
-                                                    setGhostSuggestion(suggestion);
-                                                }
-                                            }}
+                                            onChange={setSqlQuery}
+                                            onRun={handleExecuteQuery}
+                                            tables={Array.from(tables.entries()).map(([tableName, t]) => ({
+                                                tableName: tableName,
+                                                columns: t.headers
+                                            }))}
+                                            onCursorPositionChange={setCursorPosition}
                                         />
-                                        {/* Ghost Text Overlay */}
-                                        {ghostSuggestion && (
-                                            <GhostText 
-                                                suggestion={ghostSuggestion.text} 
-                                                textareaRef={textareaRef}
-                                            />
-                                        )}
                                     </div>
 
                                     {/* Query History */}

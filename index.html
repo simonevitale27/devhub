@@ -92,6 +92,15 @@
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #475569;
       }
+
+      /* Hide scrollbar for syntax highlighted editor */
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
     </style>
   </head>
   <body

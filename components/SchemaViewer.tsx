@@ -7,9 +7,10 @@ import { getTablePreview } from '../services/sqlService';
 interface SchemaViewerProps {
   schemas: TableSchema[];
   onInspect?: (schema: TableSchema) => void;
+  onColumnClick?: (columnName: string) => void;
 }
 
-const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas, onInspect }) => {
+const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas, onInspect, onColumnClick }) => {
   const [expandedTable, setExpandedTable] = useState<string | null>(null);
   const [previewData, setPreviewData] = useState<any[]>([]);
 
@@ -71,14 +72,16 @@ const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas, onInspect }) => {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         {schema.columns.map((col, idx) => (
-                        <div 
+                        <button 
                           key={col.name} 
-                          className="flex items-center gap-2 text-xs bg-[#0a0a0a] p-1.5 rounded animate-in fade-in slide-in-from-left-2 duration-200"
+                          onClick={() => onColumnClick?.(col.name)}
+                          className="flex items-center gap-2 text-xs bg-[#0a0a0a] p-1.5 rounded animate-in fade-in slide-in-from-left-2 duration-200 hover:bg-blue-500/10 hover:border hover:border-blue-500/30 transition-all cursor-pointer active:scale-95"
                           style={{ animationDelay: `${idx * 30}ms` }}
+                          title={`Clicca per inserire "${col.name}" nella query`}
                         >
                             {getIconForType(col.type)}
-                            <span className="text-slate-300 font-medium">{col.name}</span>
-                        </div>
+                            <span className="text-slate-300 font-medium hover:text-blue-300 transition-colors">{col.name}</span>
+                        </button>
                         ))}
                     </div>
                 </div>

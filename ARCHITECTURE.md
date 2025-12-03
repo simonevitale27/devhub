@@ -263,7 +263,7 @@ Componenti UI riutilizzabili e pagine:
 | **`SchemaERDiagram.tsx`** | Diagramma ER con Mermaid |
 | **`ResultsTable.tsx`** | Tabella risultati query |
 | **`ResultDiff.tsx`** | Confronto risultati attesi vs effettivi |
-| **`CodeEditor.tsx`** | Editor SQL con syntax highlighting |
+| **`SyntaxHighlightedEditor.tsx`** | Editor SQL con syntax highlighting custom (Overlay) |
 | **`ErrorBoundary.tsx`** | Gestione errori React |
 
 **Pattern di Design:**
@@ -412,6 +412,14 @@ Il progetto usa **Tailwind puro** per semplicità:
   }
 </script>
 ```
+
+### Custom Syntax Highlighting (No Heavy Libraries)
+
+Invece di importare librerie pesanti come Monaco Editor o CodeMirror, DevHub implementa un **editor custom leggero**:
+
+1. **Overlay Technique**: Un `div` colorato posizionato esattamente sotto una `textarea` trasparente.
+2. **Regex-based**: Tokenizzazione veloce tramite espressioni regolari per SQL keywords e functions.
+3. **Zero-Dependency**: Nessun bundle size aggiuntivo, caricamento istantaneo.
 
 ---
 
