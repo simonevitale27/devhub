@@ -3526,6 +3526,166 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
                 hints: ["Usa YEAR(data_ordine) = 2024", "Ordina per data DESC"],
                 explanation: "Filtrare per anno corrente e ordinare è un pattern standard per le dashboard.",
                 replacements: {}
+            },
+            {
+                titleTemplate: "Categorie per Fatturato",
+                descTemplate: "Quali categorie generano più fatturato? Calcola il totale (prezzo * stock) per ogni categoria e ordina dal più alto.",
+                queryTemplate: "SELECT c.nome, SUM(p.prezzo * p.stock) as valore_totale FROM categorie c JOIN prodotti p ON c.id = p.categoria_id GROUP BY c.nome ORDER BY valore_totale DESC",
+                hints: ["JOIN categorie e prodotti", "SUM(prezzo * stock)", "GROUP BY categoria"],
+                explanation: "Analisi del valore dell'inventario per categoria.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Utenti Meno Attivi",
+                descTemplate: "Identifica gli utenti con meno ordini effettuati. Mostra nome e numero ordini, ordinando per numero ordini crescente (inclusi quelli a 0 se possibile, ma qui usiamo INNER JOIN quindi min 1).",
+                queryTemplate: "SELECT u.nome, COUNT(o.id) as num_ordini FROM utenti u JOIN ordini o ON u.id = o.utente_id GROUP BY u.nome ORDER BY num_ordini ASC",
+                hints: ["COUNT(ordini)", "GROUP BY utente", "ORDER BY count ASC"],
+                explanation: "Utile per campagne di re-engagement.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Ordini Più Costosi",
+                descTemplate: "Trova gli ordini con il valore economico più alto. Mostra ID ordine, data e valore totale, ordinati per valore decrescente.",
+                queryTemplate: "SELECT o.id, o.data_ordine, (p.prezzo * o.quantita) as totale FROM ordini o JOIN prodotti p ON o.prodotto_id = p.id ORDER BY totale DESC",
+                hints: ["Calcola prezzo * quantità", "Ordina per il risultato"],
+                explanation: "Identificazione delle transazioni high-ticket.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Ritardi Spedizione",
+                descTemplate: "Calcola i giorni passati tra ordine e spedizione per ogni ordine spedito. Mostra ID ordine e giorni trascorsi, ordinati dal ritardo più lungo.",
+                queryTemplate: "SELECT o.id, DATEDIFF(s.data_spedizione, o.data_ordine) as giorni_attesa FROM ordini o JOIN spedizioni s ON o.id = s.ordine_id ORDER BY giorni_attesa DESC",
+                hints: ["Usa DATEDIFF(spedizione, ordine)", "Ordina DESC"],
+                explanation: "Analisi efficienza logistica.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Polarizzazione Recensioni",
+                descTemplate: "Quali prodotti hanno le recensioni più basse? Mostra nome prodotto e voto medio, ordinando per voto medio crescente.",
+                queryTemplate: "SELECT p.nome, AVG(r.voto) as media_voto FROM prodotti p JOIN recensioni r ON p.id = r.prodotto_id GROUP BY p.nome ORDER BY media_voto ASC",
+                hints: ["AVG(voto)", "GROUP BY prodotto", "ORDER BY media ASC"],
+                explanation: "Identificazione prodotti problematici.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Performance Fornitori",
+                descTemplate: "Quali fornitori hanno venduto più unità in totale? Somma le quantità degli ordini per fornitore e ordina decrescente.",
+                queryTemplate: "SELECT f.azienda, SUM(o.quantita) as unita_vendute FROM fornitori f JOIN prodotti p ON f.id = p.fornitore_id JOIN ordini o ON p.id = o.prodotto_id GROUP BY f.azienda ORDER BY unita_vendute DESC",
+                hints: ["Doppia JOIN: fornitori -> prodotti -> ordini", "SUM(quantita)", "GROUP BY fornitore"],
+                explanation: "Analisi volume d'affari per partner.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Preferenze Regionali",
+                descTemplate: "Quali categorie sono più popolari in ogni paese? Conta gli ordini per paese e categoria, ordinando per paese e poi per numero ordini decrescente.",
+                queryTemplate: "SELECT u.paese, c.nome, COUNT(o.id) as num_ordini FROM utenti u JOIN ordini o ON u.id = o.utente_id JOIN prodotti p ON o.prodotto_id = p.id JOIN categorie c ON p.categoria_id = c.id GROUP BY u.paese, c.nome ORDER BY u.paese ASC, num_ordini DESC",
+                hints: ["Multi-JOIN utenti-ordini-prodotti-categorie", "GROUP BY paese, categoria", "ORDER BY paese, count DESC"],
+                explanation: "Analisi di mercato geografica.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Trend Mensili",
+                descTemplate: "In quali mesi si vendono più prodotti? Estrai il mese dalla data ordine, conta gli ordini e ordina per numero ordini decrescente.",
+                queryTemplate: "SELECT MONTH(data_ordine) as mese, COUNT(*) as tot_ordini FROM ordini GROUP BY mese ORDER BY tot_ordini DESC",
+                hints: ["MONTH(data)", "GROUP BY mese", "ORDER BY count DESC"],
+                explanation: "Analisi stagionalità.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Clienti Alto Valore",
+                descTemplate: "Calcola il valore medio degli ordini per ogni utente. Mostra nome e media ordine, ordinando per media decrescente.",
+                queryTemplate: "SELECT u.nome, AVG(p.prezzo * o.quantita) as scontrino_medio FROM utenti u JOIN ordini o ON u.id = o.utente_id JOIN prodotti p ON o.prodotto_id = p.id GROUP BY u.nome ORDER BY scontrino_medio DESC",
+                hints: ["AVG(prezzo * quantita)", "GROUP BY utente", "ORDER BY avg DESC"],
+                explanation: "Analisi Average Order Value (AOV) per cliente.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Valore Magazzino Fornitori",
+                descTemplate: "Quale fornitore ha più valore fermo in magazzino? Calcola somma (prezzo * stock) per fornitore e ordina decrescente.",
+                queryTemplate: "SELECT f.azienda, SUM(p.prezzo * p.stock) as valore_stock FROM fornitori f JOIN prodotti p ON f.id = p.fornitore_id GROUP BY f.azienda ORDER BY valore_stock DESC",
+                hints: ["SUM(prezzo * stock)", "GROUP BY fornitore"],
+                explanation: "Analisi esposizione finanziaria stock.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Efficienza Corrieri",
+                descTemplate: "Quale corriere è più veloce? Calcola la media dei giorni tra ordine e spedizione per corriere, ordinando per media crescente (più veloce).",
+                queryTemplate: "SELECT s.corriere, AVG(DATEDIFF(s.data_spedizione, o.data_ordine)) as tempo_medio FROM spedizioni s JOIN ordini o ON s.ordine_id = o.id GROUP BY s.corriere ORDER BY tempo_medio ASC",
+                hints: ["AVG(DATEDIFF(...))", "GROUP BY corriere", "ORDER BY ASC"],
+                explanation: "Benchmarking logistico.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Prodotti Popolari ma Scarsi",
+                descTemplate: "Trova prodotti con molte vendite (es. > 5 ordini) ma voto medio basso (es. < 3). Ordina per numero vendite decrescente.",
+                queryTemplate: "SELECT p.nome, COUNT(o.id) as vendite, AVG(r.voto) as rating FROM prodotti p JOIN ordini o ON p.id = o.prodotto_id JOIN recensioni r ON p.id = r.prodotto_id GROUP BY p.nome HAVING vendite > 5 AND rating < 3 ORDER BY vendite DESC",
+                hints: ["HAVING count > 5 AND avg < 3", "ORDER BY count DESC"],
+                explanation: "Analisi discrepanza qualità/popolarità.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Stock Invenduto",
+                descTemplate: "Seleziona prodotti con stock alto (>50) ordinati per prezzo decrescente. (Simuliamo invenduto con stock alto).",
+                queryTemplate: "SELECT * FROM prodotti WHERE stock > 50 ORDER BY prezzo DESC",
+                hints: ["WHERE stock > 50", "ORDER BY prezzo DESC"],
+                explanation: "Identificazione capitale immobilizzato.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Diversità Categorie",
+                descTemplate: "Quali categorie hanno più prodotti diversi? Conta i prodotti per categoria e ordina decrescente.",
+                queryTemplate: "SELECT c.nome, COUNT(p.id) as num_prodotti FROM categorie c JOIN prodotti p ON c.id = p.categoria_id GROUP BY c.nome ORDER BY num_prodotti DESC",
+                hints: ["COUNT(prodotti)", "GROUP BY categoria"],
+                explanation: "Analisi ampiezza catalogo.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Fedeltà Utenti",
+                descTemplate: "Ordina gli utenti in base alla data del loro primo ordine (dal più vecchio).",
+                queryTemplate: "SELECT u.nome, MIN(o.data_ordine) as primo_ordine FROM utenti u JOIN ordini o ON u.id = o.utente_id GROUP BY u.nome ORDER BY primo_ordine ASC",
+                hints: ["MIN(data_ordine)", "GROUP BY utente", "ORDER BY min ASC"],
+                explanation: "Analisi coorti utenti.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Complessità Ordini",
+                descTemplate: "Ordina gli ordini in base alla quantità di articoli (dal più grande). Mostra ID ordine e quantità.",
+                queryTemplate: "SELECT id, quantita FROM ordini ORDER BY quantita DESC",
+                hints: ["Semplice ORDER BY quantita DESC"],
+                explanation: "Identificazione ordini voluminosi.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Impatto Spedizioni",
+                descTemplate: "Ordina le spedizioni per data decrescente, mostrando anche il valore dell'ordine associato.",
+                queryTemplate: "SELECT s.codice_tracking, s.data_spedizione, (p.prezzo * o.quantita) as valore FROM spedizioni s JOIN ordini o ON s.ordine_id = o.id JOIN prodotti p ON o.prodotto_id = p.id ORDER BY s.data_spedizione DESC",
+                hints: ["Multi-JOIN spedizioni-ordini-prodotti", "ORDER BY data spedizione"],
+                explanation: "Monitoraggio spedizioni di valore.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Fornitori Locali vs Esteri",
+                descTemplate: "Ordina i fornitori mettendo prima quelli italiani, poi gli altri in ordine alfabetico.",
+                queryTemplate: "SELECT * FROM fornitori ORDER BY CASE WHEN nazione = 'Italia' THEN 0 ELSE 1 END, azienda ASC",
+                hints: ["ORDER BY CASE WHEN ...", "Poi per azienda"],
+                explanation: "Ordinamento condizionale custom.",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Pareto Prodotti",
+                descTemplate: "Seleziona i top 3 prodotti che hanno generato più fatturato. Ordina per fatturato decrescente.",
+                queryTemplate: "SELECT p.nome, SUM(p.prezzo * o.quantita) as fatturato FROM prodotti p JOIN ordini o ON p.id = o.prodotto_id GROUP BY p.nome ORDER BY fatturato DESC LIMIT 3",
+                hints: ["SUM(prezzo * quantita)", "GROUP BY prodotto", "ORDER DESC LIMIT 3"],
+                explanation: "Analisi best seller (principio 80/20).",
+                replacements: {}
+            },
+            {
+                titleTemplate: "Ordini Last Minute",
+                descTemplate: "Seleziona gli ordini dell'ultimo mese (mese 12). Ordina per data decrescente.",
+                queryTemplate: "SELECT * FROM ordini WHERE MONTH(data_ordine) = 12 ORDER BY data_ordine DESC",
+                hints: ["WHERE MONTH = 12", "ORDER BY data DESC"],
+                explanation: "Focus su attività recente.",
+                replacements: {}
             }
         ]
     },
