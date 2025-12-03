@@ -8,24 +8,16 @@ export interface TableInfo {
   columns: string[];
 }
 
-// Comprehensive SQL keywords
-const SQL_KEYWORDS = [
-  'SELECT', 'FROM', 'WHERE', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'OUTER',
-  'ON', 'AND', 'OR', 'NOT', 'IN', 'BETWEEN', 'LIKE', 'IS', 'NULL',
-  'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT', 'OFFSET', 'DISTINCT',
-  'AS', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE',
-  'CREATE', 'TABLE', 'ALTER', 'DROP', 'TRUNCATE',
-  'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
-  'CASE', 'WHEN', 'THEN', 'ELSE', 'END',
-  'UNION', 'INTERSECT', 'EXCEPT',
-  'ASC', 'DESC', 'NULLS', 'FIRST', 'LAST',
-  'COALESCE', 'CAST', 'UPPER', 'LOWER', 'TRIM',
-  'CONCAT', 'SUBSTRING', 'LENGTH', 'ROUND'
-];
+import { SQL_KEYWORDS, SQL_FUNCTIONS } from './sqlConstants';
+
+export interface TableInfo {
+  tableName: string;
+  columns: string[];
+}
 
 export interface GhostSuggestion {
   text: string; // The completion text to display
-  type: 'keyword' | 'table' | 'column';
+  type: 'keyword' | 'table' | 'column' | 'function';
   fullText: string; // The full suggested text
 }
 
@@ -43,7 +35,7 @@ export function getGhostSuggestion(
   const textAfterCursor = query.slice(cursorPosition);
   
   // Get the current word being typed (last word before cursor)
-  const words = textBeforeCursor.split(/\s+/);
+  const words = textBeforeCursor.split(/[\s(),]+/); // Split by space, parens, commas
   const currentWord = words[words.length - 1] || '';
   
   // Don't suggest if cursor is in middle of a word
@@ -58,7 +50,7 @@ export function getGhostSuggestion(
   
   const currentWordUpper = currentWord.toUpperCase();
   
-  // Try to match SQL keywords first
+  // 1. Try to match SQL keywords
   const keywordMatch = SQL_KEYWORDS.find(kw => 
     kw.startsWith(currentWordUpper) && kw !== currentWordUpper
   );
@@ -70,8 +62,21 @@ export function getGhostSuggestion(
       fullText: keywordMatch
     };
   }
+
+  // 2. Try to match SQL functions
+  const functionMatch = SQL_FUNCTIONS.find(func => 
+    func.startsWith(currentWordUpper) && func !== currentWordUpper
+  );
   
-  // Try to match table names
+  if (functionMatch) {
+    return {
+      text: functionMatch.slice(currentWord.length) + '()', // Add parens for functions
+      type: 'function',
+      fullText: functionMatch
+    };
+  }
+  
+  // 3. Try to match table names
   const tableMatch = tables.find(t => 
     t.tableName.toLowerCase().startsWith(currentWord.toLowerCase()) &&
     t.tableName.toLowerCase() !== currentWord.toLowerCase()
@@ -85,7 +90,7 @@ export function getGhostSuggestion(
     };
   }
   
-  // Try to match column names (look for context to determine which table)
+  // 4. Try to match column names (look for context to determine which table)
   const contextTable = getTableContext(textBeforeCursor, tables);
   
   if (contextTable) {

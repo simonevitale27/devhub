@@ -3448,243 +3448,83 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         ],
         [Difficulty.Hard]: [
             {
-                titleTemplate: "Ordinamento Multiplo (Paese/Nome)",
-                descTemplate: "Seleziona tutti i record dalla tabella 'utenti' ordinati prima per la colonna 'paese' in ordine crescente, e poi per la colonna 'nome' in ordine crescente.",
-                queryTemplate: "SELECT * FROM utenti ORDER BY paese ASC, nome ASC",
-                hints: ["Elenca le colonne separate da virgola dopo ORDER BY"],
-                explanation: "L'ordinamento secondario si applica solo a parità del primario.",
+                titleTemplate: "Analisi Vendite per Paese",
+                descTemplate: "Il direttore commerciale vuole sapere quali sono i mercati più performanti. Seleziona il paese e il totale delle vendite (somma delle quantità) per ogni paese, ordinando il risultato dal più alto al più basso.",
+                queryTemplate: "SELECT u.paese, SUM(o.quantita) as totale_vendite FROM utenti u JOIN ordini o ON u.id = o.utente_id GROUP BY u.paese ORDER BY totale_vendite DESC",
+                hints: ["Usa JOIN tra utenti e ordini", "Raggruppa per paese", "Ordina per la somma delle quantità DESC"],
+                explanation: "L'ordinamento sui dati aggregati è fondamentale per il reporting direzionale.",
                 replacements: {}
             },
             {
-                titleTemplate: "Ordinamento Misto (Cat/Prezzo)",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati prima per la colonna 'categoria_id' in ordine crescente, e poi per la colonna 'prezzo' in ordine decrescente.",
-                queryTemplate: "SELECT * FROM prodotti ORDER BY categoria_id ASC, prezzo DESC",
-                hints: ["ORDER BY col1 ASC, col2 DESC"],
-                explanation: "Puoi mixare ASC e DESC su colonne diverse.",
+                titleTemplate: "Prodotti più Recensiti",
+                descTemplate: "Identifica i 3 prodotti più discussi dagli utenti. Seleziona il nome del prodotto e il numero di recensioni ricevute, ordinando per numero di recensioni decrescente.",
+                queryTemplate: "SELECT p.nome, COUNT(r.id) as num_recensioni FROM prodotti p JOIN recensioni r ON p.id = r.prodotto_id GROUP BY p.nome ORDER BY num_recensioni DESC LIMIT 3",
+                hints: ["Conta le recensioni per prodotto", "Ordina DESC", "Usa LIMIT 3"],
+                explanation: "Combinare aggregazione, ordinamento e limiti permette di trovare i 'top performer'.",
                 replacements: {}
             },
             {
-                titleTemplate: "Ordinamento Calcolato",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati in base al valore totale dello stock (calcolato come prezzo * stock) in ordine decrescente.",
-                queryTemplate: "SELECT *, (prezzo * stock) as valore FROM prodotti ORDER BY (prezzo * stock) DESC",
-                hints: ["Puoi ordinare in base a un'espressione matematica"],
-                explanation: "Non serve creare la colonna nella SELECT per ordinarci sopra, ma aiuta a visualizzare.",
+                titleTemplate: "Ordini di Valore Elevato",
+                descTemplate: "Il reparto finance vuole una lista degli ordini ordinata per fatturato generato. Seleziona l'ID dell'ordine e il valore totale (prezzo * quantità), ordinando dal valore più alto.",
+                queryTemplate: "SELECT o.id, (p.prezzo * o.quantita) as valore_totale FROM ordini o JOIN prodotti p ON o.prodotto_id = p.id ORDER BY valore_totale DESC",
+                hints: ["Calcola prezzo * quantità", "Ordina sul valore calcolato"],
+                explanation: "Spesso l'ordinamento si basa su metriche calcolate al volo e non su colonne esistenti.",
                 replacements: {}
             },
             {
-                titleTemplate: "Ordinamento Triplo (Paese/Premium/Nome)",
-                descTemplate: "Seleziona tutti i record dalla tabella 'utenti' ordinati per 'paese' crescente, poi per 'premium' crescente, e infine per 'nome' crescente.",
-                queryTemplate: "SELECT * FROM utenti ORDER BY paese ASC, premium ASC, nome ASC",
-                hints: ["Tre colonne separate da virgole", "ORDER BY paese ASC, premium ASC, nome ASC"],
-                explanation: "Ordinamento su tre colonne.",
+                titleTemplate: "Fornitori con Stock Basso",
+                descTemplate: "Urgenza approvvigionamenti: lista i fornitori (azienda) che hanno prodotti con stock inferiore a 10, mostrando anche nome prodotto e stock. Ordina per stock crescente (dal più critico).",
+                queryTemplate: "SELECT f.azienda, p.nome, p.stock FROM fornitori f JOIN prodotti p ON f.id = p.fornitore_id WHERE p.stock < 10 ORDER BY p.stock ASC",
+                hints: ["Filtra per stock < 10", "Ordina per stock ASC"],
+                explanation: "L'ordinamento aiuta a dare priorità alle azioni correttive (es. riordino merce).",
                 replacements: {}
             },
             {
-                titleTemplate: "Ordinamento Categoria/Stock/Prezzo",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati per 'categoria_id' crescente, poi per 'stock' decrescente, e infine per 'prezzo' crescente.",
-                queryTemplate: "SELECT * FROM prodotti ORDER BY categoria_id ASC, stock DESC, prezzo ASC",
-                hints: ["Tre colonne con ordinamenti diversi", "ORDER BY categoria_id ASC, stock DESC, prezzo ASC"],
-                explanation: "Ordinamento multiplo con direzioni diverse.",
+                titleTemplate: "Clienti Migliori",
+                descTemplate: "Vogliamo premiare i nostri clienti più fedeli. Trova i primi 5 clienti per quantità totale di articoli acquistati. Mostra nome e totale acquisti.",
+                queryTemplate: "SELECT u.nome, SUM(o.quantita) as totale_acquisti FROM utenti u JOIN ordini o ON u.id = o.utente_id GROUP BY u.nome ORDER BY totale_acquisti DESC LIMIT 5",
+                hints: ["Somma le quantità per utente", "Ordina DESC", "Prendi i primi 5"],
+                explanation: "Identificare i clienti 'VIP' è un classico caso d'uso di ordinamento su aggregati.",
                 replacements: {}
             },
             {
-                titleTemplate: "Ordinamento Data/Quantità",
-                descTemplate: "Seleziona tutti i record dalla tabella 'ordini' ordinati prima per la colonna 'data_ordine' in ordine crescente, e poi per la colonna 'quantita' in ordine decrescente.",
-                queryTemplate: "SELECT * FROM ordini ORDER BY data_ordine ASC, quantita DESC",
-                hints: ["Due colonne con ordinamenti diversi", "ORDER BY data_ordine ASC, quantita DESC"],
-                explanation: "Ordinamento doppio con direzioni diverse.",
+                titleTemplate: "Spedizioni Recenti DHL",
+                descTemplate: "Verifica le ultime 5 spedizioni affidate al corriere 'DHL'. Mostra tutti i dati della spedizione, ordinate dalla più recente.",
+                queryTemplate: "SELECT * FROM spedizioni WHERE corriere = 'DHL' ORDER BY data_spedizione DESC LIMIT 5",
+                hints: ["Filtra per corriere DHL", "Ordina per data DESC", "LIMIT 5"],
+                explanation: "Filtri e ordinamenti temporali sono la base per i log di audit.",
                 replacements: {}
             },
             {
-                titleTemplate: "Ordinamento Fornitore/Categoria/Prezzo",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati per 'fornitore_id' crescente, poi per 'categoria_id' crescente, e infine per 'prezzo' decrescente.",
-                queryTemplate: "SELECT * FROM prodotti ORDER BY fornitore_id ASC, categoria_id ASC, prezzo DESC",
-                hints: ["Tre colonne", "ORDER BY fornitore_id ASC, categoria_id ASC, prezzo DESC"],
-                explanation: "Ordinamento triplo con mix ASC/DESC.",
+                titleTemplate: "Catalogo Ordinato per Categoria",
+                descTemplate: "Genera un catalogo prodotti che mostri nome categoria, nome prodotto e prezzo. Ordina alfabeticamente per categoria, e all'interno della stessa categoria, per prezzo dal più alto al più basso.",
+                queryTemplate: "SELECT c.nome as categoria, p.nome, p.prezzo FROM prodotti p JOIN categorie c ON p.categoria_id = c.id ORDER BY c.nome ASC, p.prezzo DESC",
+                hints: ["JOIN prodotti e categorie", "ORDER BY categoria ASC, prezzo DESC"],
+                explanation: "L'ordinamento multi-livello organizza i dati in modo gerarchico e leggibile.",
                 replacements: {}
             },
             {
-                titleTemplate: "Ordinamento Calcolato Valore",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati in base al valore dell'inventario (calcolato come prezzo * stock) in ordine decrescente.",
-                queryTemplate: "SELECT *, (prezzo * stock) as valore FROM prodotti ORDER BY (prezzo * stock) DESC",
-                hints: ["Calcola prezzo * stock", "ORDER BY (prezzo * stock) DESC"],
-                explanation: "Ordinamento su espressione calcolata.",
+                titleTemplate: "Recensioni Positive Recenti",
+                descTemplate: "Il customer care vuole leggere i feedback positivi recenti. Mostra tutte le recensioni con voto 5, ordinate per ID decrescente (dalla più recente inserita).",
+                queryTemplate: "SELECT * FROM recensioni WHERE voto = 5 ORDER BY id DESC",
+                hints: ["Filtra voto = 5", "Ordina per id DESC (proxy per la data di inserimento)"],
+                explanation: "Spesso l'ID autoincrementale è un buon sostituto della data per l'ordinamento temporale.",
                 replacements: {}
             },
             {
-                titleTemplate: "Ordinamento Calcolato Sconto",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati in base al prezzo scontato (calcolato come prezzo * 0.9) in ordine crescente.",
-                queryTemplate: "SELECT *, (prezzo * 0.9) as prezzo_scontato FROM prodotti ORDER BY (prezzo * 0.9) ASC",
-                hints: ["Calcola prezzo * 0.9", "ORDER BY (prezzo * 0.9) ASC"],
-                explanation: "Ordinamento su calcolo sconto.",
+                titleTemplate: "Prezzi Medi per Fornitore",
+                descTemplate: "Quali fornitori hanno il posizionamento di prezzo più alto? Seleziona l'azienda e il prezzo medio dei suoi prodotti, ordinando per prezzo medio decrescente.",
+                queryTemplate: "SELECT f.azienda, AVG(p.prezzo) as prezzo_medio FROM fornitori f JOIN prodotti p ON f.id = p.fornitore_id GROUP BY f.azienda ORDER BY prezzo_medio DESC",
+                hints: ["Media (AVG) dei prezzi", "Raggruppa per fornitore", "Ordina DESC"],
+                explanation: "L'ordinamento su medie aggregate rivela il posizionamento di mercato dei partner.",
                 replacements: {}
             },
             {
-                titleTemplate: "Ordinamento Calcolato Margine",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati in base al margine (calcolato come prezzo - 10) in ordine decrescente.",
-                queryTemplate: "SELECT *, (prezzo - 10) as margine FROM prodotti ORDER BY (prezzo - 10) DESC",
-                hints: ["Calcola prezzo - 10", "ORDER BY (prezzo - 10) DESC"],
-                explanation: "Ordinamento su calcolo margine.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Multiplo con Calcolo",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati prima per 'categoria_id' crescente, e poi per il valore (prezzo * stock) decrescente.",
-                queryTemplate: "SELECT *, (prezzo * stock) as valore FROM prodotti ORDER BY categoria_id ASC, (prezzo * stock) DESC",
-                hints: ["Combina colonna normale con calcolo", "ORDER BY categoria_id ASC, (prezzo * stock) DESC"],
-                explanation: "Ordinamento multiplo con calcolo.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Nome/Email",
-                descTemplate: "Seleziona tutti i record dalla tabella 'utenti' ordinati prima per la colonna 'nome' in ordine crescente, e poi per la colonna 'email' in ordine crescente.",
-                queryTemplate: "SELECT * FROM utenti ORDER BY nome ASC, email ASC",
-                hints: ["Due colonne stringa", "ORDER BY nome ASC, email ASC"],
-                explanation: "Ordinamento doppio su stringhe.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Prodotto/Categoria/Stock",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati per 'nome' crescente, poi per 'categoria_id' crescente, e infine per 'stock' decrescente.",
-                queryTemplate: "SELECT * FROM prodotti ORDER BY nome ASC, categoria_id ASC, stock DESC",
-                hints: ["Tre colonne", "ORDER BY nome ASC, categoria_id ASC, stock DESC"],
-                explanation: "Ordinamento triplo con stringa e numeri.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Data/ID",
-                descTemplate: "Seleziona tutti i record dalla tabella 'ordini' ordinati prima per la colonna 'data_ordine' in ordine decrescente, e poi per la colonna 'id' in ordine crescente.",
-                queryTemplate: "SELECT * FROM ordini ORDER BY data_ordine DESC, id ASC",
-                hints: ["Data e ID", "ORDER BY data_ordine DESC, id ASC"],
-                explanation: "Ordinamento doppio data/ID.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Voto/Prodotto",
-                descTemplate: "Seleziona tutti i record dalla tabella 'recensioni' ordinati prima per 'voto' decrescente, e poi per 'prodotto_id' crescente.",
-                queryTemplate: "SELECT * FROM recensioni ORDER BY voto DESC, prodotto_id ASC",
-                hints: ["Voto e prodotto", "ORDER BY voto DESC, prodotto_id ASC"],
-                explanation: "Ordinamento doppio recensioni.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Corriere/Data",
-                descTemplate: "Seleziona tutti i record dalla tabella 'spedizioni' ordinati prima per la colonna 'corriere' in ordine crescente, e poi per la colonna 'data_spedizione' in ordine decrescente.",
-                queryTemplate: "SELECT * FROM spedizioni ORDER BY corriere ASC, data_spedizione DESC",
-                hints: ["Corriere e data", "ORDER BY corriere ASC, data_spedizione DESC"],
-                explanation: "Ordinamento doppio spedizioni.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Azienda/Nazione",
-                descTemplate: "Seleziona tutti i record dalla tabella 'fornitori' ordinati prima per la colonna 'azienda' in ordine crescente, e poi per la colonna 'nazione' in ordine crescente.",
-                queryTemplate: "SELECT * FROM fornitori ORDER BY azienda ASC, nazione ASC",
-                hints: ["Due colonne stringa", "ORDER BY azienda ASC, nazione ASC"],
-                explanation: "Ordinamento doppio fornitori.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Categoria/Nome",
-                descTemplate: "Seleziona tutti i record dalla tabella 'categorie' ordinati prima per la colonna 'nome' in ordine crescente, e poi per la colonna 'descrizione' in ordine crescente.",
-                queryTemplate: "SELECT * FROM categorie ORDER BY nome ASC, descrizione ASC",
-                hints: ["Nome e descrizione", "ORDER BY nome ASC, descrizione ASC"],
-                explanation: "Ordinamento doppio categorie.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Premium/Paese/Nome",
-                descTemplate: "Seleziona tutti i record dalla tabella 'utenti' ordinati per 'premium' crescente, poi per 'paese' crescente, e infine per 'nome' crescente.",
-                queryTemplate: "SELECT * FROM utenti ORDER BY premium ASC, paese ASC, nome ASC",
-                hints: ["Tre colonne", "ORDER BY premium ASC, paese ASC, nome ASC"],
-                explanation: "Ordinamento triplo utenti.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Calcolato Complesso",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati in base alla somma (prezzo + stock) in ordine decrescente.",
-                queryTemplate: "SELECT *, (prezzo + stock) as somma FROM prodotti ORDER BY (prezzo + stock) DESC",
-                hints: ["Calcola prezzo + stock", "ORDER BY (prezzo + stock) DESC"],
-                explanation: "Ordinamento su somma calcolata.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Categoria/Valore",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati prima per 'categoria_id' crescente, e poi per il valore (prezzo * stock) decrescente.",
-                queryTemplate: "SELECT *, (prezzo * stock) as valore FROM prodotti ORDER BY categoria_id ASC, (prezzo * stock) DESC",
-                hints: ["Categoria e calcolo", "ORDER BY categoria_id ASC, (prezzo * stock) DESC"],
-                explanation: "Ordinamento categoria con calcolo.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Fornitore/Prezzo",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati prima per 'fornitore_id' crescente, e poi per 'prezzo' decrescente.",
-                queryTemplate: "SELECT * FROM prodotti ORDER BY fornitore_id ASC, prezzo DESC",
-                hints: ["Fornitore e prezzo", "ORDER BY fornitore_id ASC, prezzo DESC"],
-                explanation: "Ordinamento fornitore/prezzo.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Data/Utente",
-                descTemplate: "Seleziona tutti i record dalla tabella 'ordini' ordinati prima per 'data_ordine' decrescente, e poi per 'utente_id' crescente.",
-                queryTemplate: "SELECT * FROM ordini ORDER BY data_ordine DESC, utente_id ASC",
-                hints: ["Data e utente", "ORDER BY data_ordine DESC, utente_id ASC"],
-                explanation: "Ordinamento data/utente.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Prodotto/Utente/Voto",
-                descTemplate: "Seleziona tutti i record dalla tabella 'recensioni' ordinati per 'prodotto_id' crescente, poi per 'utente_id' crescente, e infine per 'voto' decrescente.",
-                queryTemplate: "SELECT * FROM recensioni ORDER BY prodotto_id ASC, utente_id ASC, voto DESC",
-                hints: ["Tre colonne", "ORDER BY prodotto_id ASC, utente_id ASC, voto DESC"],
-                explanation: "Ordinamento triplo recensioni.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Ordine/Data",
-                descTemplate: "Seleziona tutti i record dalla tabella 'spedizioni' ordinati prima per 'ordine_id' crescente, e poi per 'data_spedizione' decrescente.",
-                queryTemplate: "SELECT * FROM spedizioni ORDER BY ordine_id ASC, data_spedizione DESC",
-                hints: ["Ordine e data", "ORDER BY ordine_id ASC, data_spedizione DESC"],
-                explanation: "Ordinamento ordine/data.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Calcolato con Alias",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati in base al valore calcolato (prezzo * 1.1) decrescente, usando l'alias 'prezzo_iva'.",
-                queryTemplate: "SELECT *, (prezzo * 1.1) as prezzo_iva FROM prodotti ORDER BY prezzo_iva DESC",
-                hints: ["Usa alias nell'ORDER BY", "ORDER BY prezzo_iva DESC"],
-                explanation: "Ordinamento usando alias di colonna calcolata.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Multiplo con Alias",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati prima per 'categoria_id' crescente, e poi per il valore (prezzo * stock) decrescente usando l'alias 'valore'.",
-                queryTemplate: "SELECT *, (prezzo * stock) as valore FROM prodotti ORDER BY categoria_id ASC, valore DESC",
-                hints: ["Usa alias nell'ORDER BY", "ORDER BY categoria_id ASC, valore DESC"],
-                explanation: "Ordinamento multiplo con alias.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Quattro Colonne",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati per 'fornitore_id' crescente, poi 'categoria_id' crescente, poi 'prezzo' decrescente, e infine 'stock' crescente.",
-                queryTemplate: "SELECT * FROM prodotti ORDER BY fornitore_id ASC, categoria_id ASC, prezzo DESC, stock ASC",
-                hints: ["Quattro colonne", "ORDER BY fornitore_id ASC, categoria_id ASC, prezzo DESC, stock ASC"],
-                explanation: "Ordinamento su quattro colonne.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Complesso Finale",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati per 'categoria_id' crescente, poi per il valore (prezzo * stock) decrescente, e infine per 'nome' crescente.",
-                queryTemplate: "SELECT *, (prezzo * stock) as valore FROM prodotti ORDER BY categoria_id ASC, valore DESC, nome ASC",
-                hints: ["Tre colonne con calcolo", "ORDER BY categoria_id ASC, valore DESC, nome ASC"],
-                explanation: "Ordinamento complesso con calcolo e stringa.",
-                replacements: {}
-            },
-            {
-                titleTemplate: "Ordinamento Finale Avanzato",
-                descTemplate: "Seleziona tutti i record dalla tabella 'prodotti' ordinati per 'fornitore_id' crescente, poi 'categoria_id' crescente, poi valore (prezzo * stock) decrescente, e infine 'nome' crescente.",
-                queryTemplate: "SELECT *, (prezzo * stock) as valore FROM prodotti ORDER BY fornitore_id ASC, categoria_id ASC, valore DESC, nome ASC",
-                hints: ["Quattro colonne con calcolo", "ORDER BY fornitore_id ASC, categoria_id ASC, valore DESC, nome ASC"],
-                explanation: "Ordinamento finale avanzato con quattro colonne e calcolo.",
+                titleTemplate: "Ordini Anno Corrente",
+                descTemplate: "Visualizza solo gli ordini effettuati nell'anno 2024, ordinati per data dal più recente al più vecchio.",
+                queryTemplate: "SELECT * FROM ordini WHERE YEAR(data_ordine) = 2024 ORDER BY data_ordine DESC",
+                hints: ["Usa YEAR(data_ordine) = 2024", "Ordina per data DESC"],
+                explanation: "Filtrare per anno corrente e ordinare è un pattern standard per le dashboard.",
                 replacements: {}
             }
         ]
