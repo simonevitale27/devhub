@@ -275,6 +275,34 @@ export function detectMisspelledWords(
     // Check if word is valid
     const upperWord = word.toUpperCase();
     
+    // Check casing format
+    // Valid formats:
+    // 1. All uppercase (e.g. "SELECT")
+    // 2. All lowercase (e.g. "select")
+    // 3. Title case (e.g. "Select")
+    // Invalid: Mixed case (e.g. "SeLeCt", "SPediZione")
+    // Compound words with underscores (e.g. "Mese_Spedizione") are checked part by part
+    
+    const checkCasing = (text: string): boolean => {
+      if (!text) return true;
+      const isAllUpper = text === text.toUpperCase();
+      const isAllLower = text === text.toLowerCase();
+      const isTitleCase = text[0] === text[0].toUpperCase() && text.slice(1) === text.slice(1).toLowerCase();
+      return isAllUpper || isAllLower || isTitleCase;
+    };
+
+    const casingParts = word.split('_');
+    const hasValidCasing = casingParts.every(part => checkCasing(part));
+    
+    if (!hasValidCasing) {
+      misspelled.push({
+        word,
+        startIndex,
+        endIndex
+      });
+      continue;
+    }
+
     // Skip if it's a valid identifier, keyword, or function (exact match)
     if (validIdentifiers.has(upperWord)) {
       continue;
