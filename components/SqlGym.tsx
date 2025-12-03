@@ -246,6 +246,10 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
       return;
     }
 
+    // Reset all previous state for fresh execution
+    setUserResult(null);
+    setValidation(null);
+    setExpectedResult([]);
     setShowErrorExplanation(false);
     setShowStatsModal(false); // Close stats modal on new run
 
