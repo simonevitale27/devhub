@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import GhostText from './GhostText';
 import { getGhostSuggestion, applyGhostSuggestion, GhostSuggestion, TableInfo } from '../utils/ghostTextSuggestions';
 
@@ -11,6 +11,7 @@ interface SyntaxHighlightedEditorProps {
 }
 
 import { SQL_KEYWORDS, SQL_FUNCTIONS } from '../utils/sqlConstants';
+import { detectMisspelledWords, MisspelledWord } from '../utils/sqlSpellCheck';
 
 /**
  * Generate syntax-highlighted HTML from SQL text
@@ -50,8 +51,15 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
+  const spellCheckRef = useRef<HTMLDivElement>(null);
   const [ghostSuggestion, setGhostSuggestion] = useState<GhostSuggestion | null>(null);
   const [highlightedHTML, setHighlightedHTML] = useState<string>('');
+  const [cursorPos, setCursorPos] = useState<number>(0);
+
+  // Detect misspelled words (excluding word at cursor position)
+  const misspelledWords = useMemo(() => {
+    return detectMisspelledWords(value, tables, cursorPos);
+  }, [value, tables, cursorPos]);
 
   // Update highlighted HTML when value changes
   useEffect(() => {
@@ -63,6 +71,10 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
     if (textareaRef.current && highlightRef.current) {
       highlightRef.current.scrollTop = textareaRef.current.scrollTop;
       highlightRef.current.scrollLeft = textareaRef.current.scrollLeft;
+    }
+    if (textareaRef.current && spellCheckRef.current) {
+      spellCheckRef.current.scrollTop = textareaRef.current.scrollTop;
+      spellCheckRef.current.scrollLeft = textareaRef.current.scrollLeft;
     }
   };
 
@@ -106,23 +118,29 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
     onChange(newValue);
 
     // Generate ghost text suggestion
-    const cursorPos = e.target.selectionStart;
-    const suggestion = getGhostSuggestion(newValue, cursorPos, tables);
+    const cursorPosition = e.target.selectionStart;
+    const suggestion = getGhostSuggestion(newValue, cursorPosition, tables);
     setGhostSuggestion(suggestion);
     
+    // Update cursor position for spell check
+    setCursorPos(cursorPosition);
+    
     // Notify parent of cursor position change
-    onCursorPositionChange?.(cursorPos);
+    onCursorPositionChange?.(cursorPosition);
   };
 
   const handleClick = () => {
     // Update ghost suggestion on click (cursor position change)
     if (textareaRef.current) {
-      const cursorPos = textareaRef.current.selectionStart;
-      const suggestion = getGhostSuggestion(value, cursorPos, tables);
+      const cursorPosition = textareaRef.current.selectionStart;
+      const suggestion = getGhostSuggestion(value, cursorPosition, tables);
       setGhostSuggestion(suggestion);
       
+      // Update cursor position for spell check
+      setCursorPos(cursorPosition);
+      
       // Notify parent of cursor position change
-      onCursorPositionChange?.(cursorPos);
+      onCursorPositionChange?.(cursorPosition);
     }
   };
 
@@ -138,6 +156,45 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
             lineHeight: '1.5',
           }}
           dangerouslySetInnerHTML={{ __html: highlightedHTML || '<span style="color: #64748b;">Scrivi la tua query SQL qui...</span>' }}
+        />
+        
+        {/* Spell Check Underline Layer */}
+        <div
+          ref={spellCheckRef}
+          className="absolute inset-0 w-full h-full p-4 font-mono text-sm overflow-auto pointer-events-none whitespace-pre-wrap break-words scrollbar-hide"
+          style={{
+            lineHeight: '1.5',
+            color: 'transparent', // Make text transparent, only show underlines
+          }}
+          dangerouslySetInnerHTML={{
+            __html: (() => {
+              if (!value || misspelledWords.length === 0) return '';
+              
+              let result = value;
+              
+              // Escape HTML
+              result = result
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+              
+              // Sort misspelled words by start index descending (to process from end to start)
+              const sorted = [...misspelledWords].sort((a, b) => b.startIndex - a.startIndex);
+              
+              // Insert underline spans for each misspelled word
+              sorted.forEach(misspelled => {
+                const before = result.substring(0, misspelled.startIndex);
+                const word = result.substring(misspelled.startIndex, misspelled.endIndex);
+                const after = result.substring(misspelled.endIndex);
+                
+                result = before + 
+                  `<span style="text-decoration: underline wavy red; text-decoration-skip-ink: none; text-underline-offset: 2px;">${word}</span>` +
+                  after;
+              });
+              
+              return result;
+            })()
+          }}
         />
         
         {/* Actual Textarea (transparent text) */}
