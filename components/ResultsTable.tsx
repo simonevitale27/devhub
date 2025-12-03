@@ -8,6 +8,8 @@ interface ResultsTableProps {
 
 const ResultsTable: React.FC<ResultsTableProps> = ({ data, title }) => {
   const PAGE_SIZE = 500;
+  
+  // CRITICAL: All hooks must be called before any conditional returns
   const [currentPage, setCurrentPage] = useState(1);
 
   // Handle empty array or null/undefined
@@ -43,10 +45,8 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ data, title }) => {
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const endIndex = Math.min(startIndex + PAGE_SIZE, data.length);
   
-  // Use useMemo to avoid recalculating on every render
-  const paginatedData = useMemo(() => {
-    return data.slice(startIndex, endIndex);
-  }, [data, startIndex, endIndex]);
+  // Paginated data
+  const paginatedData = data.slice(startIndex, endIndex);
 
   const handleFirstPage = () => setCurrentPage(1);
   const handlePrevPage = () => setCurrentPage(p => Math.max(1, p - 1));
