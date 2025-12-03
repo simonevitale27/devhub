@@ -13,19 +13,107 @@ export interface MisspelledWord {
 
 // Common Italian words that might appear in database data/column names
 const COMMON_ITALIAN_WORDS = [
-  'NOME', 'COGNOME', 'EMAIL', 'TELEFONO', 'INDIRIZZO', 'CITTA', 'PROVINCIA',
-  'CAP', 'REGIONE', 'PAESE', 'STATO', 'DATA', 'ORA', 'ANNO', 'MESE', 'GIORNO',
-  'DESCRIZIONE', 'TITOLO', 'TESTO', 'MESSAGGIO', 'NOTA', 'COMMENTO',
-  'PREZZO', 'COSTO', 'TOTALE', 'IMPORTO', 'QUANTITA', 'NUMERO', 'CODICE',
-  'TIPO', 'CATEGORIA', 'GRUPPO', 'CLASSE', 'LIVELLO', 'STATO', 'STATUS',
-  'UTENTE', 'CLIENTE', 'FORNITORE', 'PRODOTTO', 'SERVIZIO', 'ORDINE',
-  'FATTURA', 'PAGAMENTO', 'SPEDIZIONE', 'CONSEGNA', 'SCADENZA',
-  'INIZIO', 'FINE', 'ATTIVO', 'DISATTIVO', 'PUBBLICO', 'PRIVATO',
-  'AZIENDA', 'SOCIETA', 'DIPARTIMENTO', 'UFFICIO', 'SEDE', 'FILIALE',
-  'VIA', 'PIAZZA', 'CORSO', 'VIALE', 'VICOLO', 'STRADA',
-  'ITALIA', 'MILANO', 'ROMA', 'NAPOLI', 'TORINO', 'PALERMO', 'GENOVA',
-  // Common data values
-  'SI', 'NO', 'VERO', 'FALSO', 'MASCHIO', 'FEMMINA', 'UOMO', 'DONNA'
+  // Anagrafica & Persone
+  'NOME', 'COGNOME', 'EMAIL', 'TELEFONO', 'CELLULARE', 'INDIRIZZO', 'CITTA', 'PROVINCIA',
+  'CAP', 'REGIONE', 'PAESE', 'NAZIONE', 'STATO', 'SESSO', 'GENERE', 'ETA', 'NASCITA',
+  'LUOGO', 'RESIDENZA', 'DOMICILIO', 'FISCALE', 'PARTITA', 'IVA', 'CODICE',
+  'UTENTE', 'CLIENTE', 'FORNITORE', 'DIPENDENTE', 'COLLABORATORE', 'AGENTE',
+  'CONTATTO', 'REFERENTE', 'RUOLO', 'MANSIONE', 'TITOLO', 'RESPONSABILE',
+  'AMMINISTRATORE', 'DIRETTORE', 'MANAGER', 'PRESIDENTE', 'SOCIO', 'MEMBRO',
+  'PERSONA', 'INDIVIDUO', 'SOGGETTO', 'GRUPPO', 'TEAM', 'SQUADRA', 'STAFF',
+  
+  // Nomi di Persona Comuni (Italiani) - Uomini
+  'MARIO', 'LUIGI', 'GIOVANNI', 'GIUSEPPE', 'ANTONIO', 'FRANCESCO', 'PAOLO', 'ROBERTO',
+  'ANDREA', 'STEFANO', 'MARCO', 'LUCA', 'ALESSANDRO', 'MATTEO', 'LORENZO', 'SIMONE',
+  'FEDERICO', 'DAVIDE', 'GIORGIO', 'PIETRO', 'ENRICO', 'CLAUDIO', 'MASSIMO', 'FABIO',
+  'ALESSIO', 'ALBERTO', 'ANGELO', 'CARLO', 'CRISTIAN', 'DANIELE', 'DOMENICO', 'EMANUELE',
+  'EDOARDO', 'FILIPPO', 'GABRIELE', 'GIACOMO', 'GIANLUCA', 'LEONARDO', 'MANUEL', 'MATTIA',
+  'MICHELE', 'NICOLA', 'PASQUALE', 'RAFFAELE', 'RICCARDO', 'SALVATORE', 'SAMUELE', 'TOMMASO',
+  'VINCENZO', 'VITTORIO', 'GIULIO', 'VALERIO', 'VINCENZO', 'SALVATORE', 'CARMELO', 'ROSARIO',
+  
+  // Nomi di Persona Comuni (Italiani) - Donne
+  'ANNA', 'MARIA', 'GIOVANNA', 'ELENA', 'SARA', 'LAURA', 'CHIARA', 'GIULIA',
+  'SOFIA', 'MARTINA', 'ALICE', 'FRANCESCA', 'SILVIA', 'ROBERTA', 'VALENTINA',
+  'ALESSANDRA', 'ARIANNA', 'AURORA', 'BEATRICE', 'CAMILLA', 'CATERINA', 'CLAUDIA',
+  'CRISTINA', 'DANIELA', 'ELEONORA', 'ELISA', 'ELISABETTA', 'ERICA', 'FEDERICA',
+  'GAIA', 'GIADA', 'GINEVRA', 'GIORGIA', 'GRETA', 'ILARIA', 'IRENE', 'JESSICA',
+  'LETIZIA', 'LISA', 'LUDOVICA', 'MANUELA', 'MARGHERITA', 'MARTA', 'MICHELA',
+  'MONICA', 'NADIA', 'NOEMI', 'PAOLA', 'REBECCA', 'SERENA', 'SIMONA', 'STEFANIA',
+  'TERESA', 'VANESSA', 'VERONICA', 'VIOLA', 'VITTORIA', 'ANGELA', 'ROSA', 'CARMELA',
+  
+  // Date & Tempo
+  'DATA', 'ORA', 'ORARIO', 'ANNO', 'MESE', 'GIORNO', 'SETTIMANA', 'TRIMESTRE',
+  'SEMESTRE', 'BIENNIO', 'PERIODO', 'DURATA', 'SCADENZA', 'INIZIO', 'FINE',
+  'CREAZIONE', 'MODIFICA', 'AGGIORNAMENTO', 'CANCELLAZIONE', 'STORICO',
+  'ATTUALE', 'PRECEDENTE', 'SUCCESSIVO', 'FUTURO', 'PASSATO', 'RECENTE',
+  'OGGI', 'IERI', 'DOMANI', 'MATTINA', 'POMERIGGIO', 'SERA', 'NOTTE',
+  'MINUTO', 'SECONDO', 'TEMPO', 'MOMENTO', 'ISTANTE', 'INTERVALLO', 'FREQUENZA',
+  
+  // E-commerce & Business
+  'PRODOTTO', 'ARTICOLO', 'SERVIZIO', 'BENE', 'MERCE', 'MAGAZZINO', 'STOCK',
+  'GIACENZA', 'QUANTITA', 'PREZZO', 'COSTO', 'VALORE', 'IMPORTO', 'TOTALE',
+  'SUBTOTALE', 'TASSA', 'SCONTO', 'OFFERTA', 'PROMOZIONE', 'LISTINO', 'TARIFFA',
+  'ORDINE', 'FATTURA', 'RICEVUTA', 'SCONTRINO', 'PAGAMENTO', 'BONIFICO',
+  'CARTA', 'CREDITO', 'DEBITO', 'CONTO', 'BANCA', 'IBAN', 'VALUTA', 'EURO',
+  'SPEDIZIONE', 'CONSEGNA', 'TRASPORTO', 'CORRIERE', 'TRACKING', 'RITIRO',
+  'RESO', 'RIMBORSO', 'CAMBIO', 'GARANZIA', 'ASSISTENZA', 'SUPPORTO',
+  'VENDITA', 'ACQUISTO', 'ORDINI', 'VENDITE', 'ACQUISTI', 'FATTURATO',
+  'RICAVO', 'UTILE', 'PERDITA', 'BILANCIO', 'BUDGET', 'FORECAST', 'TARGET',
+  'TRANSAZIONE', 'OPERAZIONE', 'MOVIMENTO', 'CAUSALE', 'DESCRIZIONE',
+  
+  // Contenuti & Media
+  'TITOLO', 'DESCRIZIONE', 'TESTO', 'MESSAGGIO', 'NOTA', 'COMMENTO', 'RECENSIONE',
+  'VOTO', 'RATING', 'FEEDBACK', 'DOMANDA', 'RISPOSTA', 'FAQ', 'BLOG', 'POST',
+  'ARTICOLO', 'PAGINA', 'SEZIONE', 'CATEGORIA', 'TAG', 'ETICHETTA', 'LINK',
+  'URL', 'IMMAGINE', 'FOTO', 'VIDEO', 'AUDIO', 'FILE', 'DOCUMENTO', 'ALLEGATO',
+  'FORMATO', 'DIMENSIONE', 'PESO', 'ALTEZZA', 'LARGHEZZA', 'LUNGHEZZA',
+  'COLORE', 'TAGLIA', 'MISURA', 'MODELLO', 'BRAND', 'MARCA', 'STILE',
+  
+  // Stato & Valori
+  'STATUS', 'STATO', 'TIPO', 'TIPOLOGIA', 'CATEGORIA', 'GRUPPO', 'CLASSE',
+  'LIVELLO', 'GRADO', 'PRIORITA', 'IMPORTANZA', 'SEVERITA', 'COMPLESSITA',
+  'ATTIVO', 'DISATTIVO', 'ABILITATO', 'DISABILITATO', 'ON', 'OFF',
+  'PUBBLICO', 'PRIVATO', 'NASCOSTO', 'VISIBILE', 'BOZZA', 'PUBBLICATO',
+  'ARCHIVIATO', 'ELIMINATO', 'CANCELLATO', 'RIMOSSO', 'SOSPESO', 'BLOCCATO',
+  'NUOVO', 'VECCHIO', 'USATO', 'RIGENERATO', 'APERTO', 'CHIUSO',
+  'COMPLETATO', 'FALLITO', 'ERRORE', 'SUCCESS', 'WARNING', 'INFO', 'DEBUG',
+  'VERO', 'FALSO', 'SI', 'NO', 'NULLO', 'VUOTO', 'PIENO', 'VALIDO', 'INVALIDO',
+  'CONFERMATO', 'PENDENTE', 'IN_CORSO', 'LAVORAZIONE', 'ATTESA',
+  
+  // Luoghi & Geografia Italiana (Città e Province)
+  'ITALIA', 'ESTERO', 'EUROPA', 'MONDO', 'NORD', 'SUD', 'EST', 'OVEST', 'CENTRO',
+  'ROMA', 'MILANO', 'NAPOLI', 'TORINO', 'PALERMO', 'GENOVA', 'BOLOGNA', 'FIRENZE',
+  'BARI', 'CATANIA', 'VENEZIA', 'VERONA', 'MESSINA', 'PADOVA', 'TRIESTE', 'TARANTO',
+  'BRESCIA', 'PARMA', 'PRATO', 'MODENA', 'REGGIO', 'CALABRIA', 'EMILIA', 'PERUGIA',
+  'LIVORNO', 'RAVENNA', 'CAGLIARI', 'FOGGIA', 'RIMINI', 'SALERNO', 'FERRARA',
+  'SASSARI', 'LATINA', 'GIUGLIANO', 'MONZA', 'BERGAMO', 'SIRACUSA', 'PESCARA',
+  'TRENTO', 'FORLI', 'VICENZA', 'TERNI', 'BOLZANO', 'PIACENZA', 'NOVARA', 'ANCONA',
+  'ANDRIA', 'AREZZO', 'UDINE', 'CESENA', 'LECCE', 'PESARO', 'BARLETTA', 'ALESSANDRIA',
+  'LA_SPEZIA', 'PISA', 'PISTOIA', 'GUIDONIA', 'LUCCA', 'BRINDISI', 'CATANZARO',
+  'TREVISO', 'COMO', 'GROSSETO', 'BUSTO', 'ARSIZIO', 'VARESE', 'SESTO', 'SAN', 'GIOVANNI',
+  'AGRIGENTO', 'AOSTA', 'ASCOLI', 'AVELLINO', 'BELLUNO', 'BENEVENTO', 'BIELLA',
+  'CAMPOBASSO', 'CASERTA', 'CHIETI', 'CROTONE', 'CUNEO', 'ENNA', 'FERMO', 'FROSINONE',
+  'GORIZIA', 'IMPERIA', 'ISERNIA', 'L\'AQUILA', 'LECCO', 'LODI', 'MACERATA', 'MANTOVA',
+  'MASSA', 'MATERA', 'NUORO', 'ORISTANO', 'PAVIA', 'PORDENONE', 'POTENZA', 'RAGUSA',
+  'RIETI', 'ROVIGO', 'SAVONA', 'SIENA', 'SONDRIO', 'TERAMO', 'TRAPANI', 'URBINO',
+  'VERBANIA', 'VERCELLI', 'VIBO', 'VITERBO',
+  
+  // Grandi Aziende Italiane
+  'ENEL', 'ENI', 'INTESA', 'SANPAOLO', 'UNICREDIT', 'FERRARI', 'FIAT', 'STELLANTIS',
+  'GENERALI', 'POSTE', 'ITALIANE', 'TIM', 'TELECOM', 'LEONARDO', 'LUXOTTICA',
+  'PRADA', 'ARMANI', 'GUCCI', 'FERRERO', 'BARILLA', 'PIRELLI', 'MEDIASET', 'RAI',
+  'ATLANTIA', 'AUTOSTRADE', 'CAMPARI', 'CNH', 'DIASORIN', 'FINECO', 'HERA',
+  'INTERPUMP', 'INWIT', 'ITALGAS', 'MEDIOBANCA', 'MONCLER', 'NEXI', 'PRYSMIAN',
+  'RECORDATI', 'SAIPEM', 'SNAM', 'STM', 'TENARIS', 'TERNA', 'UNIPOL',
+  
+  // Sistema & Tech
+  'ID', 'UUID', 'KEY', 'CHIAVE', 'TOKEN', 'SESSIONE', 'LOGIN', 'LOGOUT',
+  'PASSWORD', 'USERNAME', 'EMAIL', 'AUTH', 'ACCESS', 'ROLE', 'PERMISSION',
+  'CONFIG', 'SETTING', 'PREFERENZA', 'OPZIONE', 'PARAMETRO', 'VALORE',
+  'SYSTEM', 'APP', 'WEB', 'MOBILE', 'DESKTOP', 'API', 'SERVER', 'CLIENT',
+  'DATABASE', 'DB', 'TABLE', 'COLUMN', 'ROW', 'FIELD', 'RECORD', 'DATA',
+  'LOG', 'EVENTO', 'AZIONE', 'OPERATION', 'QUERY', 'RESULT', 'ERROR',
+  'EXCEPTION', 'STACK', 'TRACE', 'DEBUG', 'INFO', 'WARN', 'FATAL'
 ];
 
 // Common English words that might appear in database
@@ -41,8 +129,75 @@ const COMMON_ENGLISH_WORDS = [
   'START', 'END', 'ACTIVE', 'INACTIVE', 'PUBLIC', 'PRIVATE',
   'COMPANY', 'DEPARTMENT', 'OFFICE', 'BRANCH', 'LOCATION',
   'STREET', 'AVENUE', 'ROAD', 'BOULEVARD', 'LANE',
-  // Common data values
-  'YES', 'NO', 'TRUE', 'FALSE', 'MALE', 'FEMALE', 'MAN', 'WOMAN'
+  'YES', 'NO', 'TRUE', 'FALSE', 'MALE', 'FEMALE', 'MAN', 'WOMAN',
+  'CREATE', 'UPDATE', 'DELETE', 'INSERT', 'SELECT', 'FROM', 'WHERE',
+  'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'FULL', 'CROSS',
+  'GROUP', 'ORDER', 'BY', 'HAVING', 'LIMIT', 'OFFSET',
+  'TABLE', 'COLUMN', 'DATABASE', 'SCHEMA', 'VIEW', 'INDEX',
+  'TRIGGER', 'PROCEDURE', 'FUNCTION', 'CONSTRAINT', 'KEY',
+  'PRIMARY', 'FOREIGN', 'UNIQUE', 'CHECK', 'DEFAULT', 'NULL',
+  'VARCHAR', 'INT', 'INTEGER', 'DECIMAL', 'FLOAT', 'DOUBLE',
+  'BOOLEAN', 'CHAR', 'TEXT', 'BLOB', 'JSON', 'XML',
+  'ID', 'UUID', 'TOKEN', 'SESSION', 'AUTH', 'ROLE', 'PERMISSION',
+  'CONFIG', 'SETTING', 'OPTION', 'PARAMETER', 'VALUE',
+  'SYSTEM', 'APPLICATION', 'WEB', 'MOBILE', 'API', 'SERVER',
+  'LOG', 'EVENT', 'ACTION', 'RESULT', 'ERROR', 'WARNING',
+  
+  // Common Names (English/International)
+  'JOHN', 'JAMES', 'ROBERT', 'MICHAEL', 'WILLIAM', 'DAVID', 'RICHARD', 'JOSEPH',
+  'MARY', 'PATRICIA', 'LINDA', 'BARBARA', 'ELIZABETH', 'JENNIFER', 'MARIA', 'SUSAN',
+  'THOMAS', 'CHARLES', 'CHRISTOPHER', 'DANIEL', 'MATTHEW', 'ANTHONY', 'MARK', 'DONALD',
+  'STEVEN', 'PAUL', 'ANDREW', 'JOSHUA', 'KENNETH', 'KEVIN', 'BRIAN', 'GEORGE',
+  'EDWARD', 'RONALD', 'TIMOTHY', 'JASON', 'JEFFREY', 'RYAN', 'JACOB', 'GARY',
+  'NICHOLAS', 'ERIC', 'JONATHAN', 'STEPHEN', 'LARRY', 'JUSTIN', 'SCOTT', 'BRANDON',
+  'BENJAMIN', 'SAMUEL', 'GREGORY', 'FRANK', 'ALEXANDER', 'RAYMOND', 'PATRICK', 'JACK',
+  'DENNIS', 'JERRY', 'TYLER', 'AARON', 'JOSE', 'ADAM', 'HENRY', 'NATHAN',
+  'DOUGLAS', 'ZACHARY', 'PETER', 'KYLE', 'WALTER', 'ETHAN', 'JEREMY', 'HAROLD',
+  'MARGARET', 'DOROTHY', 'LISA', 'NANCY', 'KAREN', 'BETTY', 'HELEN', 'SANDRA',
+  'DONNA', 'CAROL', 'RUTH', 'SHARON', 'MICHELLE', 'LAURA', 'SARAH', 'KIMBERLY',
+  'DEBORAH', 'JESSICA', 'SHIRLEY', 'CYNTHIA', 'ANGELA', 'MELISSA', 'BRENDA', 'AMY',
+  'ANNA', 'REBECCA', 'VIRGINIA', 'KATHLEEN', 'PAMELA', 'MARTHA', 'DEBRA', 'AMANDA',
+  'STEPHANIE', 'CAROLYN', 'CHRISTINE', 'MARIE', 'JANET', 'CATHERINE', 'FRANCES', 'ANN',
+  'JOYCE', 'DIANE', 'ALICE', 'JULIE', 'HEATHER', 'TERESA', 'DORIS', 'GLORIA',
+  
+  // World Cities & Countries
+  'LONDON', 'PARIS', 'NEW', 'YORK', 'TOKYO', 'BERLIN', 'MADRID', 'BEIJING', 'MOSCOW',
+  'ROME', 'DUBAI', 'SINGAPORE', 'HONG', 'KONG', 'SYDNEY', 'TORONTO', 'CHICAGO',
+  'USA', 'UK', 'FRANCE', 'GERMANY', 'ITALY', 'SPAIN', 'CHINA', 'JAPAN', 'RUSSIA',
+  'BRAZIL', 'INDIA', 'CANADA', 'AUSTRALIA', 'AMERICA', 'AFRICA', 'ASIA', 'EUROPE',
+  'AFGHANISTAN', 'ALBANIA', 'ALGERIA', 'ANDORRA', 'ANGOLA', 'ARGENTINA', 'ARMENIA', 'AUSTRALIA',
+  'AUSTRIA', 'AZERBAIJAN', 'BAHAMAS', 'BAHRAIN', 'BANGLADESH', 'BARBADOS', 'BELARUS', 'BELGIUM',
+  'BELIZE', 'BENIN', 'BHUTAN', 'BOLIVIA', 'BOSNIA', 'BOTSWANA', 'BRAZIL', 'BRUNEI',
+  'BULGARIA', 'BURKINA', 'BURUNDI', 'CAMBODIA', 'CAMEROON', 'CANADA', 'CAPE', 'VERDE',
+  'CHAD', 'CHILE', 'CHINA', 'COLOMBIA', 'COMOROS', 'CONGO', 'COSTA', 'RICA',
+  'CROATIA', 'CUBA', 'CYPRUS', 'CZECH', 'DENMARK', 'DJIBOUTI', 'DOMINICA', 'DOMINICAN',
+  'ECUADOR', 'EGYPT', 'SALVADOR', 'EQUATORIAL', 'ERITREA', 'ESTONIA', 'ESWATINI', 'ETHIOPIA',
+  'FIJI', 'FINLAND', 'FRANCE', 'GABON', 'GAMBIA', 'GEORGIA', 'GERMANY', 'GHANA',
+  'GREECE', 'GRENADA', 'GUATEMALA', 'GUINEA', 'GUYANA', 'HAITI', 'HONDURAS', 'HUNGARY',
+  'ICELAND', 'INDIA', 'INDONESIA', 'IRAN', 'IRAQ', 'IRELAND', 'ISRAEL', 'ITALY',
+  'JAMAICA', 'JAPAN', 'JORDAN', 'KAZAKHSTAN', 'KENYA', 'KIRIBATI', 'KOREA', 'KOSOVO',
+  'KUWAIT', 'KYRGYZSTAN', 'LAOS', 'LATVIA', 'LEBANON', 'LESOTHO', 'LIBERIA', 'LIBYA',
+  'LIECHTENSTEIN', 'LITHUANIA', 'LUXEMBOURG', 'MADAGASCAR', 'MALAWI', 'MALAYSIA', 'MALDIVES', 'MALI',
+  'MALTA', 'MARSHALL', 'MAURITANIA', 'MAURITIUS', 'MEXICO', 'MICRONESIA', 'MOLDOVA', 'MONACO',
+  'MONGOLIA', 'MONTENEGRO', 'MOROCCO', 'MOZAMBIQUE', 'MYANMAR', 'NAMIBIA', 'NAURU', 'NEPAL',
+  'NETHERLANDS', 'ZEALAND', 'NICARAGUA', 'NIGER', 'NIGERIA', 'MACEDONIA', 'NORWAY', 'OMAN',
+  'PAKISTAN', 'PALAU', 'PALESTINE', 'PANAMA', 'PAPUA', 'PARAGUAY', 'PERU', 'PHILIPPINES',
+  'POLAND', 'PORTUGAL', 'QATAR', 'ROMANIA', 'RUSSIA', 'RWANDA', 'KITTS', 'NEVIS',
+  'LUCIA', 'VINCENT', 'SAMOA', 'MARINO', 'SAOME', 'SAUDI', 'ARABIA', 'SENEGAL',
+  'SERBIA', 'SEYCHELLES', 'SIERRA', 'LEONE', 'SINGAPORE', 'SLOVAKIA', 'SLOVENIA', 'SOLOMON',
+  'SOMALIA', 'SOUTH', 'AFRICA', 'SPAIN', 'LANKA', 'SUDAN', 'SURINAME', 'SWEDEN',
+  'SWITZERLAND', 'SYRIA', 'TAIWAN', 'TAJIKISTAN', 'TANZANIA', 'THAILAND', 'TIMOR', 'TOGO',
+  'TONGA', 'TRINIDAD', 'TOBAGO', 'TUNISIA', 'TURKEY', 'TURKMENISTAN', 'TUVALU', 'UGANDA',
+  'UKRAINE', 'EMIRATES', 'UK', 'USA', 'URUGUAY', 'UZBEKISTAN', 'VANUATU', 'VATICAN',
+  'VENEZUELA', 'VIETNAM', 'YEMEN', 'ZAMBIA', 'ZIMBABWE',
+  
+  // Global Companies
+  'GOOGLE', 'APPLE', 'MICROSOFT', 'AMAZON', 'FACEBOOK', 'META', 'TESLA', 'NETFLIX',
+  'SAMSUNG', 'TOYOTA', 'VOLKSWAGEN', 'SONY', 'INTEL', 'IBM', 'ORACLE', 'CISCO',
+  'ALPHABET', 'NVIDIA', 'TSMC', 'TENCENT', 'ALIBABA', 'VISA', 'MASTERCARD', 'JPMORGAN',
+  'WALMART', 'LVMH', 'NESTLE', 'ROCHE', 'PFIZER', 'NOVARTIS', 'SHELL', 'EXXON',
+  'CHEVRON', 'COCA', 'COLA', 'PEPSI', 'MCDONALD', 'NIKE', 'ADIDAS', 'ZARA',
+  'IKEA', 'SIEMENS', 'SAP', 'AIRBUS', 'BOEING', 'FEDEX', 'UPS', 'DHL', 'MAERSK'
 ];
 
 // Common SQL operations and values that should not be flagged
@@ -120,7 +275,7 @@ export function detectMisspelledWords(
     // Check if word is valid
     const upperWord = word.toUpperCase();
     
-    // Skip if it's a valid identifier, keyword, or function
+    // Skip if it's a valid identifier, keyword, or function (exact match)
     if (validIdentifiers.has(upperWord)) {
       continue;
     }
@@ -135,21 +290,65 @@ export function detectMisspelledWords(
       continue;
     }
 
-    // Only flag if word looks like it SHOULD be a SQL keyword but isn't
-    // Check if it's similar to any keyword (Levenshtein distance <= 2)
-    let isSimilarToKeyword = false;
-    for (const token of COMMON_SQL_TOKENS) {
-      if (Math.abs(token.length - upperWord.length) <= 2) {
-        const distance = levenshteinDistance(upperWord, token);
-        if (distance <= 2 && distance > 0) {
-          isSimilarToKeyword = true;
-          break;
+    // Handle compound words with underscores (e.g., "data_spedizone")
+    // If the word contains underscores, we check if ANY part is a typo of a known word
+    const parts = upperWord.split('_').filter(p => p.length > 2);
+    
+    let shouldFlag = false;
+    
+    // If it's a single word (no underscores), check it directly
+    if (parts.length <= 1) {
+      // Check if it's similar to any known token (Keyword, Function, Italian, English)
+      let isSimilarToKnownToken = false;
+      
+      // Optimization: Only check similarity if it's NOT in the valid set
+      // (We already checked validIdentifiers above, but let's be sure)
+      
+      for (const token of COMMON_SQL_TOKENS) {
+        // Only check if lengths are close
+        if (Math.abs(token.length - upperWord.length) <= 2) {
+          const distance = levenshteinDistance(upperWord, token);
+          // If distance is small (typo) AND it's not an exact match (distance > 0)
+          if (distance <= 2 && distance > 0) {
+            isSimilarToKnownToken = true;
+            break;
+          }
         }
+      }
+      
+      // If it looks like a typo of a known word, flag it
+      if (isSimilarToKnownToken) {
+        shouldFlag = true;
+      }
+    } else {
+      // It's a compound word (e.g. "data_spedizone")
+      // Check each part. If a part looks like a typo of a dictionary word, flag the whole word.
+      // But we must be careful: "xyz" is not a typo of anything, so we ignore it.
+      // "spedizone" IS a typo of "SPEDIZIONE", so we flag it.
+      
+      for (const part of parts) {
+        // Skip parts that are valid words themselves
+        if (COMMON_SQL_TOKENS.includes(part)) {
+          continue;
+        }
+        
+        // Check if this part is a typo of a known word
+        for (const token of COMMON_SQL_TOKENS) {
+           if (Math.abs(token.length - part.length) <= 2) {
+            const distance = levenshteinDistance(part, token);
+            if (distance <= 2 && distance > 0) {
+              // Found a typo in one of the parts!
+              shouldFlag = true;
+              break;
+            }
+          }
+        }
+        if (shouldFlag) break;
       }
     }
 
-    // Only flag if it looks like a misspelled keyword
-    if (!isSimilarToKeyword) {
+    // Only flag if we detected a typo of a known word
+    if (!shouldFlag) {
       continue;
     }
 
