@@ -39,10 +39,12 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         <div className="min-h-screen bg-transparent text-slate-200 font-sans flex flex-col relative overflow-y-auto">
 
             {/* BACKGROUND LOGO WATERMARK */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] overflow-hidden">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.08] overflow-hidden">
                 <Hexagon size={800} className="text-slate-400 animate-spin-slow origin-center" strokeWidth={0.5} />
             </div>
-            {/* Removed light beams for pure black stealth look */}
+
+             {/* AMBIENT GLOW */}
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
             {/* Navbar */}
             <nav className="h-24 px-8 md:px-16 flex items-center justify-between relative z-20 shrink-0">
@@ -71,7 +73,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* SQL GYM CARD */}
                     <button
                         onClick={() => onNavigate(Page.SqlGym)}
-                            className="group relative h-64 bg-[#121212]/50 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-black/50 border border-white/20 hover:shadow-blue-500/20"
+                            className="group relative h-64 bg-[#121212]/30 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-black/50 hover:shadow-blue-500/20"
                     >
                         <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 mb-4 group-hover:scale-110 transition-transform duration-500">
                             <Database size={28} strokeWidth={1.5} />
@@ -85,21 +87,21 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* DATALAB CARD */}
                     <button
                         onClick={() => onNavigate(Page.DataLab)}
-                        className="group relative h-64 bg-[#121212]/50 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-black/50 border border-white/20 hover:shadow-emerald-500/20"
+                        className="group relative h-64 bg-[#121212]/30 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-black/50 hover:shadow-emerald-500/20"
                     >
                         <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 mb-4 group-hover:scale-110 transition-transform duration-500">
                             <Code2 size={28} strokeWidth={1.5} />
                         </div>
                         <h2 className="text-2xl font-bold text-white mb-2 tracking-tight font-outfit group-hover:text-emerald-400 transition-colors">DataLab</h2>
                         <p className="text-slate-300 text-sm font-medium max-w-[200px] leading-relaxed group-hover:text-slate-200 transition-colors">
-                            Carica CSV, interroga con SQL, ricevi feedback AI.
+                            Carica CSV, interroga con SQL
                         </p>
                     </button>
 
                     {/* PYTHON GYM CARD (Placeholder) */}
                     <button
                         disabled
-                        className="group relative h-64 bg-[#121212]/30 backdrop-blur-sm rounded-3xl p-8 flex flex-col items-center justify-center text-center opacity-40 cursor-not-allowed border border-white/10 grayscale hover:grayscale-0 transition-all duration-500"
+                        className="group relative h-64 bg-[#121212]/10 backdrop-blur-sm rounded-3xl p-8 flex flex-col items-center justify-center text-center opacity-40 cursor-not-allowed grayscale hover:grayscale-0 transition-all duration-500"
                     >
                         <div className="absolute top-4 right-4 px-2 py-1 bg-slate-800/50 text-[9px] font-bold text-slate-400 uppercase tracking-wider rounded">Coming Soon</div>
                         <div className="w-16 h-16 bg-slate-800/30 rounded-2xl flex items-center justify-center text-slate-600 mb-4">
@@ -114,7 +116,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* ANGULAR GYM CARD (Active but Disabled) */}
                     <button
                         disabled
-                        className="group relative h-64 bg-[#121212]/30 backdrop-blur-sm rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-default border border-white/10 opacity-40"
+                        className="group relative h-64 bg-[#121212]/10 backdrop-blur-sm rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-default opacity-40"
                     >
                         <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mb-4">
                             <Braces size={28} strokeWidth={1.5} />
