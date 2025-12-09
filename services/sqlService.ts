@@ -90,7 +90,9 @@ export const initDatabase = (difficulty: Difficulty) => {
         { id: 1001, utente_id: 101, prodotto_id: 101, data_ordine: '2023-01-01', quantita: 1 }, // New Year Order
         { id: 1002, utente_id: 101, prodotto_id: 102, data_ordine: '2023-01-15', quantita: 2 },
         { id: 1003, utente_id: 102, prodotto_id: 104, data_ordine: '2023-06-01', quantita: 5 }, // Summer Start
-        { id: 1004, utente_id: 103, prodotto_id: 103, data_ordine: '2023-12-25', quantita: 1 }  // Christmas
+        { id: 1004, utente_id: 103, prodotto_id: 103, data_ordine: '2023-12-25', quantita: 1 },  // Christmas
+        { id: 1005, utente_id: 104, prodotto_id: 101, data_ordine: '2022-05-10', quantita: 3 }, // 2022 Order
+        { id: 1006, utente_id: 102, prodotto_id: 105, data_ordine: '2024-02-20', quantita: 2 }  // 2024 Order
     ];
     alasql('INSERT INTO ordini SELECT * FROM ?', [fixedOrders]);
 
