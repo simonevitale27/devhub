@@ -778,7 +778,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         descTemplate:
           "Il CRM richiede che il campo 'nome' dalla tabella 'utenti' venga visualizzato come 'Nome_Cliente'.",
         queryTemplate: "SELECT nome AS Nome_Cliente FROM utenti",
-        hints: ["Usa un alias (AS) per cambiare il nome visualizzato.", "Attenzione all'uso dell'underscore nel nuovo nome."],
+        hints: [
+          "Usa un alias (AS) per cambiare il nome visualizzato.",
+          "Attenzione all'uso dell'underscore nel nuovo nome.",
+        ],
         explanation:
           "Gli alias adattano i nomi delle colonne del database alle esigenze del frontend o dei report.",
         replacements: {},
@@ -790,7 +793,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         descTemplate:
           "Per l'integrazione con il tool di marketing, estrai la colonna 'email' dalla tabella 'utenti' assegnandole l'alias 'Indirizzo_Email'.",
         queryTemplate: "SELECT email AS Indirizzo_Email FROM utenti",
-        hints: ["Assegna un alias alla colonna.", "Usa l'underscore per separare le parole nell'alias."],
+        hints: [
+          "Assegna un alias alla colonna.",
+          "Usa l'underscore per separare le parole nell'alias.",
+        ],
         explanation:
           "L'uso di alias rende i report più leggibili e compatibili con sistemi esterni.",
         replacements: {},
@@ -803,7 +809,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         descTemplate:
           "Il listino ufficiale richiede che la colonna 'prezzo' dalla tabella 'prodotti' venga visualizzata come 'Prezzo_Vendita'.",
         queryTemplate: "SELECT prezzo AS Prezzo_Vendita FROM prodotti",
-        hints: ["Definisci un alias per il prezzo.", "Il nuovo nome deve rispettare maiuscole e minuscole."],
+        hints: [
+          "Definisci un alias per il prezzo.",
+          "Il nuovo nome deve rispettare maiuscole e minuscole.",
+        ],
         explanation:
           "Rinominare le colonne è utile per chiarire il significato dei dati in report specifici.",
         replacements: {},
@@ -815,7 +824,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         descTemplate:
           "Il report di inventario deve mostrare la colonna 'stock' dalla tabella 'prodotti' con l'alias 'Quantita_Magazzino'.",
         queryTemplate: "SELECT stock AS Quantita_Magazzino FROM prodotti",
-        hints: ["Rinomina la colonna nell'output con un alias.", "L'alias è temporaneo e solo per la visualizzazione."],
+        hints: [
+          "Rinomina la colonna nell'output con un alias.",
+          "L'alias è temporaneo e solo per la visualizzazione.",
+        ],
         explanation:
           "Gli alias sono temporanei e non modificano la struttura fisica della tabella.",
         replacements: {},
@@ -829,7 +841,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Per la promozione estiva, calcola il prezzo scontato del 10% per tutti i prodotti. Estrai le colonne 'nome' e il prezzo calcolato (prezzo * 0.9) rinominato come 'prezzo_scontato' (tutto minuscolo con underscore) dalla tabella 'prodotti'.",
         queryTemplate:
           "SELECT nome, prezzo * 0.9 AS prezzo_scontato FROM prodotti",
-        hints: ["Calcola lo sconto moltiplicando il prezzo.", "Usa un alias per il risultato del calcolo."],
+        hints: [
+          "Calcola lo sconto moltiplicando il prezzo.",
+          "Usa un alias per il risultato del calcolo.",
+        ],
         explanation:
           "È comune eseguire calcoli di sconto direttamente in SQL per report rapidi.",
         replacements: {},
@@ -842,7 +857,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Il reparto contabilità necessita del prezzo lordo. Estrai la colonna 'nome' e calcola il prezzo con IVA moltiplicando 'prezzo' per {perc}. Rinomina il risultato del calcolo come 'prezzo_iva' (tutto minuscolo con underscore).",
         queryTemplate:
           "SELECT nome, prezzo * {perc} AS prezzo_iva FROM prodotti",
-        hints: ["Applica la percentuale al prezzo.", "Assegna un nome chiaro al risultato calcolato."],
+        hints: [
+          "Applica la percentuale al prezzo.",
+          "Assegna un nome chiaro al risultato calcolato.",
+        ],
         explanation:
           "Calcolare l'IVA in fase di estrazione dati semplifica il lavoro del frontend.",
         replacements: { perc: [1.1, 1.22, 1.2] },
@@ -856,7 +874,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Per la valutazione degli asset, estrai la colonna 'nome' e calcola il valore totale dello stock moltiplicando 'prezzo' per 'stock'. Rinomina il risultato calcolato come 'valore_totale' (tutto minuscolo con underscore).",
         queryTemplate:
           "SELECT nome, prezzo * stock AS valore_totale FROM prodotti",
-        hints: ["Esegui il prodotto tra le due colonne numeriche.", "Usa un alias per il valore totale."],
+        hints: [
+          "Esegui il prodotto tra le due colonne numeriche.",
+          "Usa un alias per il valore totale.",
+        ],
         explanation:
           "Puoi moltiplicare i valori di due colonne diverse della stessa riga.",
         replacements: {},
@@ -869,7 +890,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Simula un nuovo listino estraendo la colonna 'nome' e calcolando il prezzo con margine moltiplicando 'prezzo' per {perc}. Rinomina il risultato come 'prezzo_margine' (tutto minuscolo con underscore).",
         queryTemplate:
           "SELECT nome, prezzo * {perc} AS prezzo_margine FROM prodotti",
-        hints: ["Calcola il nuovo prezzo con il margine.", "Rinomina la colonna calcolata."],
+        hints: [
+          "Calcola il nuovo prezzo con il margine.",
+          "Rinomina la colonna calcolata.",
+        ],
         explanation:
           "Le simulazioni di prezzo sono frequenti nelle analisi di business.",
         replacements: { perc: DATA.percentages },
@@ -3380,8 +3404,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM prodotti ORDER BY prezzo ASC",
         brokenCode: "SELECT * FROM prodotti ORDER prezzo ASC",
         debugHint: "Manca la parola chiave BY dopo ORDER.",
-        hints: ["Usa ORDER BY prezzo ASC"],
-        explanation: "L'ordinamento base.",
+        hints: ["Usa la clausola: ORDER BY prezzo ASC"],
+        explanation:
+          "L'ordinamento base si fa con ORDER BY seguito dal nome della colonna.",
         replacements: {},
       },
       {
@@ -3391,19 +3416,21 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM prodotti ORDER BY stock DESC",
         brokenCode: "SELECT * FROM prodotti ORDER BY stock DES",
         debugHint: "Errore di battitura nella parola chiave DESC.",
-        hints: ["Usa ORDER BY colonna DESC"],
-        explanation: "DESC inverte l'ordine.",
+        hints: ["Usa la clausola: ORDER BY stock DESC"],
+        explanation:
+          "Usa DESC dopo il nome della colonna per invertire l'ordine.",
         replacements: {},
       },
       {
         titleTemplate: "Ordini Cronologici",
         descTemplate:
           "Seleziona tutti i record dalla tabella 'ordini' ordinati per la colonna 'data_ordine' in ordine crescente (dal più vecchio).",
-        queryTemplate: "SELECT * FROM ordini ORDER BY data_ordine",
+        queryTemplate: "SELECT * FROM ordini ORDER BY data_ordine ASC",
         brokenCode: "SELECT * FROM ordini ORDER data_ordine",
         debugHint: "Manca la parola chiave BY dopo ORDER.",
-        hints: ["Usa ORDER BY data_ordine ASC"],
-        explanation: "Ordinare date è essenziale per analisi temporali.",
+        hints: ["Usa la clausola: ORDER BY data_ordine ASC"],
+        explanation:
+          "Ordinare per data crescente mostra prima i record più vecchi.",
         replacements: {},
       },
       {
@@ -3413,8 +3440,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM utenti ORDER BY nome ASC",
         brokenCode: "SELECT * FROM utenti ORDER BY nome A SC",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["Usa ORDER BY nome ASC"],
-        explanation: "Ordinamento alfabetico crescente.",
+        hints: ["Usa la clausola: ORDER BY nome ASC"],
+        explanation: "L'ordinamento alfabetico crescente va dalla A alla Z.",
         replacements: {},
       },
       {
@@ -3424,8 +3451,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM utenti ORDER BY nome DESC",
         brokenCode: "SELECT * FROM utenti ORDER BY nome DSC",
         debugHint: "Errore di battitura nella parola chiave DESC.",
-        hints: ["Usa ORDER BY nome DESC"],
-        explanation: "Ordinamento alfabetico decrescente.",
+        hints: ["Usa la clausola: ORDER BY nome DESC"],
+        explanation: "L'ordinamento alfabetico decrescente va dalla Z alla A.",
         replacements: {},
       },
       {
@@ -3435,8 +3462,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM utenti ORDER BY email ASC",
         brokenCode: "SELECT * FROM utenti ORDER BY email AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["Usa ORDER BY email ASC"],
-        explanation: "Ordinamento su colonna email.",
+        hints: ["Usa la clausola: ORDER BY email ASC"],
+        explanation: "Puoi ordinare anche in base agli indirizzi email.",
         replacements: {},
       },
       {
@@ -3445,9 +3472,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona tutti i record dalla tabella 'utenti' ordinati per la colonna 'paese' in ordine alfabetico crescente.",
         queryTemplate: "SELECT * FROM utenti ORDER BY paese ASC",
         brokenCode: "SELECT * FROM utenti ORDER BY country ASC",
-        debugHint: "Controlla il nome della colonna paese.",
-        hints: ["Usa ORDER BY paese ASC"],
-        explanation: "Ordinamento per paese.",
+        debugHint: "Il nome della colonna deve essere 'paese' (in italiano).",
+        hints: ["Usa la clausola: ORDER BY paese ASC"],
+        explanation:
+          "Ordinare per paese raggruppa visivamente gli utenti della stessa nazione.",
         replacements: {},
       },
       {
@@ -3456,9 +3484,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona tutti i record dalla tabella 'prodotti' ordinati per la colonna 'nome' in ordine alfabetico crescente.",
         queryTemplate: "SELECT * FROM prodotti ORDER BY nome ASC",
         brokenCode: "SELECT * FROM prodotti ORDER BY name ASC",
-        debugHint: "Controlla il nome della colonna nome.",
-        hints: ["Usa ORDER BY nome ASC"],
-        explanation: "Ordinamento prodotti per nome.",
+        debugHint: "La colonna si chiama 'nome', non 'name'.",
+        hints: ["Usa la clausola: ORDER BY nome ASC"],
+        explanation:
+          "L'ordinamento rende più facile trovare un prodotto specifico nella lista.",
         replacements: {},
       },
       {
@@ -3467,9 +3496,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona tutti i record dalla tabella 'prodotti' ordinati per la colonna 'nome' in ordine alfabetico decrescente.",
         queryTemplate: "SELECT * FROM prodotti ORDER BY nome DESC",
         brokenCode: "SELECT * FROM prodotti ORDER BY name DESC",
-        debugHint: "Controlla il nome della colonna nome.",
-        hints: ["Usa ORDER BY nome DESC"],
-        explanation: "Ordinamento decrescente per nome.",
+        debugHint: "La colonna si chiama 'nome', non 'name'.",
+        hints: ["Usa la clausola: ORDER BY nome DESC"],
+        explanation:
+          "Invertire l'ordine alfabetico può essere utile in alcune visualizzazioni.",
         replacements: {},
       },
       {
@@ -3478,9 +3508,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona tutti i record dalla tabella 'prodotti' ordinati per la colonna 'prezzo' in ordine decrescente.",
         queryTemplate: "SELECT * FROM prodotti ORDER BY prezzo DESC",
         brokenCode: "SELECT * FROM prodotti ORDER BY price DESC",
-        debugHint: "Controlla il nome della colonna prezzo.",
-        hints: ["Usa ORDER BY prezzo DESC"],
-        explanation: "Ordinamento decrescente per prezzo.",
+        debugHint: "La colonna si chiama 'prezzo', non 'price'.",
+        hints: ["Usa la clausola: ORDER BY prezzo DESC"],
+        explanation:
+          "Ordinare per prezzo decrescente mette in evidenza i prodotti più costosi.",
         replacements: {},
       },
       {
@@ -3490,8 +3521,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM prodotti ORDER BY stock ASC",
         brokenCode: "SELECT * FROM prodotti ORDER BY stock ASCC",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["Usa ORDER BY stock ASC"],
-        explanation: "Ordinamento crescente per stock.",
+        hints: ["Usa la clausola: ORDER BY stock ASC"],
+        explanation:
+          "Ordinare per stock crescente evidenzia i prodotti in esaurimento.",
         replacements: {},
       },
       {
@@ -3501,8 +3533,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM utenti ORDER BY id ASC",
         brokenCode: "SELECT * FROM utenti ORDER BY id A_SC",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["Usa ORDER BY id ASC"],
-        explanation: "Ordinamento per ID crescente.",
+        hints: ["Usa la clausola: ORDER BY id ASC"],
+        explanation:
+          "L'ordinamento per ID segue l'ordine di inserimento nel database.",
         replacements: {},
       },
       {
@@ -3512,8 +3545,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM utenti ORDER BY id DESC",
         brokenCode: "SELECT * FROM utenti ORDER BY id DE SC",
         debugHint: "Errore di battitura nella parola chiave DESC.",
-        hints: ["Usa ORDER BY id DESC"],
-        explanation: "Ordinamento per ID decrescente.",
+        hints: ["Usa la clausola: ORDER BY id DESC"],
+        explanation:
+          "L'ordinamento per ID decrescente mostra per primi gli ultimi utenti registrati.",
         replacements: {},
       },
       {
@@ -3523,8 +3557,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM prodotti ORDER BY id ASC",
         brokenCode: "SELECT * FROM prodotti ORDER BY id AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["Usa ORDER BY id ASC"],
-        explanation: "Ordinamento prodotti per ID.",
+        hints: ["Usa la clausola: ORDER BY id ASC"],
+        explanation:
+          "Utile per scorrere il catalogo prodotti nell'ordine originale.",
         replacements: {},
       },
       {
@@ -3534,8 +3569,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM prodotti ORDER BY id DESC",
         brokenCode: "SELECT * FROM prodotti ORDER BY id DES",
         debugHint: "Errore di battitura nella parola chiave DESC.",
-        hints: ["Usa ORDER BY id DESC"],
-        explanation: "Ordinamento decrescente per ID.",
+        hints: ["Usa la clausola: ORDER BY id DESC"],
+        explanation: "Mostra per primi i prodotti aggiunti più di recente.",
         replacements: {},
       },
       {
@@ -3711,7 +3746,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM {table} ORDER BY id ASC",
         brokenCode: "SELECT * FROM {table} ORDER BY id AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY id ASC"],
+        hints: ["Usa la clausola: ORDER BY id ASC"],
         explanation: "Ordinamento standard.",
         replacements: {
           table: [
@@ -3732,7 +3767,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM {table} ORDER BY nome ASC",
         brokenCode: "SELECT * FROM {table} ORDER BY nome AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY nome"],
+        hints: ["Usa la clausola: ORDER BY nome ASC"],
         explanation: "Ordinamento alfabetico.",
         replacements: { table: ["utenti", "prodotti", "categorie"] },
       },
@@ -3743,7 +3778,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM {table} ORDER BY {col} ASC",
         brokenCode: "SELECT * FROM {table} ORDER BY {col} AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY {col} ASC"],
+        hints: ["Usa la clausola: ORDER BY {col} ASC"],
         explanation: "Ordinamento temporale.",
         replacements: {
           table: ["ordini", "spedizioni"],
@@ -3757,7 +3792,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM prodotti ORDER BY prezzo ASC",
         brokenCode: "SELECT * FROM prodotti ORDER BY prezzo AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY prezzo"],
+        hints: ["Usa la clausola: ORDER BY prezzo ASC"],
         explanation: "Ordinamento economico.",
         replacements: {},
       },
@@ -3768,7 +3803,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM prodotti ORDER BY stock ASC",
         brokenCode: "SELECT * FROM prodotti ORDER BY stock AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY stock"],
+        hints: ["Usa la clausola: ORDER BY stock ASC"],
         explanation: "Ordinamento quantità.",
         replacements: {},
       },
@@ -3779,7 +3814,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM recensioni ORDER BY voto ASC",
         brokenCode: "SELECT * FROM recensioni ORDER BY voto AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY voto"],
+        hints: ["Usa la clausola: ORDER BY voto ASC"],
         explanation: "Ordinamento valutazione.",
         replacements: {},
       },
@@ -3790,7 +3825,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM ordini ORDER BY quantita ASC",
         brokenCode: "SELECT * FROM ordini ORDER BY quantita AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY quantita"],
+        hints: ["Usa la clausola: ORDER BY quantita ASC"],
         explanation: "Ordinamento volume.",
         replacements: {},
       },
@@ -3801,7 +3836,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM utenti ORDER BY paese ASC",
         brokenCode: "SELECT * FROM utenti ORDER BY paese AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY paese"],
+        hints: ["Usa la clausola: ORDER BY paese ASC"],
         explanation: "Ordinamento geografico.",
         replacements: {},
       },
@@ -3812,7 +3847,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM utenti ORDER BY email ASC",
         brokenCode: "SELECT * FROM utenti ORDER BY email AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY email"],
+        hints: ["Usa la clausola: ORDER BY email ASC"],
         explanation: "Ordinamento contatti.",
         replacements: {},
       },
@@ -3823,7 +3858,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM spedizioni ORDER BY corriere ASC",
         brokenCode: "SELECT * FROM spedizioni ORDER BY corriere AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY corriere"],
+        hints: ["Usa la clausola: ORDER BY corriere ASC"],
         explanation: "Ordinamento logistico.",
         replacements: {},
       },
@@ -3834,7 +3869,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM fornitori ORDER BY azienda ASC",
         brokenCode: "SELECT * FROM fornitori ORDER BY azienda AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY azienda"],
+        hints: ["Usa la clausola: ORDER BY azienda ASC"],
         explanation: "Ordinamento fornitori.",
         replacements: {},
       },
@@ -3845,7 +3880,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM fornitori ORDER BY nazione ASC",
         brokenCode: "SELECT * FROM fornitori ORDER BY nazione AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY nazione"],
+        hints: ["Usa la clausola: ORDER BY nazione ASC"],
         explanation: "Ordinamento geografico fornitori.",
         replacements: {},
       },
@@ -3856,7 +3891,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM prodotti ORDER BY categoria_id ASC",
         brokenCode: "SELECT * FROM prodotti ORDER BY categoria_id AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY categoria_id"],
+        hints: ["Usa la clausola: ORDER BY categoria_id ASC"],
         explanation: "Ordinamento categoria.",
         replacements: {},
       },
@@ -3867,7 +3902,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM prodotti ORDER BY fornitore_id ASC",
         brokenCode: "SELECT * FROM prodotti ORDER BY fornitore_id AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY fornitore_id"],
+        hints: ["Usa la clausola: ORDER BY fornitore_id ASC"],
         explanation: "Ordinamento fornitore.",
         replacements: {},
       },
@@ -3878,7 +3913,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         queryTemplate: "SELECT * FROM ordini ORDER BY utente_id ASC",
         brokenCode: "SELECT * FROM ordini ORDER BY utente_id AS",
         debugHint: "Errore di battitura nella parola chiave ASC.",
-        hints: ["ORDER BY utente_id"],
+        hints: ["Usa la clausola: ORDER BY utente_id ASC"],
         explanation: "Ordinamento utente.",
         replacements: {},
       },
@@ -4066,7 +4101,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi {limit} record dalla tabella 'spedizioni' ordinati per la colonna 'data_spedizione' in ordine decrescente.",
         queryTemplate:
           "SELECT * FROM spedizioni ORDER BY data_spedizione DESC LIMIT {limit}",
-        hints: ["Ordina per data spedizione decrescente e limita il risultato."],
+        hints: [
+          "Ordina per data spedizione decrescente e limita il risultato.",
+        ],
         explanation: "LIMIT per spedizioni recenti.",
         replacements: { limit: [5, 10, 15] },
         brokenCode:
@@ -4308,7 +4345,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 3 record dalla tabella 'prodotti' dove 'categoria_id' è {cat}, ordinati per 'prezzo' decrescente.",
         queryTemplate:
           "SELECT * FROM prodotti WHERE categoria_id = {cat} ORDER BY prezzo DESC LIMIT 3",
-        hints: ["WHERE ... ORDER BY ... LIMIT ..."],
+        hints: ["Filtra per categoria, ordina per prezzo decrescente e limita i risultati."],
         explanation: "Top N filtrato.",
         replacements: { cat: [1, 2, 3] },
       },
@@ -4318,7 +4355,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 3 record dalla tabella 'ordini' dove 'utente_id' è {uid}, ordinati per 'data_ordine' decrescente.",
         queryTemplate:
           "SELECT * FROM ordini WHERE utente_id = {uid} ORDER BY data_ordine DESC LIMIT 3",
-        hints: ["WHERE utente_id ... ORDER BY ... LIMIT"],
+        hints: ["Filtra per utente, ordina per data decrescente e limita i risultati."],
         explanation: "Cronologia utente.",
         replacements: { uid: [1, 2, 3] },
       },
@@ -4328,7 +4365,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 5 record dalla tabella 'spedizioni' dove 'corriere' è '{corr}', ordinati per 'data_spedizione' decrescente.",
         queryTemplate:
           "SELECT * FROM spedizioni WHERE corriere = '{corr}' ORDER BY data_spedizione DESC LIMIT 5",
-        hints: ["WHERE corriere ... ORDER BY ... LIMIT"],
+        hints: ["Filtra per corriere, ordina per data decrescente e limita i risultati."],
         explanation: "Cronologia corriere.",
         replacements: { corr: ["DHL", "UPS"] },
       },
@@ -4338,7 +4375,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 3 record dalla tabella 'recensioni' dove 'prodotto_id' è {pid}, ordinati per 'voto' decrescente.",
         queryTemplate:
           "SELECT * FROM recensioni WHERE prodotto_id = {pid} ORDER BY voto DESC LIMIT 3",
-        hints: ["WHERE prodotto_id ... ORDER BY voto DESC LIMIT"],
+        hints: ["Filtra per prodotto, ordina per voto decrescente e limita i risultati."],
         explanation: "Top recensioni prodotto.",
         replacements: { pid: [1, 2] },
       },
@@ -4348,7 +4385,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 3 record dalla tabella 'recensioni' dove 'prodotto_id' è {pid}, ordinati per 'voto' crescente.",
         queryTemplate:
           "SELECT * FROM recensioni WHERE prodotto_id = {pid} ORDER BY voto ASC LIMIT 3",
-        hints: ["WHERE prodotto_id ... ORDER BY voto ASC LIMIT"],
+        hints: ["Filtra per prodotto, ordina per voto crescente e limita i risultati."],
         explanation: "Bottom recensioni prodotto.",
         replacements: { pid: [1, 2] },
       },
@@ -4358,7 +4395,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 5 record dalla tabella 'prodotti' dove 'stock' > 0, ordinati per 'stock' crescente.",
         queryTemplate:
           "SELECT * FROM prodotti WHERE stock > 0 ORDER BY stock ASC LIMIT 5",
-        hints: ["WHERE stock > 0 ORDER BY stock ASC LIMIT 5"],
+        hints: ["Filtra per stock positivo, ordina crescente e limita i risultati."],
         explanation: "Priorità riordino.",
         replacements: {},
       },
@@ -4368,7 +4405,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 5 record dalla tabella 'utenti' dove 'premium' è TRUE, ordinati per 'id' decrescente.",
         queryTemplate:
           "SELECT * FROM utenti WHERE premium = TRUE ORDER BY id DESC LIMIT 5",
-        hints: ["WHERE premium = TRUE ORDER BY id DESC LIMIT 5"],
+        hints: ["Filtra per utenti premium, ordina per ID decrescente e limita il risultato."],
         explanation: "Nuovi VIP.",
         replacements: {},
       },
@@ -4378,7 +4415,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 3 record dalla tabella 'ordini' dove 'quantita' > 5, ordinati per 'data_ordine' decrescente.",
         queryTemplate:
           "SELECT * FROM ordini WHERE quantita > 5 ORDER BY data_ordine DESC LIMIT 3",
-        hints: ["WHERE quantita > 5 ORDER BY ... LIMIT"],
+        hints: ["Filtra per quantità > 5, ordina per data decrescente e limita."],
         explanation: "Grandi ordini recenti.",
         replacements: {},
       },
@@ -4388,7 +4425,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 3 record dalla tabella 'prodotti' dove 'categoria_id' è 1, ordinati per 'prezzo' decrescente.",
         queryTemplate:
           "SELECT * FROM prodotti WHERE categoria_id = 1 ORDER BY prezzo DESC LIMIT 3",
-        hints: ["WHERE categoria_id = 1 ..."],
+        hints: ["Filtra per categoria 1, ordina per prezzo decrescente e limita."],
         explanation: "Top categoria.",
         replacements: {},
       },
@@ -4398,7 +4435,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 3 record dalla tabella 'prodotti' dove 'categoria_id' è 2, ordinati per 'prezzo' crescente.",
         queryTemplate:
           "SELECT * FROM prodotti WHERE categoria_id = 2 ORDER BY prezzo ASC LIMIT 3",
-        hints: ["WHERE categoria_id = 2 ..."],
+        hints: ["Filtra per categoria 2, ordina per prezzo crescente e limita."],
         explanation: "Budget categoria.",
         replacements: {},
       },
@@ -4408,7 +4445,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 5 record dalla tabella 'fornitori' dove 'nazione' è 'Italia', ordinati per 'azienda' crescente.",
         queryTemplate:
           "SELECT * FROM fornitori WHERE nazione = 'Italia' ORDER BY azienda ASC LIMIT 5",
-        hints: ["WHERE nazione = 'Italia' ..."],
+        hints: ["Filtra per Italia, ordina per nome azienda e limita il risultato."],
         explanation: "Elenco filtrato ordinato.",
         replacements: {},
       },
@@ -4418,7 +4455,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona i primi 5 record dalla tabella 'fornitori' dove 'nazione' NON è 'Italia', ordinati per 'azienda' crescente.",
         queryTemplate:
           "SELECT * FROM fornitori WHERE nazione <> 'Italia' ORDER BY azienda ASC LIMIT 5",
-        hints: ["WHERE nazione <> 'Italia' ..."],
+        hints: ["Filtra per nazione diversa da Italia, ordina per azienda e limita."],
         explanation: "Elenco estero ordinato.",
         replacements: {},
       },
@@ -4485,7 +4522,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Verifica le ultime 5 spedizioni affidate al corriere 'DHL'. Mostra tutti i dati della spedizione, ordinate dalla più recente.",
         queryTemplate:
           "SELECT * FROM spedizioni WHERE corriere = 'DHL' ORDER BY data_spedizione DESC LIMIT 5",
-        hints: ["Controlla le spedizioni più recenti per il corriere specificato."],
+        hints: [
+          "Controlla le spedizioni più recenti per il corriere specificato.",
+        ],
         explanation:
           "Filtri e ordinamenti temporali sono la base per i log di audit.",
         replacements: {},
@@ -4569,7 +4608,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         descTemplate:
           "Calcola i giorni passati tra ordine e spedizione per ogni ordine spedito. Mostra ID ordine e giorni trascorsi, ordinati dal ritardo più lungo.",
         queryTemplate:
-          "SELECT o.id, DATEDIFF(s.data_spedizione, o.data_ordine) as giorni_attesa FROM ordini o JOIN spedizioni s ON o.id = s.ordine_id ORDER BY giorni_attesa DESC",
+          "SELECT o.id, DATEDIFF(day, o.data_ordine, s.data_spedizione) as giorni_attesa FROM ordini o JOIN spedizioni s ON o.id = s.ordine_id ORDER BY giorni_attesa DESC",
         hints: ["Calcola il tempo trascorso tra ordine e spedizione."],
         explanation: "Analisi efficienza logistica.",
         replacements: {},
@@ -4639,7 +4678,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         descTemplate:
           "Quale corriere è più veloce? Calcola la media dei giorni tra ordine e spedizione per corriere, ordinando per media crescente (più veloce).",
         queryTemplate:
-          "SELECT s.corriere, AVG(DATEDIFF(s.data_spedizione, o.data_ordine)) as tempo_medio FROM spedizioni s JOIN ordini o ON s.ordine_id = o.id GROUP BY s.corriere ORDER BY tempo_medio ASC",
+          "SELECT s.corriere, AVG(DATEDIFF(day, o.data_ordine, s.data_spedizione)) as tempo_medio FROM spedizioni s JOIN ordini o ON s.ordine_id = o.id GROUP BY s.corriere ORDER BY tempo_medio ASC",
         hints: ["Confronta i tempi medi di spedizione dei corrieri."],
         explanation: "Benchmarking logistico.",
         replacements: {},
@@ -5747,7 +5786,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         descTemplate:
           "Seleziona il nome e il prezzo scontato del 20% (moltiplicato per 0.8) arrotondato a 1 decimale dalla tabella 'prodotti'.",
         queryTemplate: "SELECT nome, ROUND(prezzo * 0.8, 1) FROM prodotti",
-        hints: ["Calcola il prezzo scontato e arrotondalo alla precisione richiesta."],
+        hints: [
+          "Calcola il prezzo scontato e arrotondalo alla precisione richiesta.",
+        ],
         explanation: "Sconto con ROUND a 1 decimale.",
         replacements: {},
       },
@@ -5777,7 +5818,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Seleziona il codice_tracking dalla tabella 'spedizioni'. Se è NULL, mostra 'Non disponibile' usando COALESCE().",
         queryTemplate:
           "SELECT COALESCE(codice_tracking, 'Non disponibile') FROM spedizioni",
-        hints: ["Assicurati che venga mostrato sempre un valore per il tracking."],
+        hints: [
+          "Assicurati che venga mostrato sempre un valore per il tracking.",
+        ],
         explanation: "COALESCE per gestire NULL su tracking.",
         replacements: {},
       },
@@ -5853,7 +5896,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Estrai i primi caratteri del nome (lunghezza/2) e mostra anche la lunghezza totale.",
         queryTemplate:
           "SELECT nome, LENGTH(nome), SUBSTRING(nome, 1, LENGTH(nome) / 2) FROM utenti",
-        hints: ["Usa la lunghezza della stringa per determinare quanti caratteri estrarre."],
+        hints: [
+          "Usa la lunghezza della stringa per determinare quanti caratteri estrarre.",
+        ],
         explanation: "Funzioni nidificate con LENGTH.",
         replacements: {},
       },
@@ -5872,7 +5917,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Mostra il codice tracking in maiuscolo, se NULL mostra 'IN ATTESA'.",
         queryTemplate:
           "SELECT UPPER(COALESCE(codice_tracking, 'In Attesa')) FROM spedizioni",
-        hints: ["Gestisci il valore nullo e converti il risultato in maiuscolo."],
+        hints: [
+          "Gestisci il valore nullo e converti il risultato in maiuscolo.",
+        ],
         explanation: "COALESCE nidificato in UPPER.",
         replacements: {},
       },
@@ -5902,7 +5949,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Mostra nome in maiuscolo, primi 4 caratteri, lunghezza nome e prezzo arrotondato.",
         queryTemplate:
           "SELECT UPPER(nome), SUBSTRING(nome, 1, 4), LENGTH(nome), ROUND(prezzo, 0) FROM prodotti",
-        hints: ["Combina diverse funzioni di manipolazione stringa e numerica."],
+        hints: [
+          "Combina diverse funzioni di manipolazione stringa e numerica.",
+        ],
         explanation: "Funzioni multiple complesse.",
         replacements: {},
       },
@@ -5922,7 +5971,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Calcola margine: (prezzo - (prezzo * 0.3)) arrotondato a 2 decimali.",
         queryTemplate:
           "SELECT nome, ROUND(prezzo - (prezzo * 0.3), 2) FROM prodotti",
-        hints: ["Calcola il margine applicando la formula richiesta e arrotonda."],
+        hints: [
+          "Calcola il margine applicando la formula richiesta e arrotonda.",
+        ],
         explanation: "Calcolo margine con ROUND.",
         replacements: {},
       },
@@ -6507,7 +6558,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         titleTemplate: "Ordini Pre-2024",
         descTemplate: "Trova tutti gli ordini fatti prima del 1 Gennaio 2024.",
         queryTemplate: "SELECT * FROM ordini WHERE data_ordine < '2024-01-01'",
-        hints: ["Filtra per gli ordini precedenti all'invizio dell'anno nuovo."],
+        hints: [
+          "Filtra per gli ordini precedenti all'invizio dell'anno nuovo.",
+        ],
         explanation: "Filtro per date precedenti.",
         replacements: {},
       },
@@ -6752,7 +6805,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Trova tutti gli ordini tra il 1 Gennaio 2023 e il 31 Dicembre 2023, mostrando anche anno e mese.",
         queryTemplate:
           "SELECT data_ordine, YEAR(data_ordine), MONTH(data_ordine) FROM ordini WHERE data_ordine BETWEEN '2023-01-01' AND '2023-12-31'",
-        hints: ["Filtra per il periodo richiesto ed estrai le informazioni temporali."],
+        hints: [
+          "Filtra per il periodo richiesto ed estrai le informazioni temporali.",
+        ],
         explanation: "BETWEEN con funzioni data multiple.",
         replacements: {},
       },
@@ -6872,7 +6927,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Simulando che oggi sia '2023-12-31', trova gli ordini dell'ultimo mese.",
         queryTemplate:
           "SELECT * FROM ordini WHERE data_ordine > DATEADD(day, -30, '2023-12-31')",
-        hints: ["Considera solo gli ordini recenti rispetto alla data di riferimento."],
+        hints: [
+          "Considera solo gli ordini recenti rispetto alla data di riferimento.",
+        ],
         explanation: "Finestra temporale mobile.",
         replacements: {},
       },
@@ -6882,7 +6939,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Simulando che oggi sia '2023-12-31', trova gli ordini del mese precedente.",
         queryTemplate:
           "SELECT * FROM ordini WHERE data_ordine > DATEADD(month, -1, '2023-12-31')",
-        hints: ["Considera solo gli ordini dell'ultimo mese rispetto alla data data."],
+        hints: [
+          "Considera solo gli ordini dell'ultimo mese rispetto alla data data.",
+        ],
         explanation: "Intervallo mese precedente.",
         replacements: {},
       },
@@ -6911,7 +6970,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Trova le spedizioni che hanno impiegato più di {days} giorni a partire dalla data ordine.",
         queryTemplate:
           "SELECT * FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id WHERE DATEDIFF(day, data_ordine, data_spedizione) > {days}",
-        hints: ["Filtra le spedizioni che hanno superato la soglia di giorni indicata."],
+        hints: [
+          "Filtra le spedizioni che hanno superato la soglia di giorni indicata.",
+        ],
         explanation: "Filtro su intervallo calcolato.",
         replacements: { days: [2, 3, 5, 7, 10] },
       },
@@ -6931,7 +6992,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Calcola i giorni tra ordine e spedizione e rinominalo come 'Giorni_Consegna'.",
         queryTemplate:
           "SELECT DATEDIFF(day, ordini.data_ordine, spedizioni.data_spedizione) AS Giorni_Consegna FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id",
-        hints: ["Calcola la durata e assegna un nome significativo al risultato."],
+        hints: [
+          "Calcola la durata e assegna un nome significativo al risultato.",
+        ],
         explanation: "DATEDIFF con alias.",
         replacements: {},
       },
@@ -7041,7 +7104,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Calcola giorni consegna solo per ordini dopo il 1 Gennaio 2023.",
         queryTemplate:
           "SELECT DATEDIFF(day, ordini.data_ordine, spedizioni.data_spedizione) FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id WHERE ordini.data_ordine > '2023-01-01'",
-        hints: ["Analizza i tempi di spedizione per il periodo successivo alla data indicata."],
+        hints: [
+          "Analizza i tempi di spedizione per il periodo successivo alla data indicata.",
+        ],
         explanation: "DATEDIFF con filtro data.",
         replacements: {},
         brokenCode:
@@ -7055,7 +7120,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
           "Calcola giorni consegna come 'Ritardo' solo per consegne > 3 giorni.",
         queryTemplate:
           "SELECT DATEDIFF(day, ordini.data_ordine, spedizioni.data_spedizione) AS Ritardo FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id WHERE DATEDIFF(day, ordini.data_ordine, spedizioni.data_spedizione) > 3",
-        hints: ["Usa un alias per il calcolo e filtra in base al valore originale."],
+        hints: [
+          "Usa un alias per il calcolo e filtra in base al valore originale.",
+        ],
         explanation: "DATEDIFF con alias e filtro su stesso calcolo.",
         replacements: {},
         brokenCode:
@@ -7109,7 +7176,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         descTemplate: "Mostra anno ordine, mese ordine e giorni di consegna.",
         queryTemplate:
           "SELECT YEAR(ordini.data_ordine), MONTH(ordini.data_ordine), DATEDIFF(day, ordini.data_ordine, spedizioni.data_spedizione) FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id",
-        hints: ["Ottieni le componenti temporali e la durata della spedizione."],
+        hints: [
+          "Ottieni le componenti temporali e la durata della spedizione.",
+        ],
         explanation: "Funzioni data multiple con DATEDIFF.",
         replacements: {},
         brokenCode:
