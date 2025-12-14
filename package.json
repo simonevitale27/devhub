@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/papaparse": "^5.5.0",
+    "@xyflow/react": "^12.10.0",
     "alasql": "^4.9.0",
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.2",

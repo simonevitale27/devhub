@@ -7404,1619 +7404,911 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
     [Difficulty.Easy]: [
       {
         titleTemplate: "Prodotti e Categorie",
-        descTemplate:
-          "Seleziona la colonna 'nome' dalla tabella 'prodotti' e la colonna 'nome' dalla tabella 'categorie', unendo le tabelle tramite 'categoria_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        brokenCode:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie prodotti.categoria_id = categorie.id",
-        debugHint:
-          "Manca la parola chiave ON per specificare la condizione di join.",
-        hints: ["Usa JOIN ... ON ...", "Specifica tabella.colonna"],
-        explanation: "Inner Join base per decodificare ID.",
+        descTemplate: "Il magazzino necessita di una lista di prodotti con le relative categorie. Seleziona il nome del prodotto ('nome') e il nome della categoria ('nome') unendo le tabelle 'prodotti' e 'categorie'.",
+        queryTemplate: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
+        brokenCode: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie prodotti.categoria_id = categorie.id",
+        debugHint: "Manca la parola chiave ON per specificare la condizione di join.",
+        hints: ["Usa INNER JOIN per unire le tabelle.", "La condizione di join è: prodotti.categoria_id = categorie.id"],
+        explanation: "L'INNER JOIN combina le righe di due tabelle quando c'è una corrispondenza tra le colonne specificate.",
         replacements: {},
       },
       {
         titleTemplate: "Ordini e Utenti",
-        descTemplate:
-          "Seleziona la colonna 'id' dalla tabella 'ordini' e la colonna 'nome' dalla tabella 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
-        brokenCode:
-          "SELECT ordini.id, utenti.nome FROM ordini JION utenti ON ordini.utente_id = utenti.id",
+        descTemplate: "Per il servizio clienti, mostra l'ID dell'ordine ('id') e il nome dell'utente ('nome') che lo ha effettuato. Unisci 'ordini' e 'utenti'.",
+        queryTemplate: "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
+        brokenCode: "SELECT ordini.id, utenti.nome FROM ordini JION utenti ON ordini.utente_id = utenti.id",
         debugHint: "Errore di battitura nella parola chiave JOIN.",
-        hints: ["Collega ordini.utente_id con utenti.id"],
-        explanation: "Relazione uno-a-molti.",
+        hints: ["Esegui una JOIN tra ordini e utenti.", "Collega ordini.utente_id con utenti.id"],
+        explanation: "Collega ogni ordine al cliente che l'ha generato.",
         replacements: {},
       },
       {
         titleTemplate: "Spedizioni e Corrieri",
-        descTemplate:
-          "Seleziona la colonna 'corriere' dalla tabella 'spedizioni' e la colonna 'data_ordine' dalla tabella 'ordini', unendo le tabelle tramite 'ordine_id'.",
-        queryTemplate:
-          "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
-        brokenCode:
-          "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id == ordini.id",
-        debugHint: "In SQL si usa un solo uguale (=) per i confronti.",
-        hints: ["JOIN spedizioni ON ordini"],
-        explanation: "Navigare relazioni.",
+        descTemplate: "Visualizza il corriere ('corriere') utilizzato per ogni spedizione e la data dell'ordine ('data_ordine') associato. Unisci 'spedizioni' e 'ordini'.",
+        queryTemplate: "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
+        brokenCode: "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id == ordini.id",
+        debugHint: "In SQL si usa un solo uguale (=) per i confronti, non il doppio uguale (==).",
+        hints: ["Usa JOIN spedizioni ON ordini.", "La chiave comune è l'ID dell'ordine."],
+        explanation: "Permette di vedere quando è stato fatto l'ordine per ogni spedizione.",
         replacements: {},
       },
       {
         titleTemplate: "Prodotti e Fornitori",
-        descTemplate:
-          "Seleziona la colonna 'nome' dalla tabella 'prodotti' e la colonna 'azienda' dalla tabella 'fornitori', unendo le tabelle tramite 'fornitore_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        brokenCode:
-          "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id)",
+        descTemplate: "L'ufficio acquisti vuole sapere chi fornisce cosa. Seleziona il nome del prodotto ('nome') e l'azienda fornitrice ('azienda'). Unisci 'prodotti' e 'fornitori'.",
+        queryTemplate: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
+        brokenCode: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id)",
         debugHint: "C'è una parentesi di troppo alla fine della query.",
-        hints: [
-          "JOIN prodotti con fornitori",
-          "prodotti.fornitore_id = fornitori.id",
-        ],
-        explanation: "JOIN per collegare prodotti e fornitori.",
+        hints: ["Unisci prodotti e fornitori.", "Usa la chiave esterna fornitore_id."],
+        explanation: "Associa ogni prodotto al suo fornitore.",
         replacements: {},
       },
       {
-        titleTemplate: "Ordini e Prodotti",
-        descTemplate:
-          "Seleziona la colonna 'id' dalla tabella 'ordini' e la colonna 'nome' dalla tabella 'prodotti', unendo le tabelle tramite 'prodotto_id'.",
-        queryTemplate:
-          "SELECT ordini.id, prodotti.nome FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id",
-        brokenCode:
-          "SELECT ordini.id, prodotti.nome FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["JOIN ordini con prodotti", "ordini.prodotto_id = prodotti.id"],
-        explanation: "JOIN per collegare ordini e prodotti.",
+        titleTemplate: "Dettagli Ordine Prodotto",
+        descTemplate: "Mostra l'ID dell'ordine ('id') e il nome del prodotto acquistato ('nome'). Unisci 'ordini' e 'prodotti'.",
+        queryTemplate: "SELECT ordini.id, prodotti.nome FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id",
+        brokenCode: "SELECT ordini.id, prodotti.nome FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;",
+        debugHint: "Rimuovi il punto e virgola finale se presente, o controlla che la sintassi sia pulita.",
+        hints: ["Fai una JOIN tra ordini e prodotti.", "La relazione è su prodotto_id."],
+        explanation: "Visualizza cosa è stato acquistato in ogni ordine.",
         replacements: {},
       },
       {
-        titleTemplate: "Recensioni e Prodotti",
-        descTemplate:
-          "Seleziona la colonna 'voto' dalla tabella 'recensioni' e la colonna 'nome' dalla tabella 'prodotti', unendo le tabelle tramite 'prodotto_id'.",
-        queryTemplate:
-          "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id",
-        brokenCode:
-          "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "JOIN recensioni con prodotti",
-          "recensioni.prodotto_id = prodotti.id",
-        ],
-        explanation: "JOIN per collegare recensioni e prodotti.",
+        titleTemplate: "Voti Recensioni e Prodotti",
+        descTemplate: "Analizza la qualità: mostra il voto ('voto') della recensione e il nome del prodotto ('nome') recensito. Unisci 'recensioni' e 'prodotti'.",
+        queryTemplate: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id",
+        brokenCode: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;",
+        debugHint: "Niente punto e virgola alla fine.",
+        hints: ["Unisci recensioni con prodotti.", "Usa prodotto_id come chiave di unione."],
+        explanation: "Collega il feedback al prodotto specifico.",
         replacements: {},
       },
       {
-        titleTemplate: "Recensioni e Utenti",
-        descTemplate:
-          "Seleziona la colonna 'voto' dalla tabella 'recensioni' e la colonna 'nome' dalla tabella 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT recensioni.voto, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id",
-        brokenCode:
-          "SELECT recensioni.voto, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id utenti.id",
-        debugHint: "Manca l'operatore di uguaglianza (=) nella condizione ON.",
-        hints: [
-          "JOIN recensioni con utenti",
-          "recensioni.utente_id = utenti.id",
-        ],
-        explanation: "JOIN per collegare recensioni e utenti.",
+        titleTemplate: "Utenti che Recensiscono",
+        descTemplate: "Vogliamo sapere chi sta lasciando feedback. Seleziona il voto ('voto') e il nome dell'utente ('nome'). Unisci 'recensioni' e 'utenti'.",
+        queryTemplate: "SELECT recensioni.voto, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id",
+        brokenCode: "SELECT recensioni.voto, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id utenti.id",
+        debugHint: "Manca l'uguale (=) nella condizione ON.",
+        hints: ["JOIN tra recensioni e utenti.", "Usa utente_id per l'unione."],
+        explanation: "Identifica l'autore di ogni recensione.",
         replacements: {},
       },
       {
-        titleTemplate: "Spedizioni e Ordini",
-        descTemplate:
-          "Seleziona la colonna 'corriere' dalla tabella 'spedizioni' e la colonna 'data_ordine' dalla tabella 'ordini', unendo le tabelle tramite 'ordine_id'.",
-        queryTemplate:
-          "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
-        brokenCode:
-          "SELECT spedizioni.corriere, ordini.data_ordine FROM spedizioni JOIN ordini spedizioni.ordine_id = ordini.id",
-        debugHint: "Manca la parola chiave ON.",
-        hints: [
-          "JOIN spedizioni con ordini",
-          "spedizioni.ordine_id = ordini.id",
-        ],
-        explanation: "JOIN per collegare spedizioni e ordini.",
+        titleTemplate: "Tracking Spedizioni Ordini",
+        descTemplate: "Il cliente vuole tracciare il pacco. Mostra il codice tracking ('codice_tracking') e la data dell'ordine ('data_ordine'). Unisci 'spedizioni' e 'ordini'.",
+        queryTemplate: "SELECT spedizioni.codice_tracking, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
+        brokenCode: "SELECT spedizioni.codice_tracking, ordini.data_ordine FROM spedizioni JOIN ordini spedizioni.ordine_id = ordini.id",
+        debugHint: "Hai dimenticato 'ON' prima della condizione.",
+        hints: ["Usa JOIN e specifca ON.", "Chiave comune: ordine_id."],
+        explanation: "Unisce le info di spedizione a quelle dell'ordine.",
         replacements: {},
       },
       {
-        titleTemplate: "Prodotti Categoria Completa",
-        descTemplate:
-          "Seleziona le colonne 'nome' da 'prodotti', 'nome' e 'descrizione' da 'categorie', unendo le tabelle tramite 'categoria_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        brokenCode:
-          "SELECT prodotti.nome, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "JOIN con tre colonne",
-          "SELECT prodotti.nome, categorie.nome, categorie.descrizione",
-        ],
-        explanation: "JOIN con più colonne dalla tabella joinata.",
+        titleTemplate: "Categorie Prodotti Descrizione",
+        descTemplate: "Genera un catalogo dettagliato: seleziona nome prodotto ('nome'), nome categoria ('nome') e descrizione categoria ('descrizione'). Unisci 'prodotti' e 'categorie'.",
+        queryTemplate: "SELECT prodotti.nome, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
+        brokenCode: "SELECT prodotti.nome, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
+        debugHint: "Rimuovi il punto e virgola finale.",
+        hints: ["Seleziona 3 colonne da 2 tabelle.", "Join su categoria_id."],
+        explanation: "Arricchisce i dati prodotto con i dettagli della categoria.",
         replacements: {},
       },
       {
-        titleTemplate: "Ordini Utente Completo",
-        descTemplate:
-          "Seleziona le colonne 'id' da 'ordini', 'nome' e 'email' da 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT ordini.id, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
-        brokenCode:
-          "SELECT ordini.id, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "JOIN con tre colonne",
-          "SELECT ordini.id, utenti.nome, utenti.email",
-        ],
-        explanation: "JOIN con più colonne utente.",
+        titleTemplate: "Contatti Utenti Ordini",
+        descTemplate: "Per inviare conferme d'ordine, seleziona ID ordine ('id'), nome utente ('nome') e email ('email'). Unisci 'ordini' e 'utenti'.",
+        queryTemplate: "SELECT ordini.id, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
+        brokenCode: "SELECT ordini.id, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Estrai dati da entrambe le tabelle.", "Usa ordini.utente_id = utenti.id."],
+        explanation: "Recupera i contatti per ogni ordine.",
         replacements: {},
       },
       {
-        titleTemplate: "Prodotti Fornitore Completo",
-        descTemplate:
-          "Seleziona le colonne 'nome' da 'prodotti', 'azienda' e 'nazione' da 'fornitori', unendo le tabelle tramite 'fornitore_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        brokenCode:
-          "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "JOIN con tre colonne",
-          "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione",
-        ],
-        explanation: "JOIN con più colonne fornitore.",
+        titleTemplate: "Provenienza Fornitori Prodotti",
+        descTemplate: "Analisi supply chain: mostra nome prodotto ('nome'), azienda fornitrice ('azienda') e nazione ('nazione'). Unisci 'prodotti' e 'fornitori'.",
+        queryTemplate: "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
+        brokenCode: "SELECT prodotti.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Seleziona nome, azienda, nazione.", "Join su fornitore_id."],
+        explanation: "Mostra l'origine geografica dei prodotti.",
         replacements: {},
       },
       {
-        titleTemplate: "Ordini Prodotto Completo",
-        descTemplate:
-          "Seleziona le colonne 'id' da 'ordini', 'nome' e 'prezzo' da 'prodotti', unendo le tabelle tramite 'prodotto_id'.",
-        queryTemplate:
-          "SELECT ordini.id, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id",
-        brokenCode:
-          "SELECT ordini.id, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "JOIN con tre colonne",
-          "SELECT ordini.id, prodotti.nome, prodotti.prezzo",
-        ],
-        explanation: "JOIN con più colonne prodotto.",
+        titleTemplate: "Prezzo Prodotti Ordinati",
+        descTemplate: "Calcolo costi: seleziona ID ordine ('id'), nome prodotto ('nome') e prezzo ('prezzo'). Unisci 'ordini' e 'prodotti'.",
+        queryTemplate: "SELECT ordini.id, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id",
+        brokenCode: "SELECT ordini.id, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Unisci ordini e prodotti.", "Visualizza il prezzo del prodotto ordinato."],
+        explanation: "Recupera il valore unitario degli articoli in ordine.",
         replacements: {},
       },
       {
-        titleTemplate: "Spedizioni Ordine Completo",
-        descTemplate:
-          "Seleziona le colonne 'corriere' da 'spedizioni', 'data_ordine' e 'quantita' da 'ordini', unendo le tabelle tramite 'ordine_id'.",
-        queryTemplate:
-          "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
-        brokenCode:
-          "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "JOIN con tre colonne",
-          "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita",
-        ],
-        explanation: "JOIN con più colonne ordine.",
+        titleTemplate: "Quantità Ordine Spedizione",
+        descTemplate: "Verifica bolla: seleziona corriere ('corriere'), data ordine ('data_ordine') e quantità ('quantita'). Unisci 'spedizioni' e 'ordini'.",
+        queryTemplate: "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
+        brokenCode: "SELECT spedizioni.corriere, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Join tra spedizioni e ordini.", "Mostra quantità dall'ordine."],
+        explanation: "Collega logistica e dettagli ordine.",
         replacements: {},
       },
       {
-        titleTemplate: "Recensioni Prodotto Completo",
-        descTemplate:
-          "Seleziona le colonne 'voto' da 'recensioni', 'nome' e 'prezzo' da 'prodotti', unendo le tabelle tramite 'prodotto_id'.",
-        queryTemplate:
-          "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id",
-        brokenCode:
-          "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "JOIN con tre colonne",
-          "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo",
-        ],
-        explanation: "JOIN con più colonne prodotto.",
+        titleTemplate: "Recensione con Prezzo",
+        descTemplate: "Valuta rapporto qualità/prezzo: seleziona voto ('voto'), nome prodotto ('nome') e prezzo ('prezzo'). Unisci 'recensioni' e 'prodotti'.",
+        queryTemplate: "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id",
+        brokenCode: "SELECT recensioni.voto, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Unisci recensioni e prodotti.", "Confronta voto e prezzo."],
+        explanation: "Analisi valore percepito.",
         replacements: {},
       },
       {
-        titleTemplate: "Recensioni Utente Completo",
-        descTemplate:
-          "Seleziona le colonne 'voto' da 'recensioni', 'nome' e 'paese' da 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT recensioni.voto, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id",
-        brokenCode:
-          "SELECT recensioni.voto, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "JOIN con tre colonne",
-          "SELECT recensioni.voto, utenti.nome, utenti.paese",
-        ],
-        explanation: "JOIN con più colonne utente.",
+        titleTemplate: "Recensione con Paese Utente",
+        descTemplate: "Analisi geografica feedback: seleziona voto ('voto'), nome utente ('nome') e paese ('paese'). Unisci 'recensioni' e 'utenti'.",
+        queryTemplate: "SELECT recensioni.voto, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id",
+        brokenCode: "SELECT recensioni.voto, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Join recensioni utenti.", "Mostra da dove viene l'utente."],
+        explanation: "Distribuzione geografica del sentiment.",
         replacements: {},
       },
       {
-        titleTemplate: "Tutte le Colonne Prodotti Categorie",
-        descTemplate:
-          "Seleziona tutte le colonne (*) dalle tabelle 'prodotti' e 'categorie', unendo le tabelle tramite 'categoria_id'.",
-        queryTemplate:
-          "SELECT * FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        brokenCode:
-          "SELECT * FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "SELECT * con JOIN",
-          "SELECT * FROM prodotti JOIN categorie ON ...",
-        ],
-        explanation: "SELECT * con JOIN mostra tutte le colonne.",
+        titleTemplate: "Tutto su Prodotti e Categorie",
+        descTemplate: "Visualizza tutte le informazioni disponibili (*) unendo 'prodotti' e 'categorie'.",
+        queryTemplate: "SELECT * FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
+        brokenCode: "SELECT * FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Usa SELECT *.", "Join standard su categoria_id."],
+        explanation: "Recupera il dataset completo delle due tabelle.",
         replacements: {},
       },
       {
-        titleTemplate: "Tutte le Colonne Ordini Utenti",
-        descTemplate:
-          "Seleziona tutte le colonne (*) dalle tabelle 'ordini' e 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
-        brokenCode:
-          "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["SELECT * con JOIN", "SELECT * FROM ordini JOIN utenti ON ..."],
-        explanation: "SELECT * con JOIN per vedere tutto.",
+        titleTemplate: "Tutto su Ordini e Utenti",
+        descTemplate: "Visualizza tutte le informazioni disponibili (*) unendo 'ordini' e 'utenti'.",
+        queryTemplate: "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
+        brokenCode: "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Usa SELECT *.", "Collega ordini al cliente."],
+        explanation: "Vista completa transazioni-clienti.",
         replacements: {},
       },
       {
-        titleTemplate: "Tutte le Colonne Prodotti Fornitori",
-        descTemplate:
-          "Seleziona tutte le colonne (*) dalle tabelle 'prodotti' e 'fornitori', unendo le tabelle tramite 'fornitore_id'.",
-        queryTemplate:
-          "SELECT * FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        brokenCode:
-          "SELECT * FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "SELECT * con JOIN",
-          "SELECT * FROM prodotti JOIN fornitori ON ...",
-        ],
-        explanation: "SELECT * con JOIN fornitori.",
+        titleTemplate: "Tutto su Prodotti e Fornitori",
+        descTemplate: "Visualizza tutte le informazioni disponibili (*) unendo 'prodotti' e 'fornitori'.",
+        queryTemplate: "SELECT * FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
+        brokenCode: "SELECT * FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Usa SELECT *.", "Join su fornitore_id."],
+        explanation: "Dataset completo prodotti-fornitori.",
         replacements: {},
       },
       {
-        titleTemplate: "Tutte le Colonne Ordini Prodotti",
-        descTemplate:
-          "Seleziona tutte le colonne (*) dalle tabelle 'ordini' e 'prodotti', unendo le tabelle tramite 'prodotto_id'.",
-        queryTemplate:
-          "SELECT * FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id",
-        brokenCode:
-          "SELECT * FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "SELECT * con JOIN",
-          "SELECT * FROM ordini JOIN prodotti ON ...",
-        ],
-        explanation: "SELECT * con JOIN prodotti.",
+        titleTemplate: "Tutto su Ordini e Prodotti",
+        descTemplate: "Visualizza tutte le informazioni disponibili (*) unendo 'ordini' e 'prodotti'.",
+        queryTemplate: "SELECT * FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id",
+        brokenCode: "SELECT * FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Usa SELECT *.", "Vedi i dettagli del prodotto ordinato."],
+        explanation: "Merge completo ordine-prodotto.",
         replacements: {},
       },
       {
-        titleTemplate: "Tutte le Colonne Spedizioni Ordini",
-        descTemplate:
-          "Seleziona tutte le colonne (*) dalle tabelle 'spedizioni' e 'ordini', unendo le tabelle tramite 'ordine_id'.",
-        queryTemplate:
-          "SELECT * FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
-        brokenCode:
-          "SELECT * FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "SELECT * con JOIN",
-          "SELECT * FROM spedizioni JOIN ordini ON ...",
-        ],
-        explanation: "SELECT * con JOIN ordini.",
+        titleTemplate: "Tutto su Spedizioni e Ordini",
+        descTemplate: "Visualizza tutte le informazioni disponibili (*) unendo 'spedizioni' e 'ordini'.",
+        queryTemplate: "SELECT * FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
+        brokenCode: "SELECT * FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Usa SELECT *.", "Join tra spedizioni e ordini."],
+        explanation: "Vista totale logistica.",
         replacements: {},
       },
       {
-        titleTemplate: "Tutte le Colonne Recensioni Prodotti",
-        descTemplate:
-          "Seleziona tutte le colonne (*) dalle tabelle 'recensioni' e 'prodotti', unendo le tabelle tramite 'prodotto_id'.",
-        queryTemplate:
-          "SELECT * FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id",
-        brokenCode:
-          "SELECT * FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "SELECT * con JOIN",
-          "SELECT * FROM recensioni JOIN prodotti ON ...",
-        ],
-        explanation: "SELECT * con JOIN prodotti.",
+        titleTemplate: "Tutto su Recensioni e Prodotti",
+        descTemplate: "Visualizza tutte le informazioni disponibili (*) unendo 'recensioni' e 'prodotti'.",
+        queryTemplate: "SELECT * FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id",
+        brokenCode: "SELECT * FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Usa SELECT *.", "Collega recensione al prodotto."],
+        explanation: "Dettaglio completo feedback prodotto.",
         replacements: {},
       },
       {
-        titleTemplate: "Tutte le Colonne Recensioni Utenti",
-        descTemplate:
-          "Seleziona tutte le colonne (*) dalle tabelle 'recensioni' e 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT * FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id",
-        brokenCode:
-          "SELECT * FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "SELECT * con JOIN",
-          "SELECT * FROM recensioni JOIN utenti ON ...",
-        ],
-        explanation: "SELECT * con JOIN utenti.",
+        titleTemplate: "Tutto su Recensioni e Utenti",
+        descTemplate: "Visualizza tutte le informazioni disponibili (*) unendo 'recensioni' e 'utenti'.",
+        queryTemplate: "SELECT * FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id",
+        brokenCode: "SELECT * FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Usa SELECT *.", "Collega recensione all'utente."],
+        explanation: "Dettaglio completo feedback utente.",
         replacements: {},
       },
       {
-        titleTemplate: "Quattro Colonne Prodotti Categorie",
-        descTemplate:
-          "Seleziona 'nome' e 'prezzo' da 'prodotti', e 'nome' e 'descrizione' da 'categorie', unendo le tabelle tramite 'categoria_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, prodotti.prezzo, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        brokenCode:
-          "SELECT prodotti.nome, prodotti.prezzo, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "Quattro colonne",
-          "SELECT prodotti.nome, prodotti.prezzo, categorie.nome, categorie.descrizione",
-        ],
-        explanation: "JOIN con quattro colonne.",
+        titleTemplate: "Stock Prodotti e Categoria",
+        descTemplate: "Inventario: seleziona nome prodotto ('nome'), stock ('stock'), nome categoria ('nome') e descrizione ('descrizione'). Unisci 'prodotti' e 'categorie'.",
+        queryTemplate: "SELECT prodotti.nome, prodotti.stock, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
+        brokenCode: "SELECT prodotti.nome, prodotti.stock, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Seleziona 4 colonne specifiche.", "Join su categoria_id."],
+        explanation: "Report inventario per categoria.",
         replacements: {},
       },
       {
-        titleTemplate: "Quattro Colonne Ordini Utenti",
-        descTemplate:
-          "Seleziona 'id' e 'data_ordine' da 'ordini', e 'nome' e 'email' da 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
-        brokenCode:
-          "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "Quattro colonne",
-          "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email",
-        ],
-        explanation: "JOIN con quattro colonne ordini-utenti.",
+        titleTemplate: "Info Ordini e Utenti",
+        descTemplate: "Report ordini: seleziona ID ordine ('id'), data ('data_ordine'), nome utente ('nome') e email ('email'). Unisci 'ordini' e 'utenti'.",
+        queryTemplate: "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
+        brokenCode: "SELECT ordini.id, ordini.data_ordine, utenti.nome, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Seleziona i campi richiesti.", "Join ordini utenti."],
+        explanation: "Dati essenziali ordine e cliente.",
         replacements: {},
       },
       {
-        titleTemplate: "Quattro Colonne Prodotti Fornitori",
-        descTemplate:
-          "Seleziona 'nome' e 'prezzo' da 'prodotti', e 'azienda' e 'nazione' da 'fornitori', unendo le tabelle tramite 'fornitore_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        brokenCode:
-          "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "Quattro colonne",
-          "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione",
-        ],
-        explanation: "JOIN con quattro colonne prodotti-fornitori.",
+        titleTemplate: "Listino Fornitori",
+        descTemplate: "Listino acquisto: seleziona nome prodotto ('nome'), prezzo ('prezzo'), azienda fornitore ('azienda') e nazione ('nazione'). Unisci 'prodotti' e 'fornitori'.",
+        queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
+        brokenCode: "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda, fornitori.nazione FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Campi: nome, prezzo, azienda, nazione.", "Join prodotti fornitori."],
+        explanation: "Confronto prezzi e provenienza.",
         replacements: {},
       },
       {
-        titleTemplate: "Quattro Colonne Ordini Prodotti",
-        descTemplate:
-          "Seleziona 'id' e 'quantita' da 'ordini', e 'nome' e 'prezzo' da 'prodotti', unendo le tabelle tramite 'prodotto_id'.",
-        queryTemplate:
-          "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id",
-        brokenCode:
-          "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "Quattro colonne",
-          "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo",
-        ],
-        explanation: "JOIN con quattro colonne ordini-prodotti.",
+        titleTemplate: "Analisi Ordini Prodotti",
+        descTemplate: "Vendite: seleziona ID ordine ('id'), quantità ('quantita'), nome prodotto ('nome') e prezzo ('prezzo'). Unisci 'ordini' e 'prodotti'.",
+        queryTemplate: "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id",
+        brokenCode: "SELECT ordini.id, ordini.quantita, prodotti.nome, prodotti.prezzo FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Seleziona campi vendita e prodotto.", "Join su prodotto_id."],
+        explanation: "Dettaglio righe ordine.",
         replacements: {},
       },
       {
-        titleTemplate: "Quattro Colonne Spedizioni Ordini",
-        descTemplate:
-          "Seleziona 'corriere' e 'codice_tracking' da 'spedizioni', e 'data_ordine' e 'quantita' da 'ordini', unendo le tabelle tramite 'ordine_id'.",
-        queryTemplate:
-          "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
-        brokenCode:
-          "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "Quattro colonne",
-          "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita",
-        ],
-        explanation: "JOIN con quattro colonne spedizioni-ordini.",
+        titleTemplate: "Report Spedizioni Completo",
+        descTemplate: "Logistica: seleziona corriere ('corriere'), tracking ('codice_tracking'), data ordine ('data_ordine') e quantità ('quantita'). Unisci 'spedizioni' e 'ordini'.",
+        queryTemplate: "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
+        brokenCode: "SELECT spedizioni.corriere, spedizioni.codice_tracking, ordini.data_ordine, ordini.quantita FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Dati spedizione e ordine.", "Join su ordine_id."],
+        explanation: "Status completo spedizione.",
         replacements: {},
       },
       {
-        titleTemplate: "Quattro Colonne Recensioni Prodotti",
-        descTemplate:
-          "Seleziona 'voto' e 'commento' da 'recensioni', e 'nome' e 'prezzo' da 'prodotti', unendo le tabelle tramite 'prodotto_id'.",
-        queryTemplate:
-          "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id",
-        brokenCode:
-          "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "Quattro colonne",
-          "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo",
-        ],
-        explanation: "JOIN con quattro colonne recensioni-prodotti.",
+        titleTemplate: "Feedback Prodotto Esteso",
+        descTemplate: "Analisi recensioni: seleziona voto ('voto'), commento ('commento'), nome prodotto ('nome') e prezzo ('prezzo'). Unisci 'recensioni' e 'prodotti'.",
+        queryTemplate: "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id",
+        brokenCode: "SELECT recensioni.voto, recensioni.commento, prodotti.nome, prodotti.prezzo FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Dettagli recensione e prodotto.", "Join su prodotto_id."],
+        explanation: "Contesto completo della recensione.",
         replacements: {},
       },
       {
-        titleTemplate: "Quattro Colonne Recensioni Utenti",
-        descTemplate:
-          "Seleziona 'voto' e 'commento' da 'recensioni', e 'nome' e 'paese' da 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT recensioni.voto, recensioni.commento, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id",
-        brokenCode:
-          "SELECT recensioni.voto, recensioni.commento, utenti.nome, utenti.paese FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "Quattro colonne",
-          "SELECT recensioni.voto, recensioni.commento, utenti.nome, utenti.paese",
-        ],
-        explanation: "JOIN con quattro colonne recensioni-utenti.",
+        titleTemplate: "Utenti e Categorie (Cross Join Simulata)",
+        descTemplate: "Dimostrazione di JOIN senza filtri (Join implicita/Cross): Mostra nome utente e nome categoria unendo le tabelle 'utenti' e 'categorie' su una condizione sempre vera (es. 1=1) o tramite JOIN esplicita.",
+        queryTemplate: "SELECT utenti.nome, categorie.nome FROM utenti JOIN categorie ON 1=1 WHERE utenti.id < 103 AND categorie.id < 3",
+        brokenCode: "SELECT utenti.nome, categorie.nome FROM utenti JOIN categorie ON 1=1 WHERE utenti.id < 103 AND categorie.id < 3;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Usa JOIN categorie ON 1=1.", "Filtra con WHERE per limitare i risultati."],
+        explanation: "Esempio didattico di combinazione cartesiana limitata.",
         replacements: {},
       },
       {
-        titleTemplate: "Cinque Colonne Complete",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e 'stock' da 'prodotti', e 'nome' e 'descrizione' da 'categorie', unendo le tabelle tramite 'categoria_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        brokenCode:
-          "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: [
-          "Cinque colonne",
-          "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione",
-        ],
-        explanation: "JOIN con cinque colonne.",
-        replacements: {},
-      },
-      // NEW EXERCISES FOR JOINS EASY
-      {
-        titleTemplate: "Utenti e Ordini Semplice",
-        descTemplate:
-          "Seleziona 'nome' dalla tabella 'utenti' e 'id' dalla tabella 'ordini', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT utenti.nome, ordini.id FROM utenti JOIN ordini ON utenti.id = ordini.utente_id",
-        brokenCode:
-          "SELECT utenti.nome, ordini.id FROM utenti JOIN ordini ON utenti.id = ordini.utente_id)",
-        debugHint: "C'è una parentesi di troppo alla fine.",
-        hints: ["JOIN utenti ordini"],
-        explanation: "Relazione base.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Prodotti e Categorie Semplice",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie', unendo le tabelle tramite 'categoria_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        brokenCode:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["JOIN prodotti categorie"],
-        explanation: "Relazione catalogo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Prodotti e Fornitori Semplice",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'azienda' da 'fornitori', unendo le tabelle tramite 'fornitore_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        brokenCode:
-          "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["JOIN prodotti fornitori"],
-        explanation: "Relazione supply chain.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Recensioni e Prodotti Semplice",
-        descTemplate:
-          "Seleziona 'voto' da 'recensioni' e 'nome' da 'prodotti', unendo le tabelle tramite 'prodotto_id'.",
-        queryTemplate:
-          "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id",
-        brokenCode:
-          "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["JOIN recensioni prodotti"],
-        explanation: "Relazione feedback.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Spedizioni e Ordini Semplice",
-        descTemplate:
-          "Seleziona 'codice_tracking' da 'spedizioni' e 'data_ordine' da 'ordini', unendo le tabelle tramite 'ordine_id'.",
-        queryTemplate:
-          "SELECT spedizioni.codice_tracking, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id",
-        brokenCode:
-          "SELECT spedizioni.codice_tracking, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["JOIN spedizioni ordini"],
-        explanation: "Relazione logistica.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Utenti e Paesi (Join)",
-        descTemplate:
-          "Seleziona 'nome' e 'paese' dalla tabella 'utenti'. (Questa è una selezione semplice, ma concettualmente prepara alle join se paese fosse una tabella esterna).",
-        queryTemplate: "SELECT nome, paese FROM utenti",
-        brokenCode: "SELECT nome, paese FROM utenti;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["SELECT semplice"],
-        explanation: "Selezione colonne.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Ordini con Dettagli Utente",
-        descTemplate:
-          "Seleziona 'id' e 'data_ordine' da 'ordini', e 'email' da 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT ordini.id, ordini.data_ordine, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
-        brokenCode:
-          "SELECT ordini.id, ordini.data_ordine, utenti.email FROM ordini JOIN utenti ON ordini.utente_id = utenti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["JOIN ordini utenti"],
-        explanation: "Dettagli contatto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Prodotti con Dettagli Categoria",
-        descTemplate:
-          "Seleziona 'nome' e 'prezzo' da 'prodotti', e 'descrizione' da 'categorie', unendo le tabelle tramite 'categoria_id'.",
-        queryTemplate:
-          "SELECT prodotti.nome, prodotti.prezzo, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        brokenCode:
-          "SELECT prodotti.nome, prodotti.prezzo, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["JOIN prodotti categorie"],
-        explanation: "Dettagli contesto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Fornitori e Prodotti List",
-        descTemplate:
-          "Seleziona 'azienda' da 'fornitori' e 'nome' da 'prodotti', unendo le tabelle tramite 'fornitore_id'.",
-        queryTemplate:
-          "SELECT fornitori.azienda, prodotti.nome FROM fornitori JOIN prodotti ON fornitori.id = prodotti.fornitore_id",
-        brokenCode:
-          "SELECT fornitori.azienda, prodotti.nome FROM fornitori JOIN prodotti ON fornitori.id = prodotti.fornitore_id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["JOIN fornitori prodotti"],
-        explanation: "Lista offerta.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Recensioni con Utente",
-        descTemplate:
-          "Seleziona 'commento' da 'recensioni' e 'nome' da 'utenti', unendo le tabelle tramite 'utente_id'.",
-        queryTemplate:
-          "SELECT recensioni.commento, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id",
-        brokenCode:
-          "SELECT recensioni.commento, utenti.nome FROM recensioni JOIN utenti ON recensioni.utente_id = utenti.id;",
-        debugHint:
-          "Rimuovi il punto e virgola finale se presente, o controlla la sintassi.",
-        hints: ["JOIN recensioni utenti"],
-        explanation: "Autore feedback.",
+        titleTemplate: "Report Completo 5 Colonne",
+        descTemplate: "Ultimo esercizio Easy: Seleziona nome prodotto, prezzo, stock, nome categoria e descrizione categoria. Unisci 'prodotti' e 'categorie'.",
+        queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
+        brokenCode: "SELECT prodotti.nome, prodotti.prezzo, prodotti.stock, categorie.nome, categorie.descrizione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id;",
+        debugHint: "Rimuovi il punto e virgola.",
+        hints: ["Seleziona 5 colonne.", "Join classica prodotti-categorie."],
+        explanation: "Estrazione dati massiva da due tabelle.",
         replacements: {},
       },
     ],
+
+
     [Difficulty.Medium]: [
       {
         titleTemplate: "Prodotti Fornitore {country}",
-        descTemplate:
-          "Seleziona la colonna 'nome' dalla tabella 'prodotti' unendo la tabella 'fornitori' dove la colonna 'nazione' è '{country}'.",
-        queryTemplate:
-          "SELECT prodotti.nome FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione = '{country}'",
-        hints: ["Fai la JOIN e poi il WHERE"],
-        explanation: "Filtrare in base a tabella collegata.",
-        replacements: {
-          country: [
-            "Italia",
-            "Germania",
-            "USA",
-            "Francia",
-            "Spagna",
-            "Regno Unito",
-          ],
-        },
-        brokenCode:
-          "SELECT prodotti.nome FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione = '{country}",
-        debugHint: "Manca l'apice di chiusura per il valore '{country}'.",
-      },
-      {
-        titleTemplate: "Left Join (Prodotti senza Ordini)",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'id' da 'ordini' usando LEFT JOIN per includere anche i prodotti che non sono mai stati ordinati.",
-        queryTemplate:
-          "SELECT prodotti.nome, ordini.id FROM prodotti LEFT JOIN ordini ON prodotti.id = ordini.prodotto_id",
-        hints: ["Usa LEFT JOIN", "Prodotti a sinistra"],
-        explanation:
-          "LEFT JOIN preserva la tabella di sinistra anche se non c'è match.",
-        replacements: {},
-        brokenCode:
-          "SELECT prodotti.nome, ordini.id FROM prodotti LEFT JOIN ordini prodotti.id = ordini.prodotto_id",
-        debugHint: "Manca la parola chiave ON.",
-      },
-      {
-        titleTemplate: "Ordini Utenti Premium",
-        descTemplate:
-          "Seleziona tutte le colonne (*) da 'ordini' unendo 'utenti' dove la colonna 'premium' è TRUE.",
-        queryTemplate:
-          "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.premium = TRUE",
-        hints: ["Filtra su colonna della tabella joinata"],
-        explanation: "Restrizione dataset via relazione.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.premium =",
-        debugHint: "Manca il valore di confronto per la colonna premium.",
-      },
-      {
-        titleTemplate: "Prodotti Categoria {cat}",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' unendo 'categorie' dove il nome della categoria è '{cat}'.",
-        queryTemplate:
-          "SELECT prodotti.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = '{cat}'",
-        hints: ["JOIN e WHERE su categoria", "WHERE categorie.nome = '{cat}'"],
-        explanation: "Filtro su colonna tabella joinata.",
-        replacements: {
-          cat: ["Elettronica", "Abbigliamento", "Casa", "Sport", "Libri"],
-        },
-        brokenCode:
-          "SELECT prodotti.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = {cat}",
-        debugHint: "Il valore stringa '{cat}' deve essere racchiuso tra apici.",
-      },
-      {
-        titleTemplate: "Ordini Utenti {country}",
-        descTemplate:
-          "Seleziona 'id' da 'ordini' unendo 'utenti' dove il paese dell'utente è '{country}'.",
-        queryTemplate:
-          "SELECT ordini.id FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.paese = '{country}'",
-        hints: ["JOIN e WHERE su paese", "WHERE utenti.paese = '{country}'"],
-        explanation: "Filtro su paese utente.",
-        replacements: {
-          country: ["Italia", "Francia", "Germania", "Spagna", "USA"],
-        },
-        brokenCode:
-          "SELECT ordini.id FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.paese = {country}",
-        debugHint:
-          "Il valore stringa '{country}' deve essere racchiuso tra apici.",
-      },
-      {
-        titleTemplate: "Recensioni Prodotti Costosi",
-        descTemplate:
-          "Seleziona 'voto' da 'recensioni' unendo 'prodotti' dove il prezzo del prodotto è maggiore di 100.",
-        queryTemplate:
-          "SELECT recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE prodotti.prezzo > 100",
-        hints: ["JOIN e WHERE su prezzo", "WHERE prodotti.prezzo > 100"],
-        explanation: "Filtro su prezzo prodotto.",
-        replacements: {},
-        brokenCode:
-          "SELECT recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE prodotti.prezzo 100",
-        debugHint: "Manca l'operatore di confronto (>).",
-      },
-      {
-        titleTemplate: "Spedizioni Ordini Recenti",
-        descTemplate:
-          "Seleziona 'corriere' da 'spedizioni' unendo 'ordini' dove la data ordine è successiva al '2023-01-01'.",
-        queryTemplate:
-          "SELECT spedizioni.corriere FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id WHERE ordini.data_ordine > '2023-01-01'",
-        hints: [
-          "JOIN e WHERE su data",
-          "WHERE ordini.data_ordine > '2023-01-01'",
-        ],
-        explanation: "Filtro su data ordine.",
-        replacements: {},
-        brokenCode:
-          "SELECT spedizioni.corriere FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id WHERE ordini.data_ordine > 2023-01-01",
-        debugHint: "La data deve essere racchiusa tra apici.",
-      },
-      {
-        titleTemplate: "Prodotti Fornitori {country}",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' unendo 'fornitori' dove la nazione del fornitore è '{country}'.",
-        queryTemplate:
-          "SELECT prodotti.nome FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione = '{country}'",
-        hints: [
-          "JOIN e WHERE su nazione",
-          "WHERE fornitori.nazione = '{country}'",
-        ],
-        explanation: "Filtro su nazione fornitore.",
+        descTemplate: "Trova tutti i prodotti forniti da fornitori basati in '{country}'. Mostra il nome del prodotto ('nome') e il nome dell'azienda ('azienda').",
+        queryTemplate: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione = '{country}'",
+        hints: ["Fai una JOIN e filtra per nazione.", "WHERE fornitori.nazione = '{country}'"],
+        explanation: "Combina JOIN e WHERE per filtrare i risultati.",
         replacements: {
           country: ["Italia", "Germania", "USA", "Francia", "Spagna"],
         },
-        brokenCode:
-          "SELECT prodotti.nome FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione = {country}",
-        debugHint:
-          "Il valore stringa '{country}' deve essere racchiuso tra apici.",
+        brokenCode: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione = {country}",
+        debugHint: "Il valore stringa deve essere tra apici.",
       },
       {
-        titleTemplate: "Ordini Utenti Non Premium",
-        descTemplate:
-          "Seleziona tutte le colonne (*) da 'ordini' unendo 'utenti' dove 'premium' è FALSE.",
-        queryTemplate:
-          "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.premium = FALSE",
-        hints: ["JOIN e WHERE su premium", "WHERE utenti.premium = FALSE"],
-        explanation: "Filtro su utenti non premium.",
+        titleTemplate: "Ordini Recenti",
+        descTemplate: "Seleziona l'ID dell'ordine ('id') e il nome dell'utente ('nome') per gli ordini effettuati dopo il '2023-01-01'.",
+        queryTemplate: "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE ordini.data_ordine > '2023-01-01'",
+        hints: ["Unisci ordini e utenti, poi filtra sulla data.", "Usa l'operatore > per la data."],
+        explanation: "Filtra i risultati della JOIN basandosi su una data.",
         replacements: {},
-        brokenCode:
-          "SELECT * FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.premium FALSE",
-        debugHint: "Manca il segno di uguale (=).",
+        brokenCode: "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE ordini.data_ordine > 2023-01-01",
+        debugHint: "La data deve essere racchiusa tra apici singoli.",
       },
-      {
-        titleTemplate: "Recensioni Voto Alto",
-        descTemplate:
-          "Seleziona 'voto' da 'recensioni' unendo 'prodotti' dove il voto è >= 4 E il prezzo del prodotto è > 50.",
-        queryTemplate:
-          "SELECT recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE recensioni.voto >= 4 AND prodotti.prezzo > 50",
-        hints: [
-          "JOIN e WHERE multipli",
-          "WHERE recensioni.voto >= 4 AND prodotti.prezzo > 50",
-        ],
-        explanation: "Filtri multipli con JOIN.",
-        replacements: {},
-        brokenCode:
-          "SELECT recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE recensioni.voto >= 4 prodotti.prezzo > 50",
-        debugHint: "Manca l'operatore AND tra le due condizioni.",
-      },
-      {
-        titleTemplate: "LEFT JOIN Prodotti Ordini",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'id' da 'ordini' usando LEFT JOIN per includere tutti i prodotti, anche quelli senza ordini.",
-        queryTemplate:
-          "SELECT prodotti.nome, ordini.id FROM prodotti LEFT JOIN ordini ON prodotti.id = ordini.prodotto_id",
-        hints: ["LEFT JOIN", "prodotti LEFT JOIN ordini"],
-        explanation: "LEFT JOIN per vedere tutti i prodotti.",
-        replacements: {},
-        brokenCode:
-          "SELECT prodotti.nome, ordini.id FROM prodotti LEFT ordini ON prodotti.id = ordini.prodotto_id",
-        debugHint: "Manca la parola chiave JOIN.",
-      },
-      {
-        titleTemplate: "LEFT JOIN Utenti Ordini",
-        descTemplate:
-          "Seleziona 'nome' da 'utenti' e 'id' da 'ordini' usando LEFT JOIN per includere tutti gli utenti, anche quelli senza ordini.",
-        queryTemplate:
-          "SELECT utenti.nome, ordini.id FROM utenti LEFT JOIN ordini ON utenti.id = ordini.utente_id",
-        hints: ["LEFT JOIN", "utenti LEFT JOIN ordini"],
-        explanation: "LEFT JOIN per vedere tutti gli utenti.",
-        replacements: {},
-        brokenCode:
-          "SELECT utenti.nome, ordini.id FROM utenti LEFT JOIN ordini utenti.id = ordini.utente_id",
-        debugHint: "Manca la parola chiave ON.",
-      },
-      {
-        titleTemplate: "LEFT JOIN Categorie Prodotti",
-        descTemplate:
-          "Seleziona 'nome' da 'categorie' e 'nome' da 'prodotti' usando LEFT JOIN per includere tutte le categorie, anche quelle vuote.",
-        queryTemplate:
-          "SELECT categorie.nome, prodotti.nome FROM categorie LEFT JOIN prodotti ON categorie.id = prodotti.categoria_id",
-        hints: ["LEFT JOIN", "categorie LEFT JOIN prodotti"],
-        explanation: "LEFT JOIN per vedere tutte le categorie.",
-        replacements: {},
-        brokenCode:
-          "SELECT categorie.nome, prodotti.nome FROM categorie LETF JOIN prodotti ON categorie.id = prodotti.categoria_id",
-        debugHint: "Errore di battitura in LEFT JOIN.",
-      },
-      {
-        titleTemplate: "LEFT JOIN Fornitori Prodotti",
-        descTemplate:
-          "Seleziona 'azienda' da 'fornitori' e 'nome' da 'prodotti' usando LEFT JOIN per includere tutti i fornitori.",
-        queryTemplate:
-          "SELECT fornitori.azienda, prodotti.nome FROM fornitori LEFT JOIN prodotti ON fornitori.id = prodotti.fornitore_id",
-        hints: ["LEFT JOIN", "fornitori LEFT JOIN prodotti"],
-        explanation: "LEFT JOIN per vedere tutti i fornitori.",
-        replacements: {},
-        brokenCode:
-          "SELECT fornitori.azienda, prodotti.nome FROM fornitori LEFT JOIN prodotti ON fornitori.id prodotti.fornitore_id",
-        debugHint: "Manca l'operatore di uguaglianza (=).",
-      },
-      {
-        titleTemplate: "LEFT JOIN Prodotti Recensioni",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'voto' da 'recensioni' usando LEFT JOIN per includere tutti i prodotti.",
-        queryTemplate:
-          "SELECT prodotti.nome, recensioni.voto FROM prodotti LEFT JOIN recensioni ON prodotti.id = recensioni.prodotto_id",
-        hints: ["LEFT JOIN", "prodotti LEFT JOIN recensioni"],
-        explanation: "LEFT JOIN per vedere tutti i prodotti con recensioni.",
-        replacements: {},
-        brokenCode:
-          "SELECT prodotti.nome, recensioni.voto FROM prodotti LEFT JOIN recensioni prodotti.id = recensioni.prodotto_id",
-        debugHint: "Manca la parola chiave ON.",
-      },
-      {
-        titleTemplate: "LEFT JOIN Utenti Recensioni",
-        descTemplate:
-          "Seleziona 'nome' da 'utenti' e 'voto' da 'recensioni' usando LEFT JOIN per includere tutti gli utenti.",
-        queryTemplate:
-          "SELECT utenti.nome, recensioni.voto FROM utenti LEFT JOIN recensioni ON utenti.id = recensioni.utente_id",
-        hints: ["LEFT JOIN", "utenti LEFT JOIN recensioni"],
-        explanation: "LEFT JOIN per vedere tutti gli utenti con recensioni.",
-        replacements: {},
-        brokenCode:
-          "SELECT utenti.nome, recensioni.voto FROM utenti LEFT recensioni ON utenti.id = recensioni.utente_id",
-        debugHint: "Manca la parola chiave JOIN.",
-      },
-      {
-        titleTemplate: "JOIN con WHERE Prezzo",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie' per i prodotti che costano più di {price} euro.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.prezzo > {price}",
-        hints: ["JOIN e WHERE su prezzo", "WHERE prodotti.prezzo > {price}"],
-        explanation: "JOIN con filtro prezzo.",
-        replacements: { price: [50, 100, 150, 200] },
-        brokenCode:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id prodotti.prezzo > {price}",
-        debugHint: "Manca la parola chiave WHERE.",
-      },
-      {
-        titleTemplate: "JOIN con WHERE Stock",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie' per i prodotti con stock > {stock}.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.stock > {stock}",
-        hints: ["JOIN e WHERE su stock", "WHERE prodotti.stock > {stock}"],
-        explanation: "JOIN con filtro stock.",
-        replacements: { stock: [10, 20, 30, 40] },
-        brokenCode:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.stock {stock}",
-        debugHint: "Manca l'operatore di confronto (>).",
-      },
-      {
-        titleTemplate: "JOIN con WHERE Data",
-        descTemplate:
-          "Seleziona 'id' da 'ordini' e 'nome' da 'utenti' per gli ordini effettuati dopo il {date}.",
-        queryTemplate:
-          "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE ordini.data_ordine > '{date}'",
-        hints: ["JOIN e WHERE su data", "WHERE ordini.data_ordine > '{date}'"],
-        explanation: "JOIN con filtro data.",
-        replacements: { date: ["2023-01-01", "2023-06-01", "2023-12-01"] },
-        brokenCode:
-          "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE ordini.data_ordine > {date}",
-        debugHint: "La data deve essere racchiusa tra apici.",
-      },
-      {
-        titleTemplate: "JOIN con WHERE Voto",
-        descTemplate:
-          "Seleziona 'voto' da 'recensioni' e 'nome' da 'prodotti' per le recensioni con voto >= {vote}.",
-        queryTemplate:
-          "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE recensioni.voto >= {vote}",
-        hints: ["JOIN e WHERE su voto", "WHERE recensioni.voto >= {vote}"],
-        explanation: "JOIN con filtro voto.",
-        replacements: { vote: [3, 4, 5] },
-        brokenCode:
-          "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE recensioni.voto {vote}",
-        debugHint: "Manca l'operatore >=.",
-      },
-      {
-        titleTemplate: "JOIN con WHERE AND",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie' per i prodotti con prezzo tra {min} e {max}.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.prezzo BETWEEN {min} AND {max}",
-        hints: [
-          "JOIN e WHERE BETWEEN",
-          "WHERE prodotti.prezzo BETWEEN {min} AND {max}",
-        ],
-        explanation: "JOIN con filtro range prezzo.",
-        replacements: { min: [50, 100], max: [150, 200] },
-        brokenCode:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.prezzo BETWEEN {min} {max}",
-        debugHint: "Manca la parola chiave AND.",
-      },
-      {
-        titleTemplate: "JOIN con WHERE OR",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie' per le categorie 'Elettronica' O 'Sport'.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = 'Elettronica' OR categorie.nome = 'Sport'",
-        hints: [
-          "JOIN e WHERE OR",
-          "WHERE categorie.nome = 'Elettronica' OR categorie.nome = 'Sport'",
-        ],
-        explanation: "JOIN con filtro OR.",
-        replacements: {},
-        brokenCode:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = 'Elettronica' categorie.nome = 'Sport'",
-        debugHint: "Manca l'operatore OR.",
-      },
-      {
-        titleTemplate: "JOIN con WHERE IN",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'azienda' da 'fornitori' per i fornitori di Italia, Germania o USA.",
-        queryTemplate:
-          "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione IN ('Italia', 'Germania', 'USA')",
-        hints: [
-          "JOIN e WHERE IN",
-          "WHERE fornitori.nazione IN ('Italia', 'Germania', 'USA')",
-        ],
-        explanation: "JOIN con filtro IN.",
-        replacements: {},
-        brokenCode:
-          "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione IN ('Italia', 'Germania', 'USA'",
-        debugHint: "Manca la parentesi di chiusura della lista IN.",
-      },
-      {
-        titleTemplate: "JOIN con ORDER BY",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie', ordinati per prezzo decrescente.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id ORDER BY prodotti.prezzo DESC",
-        hints: ["JOIN con ORDER BY", "ORDER BY prodotti.prezzo DESC"],
-        explanation: "JOIN con ordinamento.",
-        replacements: {},
-        brokenCode:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id ORDER prodotti.prezzo DESC",
-        debugHint: "Manca la parola chiave BY.",
-      },
-      {
-        titleTemplate: "JOIN con ORDER BY Nome",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie', ordinati per nome prodotto A-Z.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id ORDER BY prodotti.nome ASC",
-        hints: ["JOIN con ORDER BY nome", "ORDER BY prodotti.nome ASC"],
-        explanation: "JOIN con ordinamento nome.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "JOIN con LIMIT",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie', ordinati per prezzo decrescente, limitando a 5 risultati.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id ORDER BY prodotti.prezzo DESC LIMIT 5",
-        hints: [
-          "JOIN con ORDER BY e LIMIT",
-          "ORDER BY prodotti.prezzo DESC LIMIT 5",
-        ],
-        explanation: "JOIN con LIMIT.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "JOIN con WHERE e ORDER BY",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie' per prodotti > 100 euro, ordinati per prezzo decrescente.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.prezzo > 100 ORDER BY prodotti.prezzo DESC",
-        hints: [
-          "JOIN, WHERE e ORDER BY",
-          "WHERE prodotti.prezzo > 100 ORDER BY prodotti.prezzo DESC",
-        ],
-        explanation: "JOIN con WHERE e ORDER BY.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "JOIN con WHERE e LIMIT",
-        descTemplate:
-          "Seleziona 'id' da 'ordini' e 'nome' da 'utenti' per ordini dopo il '2023-01-01', limitando a 3 risultati.",
-        queryTemplate:
-          "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE ordini.data_ordine > '2023-01-01' LIMIT 3",
-        hints: [
-          "JOIN, WHERE e LIMIT",
-          "WHERE ordini.data_ordine > '2023-01-01' LIMIT 3",
-        ],
-        explanation: "JOIN con WHERE e LIMIT.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "JOIN con WHERE e ORDER BY Nome",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie' per prodotti > 50 euro, ordinati per nome prodotto A-Z.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.prezzo > 50 ORDER BY prodotti.nome ASC",
-        hints: [
-          "JOIN, WHERE e ORDER BY nome",
-          "WHERE prodotti.prezzo > 50 ORDER BY prodotti.nome ASC",
-        ],
-        explanation: "JOIN con WHERE e ordinamento nome.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "JOIN con WHERE e ORDER BY Stock",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie' per prodotti con stock > 10, ordinati per stock decrescente.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.stock > 10 ORDER BY prodotti.stock DESC",
-        hints: [
-          "JOIN, WHERE e ORDER BY stock",
-          "WHERE prodotti.stock > 10 ORDER BY prodotti.stock DESC",
-        ],
-        explanation: "JOIN con WHERE e ordinamento stock.",
-        replacements: {},
-      },
-      // NEW EXERCISES FOR JOINS MEDIUM
       {
         titleTemplate: "Prodotti Categoria Elettronica",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' unendo 'categorie' dove il nome categoria è 'Elettronica'.",
-        queryTemplate:
-          "SELECT prodotti.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = 'Elettronica'",
-        hints: ["WHERE categorie.nome = 'Elettronica'"],
-        explanation: "Filtro su tabella joinata.",
+        descTemplate: "Visualizza i nomi dei prodotti ('nome') che appartengono alla categoria 'Elettronica'.",
+        queryTemplate: "SELECT prodotti.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = 'Elettronica'",
+        hints: ["Join su categoria_id, filtra su nome categoria.", "WHERE nome = 'Elettronica'"],
+        explanation: "Filtra i prodotti per categoria specifica.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = Elettronica",
+        debugHint: "La stringa 'Elettronica' manca di apici.",
       },
       {
-        titleTemplate: "Prodotti Fornitore Italia",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' unendo 'fornitori' dove la nazione è 'Italia'.",
-        queryTemplate:
-          "SELECT prodotti.nome FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.nazione = 'Italia'",
-        hints: ["WHERE fornitori.nazione = 'Italia'"],
-        explanation: "Filtro geografico.",
+        titleTemplate: "Recensioni Positive",
+        descTemplate: "Mostra il nome del prodotto ('nome') e il voto ('voto') per tutte le recensioni con voto superiore o uguale a 4.",
+        queryTemplate: "SELECT prodotti.nome, recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE recensioni.voto >= 4",
+        hints: ["Unisci recensioni e prodotti.", "Filtra con voto >= 4."],
+        explanation: "Identifica i prodotti più apprezzati.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome, recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE recensioni.voto > = 4",
+        debugHint: "L'operatore >= non deve avere spazi.",
       },
       {
-        titleTemplate: "Ordini Utenti USA",
-        descTemplate:
-          "Seleziona 'id' da 'ordini' unendo 'utenti' dove il paese è 'USA'.",
-        queryTemplate:
-          "SELECT ordini.id FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.paese = 'USA'",
-        hints: ["WHERE utenti.paese = 'USA'"],
-        explanation: "Filtro geografico ordini.",
+        titleTemplate: "Spedizioni DHL",
+        descTemplate: "Elenca gli ID degli ordini ('id') spediti tramite 'DHL'.",
+        queryTemplate: "SELECT ordini.id FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id WHERE spedizioni.corriere = 'DHL'",
+        hints: ["Join tra ordini e spedizioni.", "Filtra dove corriere è 'DHL'."],
+        explanation: "Filtra gli ordini per corriere specifico.",
         replacements: {},
+        brokenCode: "SELECT ordini.id FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id WHERE spedizioni.corriere IS 'DHL'",
+        debugHint: "Usa = per confrontare stringhe, non IS.",
       },
       {
-        titleTemplate: "Recensioni Voto 5",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'commento' da 'recensioni' dove il voto è 5.",
-        queryTemplate:
-          "SELECT prodotti.nome, recensioni.commento FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE recensioni.voto = 5",
-        hints: ["WHERE voto = 5"],
-        explanation: "Filtro eccellenza.",
+        titleTemplate: "Ordini Utenti Premium",
+        descTemplate: "Trova gli ordini effettuati da utenti Premium. Mostra ID ordine ('id') e nome utente ('nome').",
+        queryTemplate: "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.premium = TRUE",
+        hints: ["Filtra gli utenti dove premium è TRUE (o 1).", "Join standard richiesta."],
+        explanation: "Segmentazione per tipologia cliente.",
         replacements: {},
+        brokenCode: "SELECT ordini.id, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.premium = 'TRUE'",
+        debugHint: "In questo database, TRUE è un booleano, non una stringa.",
       },
       {
-        titleTemplate: "Spedizioni DHL Ordini",
-        descTemplate:
-          "Seleziona 'id' e 'data_ordine' da 'ordini' unendo 'spedizioni' dove il corriere è 'DHL'.",
-        queryTemplate:
-          "SELECT ordini.id, ordini.data_ordine FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id WHERE spedizioni.corriere = 'DHL'",
-        hints: ["WHERE corriere = 'DHL'"],
-        explanation: "Filtro corriere.",
+        titleTemplate: "Prodotti Senza Ordini (Left Join)",
+        descTemplate: "Usa una LEFT JOIN per trovare i prodotti che POTREBBERO non avere ordini. Seleziona nome prodotto ('nome') e ID ordine ('id').",
+        queryTemplate: "SELECT prodotti.nome, ordini.id FROM prodotti LEFT JOIN ordini ON prodotti.id = ordini.prodotto_id",
+        hints: ["Usa LEFT JOIN con prodotti a sinistra.", "Includi tutti i prodotti."],
+        explanation: "LEFT JOIN mantiene tutte le righe della tabella di sinistra.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome, ordini.id FROM prodotti JOIN ordini ON prodotti.id = ordini.prodotto_id",
+        debugHint: "La semplice JOIN (INNER) esclude i prodotti senza ordini. Usa LEFT JOIN.",
       },
       {
-        titleTemplate: "Prodotti Categoria Prezzo > 50",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti' e 'nome' da 'categorie' per prodotti con prezzo > 50.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.prezzo > 50",
-        hints: ["WHERE prezzo > 50"],
-        explanation: "Filtro prezzo su join.",
+        titleTemplate: "Utenti Senza Recensioni (Left Join)",
+        descTemplate: "Identifica gli utenti che non hanno (o potrebbero non avere) lasciato recensioni. Seleziona nome utente ('nome') e voto ('voto').",
+        queryTemplate: "SELECT utenti.nome, recensioni.voto FROM utenti LEFT JOIN recensioni ON utenti.id = recensioni.utente_id",
+        hints: ["LEFT JOIN: utenti su recensioni.", "Vedi chi non ha attività."],
+        explanation: "Mostra tutti gli utenti, anche i silenziosi.",
         replacements: {},
+        brokenCode: "SELECT utenti.nome, recensioni.voto FROM utenti LEFT JOIN recensioni ON utenti.id = recensioni.utente_id WHERE recensioni.voto IS NULL",
+        debugHint: "La richiesta è solo la LEFT JOIN, non filtrare per NULL ora.",
       },
       {
-        titleTemplate: "Utenti con Ordini > 2023",
-        descTemplate:
-          "Seleziona 'nome' (DISTINCT) da 'utenti' che hanno ordinato dopo il '2023-01-01'.",
-        queryTemplate:
-          "SELECT DISTINCT utenti.nome FROM utenti JOIN ordini ON utenti.id = ordini.utente_id WHERE ordini.data_ordine > '2023-01-01'",
-        hints: ["DISTINCT per evitare duplicati"],
-        explanation: "Utenti attivi recenti.",
+        titleTemplate: "Categorie Vuote (Left Join)",
+        descTemplate: "Visualizza tutte le categorie e i prodotti associati. Seleziona nome categoria ('nome') e nome prodotto ('nome').",
+        queryTemplate: "SELECT categorie.nome, prodotti.nome FROM categorie LEFT JOIN prodotti ON categorie.id = prodotti.categoria_id",
+        hints: ["LEFT JOIN categorie su prodotti.", "Assicura che tutte le categorie appaiano."],
+        explanation: "Verifica copertura del catalogo.",
         replacements: {},
+        brokenCode: "SELECT categorie.nome, prodotti.nome FROM prodotti LEFT JOIN categorie ON categorie.id = prodotti.categoria_id",
+        debugHint: "L'ordine delle tabelle è importante nella LEFT JOIN. Categorie a sinistra.",
       },
       {
-        titleTemplate: "Categorie con Prodotti Stock 0",
-        descTemplate:
-          "Seleziona 'nome' (DISTINCT) da 'categorie' che hanno prodotti con stock = 0.",
-        queryTemplate:
-          "SELECT DISTINCT categorie.nome FROM categorie JOIN prodotti ON categorie.id = prodotti.categoria_id WHERE prodotti.stock = 0",
-        hints: ["DISTINCT, WHERE stock = 0"],
-        explanation: "Analisi stock categorie.",
+        titleTemplate: "Fornitori Inattivi (Left Join)",
+        descTemplate: "Elenca tutti i fornitori e i loro prodotti. Seleziona azienda ('azienda') e nome prodotto ('nome').",
+        queryTemplate: "SELECT fornitori.azienda, prodotti.nome FROM fornitori LEFT JOIN prodotti ON fornitori.id = prodotti.fornitore_id",
+        hints: ["LEFT JOIN fornitori su prodotti.", "Mostra anche chi non fornisce nulla."],
+        explanation: "Analisi fornitori.",
         replacements: {},
+        brokenCode: "SELECT fornitori.azienda, prodotti.nome FROM fornitori INNER JOIN prodotti ON fornitori.id = prodotti.fornitore_id",
+        debugHint: "INNER JOIN nasconde i fornitori senza prodotti.",
       },
       {
-        titleTemplate: "Fornitori Prodotti Costosi",
-        descTemplate:
-          "Seleziona 'azienda' (DISTINCT) da 'fornitori' che vendono prodotti con prezzo > 200.",
-        queryTemplate:
-          "SELECT DISTINCT fornitori.azienda FROM fornitori JOIN prodotti ON fornitori.id = prodotti.fornitore_id WHERE prodotti.prezzo > 200",
-        hints: ["DISTINCT, WHERE prezzo > 200"],
-        explanation: "Fornitori premium.",
+        titleTemplate: "Ordini Utente e Spedizione (3 Tabelle)",
+        descTemplate: "Collega ordini, utenti e spedizioni. Mostra nome utente ('nome'), data ordine ('data_ordine') e corriere ('corriere').",
+        queryTemplate: "SELECT utenti.nome, ordini.data_ordine, spedizioni.corriere FROM utenti JOIN ordini ON utenti.id = ordini.utente_id JOIN spedizioni ON ordini.id = spedizioni.ordine_id",
+        hints: ["Fai due JOIN sequenziali.", "utenti -> ordini -> spedizioni."],
+        explanation: "Chain di join per attraversare lo schema.",
         replacements: {},
+        brokenCode: "SELECT utenti.nome, ordini.data_ordine, spedizioni.corriere FROM utenti JOIN ordini, spedizioni WHERE utenti.id = ordini.utente_id",
+        debugHint: "Usa la sintassi esplicita JOIN ... ON per chiarezza e correttezza.",
       },
       {
-        titleTemplate: "Utenti Recensioni Negative",
-        descTemplate:
-          "Seleziona 'nome' (DISTINCT) da 'utenti' che hanno dato voto <= 2.",
-        queryTemplate:
-          "SELECT DISTINCT utenti.nome FROM utenti JOIN recensioni ON utenti.id = recensioni.utente_id WHERE recensioni.voto <= 2",
-        hints: ["DISTINCT, WHERE voto <= 2"],
-        explanation: "Utenti insoddisfatti.",
+        titleTemplate: "Recensioni Dettagliate (3 Tabelle)",
+        descTemplate: "Mostra voto recensione ('voto'), nome prodotto ('nome') e nome categoria ('nome').",
+        queryTemplate: "SELECT recensioni.voto, prodotti.nome, categorie.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id",
+        hints: ["Parti da recensioni, unisci prodotti, poi categorie.", "Chain: recensioni -> prodotti -> categorie."],
+        explanation: "Risale la gerarchia da dettaglio a raggruppamento.",
         replacements: {},
+        brokenCode: "SELECT recensioni.voto, prodotti.nome, categorie.nome FROM recensioni JOIN categorie ON prodotti.categoria_id = categorie.id",
+        debugHint: "Non puoi unire recensioni e categorie direttamente senza passare per prodotti.",
+      },
+      {
+        titleTemplate: "Prodotti Globali (3 Tabelle)",
+        descTemplate: "Elenca nome prodotto ('nome'), azienda fornitrice ('azienda') e nome categoria ('nome').",
+        queryTemplate: "SELECT prodotti.nome, fornitori.azienda, categorie.nome FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id JOIN categorie ON prodotti.categoria_id = categorie.id",
+        hints: ["Prodotti è la tabella centrale.", "Unisci sia fornitori che categorie a prodotti."],
+        explanation: "Arricchisce l'entità principale con tutte le relazioni.",
+        replacements: {},
+        brokenCode: "SELECT prodotti.nome, fornitori.azienda, categorie.nome FROM prodotti JOIN fornitori ON id = fornitore_id JOIN categorie ON id = categoria_id",
+        debugHint: "Ambiguita nei nomi colonne. Usa prefissi tabella (es. prodotti.id).",
+      },
+      {
+        titleTemplate: "Ordini Recenti con Nomi",
+        descTemplate: "Mostra data ordine ('data_ordine') e nome utente ('nome'), ordinati per data decrescente (più recenti prima).",
+        queryTemplate: "SELECT ordini.data_ordine, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id ORDER BY ordini.data_ordine DESC",
+        hints: ["Join ordini-utenti.", "Usa ORDER BY ... DESC."],
+        explanation: "Presentazione cronologica inversa.",
+        replacements: {},
+        brokenCode: "SELECT ordini.data_ordine, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id SORT BY ordini.data_ordine DESC",
+        debugHint: "SORT BY non esiste. Usa ORDER BY.",
+      },
+      {
+        titleTemplate: "Prodotti Costosi con Fornitore",
+        descTemplate: "Mostra nome prodotto ('nome'), prezzo ('prezzo') e azienda ('azienda'), ordinati dal più costoso.",
+        queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id ORDER BY prodotti.prezzo DESC",
+        hints: ["Join prodotti-fornitori.", "Ordina per prezzo decrescente."],
+        explanation: "Ranking prodotti per valore.",
+        replacements: {},
+        brokenCode: "SELECT prodotti.nome, prodotti.prezzo, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id ORDER BY prezzo",
+        debugHint: "Specifica DESC per l'ordine decrescente (default è ASC).",
+      },
+      {
+        titleTemplate: "Migliori Recensioni",
+        descTemplate: "Mostra voto ('voto') e nome prodotto ('nome'), ordinati per voto decrescente.",
+        queryTemplate: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id ORDER BY recensioni.voto DESC",
+        hints: ["Join recensioni-prodotti.", "Voti alti prima."],
+        explanation: "Focus sulla qualità.",
+        replacements: {},
+        brokenCode: "SELECT recensioni.voto, prodotti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id ORDER BY recensioni.voto DOWN",
+        debugHint: "Usa DESC, non DOWN.",
+      },
+      {
+        titleTemplate: "Top 5 Prodotti Costosi",
+        descTemplate: "Mostra i 5 prodotti più costosi con la loro categoria. Seleziona nome prodotto e nome categoria.",
+        queryTemplate: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id ORDER BY prodotti.prezzo DESC LIMIT 5",
+        hints: ["Join, Order By Prezzo Desc, Limit 5.", "Combina tre clausole."],
+        explanation: "Query Top-N.",
+        replacements: {},
+        brokenCode: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id LIMIT 5 ORDER BY prodotti.prezzo DESC",
+        debugHint: "LIMIT deve essere l'ultima clausola.",
+      },
+      {
+        titleTemplate: "Elettronica Costosa",
+        descTemplate: "Trova prodotti 'Elettronica' con prezzo > 50. Mostra nome e prezzo, ordinati per prezzo.",
+        queryTemplate: "SELECT prodotti.nome, prodotti.prezzo FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = 'Elettronica' AND prodotti.prezzo > 50 ORDER BY prodotti.prezzo ASC",
+        hints: ["Filtra categoria E prezzo.", "Ordina il risultato."],
+        explanation: "Filtri complessi e ordinamento.",
+        replacements: {},
+        brokenCode: "SELECT prodotti.nome, prodotti.prezzo FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = 'Elettronica' OR prodotti.prezzo > 50",
+        debugHint: "Richiesto AND (entrambe le condizioni), non OR.",
+      },
+      {
+        titleTemplate: "Primi 3 Ordini Utente",
+        descTemplate: "Trova i primi 3 ordini (per data) dell'utente 'Mario Rossi'. Mostra ID e data.",
+        queryTemplate: "SELECT ordini.id, ordini.data_ordine FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.nome = 'Mario Rossi' ORDER BY ordini.data_ordine ASC LIMIT 3",
+        hints: ["Filtra nome utente.", "Ordina per data ASC.", "Limit 3."],
+        explanation: "Storico iniziale cliente.",
+        replacements: {},
+        brokenCode: "SELECT ordini.id, ordini.data_ordine FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.nome = 'Mario Rossi' LIMIT 3",
+        debugHint: "Senza ORDER BY, non è garantito quali siano i 'primi'.",
+      },
+      {
+        titleTemplate: "Ordini Periodo Estivo",
+        descTemplate: "Mostra ordini tra '2023-06-01' e '2023-08-31'. Seleziona data ordine e nome utente.",
+        queryTemplate: "SELECT ordini.data_ordine, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE ordini.data_ordine BETWEEN '2023-06-01' AND '2023-08-31'",
+        hints: ["Usa BETWEEN per le date.", "Join ordini-utenti."],
+        explanation: "Filtro range temporale.",
+        replacements: {},
+        brokenCode: "SELECT ordini.data_ordine, utenti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE ordini.data_ordine IN ('2023-06-01', '2023-08-31')",
+        debugHint: "IN cerca corrispondenze esatte, BETWEEN cerca un intervallo.",
+      },
+      {
+        titleTemplate: "Prodotti Fornitori Multipli (IN)",
+        descTemplate: "Mostra prodotti forniti da 'TechCorp' o 'LogiWares'. Seleziona nome prodotto e azienda.",
+        queryTemplate: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.azienda IN ('TechCorp', 'LogiWares')",
+        hints: ["Usa IN con la lista fornitori.", "Join prodotti-fornitori."],
+        explanation: "Filtro su lista di valori.",
+        replacements: {},
+        brokenCode: "SELECT prodotti.nome, fornitori.azienda FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE fornitori.azienda = 'TechCorp' OR 'LogiWares'",
+        debugHint: "Sintassi OR errata. Usa azienda = 'A' OR azienda = 'B' oppure la clausola IN.",
+      },
+      {
+        titleTemplate: "Prodotti Iniziano con S",
+        descTemplate: "Trova prodotti che iniziano per 'S' e mostra la loro categoria.",
+        queryTemplate: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.nome LIKE 'S%'",
+        hints: ["Usa LIKE 'S%'.", "Join prodotti-categorie."],
+        explanation: "Pattern matching su stringhe.",
+        replacements: {},
+        brokenCode: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.nome = 'S%'",
+        debugHint: "L'uguale cerca la stringa esatta 'S%'. Usa LIKE per i pattern.",
+      },
+      {
+        titleTemplate: "Stock Critico Elettronica",
+        descTemplate: "Prodotti 'Elettronica' con stock < 5. Mostra nome e stock.",
+        queryTemplate: "SELECT prodotti.nome, prodotti.stock FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = 'Elettronica' AND prodotti.stock < 5",
+        hints: ["Filtra categoria e stock basso.", "Usa AND."],
+        explanation: "Report allerta magazzino.",
+        replacements: {},
+        brokenCode: "SELECT prodotti.nome, prodotti.stock FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE categorie.nome = 'Elettronica' WHERE prodotti.stock < 5",
+        debugHint: "Non ripetere WHERE. Usa AND per collegare le condizioni.",
+      },
+      {
+        titleTemplate: "Utenti Italia o Francia",
+        descTemplate: "Mostra ordini di utenti di 'Italia' o 'Francia'. Seleziona ID ordine e paese utente.",
+        queryTemplate: "SELECT ordini.id, utenti.paese FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.paese IN ('Italia', 'Francia')",
+        hints: ["Filtra paese utente con IN.", "Join ordini-utenti."],
+        explanation: "Filto geografico multiplo.",
+        replacements: {},
+        brokenCode: "SELECT ordini.id, utenti.paese FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.paese = 'Italia' AND utenti.paese = 'Francia'",
+        debugHint: "Un utente non può essere contemporaneamente in Italia E Francia. Usa OR o IN.",
+      },
+      {
+        titleTemplate: "Prodotti Review > 4 e < 50€",
+        descTemplate: "Prodotti economici ma top rated: voto > 4 e prezzo < 50. Mostra nome, prezzo, voto.",
+        queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, recensioni.voto FROM prodotti JOIN recensioni ON prodotti.id = recensioni.prodotto_id WHERE recensioni.voto > 4 AND prodotti.prezzo < 50",
+        hints: ["Filtra su campi di entrambe le tabelle.", "Join prodotti-recensioni."],
+        explanation: "Intersezione di criteri qualità/prezzo.",
+        replacements: {},
+        brokenCode: "SELECT prodotti.nome, prodotti.prezzo, recensioni.voto FROM prodotti JOIN recensioni ON prodotti.id = recensioni.prodotto_id WHERE recensioni.voto > 4 OR prodotti.prezzo < 50",
+        debugHint: "OR accetta prodotti costosi con buon voto o economici con voto basso. Qui servono entrambi (AND).",
+      },
+      {
+        titleTemplate: "Corriere Specifico e Data",
+        descTemplate: "Ordini spediti da 'DHL' dopo il '2023-01-01'. Mostra tracking e data.",
+        queryTemplate: "SELECT spedizioni.codice_tracking, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id WHERE spedizioni.corriere = 'DHL' AND ordini.data_ordine > '2023-01-01'",
+        hints: ["Filtra corriere e data.", "Join spedizioni-ordini."],
+        explanation: "Filtro combinato logistica.",
+        replacements: {},
+        brokenCode: "SELECT spedizioni.codice_tracking, ordini.data_ordine FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id WHERE spedizioni.corriere = 'DHL' ordini.data_ordine > '2023-01-01'",
+        debugHint: "Manca l'operatore logico (AND) tra le condizioni.",
+      },
+      {
+        titleTemplate: "Tutte le Info (Recensione Specifica)",
+        descTemplate: "Per la recensione con ID 1, mostra: commento, nome prodotto, nome utente.",
+        queryTemplate: "SELECT recensioni.commento, prodotti.nome, utenti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN utenti ON recensioni.utente_id = utenti.id WHERE recensioni.id = 1",
+        hints: ["Doppia join partendo da recensioni.", "Filtra per id = 1."],
+        explanation: "Dettaglio puntuale entity.",
+        replacements: {},
+        brokenCode: "SELECT recensioni.commento, prodotti.nome, utenti.nome FROM recensioni JOIN prodotti JOIN utenti ON recensioni.utente_id = utenti.id WHERE recensioni.id = 1",
+        debugHint: "Ogni JOIN deve avere la sua condizione ON. Manca ON per prodotti.",
+      },
+      {
+        titleTemplate: "Utenti con Prodotti Costosi",
+        descTemplate: "Trova utenti che hanno comprato prodotti > 200€. Mostra nome utente e nome prodotto.",
+        queryTemplate: "SELECT utenti.nome, prodotti.nome FROM utenti JOIN ordini ON utenti.id = ordini.utente_id JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE prodotti.prezzo > 200",
+        hints: ["Serve unire Utenti -> Ordini -> Prodotti.", "Filtra sul prezzo prodotto."],
+        explanation: "Traversamento completo relazione M:N.",
+        replacements: {},
+        brokenCode: "SELECT utenti.nome, prodotti.nome FROM utenti JOIN prodotti ON utenti.id = prodotti.id WHERE prodotti.prezzo > 200",
+        debugHint: "Non puoi unire utenti e prodotti direttamente. Passa per ordini.",
+      },
+      {
+        titleTemplate: "Categorie in Ordini Recenti",
+        descTemplate: "Categorie di prodotti venduti dopo '2023-11-01'. Seleziona (DISTINCT) nome categoria.",
+        queryTemplate: "SELECT DISTINCT categorie.nome FROM categorie JOIN prodotti ON categorie.id = prodotti.categoria_id JOIN ordini ON prodotti.id = ordini.prodotto_id WHERE ordini.data_ordine > '2023-11-01'",
+        hints: ["3 Tabelle: Categorie-Prodotti-Ordini.", "Usa DISTINCT per lista pulita."],
+        explanation: "Analisi trend categorie.",
+        replacements: {},
+        brokenCode: "SELECT DISTINCT categorie.nome FROM categorie JOIN ordini ON categorie.id = ordini.id WHERE ordini.data_ordine > '2023-11-01'",
+        debugHint: "Manca il passaggio intermedio per la tabella prodotti.",
+      },
+      {
+        titleTemplate: "Report Completo 6 Colonne",
+        descTemplate: "Genera una vista ampia: ID ordine, data, nome utente, nome prodotto, prezzo, categoria. Unisci 4 tabelle.",
+        queryTemplate: "SELECT ordini.id, ordini.data_ordine, utenti.nome, prodotti.nome, prodotti.prezzo, categorie.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id",
+        hints: ["Unisci Ordini a Utenti e Prodotti. Poi Prodotti a Categorie.", "Attenzione alle chiavi."],
+        explanation: "Vista denormalizzata completa.",
+        replacements: {},
+        brokenCode: "SELECT * FROM ordini JOIN utenti JOIN prodotti JOIN categorie",
+        debugHint: "Devi specificare le condizioni ON per ogni JOIN.",
       },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Recensioni Prodotto e Utente",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'utenti' e 'voto' da 'recensioni', unendo le tre tabelle.",
-        queryTemplate:
-          "SELECT prodotti.nome, utenti.nome, recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN utenti ON recensioni.utente_id = utenti.id",
-        hints: ["Fai due JOIN consecutive"],
-        explanation: "SQL permette di concatenare infinite JOIN.",
+        titleTemplate: "Recensioni Prodotto Utente Completo",
+        descTemplate: "Seleziona 'nome' da 'prodotti', 'nome' da 'utenti' e 'voto' da 'recensioni' per ogni recensione.",
+        queryTemplate: "SELECT prodotti.nome, utenti.nome, recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN utenti ON recensioni.utente_id = utenti.id",
+        hints: ["Usa due JOIN sequenziali.", "recensioni -> prodotti E recensioni -> utenti."],
+        explanation: "Collega le tre tabelle principali del sistema di feedback.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome, utenti.nome, recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN utenti ON recensioni.id = utenti.id",
+        debugHint: "La condizione di join per utenti è sbagliata. Usa utente_id.",
       },
       {
-        titleTemplate: "Ordini con Dettagli Completi",
-        descTemplate:
-          "Seleziona 'data_ordine' da 'ordini', 'nome' da 'utenti', 'nome' da 'prodotti' e 'quantita' da 'ordini', unendo le tre tabelle.",
-        queryTemplate:
-          "SELECT ordini.data_ordine, utenti.nome, prodotti.nome, ordini.quantita FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id",
-        hints: ["Collega Ordini a Utenti E a Prodotti"],
-        explanation: "Ricostruzione oggetto di business completo.",
+        titleTemplate: "Ordini Globali (4 Tabelle)",
+        descTemplate: "Ottieni i dettagli completi: data ordine, nome utente, nome prodotto, nome categoria.",
+        queryTemplate: "SELECT ordini.data_ordine, utenti.nome, prodotti.nome, categorie.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id",
+        hints: ["Segui il percorso: Ordini -> Utenti, Ordini -> Prodotti -> Categorie.", "Tre JOIN necessarie."],
+        explanation: "Attraversa tutto lo schema relazionale.",
         replacements: {},
+        brokenCode: "SELECT ordini.data_ordine, utenti.nome, prodotti.nome, categorie.nome FROM ordini JOIN utenti JOIN prodotti JOIN categorie",
+        debugHint: "Mancano tutte le condizioni ON tra le tabelle.",
       },
       {
-        titleTemplate: "Self Join (Stesso Prezzo)",
-        descTemplate:
-          "Trova coppie di prodotti diversi (A, B) che hanno lo stesso prezzo. Seleziona A.nome, B.nome e A.prezzo.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.prezzo FROM prodotti AS A JOIN prodotti AS B ON A.prezzo = B.prezzo WHERE A.id <> B.id",
-        hints: ["Usa alias A e B per la stessa tabella", "Escludi A.id = B.id"],
-        explanation:
-          "Self Join serve per confrontare righe della stessa tabella.",
+        titleTemplate: "Tracking Spedizioni Dettagliato",
+        descTemplate: "Mostra 'corriere', 'data_ordine', 'nome' utente e 'nome' prodotto.",
+        queryTemplate: "SELECT spedizioni.corriere, ordini.data_ordine, utenti.nome, prodotti.nome FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id",
+        hints: ["Parti da spedizioni.", "Spedizioni -> Ordini -> Utenti/Prodotti."],
+        explanation: "Traccia l'ordine dal cliente al corriere.",
         replacements: {},
+        brokenCode: "SELECT spedizioni.corriere, ordini.data_ordine, utenti.nome, prodotti.nome FROM spedizioni JOIN ordini ON spedizioni.id = ordini.id JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id",
+        debugHint: "Spedizioni si collega a Ordini tramite ordine_id, non id.",
       },
       {
-        titleTemplate: "Tripla JOIN Recensioni",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie', 'nome' da 'utenti' e 'voto' da 'recensioni', unendo le quattro tabelle.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, utenti.nome, recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id JOIN utenti ON recensioni.utente_id = utenti.id",
-        hints: [
-          "Tre JOIN consecutive",
-          "recensioni -> prodotti -> categorie -> utenti",
-        ],
-        explanation: "Tripla JOIN per collegare più tabelle.",
+        titleTemplate: "Self Join Prezzi",
+        descTemplate: "Trova coppie di prodotti diversi (A, B) che hanno lo stesso prezzo. Seleziona A.nome, B.nome e A.prezzo.",
+        queryTemplate: "SELECT A.nome, B.nome, A.prezzo FROM prodotti AS A JOIN prodotti AS B ON A.prezzo = B.prezzo WHERE A.id <> B.id",
+        hints: ["Usa gli alias per la stessa tabella prodotti (AS A, AS B).", "Conditione: stesso prezzo ma ID diversi."],
+        explanation: "Confronta righe all'interno della stessa tabella.",
         replacements: {},
+        brokenCode: "SELECT A.nome, B.nome, A.prezzo FROM prodotti AS A JOIN prodotti AS B ON A.prezzo = B.prezzo",
+        debugHint: "Manca la condizione per escludere il confronto di un prodotto con se stesso (A.id <> B.id).",
       },
       {
-        titleTemplate: "Tripla JOIN Ordini",
-        descTemplate:
-          "Seleziona 'data_ordine' da 'ordini', 'nome' da 'utenti', 'nome' da 'prodotti' e 'nome' da 'categorie', unendo le quattro tabelle.",
-        queryTemplate:
-          "SELECT ordini.data_ordine, utenti.nome, prodotti.nome, categorie.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id",
-        hints: [
-          "Tre JOIN consecutive",
-          "ordini -> utenti -> prodotti -> categorie",
-        ],
-        explanation: "Tripla JOIN per ordini completi.",
+        titleTemplate: "Self Join Categorie",
+        descTemplate: "Trova coppie di prodotti (A, B) della stessa categoria. Mostra i nomi dei due prodotti e l'ID categoria.",
+        queryTemplate: "SELECT A.nome, B.nome, A.categoria_id FROM prodotti AS A JOIN prodotti AS B ON A.categoria_id = B.categoria_id WHERE A.id <> B.id",
+        hints: ["Self Join su categoria_id.", "Escludi duplicati (A.id <> B.id)."],
+        explanation: "Trova prodotti correlati per categoria.",
         replacements: {},
+        brokenCode: "SELECT A.nome, B.nome, A.categoria_id FROM prodotti A, prodotti B WHERE A.categoria_id = B.categoria_id",
+        debugHint: "Usa la sintassi esplicita JOIN ... ON per chiarezza.",
       },
       {
-        titleTemplate: "Tripla JOIN Spedizioni",
-        descTemplate:
-          "Seleziona 'corriere' da 'spedizioni', 'data_ordine' da 'ordini', 'nome' da 'utenti' e 'nome' da 'prodotti', unendo le quattro tabelle.",
-        queryTemplate:
-          "SELECT spedizioni.corriere, ordini.data_ordine, utenti.nome, prodotti.nome FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id",
-        hints: [
-          "Tre JOIN consecutive",
-          "spedizioni -> ordini -> utenti -> prodotti",
-        ],
-        explanation: "Tripla JOIN per spedizioni complete.",
+        titleTemplate: "Self Join Utenti Paese",
+        descTemplate: "Trova coppie di utenti (A, B) che vivono nello stesso paese. Mostra nomi e paese.",
+        queryTemplate: "SELECT A.nome, B.nome, A.paese FROM utenti AS A JOIN utenti AS B ON A.paese = B.paese WHERE A.id <> B.id",
+        hints: ["Self Join su paese.", "Usa alias A e B."],
+        explanation: "Cluster di utenti per geografia.",
         replacements: {},
+        brokenCode: "SELECT A.nome, B.nome, A.paese FROM utenti JOIN utenti ON A.paese = B.paese",
+        debugHint: "Devi assegnare alias alle tabelle (AS A, AS B) per distinguerle.",
       },
       {
-        titleTemplate: "Quattro JOIN Complete",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie', 'azienda' da 'fornitori' e 'nazione' da 'fornitori', unendo le tre tabelle.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        hints: [
-          "Due JOIN su prodotti",
-          "prodotti -> categorie e prodotti -> fornitori",
-        ],
-        explanation: "JOIN multipli dalla stessa tabella base.",
+        titleTemplate: "Cross Join Prodotti Categorie",
+        descTemplate: "Genera tutte le combinazioni possibili tra prodotti e categorie. Seleziona nome prodotto e nome categoria.",
+        queryTemplate: "SELECT prodotti.nome, categorie.nome FROM prodotti CROSS JOIN categorie",
+        hints: ["Usa CROSS JOIN.", "Non serve la clausola ON."],
+        explanation: "Prodotto cartesiano delle due tabelle.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome, categorie.nome FROM prodotti CROSS JOIN categorie ON prodotti.categoria_id = categorie.id",
+        debugHint: "La CROSS JOIN non accetta la clausola ON.",
       },
       {
-        titleTemplate: "Self Join Prezzi Uguali",
-        descTemplate:
-          "Trova coppie di prodotti diversi (A, B) con lo stesso prezzo. Seleziona A.nome, B.nome e A.prezzo.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.prezzo FROM prodotti AS A JOIN prodotti AS B ON A.prezzo = B.prezzo WHERE A.id <> B.id",
-        hints: [
-          "Self JOIN con alias",
-          "A.prezzo = B.prezzo WHERE A.id <> B.id",
-        ],
-        explanation: "Self JOIN per trovare prodotti con stesso prezzo.",
+        titleTemplate: "Filtro Complesso 3 Tabelle",
+        descTemplate: "Trova utenti di 'Italia' che hanno ordinato prodotti > 100€. Mostra nome utente e nome prodotto.",
+        queryTemplate: "SELECT utenti.nome, prodotti.nome FROM utenti JOIN ordini ON utenti.id = ordini.utente_id JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE utenti.paese = 'Italia' AND prodotti.prezzo > 100",
+        hints: ["Join 3 tabelle.", "WHERE con due condizioni in AND."],
+        explanation: "Filtro avanzato su relazioni multiple.",
         replacements: {},
+        brokenCode: "SELECT utenti.nome, prodotti.nome FROM utenti JOIN ordini ON utenti.id = ordini.utente_id JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE utenti.paese = 'Italia' OR prodotti.prezzo > 100",
+        debugHint: "Vuoi utenti Italiani E prodotti costosi. Usa AND, non OR.",
       },
       {
-        titleTemplate: "Self Join Stock Uguali",
-        descTemplate:
-          "Trova coppie di prodotti diversi (A, B) con lo stesso stock. Seleziona A.nome, B.nome e A.stock.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.stock FROM prodotti AS A JOIN prodotti AS B ON A.stock = B.stock WHERE A.id <> B.id",
-        hints: ["Self JOIN con alias", "A.stock = B.stock WHERE A.id <> B.id"],
-        explanation: "Self JOIN per trovare prodotti con stesso stock.",
+        titleTemplate: "Chain Left Join (Categorie)",
+        descTemplate: "Mostra tutte le categorie, i prodotti (se ci sono) e le recensioni (se ci sono). Seleziona i 3 nomi.",
+        queryTemplate: "SELECT categorie.nome, prodotti.nome, recensioni.commento FROM categorie LEFT JOIN prodotti ON categorie.id = prodotti.categoria_id LEFT JOIN recensioni ON prodotti.id = recensioni.prodotto_id",
+        hints: ["Usa LEFT JOIN a catena.", "Categorie -> Prodotti -> Recensioni."],
+        explanation: "Assicura che le categorie vuote siano visibili.",
         replacements: {},
+        brokenCode: "SELECT categorie.nome, prodotti.nome, recensioni.commento FROM categorie JOIN prodotti ON categorie.id = prodotti.categoria_id LEFT JOIN recensioni ON prodotti.id = recensioni.prodotto_id",
+        debugHint: "La prima JOIN è INNER, quindi esclude categorie senza prodotti. Usa LEFT JOIN anche lì.",
       },
       {
-        titleTemplate: "Self Join Categoria Uguale",
-        descTemplate:
-          "Trova coppie di prodotti diversi (A, B) della stessa categoria. Seleziona A.nome, B.nome e A.categoria_id.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.categoria_id FROM prodotti AS A JOIN prodotti AS B ON A.categoria_id = B.categoria_id WHERE A.id <> B.id",
-        hints: [
-          "Self JOIN con alias",
-          "A.categoria_id = B.categoria_id WHERE A.id <> B.id",
-        ],
-        explanation: "Self JOIN per trovare prodotti stessa categoria.",
+        titleTemplate: "Chain Left Join (Utenti)",
+        descTemplate: "Mostra utenti, i loro ordini e le spedizioni (se ci sono). Seleziona nome utente, data ordine, corriere.",
+        queryTemplate: "SELECT utenti.nome, ordini.data_ordine, spedizioni.corriere FROM utenti LEFT JOIN ordini ON utenti.id = ordini.utente_id LEFT JOIN spedizioni ON ordini.id = spedizioni.ordine_id",
+        hints: ["Tutto a sinistra (LEFT JOIN).", "Utenti -> Ordini -> Spedizioni."],
+        explanation: "Vista completa attività utenti.",
         replacements: {},
+        brokenCode: "SELECT utenti.nome, ordini.data_ordine, spedizioni.corriere FROM utenti LEFT JOIN ordini ON utenti.id = ordini.utente_id JOIN spedizioni ON ordini.id = spedizioni.ordine_id",
+        debugHint: "Se usi JOIN (INNER) per spedizioni, perdi gli ordini non spediti e gli utenti senza ordini.",
       },
       {
-        titleTemplate: "Tripla JOIN con WHERE",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie' e 'nome' da 'utenti' per recensioni con voto >= 4.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, utenti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id JOIN utenti ON recensioni.utente_id = utenti.id WHERE recensioni.voto >= 4",
-        hints: ["Tre JOIN con WHERE", "WHERE recensioni.voto >= 4"],
-        explanation: "Tripla JOIN con filtro.",
+        titleTemplate: "Valore Ordine Calcolato",
+        descTemplate: "Trova ordini con valore totale (prezzo * quantita) > 500. Mostra ID ordine e valore.",
+        queryTemplate: "SELECT ordini.id, prodotti.prezzo * ordini.quantita AS valore_totale FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE prodotti.prezzo * ordini.quantita > 500",
+        hints: ["Calcola prezzo * quantita.", "Usa il calcolo nel WHERE."],
+        explanation: "Logica di business applicata ai dati raw.",
         replacements: {},
+        brokenCode: "SELECT ordini.id, prodotti.prezzo * ordini.quantita AS valore_totale FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE valore_totale > 500",
+        debugHint: "Non puoi usare l'alias di colonna (valore_totale) nella clausola WHERE standard. Ripeti il calcolo.",
       },
       {
-        titleTemplate: "Tripla JOIN con WHERE Prezzo",
-        descTemplate:
-          "Seleziona 'data_ordine' da 'ordini', 'nome' da 'utenti' e 'nome' da 'prodotti' per ordini di prodotti con prezzo > 100.",
-        queryTemplate:
-          "SELECT ordini.data_ordine, utenti.nome, prodotti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE prodotti.prezzo > 100",
-        hints: ["Due JOIN con WHERE", "WHERE prodotti.prezzo > 100"],
-        explanation: "JOIN multipli con filtro prezzo.",
+        titleTemplate: "Prodotti Economici Utenti",
+        descTemplate: "Utenti che hanno comprato prodotti < 50€. Mostra nome utente e nome prodotto.",
+        queryTemplate: "SELECT utenti.nome, prodotti.nome FROM utenti JOIN ordini ON utenti.id = ordini.utente_id JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE prodotti.prezzo < 50",
+        hints: ["Join 3 tabelle.", "Filtra per prezzo < 50."],
+        explanation: "Targeting per fascia economica.",
         replacements: {},
+        brokenCode: "SELECT utenti.nome, prodotti.nome FROM utenti, ordini, prodotti WHERE prodotti.prezzo < 50",
+        debugHint: "Mancano le condizioni di unione (WHERE utenti.id = ...). Usa JOIN esplicite.",
       },
       {
-        titleTemplate: "Tripla JOIN con WHERE Data",
-        descTemplate:
-          "Seleziona 'corriere' da 'spedizioni', 'data_ordine' da 'ordini' e 'nome' da 'utenti' per ordini dopo il 1 Gennaio 2023.",
-        queryTemplate:
-          "SELECT spedizioni.corriere, ordini.data_ordine, utenti.nome FROM spedizioni JOIN ordini ON spedizioni.ordine_id = ordini.id JOIN utenti ON ordini.utente_id = utenti.id WHERE ordini.data_ordine > '2023-01-01'",
-        hints: [
-          "Due JOIN con WHERE",
-          "WHERE ordini.data_ordine > '2023-01-01'",
-        ],
-        explanation: "JOIN multipli con filtro data.",
+        titleTemplate: "Conditional Join (AND)",
+        descTemplate: "Unisci ordini e spedizioni, ma considera solo spedizioni 'DHL' direttamente nella JOIN. Seleziona ID ordine.",
+        queryTemplate: "SELECT ordini.id FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id AND spedizioni.corriere = 'DHL'",
+        hints: ["Aggiungi AND nella clausola ON.", "ON ... AND ..."],
+        explanation: "Filtro applicato durante la relazione.",
         replacements: {},
+        brokenCode: "SELECT ordini.id FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id WHERE spedizioni.corriere = 'DHL'",
+        debugHint: "Questo funziona, ma la richiesta era di metterlo nella JOIN (ON).",
       },
       {
-        titleTemplate: "Tripla JOIN con ORDER BY",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie' e 'nome' da 'utenti' per recensioni, ordinate per voto decrescente.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, utenti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id JOIN utenti ON recensioni.utente_id = utenti.id ORDER BY recensioni.voto DESC",
-        hints: ["Tre JOIN con ORDER BY", "ORDER BY recensioni.voto DESC"],
-        explanation: "Tripla JOIN con ordinamento.",
+        titleTemplate: "Fornitori Senza Vendite",
+        descTemplate: "Trova fornitori i cui prodotti non sono mai stati ordinati. Seleziona azienda.",
+        queryTemplate: "SELECT DISTINCT fornitori.azienda FROM fornitori JOIN prodotti ON fornitori.id = prodotti.fornitore_id LEFT JOIN ordini ON prodotti.id = ordini.prodotto_id WHERE ordini.id IS NULL",
+        hints: ["Fornitori -> Prodotti -> Left Join Ordini.", "WHERE ordini.id IS NULL."],
+        explanation: "Analisi performance canale fornitura.",
         replacements: {},
+        brokenCode: "SELECT fornitori.azienda FROM fornitori JOIN prodotti ON fornitori.id = prodotti.fornitore_id JOIN ordini ON prodotti.id = ordini.prodotto_id WHERE ordini.id IS NULL",
+        debugHint: "INNER JOIN esclude a priori i non ordinati. Serve LEFT JOIN.",
       },
       {
-        titleTemplate: "Tripla JOIN con ORDER BY Prezzo",
-        descTemplate:
-          "Seleziona 'data_ordine' da 'ordini', 'nome' da 'utenti' e 'nome' da 'prodotti', ordinati per prezzo prodotto decrescente.",
-        queryTemplate:
-          "SELECT ordini.data_ordine, utenti.nome, prodotti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id ORDER BY prodotti.prezzo DESC",
-        hints: ["Due JOIN con ORDER BY", "ORDER BY prodotti.prezzo DESC"],
-        explanation: "JOIN multipli con ordinamento prezzo.",
+        titleTemplate: "Categorie Senza Vendite",
+        descTemplate: "Trova categorie i cui prodotti non sono mai stati ordinati. Seleziona nome categoria.",
+        queryTemplate: "SELECT DISTINCT categorie.nome FROM categorie JOIN prodotti ON categorie.id = prodotti.categoria_id LEFT JOIN ordini ON prodotti.id = ordini.prodotto_id WHERE ordini.id IS NULL",
+        hints: ["Categorie -> Prodotti -> Left Join Ordini.", "Check NULL su ordini."],
+        explanation: "Categorie a basso rendimento.",
         replacements: {},
+        brokenCode: "SELECT DISTINCT categorie.nome FROM categorie LEFT JOIN ordini ON categorie.id = ordini.id WHERE ordini.id IS NULL",
+        debugHint: "Non puoi saltare la tabella prodotti. Categorie non è collegata direttamente a ordini.",
       },
       {
-        titleTemplate: "Tripla JOIN con LIMIT",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie' e 'nome' da 'utenti' per le prime 5 recensioni con voto più alto.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, utenti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id JOIN utenti ON recensioni.utente_id = utenti.id ORDER BY recensioni.voto DESC LIMIT 5",
-        hints: [
-          "Tre JOIN con ORDER BY e LIMIT",
-          "ORDER BY recensioni.voto DESC LIMIT 5",
-        ],
-        explanation: "Tripla JOIN con LIMIT.",
+        titleTemplate: "High Value Customers",
+        descTemplate: "Clienti con almeno un ordine di importo > 1000€. Mostra nome utente.",
+        queryTemplate: "SELECT DISTINCT utenti.nome FROM utenti JOIN ordini ON utenti.id = ordini.utente_id JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE prodotti.prezzo * ordini.quantita > 1000",
+        hints: ["Join 3 tabelle.", "Calcolo importo > 1000.", "DISTINCT."],
+        explanation: "Identificazione clienti VIP.",
         replacements: {},
+        brokenCode: "SELECT utenti.nome FROM utenti JOIN ordini ON utenti.id = ordini.utente_id JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE prodotti.prezzo > 1000",
+        debugHint: "Devi considerare anche la quantità (prezzo * quantita).",
       },
       {
-        titleTemplate: "Tripla JOIN con WHERE e ORDER BY",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie' e 'nome' da 'utenti' per recensioni con voto >= 4, ordinate per voto decrescente.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, utenti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id JOIN utenti ON recensioni.utente_id = utenti.id WHERE recensioni.voto >= 4 ORDER BY recensioni.voto DESC",
-        hints: [
-          "Tre JOIN con WHERE e ORDER BY",
-          "WHERE recensioni.voto >= 4 ORDER BY recensioni.voto DESC",
-        ],
-        explanation: "Tripla JOIN con WHERE e ORDER BY.",
+        titleTemplate: "Performance Prodotti",
+        descTemplate: "Per ogni prodotto venduto, mostra nome, prezzo e quantità venduta. Ordina per quantità decrescente.",
+        queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, ordini.quantita FROM prodotti JOIN ordini ON prodotti.id = ordini.prodotto_id ORDER BY ordini.quantita DESC",
+        hints: ["Join Prodotti-Ordini.", "Order by quantita."],
+        explanation: "Analisi best seller.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome, prodotti.prezzo, ordini.quantita FROM prodotti LEFT JOIN ordini ON prodotti.id = ordini.prodotto_id ORDER BY ordini.quantita DESC",
+        debugHint: "Usa JOIN (INNER) se vuoi solo i prodotti venduti.",
       },
       {
-        titleTemplate: "Tripla JOIN con WHERE e LIMIT",
-        descTemplate:
-          "Seleziona 'data_ordine' da 'ordini', 'nome' da 'utenti' e 'nome' da 'prodotti' per i primi 3 ordini dopo il 1 Gennaio 2023.",
-        queryTemplate:
-          "SELECT ordini.data_ordine, utenti.nome, prodotti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE ordini.data_ordine > '2023-01-01' LIMIT 3",
-        hints: [
-          "Due JOIN con WHERE e LIMIT",
-          "WHERE ordini.data_ordine > '2023-01-01' LIMIT 3",
-        ],
-        explanation: "JOIN multipli con WHERE e LIMIT.",
+        titleTemplate: "Recensioni Lunghe",
+        descTemplate: "Trova recensioni con commento lungo (usando una logica simulata, es. contiene 'molto'). Visualizza nome prodotto e commento.",
+        queryTemplate: "SELECT prodotti.nome, recensioni.commento FROM prodotti JOIN recensioni ON prodotti.id = recensioni.prodotto_id WHERE recensioni.commento LIKE '%molto%'",
+        hints: ["Usa LIKE '%molto%'.", "Join standard."],
+        explanation: "Analisi testuale semplice.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome, recensioni.commento FROM prodotti JOIN recensioni ON prodotti.id = recensioni.prodotto_id WHERE recensioni.commento = '%molto%'",
+        debugHint: "Uguale cerca la stringa esatta. Per 'contiene' usa LIKE.",
       },
       {
-        titleTemplate: "Quattro JOIN Complete",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie', 'azienda' da 'fornitori' e 'nazione' da 'fornitori' per tutti i prodotti.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        hints: [
-          "Due JOIN su prodotti",
-          "prodotti -> categorie e prodotti -> fornitori",
-        ],
-        explanation: "JOIN multipli dalla stessa tabella.",
+        titleTemplate: "Ordini Italia o Francia o Spagna",
+        descTemplate: "Ordini da utenti di questi 3 paesi. Mostra ID ordine e paese.",
+        queryTemplate: "SELECT ordini.id, utenti.paese FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.paese IN ('Italia', 'Francia', 'Spagna')",
+        hints: ["Usa IN ('...', '...', '...')", "Join Ordini-Utenti."],
+        explanation: "Filtro geografico regionale.",
         replacements: {},
+        brokenCode: "SELECT ordini.id, utenti.paese FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.paese = 'Italia' OR 'Francia' OR 'Spagna'",
+        debugHint: "Sintassi OR errata. Usa IN o ripeti la condizione (paese = 'Francia').",
       },
       {
-        titleTemplate: "Quattro JOIN con WHERE",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie', 'azienda' da 'fornitori' e 'nazione' da 'fornitori' per prodotti con prezzo > 100.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE prodotti.prezzo > 100",
-        hints: ["Due JOIN con WHERE", "WHERE prodotti.prezzo > 100"],
-        explanation: "JOIN multipli con filtro.",
+        titleTemplate: "Escludi USA",
+        descTemplate: "Tutti gli ordini ECCETTO quelli dagli USA. Mostra ID e paese.",
+        queryTemplate: "SELECT ordini.id, utenti.paese FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.paese <> 'USA'",
+        hints: ["Usa <> 'USA' o NOT IN.", "Join standard."],
+        explanation: "Filtro esclusivo.",
         replacements: {},
+        brokenCode: "SELECT ordini.id, utenti.paese FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.paese ! 'USA'",
+        debugHint: "L'operatore diverso è <> o !=.",
       },
       {
-        titleTemplate: "Quattro JOIN con ORDER BY",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie', 'azienda' da 'fornitori' e 'nazione' da 'fornitori', ordinati per prezzo decrescente.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, fornitori.azienda, fornitori.nazione FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id JOIN fornitori ON prodotti.fornitore_id = fornitori.id ORDER BY prodotti.prezzo DESC",
-        hints: ["Due JOIN con ORDER BY", "ORDER BY prodotti.prezzo DESC"],
-        explanation: "JOIN multipli con ordinamento.",
+        titleTemplate: "Prodotti 'Smart'",
+        descTemplate: "Prodotti che contengono 'Smart' nel nome e loro categoria.",
+        queryTemplate: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.nome LIKE '%Smart%'",
+        hints: ["LIKE '%Smart%'", "Join prodotti-categorie."],
+        explanation: "Ricerca keyword.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id WHERE prodotti.nome LIKE 'Smart'",
+        debugHint: "Mancano i caratteri jolly (%). Cerca solo 'Smart' esatto.",
       },
       {
-        titleTemplate: "Self Join Prezzo Maggiore",
-        descTemplate:
-          "Trova coppie di prodotti diversi (A, B) dove A costa più di B. Seleziona A.nome, B.nome, A.prezzo e B.prezzo.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.prezzo, B.prezzo FROM prodotti AS A JOIN prodotti AS B ON A.prezzo > B.prezzo WHERE A.id <> B.id",
-        hints: ["Self JOIN con >", "A.prezzo > B.prezzo WHERE A.id <> B.id"],
-        explanation: "Self JOIN per confrontare prezzi.",
+        titleTemplate: "Ordini Recenti Utenti Storici",
+        descTemplate: "Ordini del 2023 fatti da utenti con ID < 10 (primi iscritti). Mostra nome e data.",
+        queryTemplate: "SELECT utenti.nome, ordini.data_ordine FROM utenti JOIN ordini ON utenti.id = ordini.utente_id WHERE ordini.data_ordine LIKE '2023%' AND utenti.id < 10",
+        hints: ["Filtra data (LIKE '2023%') e ID utente.", "Join standard."],
+        explanation: "Analisi coorte.",
         replacements: {},
+        brokenCode: "SELECT utenti.nome, ordini.data_ordine FROM utenti JOIN ordini ON utenti.id = ordini.utente_id WHERE ordini.data_ordine LIKE '2023%' OR utenti.id < 10",
+        debugHint: "OR include i nuovi utenti con ordini 2023. Usa AND.",
       },
       {
-        titleTemplate: "Self Join Stock Maggiore",
-        descTemplate:
-          "Trova coppie di prodotti diversi (A, B) dove A ha stock maggiore di B. Seleziona A.nome, B.nome, A.stock e B.stock.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.stock, B.stock FROM prodotti AS A JOIN prodotti AS B ON A.stock > B.stock WHERE A.id <> B.id",
-        hints: ["Self JOIN con >", "A.stock > B.stock WHERE A.id <> B.id"],
-        explanation: "Self JOIN per confrontare stock.",
+        titleTemplate: "Ordinamento Multiplo Complesso",
+        descTemplate: "Elenca prodotti con categoria, ordinati per Nome Categoria ASC e poi Prezzo Prodotto DESC.",
+        queryTemplate: "SELECT prodotti.nome, prodotti.prezzo, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id ORDER BY categorie.nome ASC, prodotti.prezzo DESC",
+        hints: ["ORDER BY col1 ASC, col2 DESC.", "Join prodotti-categorie."],
+        explanation: "Ordinamento gerarchico.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome, prodotti.prezzo, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id ORDER BY categorie.nome, prodotti.prezzo",
+        debugHint: "Specifica DESC per il prezzo, altrimenti è ASC di default.",
       },
       {
-        titleTemplate: "Self Join con WHERE",
-        descTemplate:
-          "Trova coppie di prodotti diversi (A, B) con stesso prezzo, ma solo se entrambi costano più di 100 euro. Seleziona A.nome, B.nome e A.prezzo.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.prezzo FROM prodotti AS A JOIN prodotti AS B ON A.prezzo = B.prezzo WHERE A.id <> B.id AND A.prezzo > 100",
-        hints: [
-          "Self JOIN con WHERE",
-          "A.prezzo = B.prezzo WHERE A.id <> B.id AND A.prezzo > 100",
-        ],
-        explanation: "Self JOIN con filtro aggiuntivo.",
+        titleTemplate: "Top 10 Ordini Costosi",
+        descTemplate: "I 10 ordini con valore più alto. Mostra ID ordine e valore.",
+        queryTemplate: "SELECT ordini.id, prodotti.prezzo * ordini.quantita AS valore FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id ORDER BY valore DESC LIMIT 10",
+        hints: ["Order by valore DESC LIMIT 10.", "Calcola valore nel SELECT."],
+        explanation: "Top N ordini.",
         replacements: {},
+        brokenCode: "SELECT ordini.id, prodotti.prezzo * ordini.quantita AS valore FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id LIMIT 10",
+        debugHint: "Senza ORDER BY, prendi 10 ordini a caso.",
       },
       {
-        titleTemplate: "Self Join con ORDER BY",
-        descTemplate:
-          "Trova coppie di prodotti diversi (A, B) con stesso prezzo, ordinate per prezzo decrescente. Seleziona A.nome, B.nome e A.prezzo.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.prezzo FROM prodotti AS A JOIN prodotti AS B ON A.prezzo = B.prezzo WHERE A.id <> B.id ORDER BY A.prezzo DESC",
-        hints: ["Self JOIN con ORDER BY", "ORDER BY A.prezzo DESC"],
-        explanation: "Self JOIN con ordinamento.",
+        titleTemplate: "Info Ordine 3",
+        descTemplate: "Tutte le info (Utente, Prodotto, Data) per l'ordine con ID 3.",
+        queryTemplate: "SELECT utenti.nome, prodotti.nome, ordini.data_ordine FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE ordini.id = 3",
+        hints: ["Filtra id = 3.", "Join 3 tabelle."],
+        explanation: "Lookup singolo record.",
         replacements: {},
+        brokenCode: "SELECT utenti.nome, prodotti.nome, ordini.data_ordine FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE ordini.id = 3",
+        debugHint: "Manca la JOIN con prodotti per recuperare il nome prodotto.",
       },
       {
-        titleTemplate: "Self Join con LIMIT",
-        descTemplate:
-          "Trova le prime 5 coppie di prodotti diversi (A, B) con stesso prezzo. Seleziona A.nome, B.nome e A.prezzo.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.prezzo FROM prodotti AS A JOIN prodotti AS B ON A.prezzo = B.prezzo WHERE A.id <> B.id LIMIT 5",
-        hints: ["Self JOIN con LIMIT", "LIMIT 5"],
-        explanation: "Self JOIN con LIMIT.",
+        titleTemplate: "Acquisti Mario Rossi",
+        descTemplate: "Tutti i prodotti comprati da 'Mario Rossi'. Mostra nome prodotto.",
+        queryTemplate: "SELECT prodotti.nome FROM prodotti JOIN ordini ON prodotti.id = ordini.prodotto_id JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.nome = 'Mario Rossi'",
+        hints: ["Filtra nome = 'Mario Rossi'.", "Traversa Utenti->Ordini->Prodotti."],
+        explanation: "Cronologia acquisti utente.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome FROM prodotti JOIN utenti ON prodotti.id = utenti.id WHERE utenti.nome = 'Mario Rossi'",
+        debugHint: "Prodotti e Utenti non sono collegati direttamente. Serve passare per Ordini.",
       },
       {
-        titleTemplate: "Tripla JOIN Completa Finale",
-        descTemplate:
-          "Seleziona 'data_ordine' da 'ordini', 'nome' da 'utenti', 'paese' da 'utenti', 'nome' da 'prodotti', 'prezzo' da 'prodotti' e 'quantita' da 'ordini', unendo le tre tabelle.",
-        queryTemplate:
-          "SELECT ordini.data_ordine, utenti.nome, utenti.paese, prodotti.nome, prodotti.prezzo, ordini.quantita FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id",
-        hints: ["Due JOIN con sei colonne", "ordini -> utenti -> prodotti"],
-        explanation: "JOIN multipli con molte colonne.",
+        titleTemplate: "Chi ha recensito iPhone?",
+        descTemplate: "Nomi degli utenti che hanno recensito un prodotto che contiene 'iPhone'.",
+        queryTemplate: "SELECT utenti.nome FROM utenti JOIN recensioni ON utenti.id = recensioni.utente_id JOIN prodotti ON recensioni.prodotto_id = prodotti.id WHERE prodotti.nome LIKE '%iPhone%'",
+        hints: ["Filtra prodotti LIKE '%iPhone%'.", "Traversa Prodotti->Recensioni->Utenti."],
+        explanation: "Analisi feedback prodotto.",
         replacements: {},
+        brokenCode: "SELECT utenti.nome FROM utenti JOIN recensioni ON utenti.id = recensioni.utente_id WHERE prodotti.nome LIKE '%iPhone%'",
+        debugHint: "La tabella prodotti non è nella JOIN. Devi unirla.",
       },
       {
-        titleTemplate: "Tripla JOIN con Filtri Multipli",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie' e 'nome' da 'utenti' per recensioni con voto >= 4 di prodotti con prezzo > 100.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, utenti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id JOIN utenti ON recensioni.utente_id = utenti.id WHERE recensioni.voto >= 4 AND prodotti.prezzo > 100",
-        hints: [
-          "Tre JOIN con WHERE multipli",
-          "WHERE recensioni.voto >= 4 AND prodotti.prezzo > 100",
-        ],
-        explanation: "Tripla JOIN con filtri multipli.",
+        titleTemplate: "Prodotti Fornitore Locale",
+        descTemplate: "Trova prodotti forniti da un'azienda della stessa nazione dell'utente che li ordina (Hypothetical Cross-Match).",
+        queryTemplate: "SELECT prodotti.nome, utenti.nome, utenti.paese FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id JOIN fornitori ON prodotti.fornitore_id = fornitori.id WHERE utenti.paese = fornitori.nazione",
+        hints: ["Join 4 tabelle.", "WHERE utenti.paese = fornitori.nazione."],
+        explanation: "Matching avanzato tra entità disgiunte.",
         replacements: {},
+        brokenCode: "SELECT prodotti.nome FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN fornitori ON utenti.paese = fornitori.nazione",
+        debugHint: "Manca il collegamento logico tramite i prodotti. Utente e Fornitore si incontrano nell'ordine del prodotto.",
       },
       {
-        titleTemplate: "Tripla JOIN con ORDER BY e LIMIT",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie' e 'nome' da 'utenti' per i primi 5 prodotti, ordinati per voto decrescente e prezzo decrescente.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, utenti.nome FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id JOIN utenti ON recensioni.utente_id = utenti.id ORDER BY recensioni.voto DESC, prodotti.prezzo DESC LIMIT 5",
-        hints: [
-          "Tre JOIN con ORDER BY multiplo e LIMIT",
-          "ORDER BY recensioni.voto DESC, prodotti.prezzo DESC LIMIT 5",
-        ],
-        explanation: "Tripla JOIN con ordinamento multiplo e LIMIT.",
+        titleTemplate: "Full Supply Chain",
+        descTemplate: "Mostra: Fornitore -> Prodotto -> Ordine -> Utente -> Spedizione. 5 Tabelle (se spedito).",
+        queryTemplate: "SELECT fornitori.azienda, prodotti.nome, ordini.id, utenti.nome, spedizioni.corriere FROM fornitori JOIN prodotti ON fornitori.id = prodotti.fornitore_id JOIN ordini ON prodotti.id = ordini.prodotto_id JOIN utenti ON ordini.utente_id = utenti.id JOIN spedizioni ON ordini.id = spedizioni.ordine_id",
+        hints: ["Catena di 5 tabelle.", "Usa JOIN (INNER) per filiera completa."],
+        explanation: "Tracciabilità estrema.",
         replacements: {},
+        brokenCode: "SELECT * FROM fornitori, prodotti, ordini, utenti, spedizioni",
+        debugHint: "Il prodotto cartesiano di 5 tabelle è enorme e sbagliato. Usa JOIN esplicite.",
       },
       {
-        titleTemplate: "Quattro JOIN Complesso",
-        descTemplate:
-          "Seleziona 'nome' da 'prodotti', 'nome' da 'categorie', 'azienda' da 'fornitori', 'nazione' da 'fornitori', 'nome' da 'utenti' e 'voto' da 'recensioni' per recensioni con voto >= 4.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome, fornitori.azienda, fornitori.nazione, utenti.nome, recensioni.voto FROM recensioni JOIN prodotti ON recensioni.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id JOIN fornitori ON prodotti.fornitore_id = fornitori.id JOIN utenti ON recensioni.utente_id = utenti.id WHERE recensioni.voto >= 4",
-        hints: [
-          "Quattro JOIN con WHERE",
-          "recensioni -> prodotti -> categorie -> fornitori -> utenti",
-        ],
-        explanation: "Quattro JOIN con filtro.",
+        titleTemplate: "Vista Tavola Piatta",
+        descTemplate: "Seleziona ID Ordine, Nome Utente, Nome Prodotto, Prezzo, Categoria, Azienda Fornitore.",
+        queryTemplate: "SELECT ordini.id, utenti.nome, prodotti.nome, prodotti.prezzo, categorie.nome, fornitori.azienda FROM ordini JOIN utenti ON ordini.utente_id = utenti.id JOIN prodotti ON ordini.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
+        hints: ["Join Ordini con tutto.", "Utenti, Prodotti -> Categorie, Fornitori."],
+        explanation: "Denormalizzazione dati per reportistica.",
         replacements: {},
-      },
-      {
-        titleTemplate: "Self Join Complesso Finale",
-        descTemplate:
-          "Trova coppie di prodotti diversi (A, B) con stesso prezzo e stessa categoria. Seleziona A.nome, B.nome, A.prezzo e A.categoria_id, ordinati per prezzo decrescente.",
-        queryTemplate:
-          "SELECT A.nome, B.nome, A.prezzo, A.categoria_id FROM prodotti AS A JOIN prodotti AS B ON A.prezzo = B.prezzo AND A.categoria_id = B.categoria_id WHERE A.id <> B.id ORDER BY A.prezzo DESC",
-        hints: [
-          "Self JOIN con condizioni multiple",
-          "A.prezzo = B.prezzo AND A.categoria_id = B.categoria_id WHERE A.id <> B.id ORDER BY A.prezzo DESC",
-        ],
-        explanation:
-          "Self JOIN complesso con condizioni multiple e ordinamento.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Cross Join (Simulazione)",
-        descTemplate:
-          "Genera tutte le possibili combinazioni (prodotto cartesiano) tra 'prodotti' e 'categorie'. Seleziona prodotti.nome e categorie.nome.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti CROSS JOIN categorie",
-        hints: ["CROSS JOIN"],
-        explanation: "Tutte le combinazioni possibili.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Join Multipla 4 Tabelle",
-        descTemplate:
-          "Seleziona 'nome' da 'utenti', 'nome' da 'prodotti' e 'nome' da 'categorie' unendo le quattro tabelle (utenti, ordini, prodotti, categorie).",
-        queryTemplate:
-          "SELECT utenti.nome, prodotti.nome, categorie.nome FROM utenti JOIN ordini ON utenti.id = ordini.utente_id JOIN prodotti ON ordini.prodotto_id = prodotti.id JOIN categorie ON prodotti.categoria_id = categorie.id",
-        hints: ["Catena di 3 JOIN"],
-        explanation: "Percorso completo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Join Multipla 5 Tabelle",
-        descTemplate:
-          "Seleziona 'nome' da 'utenti', 'corriere' da 'spedizioni' e 'azienda' da 'fornitori' unendo le cinque tabelle (utenti, ordini, spedizioni, prodotti, fornitori).",
-        queryTemplate:
-          "SELECT utenti.nome, spedizioni.corriere, fornitori.azienda FROM utenti JOIN ordini ON utenti.id = ordini.utente_id JOIN spedizioni ON ordini.id = spedizioni.ordine_id JOIN prodotti ON ordini.prodotto_id = prodotti.id JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        hints: ["Catena complessa"],
-        explanation: "Vista a 360 gradi.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Prodotti Mai Ordinati (LEFT JOIN NULL)",
-        descTemplate:
-          "Trova prodotti che non sono mai stati ordinati. Seleziona 'nome' da 'prodotti'.",
-        queryTemplate:
-          "SELECT prodotti.nome FROM prodotti LEFT JOIN ordini ON prodotti.id = ordini.prodotto_id WHERE ordini.id IS NULL",
-        hints: ["LEFT JOIN ... WHERE ... IS NULL"],
-        explanation: "Tecnica per trovare record orfani.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Utenti Senza Ordini",
-        descTemplate:
-          "Trova utenti che non hanno mai fatto ordini. Seleziona 'nome' da 'utenti'.",
-        queryTemplate:
-          "SELECT utenti.nome FROM utenti LEFT JOIN ordini ON utenti.id = ordini.utente_id WHERE ordini.id IS NULL",
-        hints: ["LEFT JOIN ... WHERE ... IS NULL"],
-        explanation: "Utenti inattivi.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Categorie Senza Prodotti",
-        descTemplate:
-          "Trova categorie che non hanno prodotti associati. Seleziona 'nome' da 'categorie'.",
-        queryTemplate:
-          "SELECT categorie.nome FROM categorie LEFT JOIN prodotti ON categorie.id = prodotti.categoria_id WHERE prodotti.id IS NULL",
-        hints: ["LEFT JOIN ... WHERE ... IS NULL"],
-        explanation: "Categorie inutilizzate.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Fornitori Senza Prodotti",
-        descTemplate:
-          "Trova fornitori che non hanno prodotti a catalogo. Seleziona 'azienda' da 'fornitori'.",
-        queryTemplate:
-          "SELECT fornitori.azienda FROM fornitori LEFT JOIN prodotti ON fornitori.id = prodotti.fornitore_id WHERE prodotti.id IS NULL",
-        hints: ["LEFT JOIN ... WHERE ... IS NULL"],
-        explanation: "Fornitori inattivi.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Prodotti Senza Recensioni",
-        descTemplate:
-          "Trova prodotti che non hanno recensioni. Seleziona 'nome' da 'prodotti'.",
-        queryTemplate:
-          "SELECT prodotti.nome FROM prodotti LEFT JOIN recensioni ON prodotti.id = recensioni.prodotto_id WHERE recensioni.id IS NULL",
-        hints: ["LEFT JOIN ... WHERE ... IS NULL"],
-        explanation: "Prodotti non valutati.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Utenti Senza Recensioni",
-        descTemplate:
-          "Trova utenti che non hanno mai scritto recensioni. Seleziona 'nome' da 'utenti'.",
-        queryTemplate:
-          "SELECT utenti.nome FROM utenti LEFT JOIN recensioni ON utenti.id = recensioni.utente_id WHERE recensioni.id IS NULL",
-        hints: ["LEFT JOIN ... WHERE ... IS NULL"],
-        explanation: "Lurkers.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Ordini Senza Spedizioni",
-        descTemplate:
-          "Trova ordini che non sono ancora stati spediti. Seleziona 'id' da 'ordini'.",
-        queryTemplate:
-          "SELECT ordini.id FROM ordini LEFT JOIN spedizioni ON ordini.id = spedizioni.ordine_id WHERE spedizioni.id IS NULL",
-        hints: ["LEFT JOIN ... WHERE ... IS NULL"],
-        explanation: "Backlog logistico.",
-        replacements: {},
+        brokenCode: "SELECT ordini.id, utenti.nome, prodotti.nome, categorie.nome, fornitori.azienda FROM ordini JOIN utenti JOIN prodotti JOIN categorie JOIN fornitori",
+        debugHint: "Ogni JOIN deve avere la sua clausola ON specificata.",
       },
     ],
   },
