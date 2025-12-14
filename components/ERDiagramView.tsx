@@ -191,18 +191,15 @@ const calculateLayout = (schemas: TableSchema[]): { nodes: Node[]; edges: Edge[]
   // Create edges based on FK relationships
   schemas.forEach((schema) => {
     schema.columns.forEach((col) => {
-      if (col.name.endsWith('_id')) {
-        // Extract target table name from FK (e.g., utente_id -> utenti)
+      if (col.isForeignKey) {
+        // Extract target table name from FK (e.g., user_id -> Users)
         const baseName = col.name.replace('_id', '');
-        // Map to actual table names
+        // Map to actual table names (TechStore schema)
         const tableMapping: Record<string, string> = {
-          utente: 'utenti',
-          prodotto: 'prodotti',
-          categoria: 'categorie',
-          fornitore: 'fornitori',
-          ordine: 'ordini',
-          spedizione: 'spedizioni',
-          recensione: 'recensioni',
+          user: 'Users',
+          product: 'Products',
+          order: 'Orders',
+          manager: 'Employees', // Self-join for Employees
         };
         const targetTable = tableMapping[baseName];
         

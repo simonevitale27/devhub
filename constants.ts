@@ -4,71 +4,54 @@ import { Book, Filter, ArrowDownUp, Calculator, Calendar, GitMerge, Sigma, Toggl
 
 export const DB_SCHEMAS: TableSchema[] = [
   {
-    tableName: 'utenti',
+    tableName: 'Users',
     columns: [
       { name: 'id', type: 'INT', isPrimaryKey: true },
-      { name: 'nome', type: 'VARCHAR' },
+      { name: 'name', type: 'VARCHAR' },
       { name: 'email', type: 'VARCHAR' },
-      { name: 'paese', type: 'VARCHAR' },
-      { name: 'premium', type: 'BOOLEAN' }
+      { name: 'country', type: 'VARCHAR' },
+      { name: 'is_premium', type: 'BOOLEAN' },
+      { name: 'created_at', type: 'DATE' }
     ]
   },
   {
-    tableName: 'categorie',
+    tableName: 'Products',
     columns: [
       { name: 'id', type: 'INT', isPrimaryKey: true },
-      { name: 'nome', type: 'VARCHAR' },
-      { name: 'descrizione', type: 'VARCHAR' }
-    ]
-  },
-  {
-    tableName: 'fornitori',
-    columns: [
-      { name: 'id', type: 'INT', isPrimaryKey: true },
-      { name: 'azienda', type: 'VARCHAR' },
-      { name: 'contatto', type: 'VARCHAR' },
-      { name: 'nazione', type: 'VARCHAR' }
-    ]
-  },
-  {
-    tableName: 'prodotti',
-    columns: [
-      { name: 'id', type: 'INT', isPrimaryKey: true },
-      { name: 'nome', type: 'VARCHAR' },
-      { name: 'categoria_id', type: 'INT', isForeignKey: true },
-      { name: 'fornitore_id', type: 'INT', isForeignKey: true },
-      { name: 'prezzo', type: 'DECIMAL' },
+      { name: 'name', type: 'VARCHAR' },
+      { name: 'category', type: 'VARCHAR' },
+      { name: 'price', type: 'DECIMAL' },
       { name: 'stock', type: 'INT' }
     ]
   },
   {
-    tableName: 'ordini',
+    tableName: 'Orders',
     columns: [
       { name: 'id', type: 'INT', isPrimaryKey: true },
-      { name: 'utente_id', type: 'INT', isForeignKey: true },
-      { name: 'prodotto_id', type: 'INT', isForeignKey: true },
-      { name: 'data_ordine', type: 'DATE' },
-      { name: 'quantita', type: 'INT' }
+      { name: 'user_id', type: 'INT', isForeignKey: true },
+      { name: 'order_date', type: 'DATE' },
+      { name: 'status', type: 'VARCHAR' },
+      { name: 'order_total', type: 'DECIMAL' }
     ]
   },
   {
-    tableName: 'spedizioni',
+    tableName: 'OrderItems',
     columns: [
       { name: 'id', type: 'INT', isPrimaryKey: true },
-      { name: 'ordine_id', type: 'INT', isForeignKey: true },
-      { name: 'data_spedizione', type: 'DATE' },
-      { name: 'corriere', type: 'VARCHAR' },
-      { name: 'codice_tracking', type: 'VARCHAR' }
+      { name: 'order_id', type: 'INT', isForeignKey: true },
+      { name: 'product_id', type: 'INT', isForeignKey: true },
+      { name: 'quantity', type: 'INT' },
+      { name: 'unit_price', type: 'DECIMAL' }
     ]
   },
   {
-    tableName: 'recensioni',
+    tableName: 'Employees',
     columns: [
       { name: 'id', type: 'INT', isPrimaryKey: true },
-      { name: 'prodotto_id', type: 'INT', isForeignKey: true },
-      { name: 'utente_id', type: 'INT', isForeignKey: true },
-      { name: 'voto', type: 'INT' },
-      { name: 'commento', type: 'VARCHAR' }
+      { name: 'name', type: 'VARCHAR' },
+      { name: 'department', type: 'VARCHAR' },
+      { name: 'hire_date', type: 'DATE' },
+      { name: 'manager_id', type: 'INT', isForeignKey: true }
     ]
   }
 ];

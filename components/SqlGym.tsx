@@ -147,6 +147,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
   };
   const difficultyColor = difficultyColors[difficulty];
 
+  // Initialize database immediately on mount to ensure tables exist
+  useEffect(() => {
+    initDatabase(difficulty);
+  }, []); // Run once on mount
+
   const loadContent = useCallback(() => {
     setIsLoading(true);
     setUserResult(null);
