@@ -1278,3798 +1278,907 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       }
     ]
   },
-  [TopicId.Case]: {
+  [TopicId.Dates]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Simple Case",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Disponibile' se 'stock' > 0, altrimenti 'Esaurito' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CSE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave CASE.",
-        hints: [
-          "Usa CASE WHEN condizione THEN valore ELSE valore END.",
-          "Sintassi: CASE WHEN stock > 0 ...",
-        ],
-        explanation:
-          "CASE permette di creare logica condizionale direttamente nella query.",
+        titleTemplate: "Filtra per Anno",
+        descTemplate: "Seleziona tutti gli ordini effettuati nell'anno 2023.",
+        queryTemplate: "SELECT * FROM Orders WHERE YEAR(order_date) = 2023",
+        hints: ["Usa la funzione YEAR()."],
+        explanation: "YEAR estrae l'anno da una data.",
         replacements: {},
+        brokenCode: "SELECT * FROM Orders WHERE order_date = 2023",
+        debugHint: "order_date è una data completa, usa YEAR(order_date) per confrontare con l'anno."
       },
       {
-        titleTemplate: "Case Stock Disponibile",
-        descTemplate:
-          "Seleziona 'nome' e un CASE come 'stato' che mostra 'Disponibile' se 'stock' > 0, altrimenti 'Esaurito' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END AS stato FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' AS stato FROM prodotti",
-        debugHint: "Manca la parola chiave END alla fine del blocco CASE.",
-        hints: [
-          "Usa AS per dare un nome alla colonna calcolata.",
-          "CASE ... END AS stato",
-        ],
-        explanation: "L'alias 'stato' rende il risultato più leggibile.",
+        titleTemplate: "Ordini Futuri (Errore Dati)",
+        descTemplate: "Trova eventuali ordini con data successiva a oggi (NOW).",
+        queryTemplate: "SELECT * FROM Orders WHERE order_date > NOW()",
+        hints: ["Usa NOW() per la data corrente."],
+        explanation: "Confrontare date è standard per validazioni temporali.",
         replacements: {},
+        brokenCode: "SELECT * FROM Orders WHERE order_date > TODAY()",
+        debugHint: "La funzione standard è NOW() (o CURRENT_DATE in alcuni DB)."
       },
       {
-        titleTemplate: "Case Prezzo Alto",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Alto' se 'prezzo' > 100, altrimenti 'Basso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > 100 THEN 'Alto' ELSE 'Basso' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo > 100 THAN 'Alto' ELSE 'Basso' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave THEN.",
-        hints: [
-          "Confronta la colonna prezzo con 100.",
-          "CASE WHEN prezzo > 100 ...",
-        ],
-        explanation: "Segmenta i prodotti in base a una soglia di prezzo.",
+        titleTemplate: "Mese dell'Ordine",
+        descTemplate: "Estrai solo il mese dagli ordini.",
+        queryTemplate: "SELECT MONTH(order_date) FROM Orders",
+        hints: ["Usa MONTH()."],
+        explanation: "Estrae il numero del mese (1-12).",
         replacements: {},
+        brokenCode: "SELECT MON(order_date) FROM Orders",
+        debugHint: "La funzione è MONTH."
       },
       {
-        titleTemplate: "Case Prezzo Medio",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Medio' se 'prezzo' > 50, altrimenti 'Basso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > 50 THEN 'Medio' ELSE 'Basso' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo > 50 THEN 'Medio' 'Basso' END FROM prodotti",
-        debugHint: "Manca la parola chiave ELSE.",
-        hints: ["Soglia di prezzo a 50.", "CASE WHEN prezzo > 50 ..."],
-        explanation:
-          "Utile per filtrare visivamente prodotti sopra una certa fascia.",
+        titleTemplate: "Giorno della Settimana",
+        descTemplate: "Estrai il giorno della settimana (1-7) dalla data dell'ordine.",
+        queryTemplate: "SELECT DAYOFWEEK(order_date) FROM Orders",
+        hints: ["Usa DAYOFWEEK()."],
+        explanation: "Utile per analisi settimanali.",
         replacements: {},
+        brokenCode: "SELECT WEEKDAY(order_date) FROM Orders",
+        debugHint: "WEEKDAY parte spesso da 0, DAYOFWEEK è più sicuro (1=Domenica)."
       },
       {
-        titleTemplate: "Case Voto Alto",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Alto' se 'voto' >= 4, altrimenti 'Basso' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto >= 4 THEN 'Alto' ELSE 'Basso' END FROM recensioni",
-        brokenCode:
-          "SELECT voto, CASE WEN voto >= 4 THEN 'Alto' ELSE 'Basso' END FROM recensioni",
-        debugHint: "Errore di battitura nella parola chiave WHEN.",
-        hints: [
-          "Usa l'operatore >= (maggiore o uguale).",
-          "CASE WHEN voto >= 4 ...",
-        ],
-        explanation: "Identifica le recensioni positive.",
+        titleTemplate: "Ordini Recenti (Filtro Data)",
+        descTemplate: "Trova gli ordini dopo il '2024-01-01'.",
+        queryTemplate: "SELECT * FROM Orders WHERE order_date >= '2024-01-01'",
+        hints: ["Usa >= con la data tra apici."],
+        explanation: "Le date letterali in SQL sono formato 'YYYY-MM-DD'.",
         replacements: {},
-      },
-      {
-        titleTemplate: "Case Voto Basso",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Basso' se 'voto' < 3, altrimenti 'Alto' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto < 3 THEN 'Basso' ELSE 'Alto' END FROM recensioni",
-        brokenCode:
-          "SELECT voto, WHEN voto < 3 THEN 'Basso' ELSE 'Alto' END FROM recensioni",
-        debugHint: "Manca la parola chiave CASE all'inizio dell'espressione.",
-        hints: ["Usa l'operatore < (minore).", "CASE WHEN voto < 3 ..."],
-        explanation: "Identifica le recensioni negative o critiche.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Quantità",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE che mostra 'Grande' se 'quantita' > 5, altrimenti 'Piccola' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita > 5 THEN 'Grande' ELSE 'Piccola' END FROM ordini",
-        brokenCode:
-          "SELECT quantita, CASE WHEN quantita > 5 THEN Grande ELSE Piccola END FROM ordini",
-        debugHint: "Le stringhe devono essere racchiuse tra apici singoli.",
-        hints: [
-          "Confronta la quantità ordinata.",
-          "CASE WHEN quantita > 5 ...",
-        ],
-        explanation: "Distingue tra ordini voluminosi e ordini standard.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Premium",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Premium' se 'premium' è TRUE, altrimenti 'Standard' dalla tabella 'utenti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN premium = TRUE THEN 'Premium' ELSE 'Standard' END FROM utenti",
-        brokenCode:
-          "SELECT nome, CASE WHEN premium = TREU THEN 'Premium' ELSE 'Standard' END FROM utenti",
-        debugHint: "Errore di battitura nel valore booleano TRUE.",
-        hints: [
-          "La colonna premium è booleana.",
-          "CASE WHEN premium = TRUE ...",
-        ],
-        explanation: "Traduce un valore booleano in un testo leggibile.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case NULL Tracking",
-        descTemplate:
-          "Seleziona un CASE che mostra 'In Attesa' se 'codice_tracking' è NULL, altrimenti 'Tracciata' dalla tabella 'spedizioni'.",
-        queryTemplate:
-          "SELECT CASE WHEN codice_tracking IS NULL THEN 'In Attesa' ELSE 'Tracciata' END FROM spedizioni",
-        brokenCode:
-          "SELECT CASE WHEN codice_tracking IS NUL THEN 'In Attesa' ELSE 'Tracciata' END FROM spedizioni",
-        debugHint: "Errore di battitura nella parola chiave NULL.",
-        hints: [
-          "Usa IS NULL per verificare i valori mancanti.",
-          "CASE WHEN codice_tracking IS NULL ...",
-        ],
-        explanation: "Gestisce i valori NULL per fornire un output più chiaro.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Stock Zero",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Esaurito' se 'stock' = 0, altrimenti 'Disponibile' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock = 0 THEN 'Esaurito' ELSE 'Disponibile' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHEN stock = 0 'Esaurito' ELSE 'Disponibile' END FROM prodotti",
-        debugHint: "Manca la parola chiave THEN.",
-        hints: ["Controlla l'uguaglianza con 0.", "CASE WHEN stock = 0 ..."],
-        explanation: "Identifica immediatamente i prodotti non disponibili.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Prezzo Zero",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Gratis' se 'prezzo' = 0, altrimenti 'A Pagamento' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo = 0 THEN 'Gratis' ELSE 'A Pagamento' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo = 0 THEN 'Gratis' ELS 'A Pagamento' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave ELSE.",
-        hints: ["CASE WHEN prezzo = 0 ..."],
-        explanation: "Evidenzia i prodotti gratuiti.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Voto Cinque",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Perfetto' se 'voto' = 5, altrimenti 'Normale' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto = 5 THEN 'Perfetto' ELSE 'Normale' END FROM recensioni",
-        brokenCode:
-          "SELECT voto, CASE WHEN voto = 5 THEN 'Perfetto' ELSE 'Normale' FROM recensioni",
-        debugHint: "Manca la parola chiave END alla fine del blocco CASE.",
-        hints: ["CASE WHEN voto = 5 ..."],
-        explanation: "Mette in risalto il punteggio massimo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Quantità Uno",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE che mostra 'Singolo' se 'quantita' = 1, altrimenti 'Multiplo' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita = 1 THEN 'Singolo' ELSE 'Multiplo' END FROM ordini",
-        brokenCode:
-          "SELECT quantita, CSE WHEN quantita = 1 THEN 'Singolo' ELSE 'Multiplo' END FROM ordini",
-        debugHint: "Errore di battitura nella parola chiave CASE.",
-        hints: ["CASE WHEN quantita = 1 ..."],
-        explanation: "Distingue acquisti singoli da acquisti multipli.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Stock Maggiore",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Abbondante' se 'stock' > 20, altrimenti 'Limitato' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock > 20 THEN 'Abbondante' ELSE 'Limitato' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE stock > 20 THEN 'Abbondante' ELSE 'Limitato' END FROM prodotti",
-        debugHint: "Manca la parola chiave WHEN dopo CASE.",
-        hints: ["CASE WHEN stock > 20 ..."],
-        explanation: "Indica prodotti con ampia disponibilità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Prezzo Minore",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Economico' se 'prezzo' < 30, altrimenti 'Normale' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo < 30 THEN 'Economico' ELSE 'Normale' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo < 30 'Economico' ELSE 'Normale' END FROM prodotti",
-        debugHint: "Manca la parola chiave THEN.",
-        hints: ["CASE WHEN prezzo < 30 ..."],
-        explanation: "Identifica prodotti di fascia bassa.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Voto Maggiore",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Positivo' se 'voto' > 3, altrimenti 'Negativo' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto > 3 THEN 'Positivo' ELSE 'Negativo' END FROM recensioni",
-        brokenCode:
-          "SELETC voto, CASE WHEN voto > 3 THEN 'Positivo' ELSE 'Negativo' END FROM recensioni",
-        debugHint: "Errore di battitura nella parola chiave SELECT.",
-        hints: ["CASE WHEN voto > 3 ..."],
-        explanation: "Separa le recensioni positive da quelle negative/neutre.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Quantità Maggiore",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE che mostra 'Grande Ordine' se 'quantita' > 10, altrimenti 'Piccolo Ordine' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita > 10 THEN 'Grande Ordine' ELSE 'Piccolo Ordine' END FROM ordini",
-        brokenCode:
-          "SELECT quantita, CASE WHEN quantita > 10 THEN 'Grande Ordine' ELSE 'Piccolo Ordine' FROM ordini",
-        debugHint: "Manca la parola chiave END alla fine del blocco CASE.",
-        hints: ["CASE WHEN quantita > 10 ..."],
-        explanation: "Evidenzia ordini particolarmente grandi.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Stock Minore",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Basso' se 'stock' < 10, altrimenti 'Sufficiente' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock < 10 THEN 'Basso' ELSE 'Sufficiente' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CAES WHEN stock < 10 THEN 'Basso' ELSE 'Sufficiente' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave CASE.",
-        hints: ["CASE WHEN stock < 10 ..."],
-        explanation: "Allerta per riordino merce.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Prezzo Maggiore Uguale",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Costoso' se 'prezzo' >= 100, altrimenti 'Accessibile' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo >= 100 THEN 'Costoso' ELSE 'Accessibile' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo >= 100 'Costoso' ELSE 'Accessibile' END FROM prodotti",
-        debugHint: "Manca la parola chiave THEN.",
-        hints: ["CASE WHEN prezzo >= 100 ..."],
-        explanation: "Segmentazione di prezzo inclusiva.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Voto Minore Uguale",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Basso' se 'voto' <= 2, altrimenti 'Alto' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto <= 2 THEN 'Basso' ELSE 'Alto' END FROM recensioni",
-        brokenCode:
-          "SELECT voto, CASE WHEN voto <= 2 THEN 'Basso' ELSI 'Alto' END FROM recensioni",
-        debugHint: "Errore di battitura nella parola chiave ELSE.",
-        hints: ["CASE WHEN voto <= 2 ..."],
-        explanation: "Identifica recensioni gravemente insufficienti.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Quantità Minore Uguale",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE che mostra 'Piccolo' se 'quantita' <= 3, altrimenti 'Grande' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita <= 3 THEN 'Piccolo' ELSE 'Grande' END FROM ordini",
-        brokenCode:
-          "SELECT quantita, WHEN quantita <= 3 THEN 'Piccolo' ELSE 'Grande' END FROM ordini",
-        debugHint: "Manca la parola chiave CASE.",
-        hints: ["CASE WHEN quantita <= 3 ..."],
-        explanation: "Identifica ordini di piccola entità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Stock Maggiore Uguale",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Alto' se 'stock' >= 50, altrimenti 'Basso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock >= 50 THEN 'Alto' ELSE 'Basso' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHE stock >= 50 THEN 'Alto' ELSE 'Basso' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave WHEN.",
-        hints: ["CASE WHEN stock >= 50 ..."],
-        explanation: "Conferma livelli di stock ottimali.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Prezzo Minore Uguale",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Economico' se 'prezzo' <= 50, altrimenti 'Costoso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo <= 50 THEN 'Economico' ELSE 'Costoso' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo <= 50 THEN 'Economico' ELSE 'Costoso' FROM prodotti",
-        debugHint: "Manca la parola chiave END.",
-        hints: ["CASE WHEN prezzo <= 50 ..."],
-        explanation: "Identifica prodotti accessibili.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Voto Maggiore Uguale",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Eccellente' se 'voto' >= 4, altrimenti 'Normale' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto >= 4 THEN 'Eccellente' ELSE 'Normale' END FROM recensioni",
-        brokenCode:
-          "SELECT voto, CASE WHEN voto >= 4 THE 'Eccellente' ELSE 'Normale' END FROM recensioni",
-        debugHint: "Errore di battitura nella parola chiave THEN.",
-        hints: ["CASE WHEN voto >= 4 ..."],
-        explanation: "Evidenzia feedback molto positivi.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Quantità Maggiore Uguale",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE che mostra 'Media' se 'quantita' >= 5, altrimenti 'Piccola' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita >= 5 THEN 'Media' ELSE 'Piccola' END FROM ordini",
-        brokenCode:
-          "SELECT quantita, CASE WHEN quantita >= 5 THEN 'Media' 'Piccola' END FROM ordini",
-        debugHint: "Manca la parola chiave ELSE.",
-        hints: ["CASE WHEN quantita >= 5 ..."],
-        explanation: "Soglia per ordini di media grandezza.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Stock Minore Uguale",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Critico' se 'stock' <= 5, altrimenti 'Normale' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock <= 5 THEN 'Critico' ELSE 'Normale' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CSE WHEN stock <= 5 THEN 'Critico' ELSE 'Normale' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave CASE.",
-        hints: ["CASE WHEN stock <= 5 ..."],
-        explanation: "Segnala prodotti quasi esauriti.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Prezzo Non Zero",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'A Pagamento' se 'prezzo' <> 0, altrimenti 'Gratis' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo <> 0 THEN 'A Pagamento' ELSE 'Gratis' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE prezzo <> 0 THEN 'A Pagamento' ELSE 'Gratis' END FROM prodotti",
-        debugHint: "Manca la parola chiave WHEN.",
-        hints: ["Usa l'operatore <> (diverso).", "CASE WHEN prezzo <> 0 ..."],
-        explanation: "Verifica che il prezzo non sia nullo o zero.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Voto Non Cinque",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Migliorabile' se 'voto' <> 5, altrimenti 'Perfetto' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto <> 5 THEN 'Migliorabile' ELSE 'Perfetto' END FROM recensioni",
-        brokenCode:
-          "SELECT voto, CASE WHEN voto <> 5 THEN 'Migliorabile' ELSE 'Perfetto' EN FROM recensioni",
-        debugHint: "Errore di battitura nella parola chiave END.",
-        hints: ["CASE WHEN voto <> 5 ..."],
-        explanation: "Identifica tutto ciò che non è perfetto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Quantità Non Uno",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE che mostra 'Multiplo' se 'quantita' <> 1, altrimenti 'Singolo' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita <> 1 THEN 'Multiplo' ELSE 'Singolo' END FROM ordini",
-        brokenCode:
-          "SELECT quantita, CASE WHEN quantita <> 1 THEN Multiplo ELSE Singolo END FROM ordini",
-        debugHint: "Le stringhe devono essere racchiuse tra apici singoli.",
-        hints: ["CASE WHEN quantita <> 1 ..."],
-        explanation: "Filtra ordini con più di un pezzo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Stock Non Zero",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Disponibile' se 'stock' <> 0, altrimenti 'Esaurito' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock <> 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti",
-        brokenCode:
-          "SELEC nome, CASE WHEN stock <> 0 THEN 'Disponibile' ELSE 'Esaurito' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave SELECT.",
-        hints: ["CASE WHEN stock <> 0 ..."],
-        explanation: "Conferma la presenza di merce a magazzino.",
-        replacements: {},
-      },
-      // NEW EXERCISES FOR CASE EASY
-      {
-        titleTemplate: "Case Categoria Elettronica",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Elettronica' se 'categoria_id' = 1, altrimenti 'Altro' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN categoria_id = 1 THEN 'Elettronica' ELSE 'Altro' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CSE WHEN categoria_id = 1 THEN 'Elettronica' ELSE 'Altro' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave CASE.",
-        hints: ["CASE WHEN categoria_id = 1 ..."],
-        explanation: "Etichetta specifica per una categoria.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Fornitore Principale",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Principale' se 'fornitore_id' = 1, altrimenti 'Secondario' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN fornitore_id = 1 THEN 'Principale' ELSE 'Secondario' END FROM prodotti",
-        brokenCode:
-          "SELECT nome, CASE WHEN fornitore_id = 1 THEN 'Principale' ELSE 'Secondario' FROM prodotti",
-        debugHint: "Manca la parola chiave END alla fine del blocco CASE.",
-        hints: ["CASE WHEN fornitore_id = 1 ..."],
-        explanation: "Distingue il fornitore primario dagli altri.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Data Futura",
-        descTemplate:
-          "Seleziona 'id' e un CASE che mostra 'Futuro' se 'data_ordine' > '2024-01-01', altrimenti 'Passato' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT id, CASE WHEN data_ordine > '2024-01-01' THEN 'Futuro' ELSE 'Passato' END FROM ordini",
-        brokenCode:
-          "SELECT id, CASE WHEN data_ordine > '2024-01-01' THAN 'Futuro' ELSE 'Passato' END FROM ordini",
-        debugHint: "Errore di battitura nella parola chiave THEN.",
-        hints: [
-          "Confronta con una stringa data.",
-          "CASE WHEN data_ordine > '2024-01-01' ...",
-        ],
-        explanation: "Classificazione temporale basata su una data fissa.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Voto Sufficienza",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Sufficiente' se 'voto' >= 3, altrimenti 'Insufficiente' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto >= 3 THEN 'Sufficiente' ELSE 'Insufficiente' END FROM recensioni",
-        brokenCode:
-          "SELECT voto, CASE WHEN voto >= 3 THEN 'Sufficiente' 'Insufficiente' END FROM recensioni",
-        debugHint: "Manca la parola chiave ELSE.",
-        hints: ["CASE WHEN voto >= 3 ..."],
-        explanation: "Soglia di accettabilità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Quantità Minima",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE che mostra 'Minimo' se 'quantita' < 2, altrimenti 'Standard' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita < 2 THEN 'Minimo' ELSE 'Standard' END FROM ordini",
-        brokenCode:
-          "SELECT quantita, CASE WEN quantita < 2 THEN 'Minimo' ELSE 'Standard' END FROM ordini",
-        debugHint: "Errore di battitura nella parola chiave WHEN.",
-        hints: ["CASE WHEN quantita < 2 ..."],
-        explanation: "Identifica ordini sotto la soglia standard.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Nome Inizia con A",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Gruppo A' se 'nome' inizia con 'A' (LIKE 'A%'), altrimenti 'Altri' dalla tabella 'utenti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN nome LIKE 'A%' THEN 'Gruppo A' ELSE 'Altri' END FROM utenti",
-        brokenCode:
-          "SELECT nome, WHEN nome LIKE 'A%' THEN 'Gruppo A' ELSE 'Altri' END FROM utenti",
-        debugHint: "Manca la parola chiave CASE all'inizio dell'espressione.",
-        hints: ["Usa LIKE 'A%'.", "CASE WHEN nome LIKE 'A%' ..."],
-        explanation: "Raggruppamento basato sull'iniziale.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Email Gmail",
-        descTemplate:
-          "Seleziona 'email' e un CASE che mostra 'Google' se 'email' contiene 'gmail' (LIKE '%gmail%'), altrimenti 'Altro' dalla tabella 'utenti'.",
-        queryTemplate:
-          "SELECT email, CASE WHEN email LIKE '%gmail%' THEN 'Google' ELSE 'Altro' END FROM utenti",
-        brokenCode:
-          "SELECT email, CASE WHEN email LIKE '%gmail%' THEN Google ELSE Altro END FROM utenti",
-        debugHint: "Le stringhe devono essere racchiuse tra apici singoli.",
-        hints: ["Usa LIKE '%gmail%'.", "CASE WHEN email LIKE '%gmail%' ..."],
-        explanation: "Identifica il provider di posta elettronica.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Prezzo Pari",
-        descTemplate:
-          "Seleziona 'prezzo' e un CASE che mostra 'Pari' se 'prezzo' è pari (prezzo % 2 = 0), altrimenti 'Dispari' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT prezzo, CASE WHEN prezzo % 2 = 0 THEN 'Pari' ELSE 'Dispari' END FROM prodotti",
-        brokenCode:
-          "SELECT prezzo, CASE WHEN prezzo % 2 = 0 THEN 'Pari' ELSI 'Dispari' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave ELSE.",
-        hints: ["Usa l'operatore modulo (%).", "CASE WHEN prezzo % 2 = 0 ..."],
-        explanation: "Verifica la parità di un numero.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Stock Multiplo 10",
-        descTemplate:
-          "Seleziona 'stock' e un CASE che mostra 'Multiplo 10' se 'stock' è multiplo di 10 (stock % 10 = 0), altrimenti 'No' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT stock, CASE WHEN stock % 10 = 0 THEN 'Multiplo 10' ELSE 'No' END FROM prodotti",
-        brokenCode:
-          "SELECT stock, CASE WHEN stock % 10 = 0 THEN 'Multiplo 10' ELSE 'No' EN FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave END.",
-        hints: ["Usa stock % 10 = 0.", "CASE WHEN stock % 10 = 0 ..."],
-        explanation: "Verifica divisibilità per 10.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Lunghezza Nome",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Lungo' se la lunghezza di 'nome' > 5 (LENGTH(nome) > 5), altrimenti 'Corto' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN LENGTH(nome) > 5 THEN 'Lungo' ELSE 'Corto' END FROM prodotti",
-        brokenCode:
-          "SELEC nome, CASE WHEN LENGTH(nome) > 5 THEN 'Lungo' ELSE 'Corto' END FROM prodotti",
-        debugHint: "Errore di battitura nella parola chiave SELECT.",
-        hints: ["Usa la funzione LENGTH().", "CASE WHEN LENGTH(nome) > 5 ..."],
-        explanation: "Logica basata sulla lunghezza del testo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Mese Estivo",
-        descTemplate:
-          "Seleziona 'data_ordine' e un CASE che mostra 'Estate' se il mese di 'data_ordine' è 6, 7 o 8 (MONTH(data_ordine) IN (6,7,8)), altrimenti 'Altro' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT data_ordine, CASE WHEN MONTH(data_ordine) IN (6,7,8) THEN 'Estate' ELSE 'Altro' END FROM ordini",
-        brokenCode:
-          "SELECT data_ordine, CASE WHEN MONTH(data_ordine) IN (6,7,8) 'Estate' ELSE 'Altro' END FROM ordini",
-        debugHint: "Manca la parola chiave THEN.",
-        hints: [
-          "Usa MONTH() e IN.",
-          "CASE WHEN MONTH(data_ordine) IN (6,7,8) ...",
-        ],
-        explanation: "Raggruppa mesi specifici in una stagione.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Anno Corrente",
-        descTemplate:
-          "Seleziona la colonna 'data_ordine' e un CASE che mostra '2023' se l'anno di 'data_ordine' è 2023, altrimenti 'Altro' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT data_ordine, CASE WHEN YEAR(data_ordine) = 2023 THEN '2023' ELSE 'Altro' END FROM ordini",
-        brokenCode:
-          "SELECT data_ordine, CAES WHEN YEAR(data_ordine) = 2023 THEN '2023' ELSE 'Altro' END FROM ordini",
-        debugHint: "Errore di battitura nella parola chiave CASE.",
-        hints: ["Confronta YEAR(data_ordine) con 2023."],
-        explanation: "Confronto con un anno specifico.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Paese Italia",
-        descTemplate:
-          "Seleziona la colonna 'paese' e un CASE che mostra 'Nazionale' se 'paese' è 'Italia', altrimenti 'Estero' dalla tabella 'utenti'.",
-        queryTemplate:
-          "SELECT paese, CASE WHEN paese = 'Italia' THEN 'Nazionale' ELSE 'Estero' END FROM utenti",
-        brokenCode:
-          "SELECT paese, CASE paese = 'Italia' THEN 'Nazionale' ELSE 'Estero' END FROM utenti",
-        debugHint: "Manca la parola chiave WHEN.",
-        hints: ["CASE WHEN paese = 'Italia' ..."],
-        explanation: "Distingue il mercato domestico da quello estero.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Corriere DHL",
-        descTemplate:
-          "Seleziona la colonna 'corriere' e un CASE che mostra 'Express' se 'corriere' è 'DHL', altrimenti 'Standard' dalla tabella 'spedizioni'.",
-        queryTemplate:
-          "SELECT corriere, CASE WHEN corriere = 'DHL' THEN 'Express' ELSE 'Standard' END FROM spedizioni",
-        brokenCode:
-          "SELECT corriere, CASE WHEN corriere = 'DHL' THE 'Express' ELSE 'Standard' END FROM spedizioni",
-        debugHint: "Errore di battitura nella parola chiave THEN.",
-        hints: ["CASE WHEN corriere = 'DHL' ..."],
-        explanation: "Etichetta il servizio in base al corriere.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Voto Massimo",
-        descTemplate:
-          "Seleziona la colonna 'voto' e un CASE che mostra 'Top' se 'voto' è 5, altrimenti 'Non Top' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto = 5 THEN 'Top' ELSE 'Non Top' END FROM recensioni",
-        brokenCode:
-          "SELECT voto, CASE WHEN voto = 5 THEN 'Top' ELSE 'Non Top' FROM recensioni",
-        debugHint: "Manca la parola chiave END alla fine del blocco CASE.",
-        hints: ["CASE WHEN voto = 5 ..."],
-        explanation: "Identifica il massimo punteggio possibile.",
-        replacements: {},
-      },
+        brokenCode: "SELECT * FROM Orders WHERE order_date >= 2024-01-01",
+        debugHint: "Le date devono essere stringhe: '2024-01-01'."
+      }
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Fasce di Prezzo",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Economico' se 'prezzo' < 50, 'Medio' se 'prezzo' <= 150, altrimenti 'Lusso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo < 50 THEN 'Economico' WHEN prezzo <= 150 THEN 'Medio' ELSE 'Lusso' END FROM prodotti",
-        hints: [
-          "Usa più clausole WHEN in sequenza.",
-          "CASE WHEN ... WHEN ... ELSE ... END",
-        ],
-        explanation: "Gestisce scenari con più di due possibili esiti.",
+        titleTemplate: "Differenza Giorni (DATEDIFF)",
+        descTemplate: "Calcola quanti giorni sono passati tra la data dell'ordine e oggi.",
+        queryTemplate: "SELECT DATEDIFF(NOW(), order_date) FROM Orders",
+        hints: ["Usa DATEDIFF(date1, date2)."],
+        explanation: "DATEDIFF restituisce la differenza in giorni.",
         replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo < 50 THEN 'Economico' WHEN prezzo <= 150 THEN 'Medio' ELSE 'Lusso' FROM prodotti",
-        debugHint: "Manca la parola chiave END.",
+        brokenCode: "SELECT NOW() - order_date FROM Orders",
+        debugHint: "Usa la funzione DATEDIFF."
       },
       {
-        titleTemplate: "Fasce di Stock",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Esaurito' se 'stock' = 0, 'Basso' se 'stock' <= 10, 'Medio' se 'stock' <= 30, altrimenti 'Alto' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock = 0 THEN 'Esaurito' WHEN stock <= 10 THEN 'Basso' WHEN stock <= 30 THEN 'Medio' ELSE 'Alto' END FROM prodotti",
-        hints: [
-          "Definisci le fasce in ordine crescente.",
-          "CASE WHEN stock = 0 ... WHEN ...",
-        ],
-        explanation:
-          "Permette una classificazione granulare dello stato del magazzino.",
+        titleTemplate: "Aggiungi Giorni (DATE_ADD)",
+        descTemplate: "Calcola la data di scadenza (30 giorni dopo l'ordine).",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 30 DAY) FROM Orders",
+        hints: ["DATE_ADD(date, INTERVAL 30 DAY)"],
+        explanation: "Calcolo di scadenze.",
         replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN stock = 0 THEN 'Esaurito' WEN stock <= 10 THEN 'Basso' WHEN stock <= 30 THEN 'Medio' ELSE 'Alto' END FROM prodotti",
-        debugHint: "Errore di battitura in WHEN.",
+        brokenCode: "SELECT order_date + 30 FROM Orders",
+        debugHint: "SQL richiede sintassi specifica per sommare giorni: DATE_ADD."
       },
       {
-        titleTemplate: "Fasce di Voto",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Basso' se 'voto' <= 2, 'Medio' se 'voto' = 3, altrimenti 'Alto' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto <= 2 THEN 'Basso' WHEN voto = 3 THEN 'Medio' ELSE 'Alto' END FROM recensioni",
-        hints: [
-          "Raggruppa i punteggi in categorie.",
-          "CASE WHEN voto <= 2 ...",
-        ],
-        explanation: "Semplifica l'analisi dei feedback raggruppandoli.",
+        titleTemplate: "Ordini nel Range (BETWEEN)",
+        descTemplate: "Trova gli ordini del primo trimestre 2024 (Gen-Mar).",
+        queryTemplate: "SELECT * FROM Orders WHERE order_date BETWEEN '2024-01-01' AND '2024-03-31'",
+        hints: ["Usa BETWEEN date1 AND date2."],
+        explanation: "Standard per intervalli temporali.",
         replacements: {},
-        brokenCode:
-          "SELECT voto, CASE WHEN voto <= 2 THEN 'Basso' WHEN voto = 3 'Medio' ELSE 'Alto' END FROM recensioni",
-        debugHint: "Manca la parola chiave THEN.",
+        brokenCode: "SELECT * FROM Orders WHERE order_date > '2024-01-01' AND < '2024-03-31'",
+        debugHint: "Sintassi BETWEEN: col BETWEEN val1 AND val2."
       },
       {
-        titleTemplate: "Fasce di Quantità",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE che mostra 'Piccolo' se 'quantita' <= 3, 'Medio' se 'quantita' <= 7, altrimenti 'Grande' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita <= 3 THEN 'Piccolo' WHEN quantita <= 7 THEN 'Medio' ELSE 'Grande' END FROM ordini",
-        hints: ["CASE WHEN quantita <= 3 ..."],
-        explanation: "Segmenta gli ordini per dimensione.",
+        titleTemplate: "Ultimo Giorno Mese",
+        descTemplate: "Trova l'ultimo giorno del mese per ogni ordine (LAST_DAY).",
+        queryTemplate: "SELECT LAST_DAY(order_date) FROM Orders",
+        hints: ["Usa LAST_DAY()."],
+        explanation: "Utile per reportistica mensile.",
         replacements: {},
-        brokenCode:
-          "SELECT quantita, CASE WHEN quantita <= 3 THEN 'Piccolo' WHEN quantita <= 7 THEN 'Medio' 'Grande' END FROM ordini",
-        debugHint: "Manca la parola chiave ELSE.",
+        brokenCode: "SELECT END_OF_MONTH(order_date) FROM Orders",
+        debugHint: "La funzione è LAST_DAY."
       },
       {
-        titleTemplate: "Fasce Prezzo Quattro",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Economico' se 'prezzo' < 30, 'Medio' se 'prezzo' <= 80, 'Costoso' se 'prezzo' <= 150, altrimenti 'Lusso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo < 30 THEN 'Economico' WHEN prezzo <= 80 THEN 'Medio' WHEN prezzo <= 150 THEN 'Costoso' ELSE 'Lusso' END FROM prodotti",
-        hints: [
-          "Aggiungi un quarto livello di classificazione.",
-          "CASE WHEN ... WHEN ... WHEN ... ELSE ...",
-        ],
-        explanation:
-          "Gestisce una logica di classificazione complessa a più livelli.",
+        titleTemplate: "Formatta Data",
+        descTemplate: "Mostra la data come 'Giorno-Mese-Anno' (es '01-12-2024').",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%d-%m-%Y') FROM Orders",
+        hints: ["Usa DATE_FORMAT()."],
+        explanation: "Formattazione custom per display.",
         replacements: {},
-        brokenCode:
-          "SELECT nome, CSE WHEN prezzo < 30 THEN 'Economico' WHEN prezzo <= 80 THEN 'Medio' WHEN prezzo <= 150 THEN 'Costoso' ELSE 'Lusso' END FROM prodotti",
-        debugHint: "Errore di battitura in CASE.",
-      },
-      {
-        titleTemplate: "Fasce Stock Quattro",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Esaurito' se 'stock' = 0, 'Basso' se 'stock' <= 5, 'Medio' se 'stock' <= 20, altrimenti 'Alto' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock = 0 THEN 'Esaurito' WHEN stock <= 5 THEN 'Basso' WHEN stock <= 20 THEN 'Medio' ELSE 'Alto' END FROM prodotti",
-        hints: ["CASE WHEN stock = 0 ..."],
-        explanation: "Fornisce una visione dettagliata della disponibilità.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN stock = 0 THEN 'Esaurito' WHEN stock <= 5 THEN 'Basso' WHEN stock <= 20 THEN 'Medio' ELSE 'Alto' FROM prodotti",
-        debugHint: "Manca la parola chiave END.",
-      },
-      {
-        titleTemplate: "Fasce Voto Quattro",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Molto Basso' se 'voto' = 1, 'Basso' se 'voto' = 2, 'Medio' se 'voto' = 3, altrimenti 'Alto' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto = 1 THEN 'Molto Basso' WHEN voto = 2 THEN 'Basso' WHEN voto = 3 THEN 'Medio' ELSE 'Alto' END FROM recensioni",
-        hints: [
-          "Gestisci ogni voto basso singolarmente.",
-          "CASE WHEN voto = 1 ...",
-        ],
-        explanation: "Analisi fine della soddisfazione cliente.",
-        replacements: {},
-        brokenCode:
-          "SELECT voto, CASE WHEN voto = 1 THEN 'Molto Basso' WHEN voto = 2 THE 'Basso' WHEN voto = 3 THEN 'Medio' ELSE 'Alto' END FROM recensioni",
-        debugHint: "Errore di battitura in THEN.",
-      },
-      {
-        titleTemplate: "Fasce Quantità Quattro",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE che mostra 'Singolo' se 'quantita' = 1, 'Piccolo' se 'quantita' <= 4, 'Medio' se 'quantita' <= 9, altrimenti 'Grande' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita = 1 THEN 'Singolo' WHEN quantita <= 4 THEN 'Piccolo' WHEN quantita <= 9 THEN 'Medio' ELSE 'Grande' END FROM ordini",
-        hints: ["CASE WHEN quantita = 1 ..."],
-        explanation: "Segmentazione dettagliata del volume ordini.",
-        replacements: {},
-        brokenCode:
-          "SELECT quantita, CASE WHEN quantita = 1 THEN 'Singolo' quantita <= 4 THEN 'Piccolo' WHEN quantita <= 9 THEN 'Medio' ELSE 'Grande' END FROM ordini",
-        debugHint: "Manca la parola chiave WHEN.",
-      },
-      {
-        titleTemplate: "Case con AND",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Premium' se 'prezzo' > 100 AND 'stock' > 10, altrimenti 'Standard' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > 100 AND stock > 10 THEN 'Premium' ELSE 'Standard' END FROM prodotti",
-        hints: [
-          "Usa AND per combinare due condizioni.",
-          "CASE WHEN prezzo > 100 AND stock > 10 ...",
-        ],
-        explanation: "CASE supporta operatori logici complessi.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo > 100 stock > 10 THEN 'Premium' ELSE 'Standard' END FROM prodotti",
-        debugHint: "Manca l'operatore AND.",
-      },
-      {
-        titleTemplate: "Case con OR",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Sconto' se 'prezzo' < 30 OR 'stock' = 0, altrimenti 'Normale' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo < 30 OR stock = 0 THEN 'Sconto' ELSE 'Normale' END FROM prodotti",
-        hints: [
-          "Usa OR per condizioni alternative.",
-          "CASE WHEN prezzo < 30 OR stock = 0 ...",
-        ],
-        explanation: "Basta che una condizione sia vera per attivare il caso.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo < 30 stock = 0 THEN 'Sconto' ELSE 'Normale' END FROM prodotti",
-        debugHint: "Manca l'operatore OR.",
-      },
-      {
-        titleTemplate: "Case con AND e OR",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Speciale' se ('prezzo' > 100 AND 'stock' > 20) OR 'prezzo' < 20, altrimenti 'Normale' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN (prezzo > 100 AND stock > 20) OR prezzo < 20 THEN 'Speciale' ELSE 'Normale' END FROM prodotti",
-        hints: [
-          "Usa le parentesi per raggruppare le condizioni.",
-          "CASE WHEN (...) OR ...",
-        ],
-        explanation: "Gestisce logiche di business articolate.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN (prezzo > 100 AND stock > 20 OR prezzo < 20 THEN 'Speciale' ELSE 'Normale' END FROM prodotti",
-        debugHint: "Manca una parentesi chiusa.",
-      },
-      {
-        titleTemplate: "Case con BETWEEN",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Medio' se 'prezzo' BETWEEN 50 AND 100, altrimenti 'Altro' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo BETWEEN 50 AND 100 THEN 'Medio' ELSE 'Altro' END FROM prodotti",
-        hints: [
-          "Usa BETWEEN per intervalli inclusivi.",
-          "CASE WHEN prezzo BETWEEN 50 AND 100 ...",
-        ],
-        explanation:
-          "Semplifica la scrittura di condizioni su intervalli numerici.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo BETWEEN 50 100 THEN 'Medio' ELSE 'Altro' END FROM prodotti",
-        debugHint: "Manca la parola chiave AND.",
-      },
-      {
-        titleTemplate: "Case con IN",
-        descTemplate:
-          "Seleziona 'voto' e un CASE che mostra 'Alto' se 'voto' IN (4, 5), altrimenti 'Basso' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto IN (4, 5) THEN 'Alto' ELSE 'Basso' END FROM recensioni",
-        hints: [
-          "Usa IN per verificare l'appartenenza a una lista.",
-          "CASE WHEN voto IN (4, 5) ...",
-        ],
-        explanation: "Utile per confrontare con un insieme discreto di valori.",
-        replacements: {},
-        brokenCode:
-          "SELECT voto, CASE WHEN voto IN (4, 5 THEN 'Alto' ELSE 'Basso' END FROM recensioni",
-        debugHint: "Manca la parentesi chiusa.",
-      },
-      {
-        titleTemplate: "Case con LIKE",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Standard' se 'nome' LIKE 'Prod%', altrimenti 'Altro' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN nome LIKE 'Prod%' THEN 'Standard' ELSE 'Altro' END FROM prodotti",
-        hints: [
-          "Usa LIKE per il confronto di stringhe.",
-          "CASE WHEN nome LIKE 'Prod%' ...",
-        ],
-        explanation:
-          "Permette logiche condizionali basate su pattern di testo.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN nome LIKE 'Prod% THEN 'Standard' ELSE 'Altro' END FROM prodotti",
-        debugHint: "Manca l'apice di chiusura.",
-      },
-      {
-        titleTemplate: "Case con IS NULL",
-        descTemplate:
-          "Seleziona un CASE che mostra 'In Attesa' se 'codice_tracking' IS NULL, altrimenti 'Tracciata' dalla tabella 'spedizioni'.",
-        queryTemplate:
-          "SELECT CASE WHEN codice_tracking IS NULL THEN 'In Attesa' ELSE 'Tracciata' END FROM spedizioni",
-        hints: [
-          "Verifica se il campo è vuoto.",
-          "CASE WHEN codice_tracking IS NULL ...",
-        ],
-        explanation: "Gestisce esplicitamente i dati mancanti.",
-        replacements: {},
-        brokenCode:
-          "SELECT CASE WHEN codice_tracking IS NUL THEN 'In Attesa' ELSE 'Tracciata' END FROM spedizioni",
-        debugHint: "Errore di battitura in NULL.",
-      },
-      {
-        titleTemplate: "Case con IS NOT NULL",
-        descTemplate:
-          "Seleziona un CASE che mostra 'Tracciata' se 'codice_tracking' IS NOT NULL, altrimenti 'In Attesa' dalla tabella 'spedizioni'.",
-        queryTemplate:
-          "SELECT CASE WHEN codice_tracking IS NOT NULL THEN 'Tracciata' ELSE 'In Attesa' END FROM spedizioni",
-        hints: [
-          "Usa IS NOT NULL.",
-          "CASE WHEN codice_tracking IS NOT NULL ...",
-        ],
-        explanation: "Logica inversa rispetto a IS NULL.",
-        replacements: {},
-        brokenCode:
-          "SELECT CASE WHEN codice_tracking NOT NULL THEN 'Tracciata' ELSE 'In Attesa' END FROM spedizioni",
-        debugHint: "Manca la parola chiave IS.",
-      },
-      {
-        titleTemplate: "Case con Alias",
-        descTemplate:
-          "Seleziona 'nome' e un CASE come 'Stato' che mostra 'Disponibile' se 'stock' > 0, altrimenti 'Esaurito' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END AS Stato FROM prodotti",
-        hints: ["Usa AS alla fine del blocco END.", "END AS Stato"],
-        explanation: "Assegna un nome chiaro alla colonna calcolata.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END Stato FROM prodotti",
-        debugHint: "Manca la parola chiave AS.",
-      },
-      {
-        titleTemplate: "Case con Alias Prezzo",
-        descTemplate:
-          "Seleziona 'nome' e un CASE come 'Fascia' che mostra 'Economico' se 'prezzo' < 50, 'Medio' se 'prezzo' <= 150, altrimenti 'Lusso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo < 50 THEN 'Economico' WHEN prezzo <= 150 THEN 'Medio' ELSE 'Lusso' END AS Fascia FROM prodotti",
-        hints: ["END AS Fascia"],
-        explanation: "Rende il report finale professionale e leggibile.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo < 50 THEN 'Economico' WHEN prezzo <= 150 THEN 'Medio' ELSE 'Lusso' END Fascia FROM prodotti",
-        debugHint: "Manca la parola chiave AS.",
-      },
-      {
-        titleTemplate: "Case con Alias Voto",
-        descTemplate:
-          "Seleziona 'voto' e un CASE come 'Valutazione' che mostra 'Basso' se 'voto' <= 2, 'Medio' se 'voto' = 3, altrimenti 'Alto' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, CASE WHEN voto <= 2 THEN 'Basso' WHEN voto = 3 THEN 'Medio' ELSE 'Alto' END AS Valutazione FROM recensioni",
-        hints: ["END AS Valutazione"],
-        explanation: "Chiarezza nell'output della query.",
-        replacements: {},
-        brokenCode:
-          "SELECT voto, CASE WHEN voto <= 2 THEN 'Basso' WHEN voto = 3 THEN 'Medio' ELSE 'Alto' END Valutazione FROM recensioni",
-        debugHint: "Manca la parola chiave AS.",
-      },
-      {
-        titleTemplate: "Case con Alias Quantità",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE come 'Dimensione' che mostra 'Piccolo' se 'quantita' <= 3, 'Medio' se 'quantita' <= 7, altrimenti 'Grande' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita <= 3 THEN 'Piccolo' WHEN quantita <= 7 THEN 'Medio' ELSE 'Grande' END AS Dimensione FROM ordini",
-        hints: ["END AS Dimensione"],
-        explanation: "Migliora la presentazione dei dati.",
-        replacements: {},
-        brokenCode:
-          "SELECT quantita, CASE WHEN quantita <= 3 THEN 'Piccolo' WHEN quantita <= 7 THEN 'Medio' ELSE 'Grande' END Dimensione FROM ordini",
-        debugHint: "Manca la parola chiave AS.",
-      },
-      {
-        titleTemplate: "Case con Calcolo",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Alto' se (prezzo * stock) > 1000, altrimenti 'Basso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN (prezzo * stock) > 1000 THEN 'Alto' ELSE 'Basso' END FROM prodotti",
-        hints: [
-          "Puoi fare calcoli dentro la condizione WHEN.",
-          "CASE WHEN (prezzo * stock) > 1000 ...",
-        ],
-        explanation: "Valuta espressioni matematiche dinamicamente.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN (prezzo stock) > 1000 THEN 'Alto' ELSE 'Basso' END FROM prodotti",
-        debugHint: "Manca l'operatore di moltiplicazione.",
-      },
-      {
-        titleTemplate: "Case con Calcolo Complesso",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Molto Alto' se (prezzo * stock) > 2000, 'Alto' se (prezzo * stock) > 1000, altrimenti 'Basso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN (prezzo * stock) > 2000 THEN 'Molto Alto' WHEN (prezzo * stock) > 1000 THEN 'Alto' ELSE 'Basso' END FROM prodotti",
-        hints: [
-          "Ripeti il calcolo nelle varie clausole WHEN.",
-          "CASE WHEN (prezzo * stock) > 2000 ...",
-        ],
-        explanation: "Segmentazione basata su valore calcolato.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN (prezzo * stock > 2000 THEN 'Molto Alto' WHEN (prezzo * stock) > 1000 THEN 'Alto' ELSE 'Basso' END FROM prodotti",
-        debugHint: "Manca la parentesi chiusa.",
-      },
-      {
-        titleTemplate: "Case con Funzione",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Nome Lungo' se LENGTH(nome) > 10, altrimenti 'Nome Corto' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN LENGTH(nome) > 10 THEN 'Nome Lungo' ELSE 'Nome Corto' END FROM prodotti",
-        hints: ["Usa LENGTH(nome).", "CASE WHEN LENGTH(nome) > 10 ..."],
-        explanation: "Combina funzioni SQL con logica condizionale.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN LENGHT(nome) > 10 THEN 'Nome Lungo' ELSE 'Nome Corto' END FROM prodotti",
-        debugHint: "Errore di battitura in LENGTH.",
-      },
-      {
-        titleTemplate: "Case con Funzione Data",
-        descTemplate:
-          "Seleziona 'data_ordine' e un CASE che mostra '2023' se YEAR(data_ordine) = 2023, altrimenti 'Altro Anno' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT data_ordine, CASE WHEN YEAR(data_ordine) = 2023 THEN '2023' ELSE 'Altro Anno' END FROM ordini",
-        hints: [
-          "Usa YEAR(data_ordine).",
-          "CASE WHEN YEAR(data_ordine) = 2023 ...",
-        ],
-        explanation: "Logica condizionale applicata alle date.",
-        replacements: {},
-        brokenCode:
-          "SELECT data_ordine, CASE WHEN YEAR(data_ordine = 2023 THEN '2023' ELSE 'Altro Anno' END FROM ordini",
-        debugHint: "Manca la parentesi chiusa di YEAR.",
-      },
-      {
-        titleTemplate: "Case con JOIN",
-        descTemplate:
-          "Seleziona 'prodotti.nome' e un CASE che mostra 'Elettronica' se 'categorie.nome' = 'Elettronica', altrimenti 'Altro' dalla tabella 'prodotti' in JOIN con 'categorie'.",
-        queryTemplate:
-          "SELECT prodotti.nome, CASE WHEN categorie.nome = 'Elettronica' THEN 'Elettronica' ELSE 'Altro' END FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        hints: [
-          "Fai una JOIN con la tabella categorie.",
-          "CASE WHEN categorie.nome = ...",
-        ],
-        explanation:
-          "Applica condizioni su dati provenienti da tabelle collegate.",
-        replacements: {},
-        brokenCode:
-          "SELECT prodotti.nome, CASE WHEN categorie.nome = 'Elettronica' THEN 'Elettronica' ELSE 'Altro' END FROM prodotti JOIN categorie prodotti.categoria_id = categorie.id",
-        debugHint: "Manca la parola chiave ON.",
-      },
-      {
-        titleTemplate: "Case con WHERE",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Disponibile' se 'stock' > 10, altrimenti 'Limitato' dalla tabella 'prodotti', filtrando per 'prezzo' > 50.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock > 10 THEN 'Disponibile' ELSE 'Limitato' END FROM prodotti WHERE prezzo > 50",
-        hints: [
-          "Usa WHERE per filtrare le righe prima del CASE.",
-          "WHERE prezzo > 50",
-        ],
-        explanation: "Combina filtro righe (WHERE) con logica colonne (CASE).",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN stock > 10 THEN 'Disponibile' ELSE 'Limitato' END FROM prodotti WHERE prezzo 50",
-        debugHint: "Manca l'operatore >.",
-      },
-      {
-        titleTemplate: "Case con ORDER BY",
-        descTemplate:
-          "Seleziona 'nome' e un CASE come 'stato' che mostra 'Disponibile' se 'stock' > 0, altrimenti 'Esaurito' dalla tabella 'prodotti', ordinando per il CASE (Disponibile prima).",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END AS stato FROM prodotti ORDER BY CASE WHEN stock > 0 THEN 0 ELSE 1 END",
-        hints: [
-          "Usa un CASE dentro ORDER BY per definire l'ordine.",
-          "ORDER BY CASE ... END",
-        ],
-        explanation:
-          "Permette ordinamenti non alfabetici basati su logica custom.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END AS stato FROM prodotti ORDER BY CASE WHEN stock > 0 THEN 0 ELSE 1",
-        debugHint: "Manca la parola chiave END nel secondo CASE.",
-      },
-      {
-        titleTemplate: "Case Complesso Finale",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Premium Disponibile' se 'prezzo' > 100 AND 'stock' > 20, 'Premium Limitato' se 'prezzo' > 100, 'Economico Disponibile' se 'stock' > 20, altrimenti 'Standard' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > 100 AND stock > 20 THEN 'Premium Disponibile' WHEN prezzo > 100 THEN 'Premium Limitato' WHEN stock > 20 THEN 'Economico Disponibile' ELSE 'Standard' END FROM prodotti",
-        hints: [
-          "L'ordine delle condizioni WHEN è importante: la prima vera vince.",
-          "CASE WHEN prezzo > 100 AND stock > 20 ...",
-        ],
-        explanation: "Esempio di logica decisionale complessa con priorità.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo > 100 AND stock > 20 THEN 'Premium Disponibile' WHEN prezzo > 100 THEN 'Premium Limitato' WHEN stock > 20 THEN 'Economico Disponibile' ELSE 'Standard' END AS tipo FROM prodotti ORDER BY CASE WHEN prezzo > 100 AND stock > 20 THEN 0 WHEN prezzo > 100 THEN 1 WHEN stock > 20 THEN 2 ELSE 3 END prezzo DESC",
-        debugHint: "Manca la virgola prima di prezzo DESC.",
-      },
-      {
-        titleTemplate: "Case con Alias Stock",
-        descTemplate:
-          "Seleziona 'nome' e un CASE come 'Livello' che mostra 'Alto' se 'stock' > 20, 'Medio' se 'stock' > 10, altrimenti 'Basso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock > 20 THEN 'Alto' WHEN stock > 10 THEN 'Medio' ELSE 'Basso' END AS Livello FROM prodotti",
-        hints: ["Usa AS Livello alla fine.", "CASE ... END AS Livello"],
-        explanation: "Crea una colonna calcolata con un nome specifico.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN stock > 20 THEN 'Alto' WHEN stock > 10 THEN 'Medio' ELSE 'Basso' END Livello FROM prodotti",
-        debugHint: "Manca la parola chiave AS.",
-      },
-      {
-        titleTemplate: "Case con Alias Quantità",
-        descTemplate:
-          "Seleziona 'quantita' e un CASE come 'Taglia' che mostra 'Grande' se 'quantita' > 7, 'Media' se 'quantita' > 3, altrimenti 'Piccola' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita > 7 THEN 'Grande' WHEN quantita > 3 THEN 'Media' ELSE 'Piccola' END AS Taglia FROM ordini",
-        hints: ["Usa AS Taglia.", "CASE ... END AS Taglia"],
-        explanation: "Rende il risultato immediatamente comprensibile.",
-        replacements: {},
-        brokenCode:
-          "SELECT quantita, CASE WHEN quantita > 7 THEN 'Grande' WHEN quantita > 3 THEN 'Media' ELSE 'Piccola' END Taglia FROM ordini",
-        debugHint: "Manca la parola chiave AS.",
-      },
-      // NEW EXERCISES FOR CASE MEDIUM
-      {
-        titleTemplate: "Case Stagioni",
-        descTemplate:
-          "Seleziona la colonna 'data_ordine' e un CASE che mostra 'Inverno' per mesi 12,1,2, 'Primavera' per 3-5, 'Estate' per 6-8, altrimenti 'Autunno' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT data_ordine, CASE WHEN MONTH(data_ordine) IN (12,1,2) THEN 'Inverno' WHEN MONTH(data_ordine) BETWEEN 3 AND 5 THEN 'Primavera' WHEN MONTH(data_ordine) BETWEEN 6 AND 8 THEN 'Estate' ELSE 'Autunno' END FROM ordini",
-        hints: ["CASE con range mesi"],
-        explanation: "Logica stagionale complessa.",
-        replacements: {},
-        brokenCode:
-          "SELECT data_ordine, CASE WHEN MONTH(data_ordine) IN (12,1,2) THEN 'Inverno' WHEN MONTH(data_ordine) BETWEEN 3 AND 5 'Primavera' WHEN MONTH(data_ordine) BETWEEN 6 AND 8 THEN 'Estate' ELSE 'Autunno' END FROM ordini",
-        debugHint: "Manca la parola chiave THEN.",
-      },
-      {
-        titleTemplate: "Case Fasce Spesa",
-        descTemplate:
-          "Seleziona la colonna 'quantita' e un CASE che mostra 'Pochi' se 'quantita' <= 2, 'Medi' se 'quantita' <= 5, altrimenti 'Tanti' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, CASE WHEN quantita <= 2 THEN 'Pochi' WHEN quantita <= 5 THEN 'Medi' ELSE 'Tanti' END FROM ordini",
-        hints: ["CASE multiplo su quantità"],
-        explanation: "Segmentazione ordini.",
-        replacements: {},
-        brokenCode:
-          "SELECT quantita, CASE WHEN quantita <= 2 THEN 'Pochi' WHEN quantita <= 5 THEN 'Medi' 'Tanti' END FROM ordini",
-        debugHint: "Manca la parola chiave ELSE.",
-      },
-      {
-        titleTemplate: "Case Qualità Prodotto",
-        descTemplate:
-          "Seleziona la colonna 'nome' e un CASE che mostra 'Top Seller' se 'prezzo' > 100 AND 'stock' > 50, 'Economico' se 'prezzo' < 20, altrimenti 'Standard' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > 100 AND stock > 50 THEN 'Top Seller' WHEN prezzo < 20 THEN 'Economico' ELSE 'Standard' END FROM prodotti",
-        hints: ["CASE con AND e condizioni miste"],
-        explanation: "Logica business complessa.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN prezzo > 100 stock > 50 THEN 'Top Seller' WHEN prezzo < 20 THEN 'Economico' ELSE 'Standard' END FROM prodotti",
-        debugHint: "Manca l'operatore AND.",
-      },
-      {
-        titleTemplate: "Case Urgenza Spedizione",
-        descTemplate:
-          "Seleziona la colonna 'corriere' e un CASE che mostra 'Urgente' se 'corriere' è 'DHL' o 'FedEx' (IN ('DHL', 'FedEx')), altrimenti 'Normale' dalla tabella 'spedizioni'.",
-        queryTemplate:
-          "SELECT corriere, CASE WHEN corriere IN ('DHL', 'FedEx') THEN 'Urgente' ELSE 'Normale' END FROM spedizioni",
-        hints: ["CASE con IN"],
-        explanation: "Raggruppamento valori.",
-        replacements: {},
-        brokenCode:
-          "SELECT corriere, CASE WHEN corriere IN ('DHL', 'FedEx') THEN 'Urgente' ELSE 'Normale' END FROM spedizioni",
-        debugHint: "",
-      },
-      {
-        titleTemplate: "Case Tipo Utente",
-        descTemplate:
-          "Seleziona la colonna 'nome' e un CASE che mostra 'VIP' se 'premium' è TRUE, altrimenti 'Standard' dalla tabella 'utenti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN premium = TRUE THEN 'VIP' ELSE 'Standard' END FROM utenti",
-        hints: ["Semplificazione logica utente"],
-        explanation: "Segmentazione clientela.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN premium = TREU THEN 'VIP' ELSE 'Standard' END FROM utenti",
-        debugHint: "Errore di battitura in TRUE.",
-      },
-      {
-        titleTemplate: "Case Lunghezza Recensione",
-        descTemplate:
-          "Seleziona la colonna 'commento' e un CASE che mostra 'Dettagliata' se la lunghezza di 'commento' > 50 (LENGTH(commento) > 50), altrimenti 'Breve' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT commento, CASE WHEN LENGTH(commento) > 50 THEN 'Dettagliata' ELSE 'Breve' END FROM recensioni",
-        hints: ["LENGTH > 50"],
-        explanation: "Analisi testo.",
-        replacements: {},
-        brokenCode:
-          "SELECT commento, CASE WHEN LENGHT(commento) > 50 THEN 'Dettagliata' ELSE 'Breve' END FROM recensioni",
-        debugHint: "Errore di battitura in LENGTH.",
-      },
-      {
-        titleTemplate: "Case Sconto Applicabile",
-        descTemplate:
-          "Seleziona la colonna 'prezzo' e un CASE come 'Sconto' che mostra '20%' se 'prezzo' > 100, '10%' se 'prezzo' > 50, altrimenti '0%' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT prezzo, CASE WHEN prezzo > 100 THEN '20%' WHEN prezzo > 50 THEN '10%' ELSE '0%' END as Sconto FROM prodotti",
-        hints: ["CASE per calcolo logico"],
-        explanation: "Logica commerciale.",
-        replacements: {},
-        brokenCode:
-          "SELECT prezzo, CASE WHEN prezzo > 100 THEN '20%' WHEN prezzo > 50 THEN '10%' ELSE '0%' END Sconto FROM prodotti",
-        debugHint: "Manca la parola chiave AS.",
-      },
-      {
-        titleTemplate: "Case Tempo Spedizione",
-        descTemplate:
-          "Seleziona la colonna 'id' e un CASE che mostra 'Lento' se la differenza in giorni tra 'data_spedizione' e 'data_ordine' (DATEDIFF) > 5, 'Veloce' se < 2, altrimenti 'Normale' unendo 'ordini' e 'spedizioni'.",
-        queryTemplate:
-          "SELECT ordini.id, CASE WHEN DATEDIFF(day, data_ordine, data_spedizione) > 5 THEN 'Lento' WHEN DATEDIFF(day, data_ordine, data_spedizione) < 2 THEN 'Veloce' ELSE 'Normale' END FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id",
-        hints: ["CASE su DATEDIFF"],
-        explanation: "KPI logistico.",
-        replacements: {},
-        brokenCode:
-          "SELECT ordini.id, CASE WHEN DATEDIFF(day data_ordine, data_spedizione) > 5 THEN 'Lento' WHEN DATEDIFF(day, data_ordine, data_spedizione) < 2 THEN 'Veloce' ELSE 'Normale' END FROM ordini JOIN spedizioni ON ordini.id = spedizioni.ordine_id",
-        debugHint: "Manca la virgola tra gli argomenti di DATEDIFF.",
-      },
-      {
-        titleTemplate: "Case Priorità Ordine",
-        descTemplate:
-          "Seleziona 'ordini.id' e un CASE che mostra 'Alta' se 'ordini.quantita' > 10 OR 'utenti.premium' è TRUE, altrimenti 'Bassa' dalla tabella 'ordini' JOIN 'utenti'.",
-        queryTemplate:
-          "SELECT ordini.id, CASE WHEN ordini.quantita > 10 OR utenti.premium = TRUE THEN 'Alta' ELSE 'Bassa' END FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
-        hints: ["CASE con OR e JOIN"],
-        explanation: "Prioritizzazione.",
-        replacements: {},
-        brokenCode:
-          "SELECT ordini.id, CASE WHEN ordini.quantita > 10 utenti.premium = TRUE THEN 'Alta' ELSE 'Bassa' END FROM ordini JOIN utenti ON ordini.utente_id = utenti.id",
-        debugHint: "Manca l'operatore OR.",
-      },
-      {
-        titleTemplate: "Case Stato Magazzino",
-        descTemplate:
-          "Seleziona la colonna 'nome' e una colonna calcolata 'StatoMagazzino' che mostra 'Critico' se 'stock' = 0, 'Riordinare' se 'stock' < 10, 'Eccesso' se 'stock' > 100, altrimenti 'Ok' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock = 0 THEN 'Critico' WHEN stock < 10 THEN 'Riordinare' WHEN stock > 100 THEN 'Eccesso' ELSE 'Ok' END FROM prodotti",
-        hints: ["CASE multiplo stock"],
-        explanation: "Gestione inventario.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN stock = 0 THEN 'Critico' stock < 10 THEN 'Riordinare' WHEN stock > 100 THEN 'Eccesso' ELSE 'Ok' END FROM prodotti",
-        debugHint: "Manca la parola chiave WHEN.",
-      },
-      {
-        titleTemplate: "Case Valutazione Fornitore",
-        descTemplate:
-          "Seleziona la colonna 'azienda' e una colonna calcolata 'Provenienza' che mostra 'Locale' se 'nazione' = 'Italia', 'UE' se 'nazione' è tra 'Francia', 'Germania', 'Spagna', altrimenti 'Extra-UE' dalla tabella 'fornitori'.",
-        queryTemplate:
-          "SELECT azienda, CASE WHEN nazione = 'Italia' THEN 'Locale' WHEN nazione IN ('Francia', 'Germania', 'Spagna') THEN 'UE' ELSE 'Extra-UE' END FROM fornitori",
-        hints: ["CASE geografico"],
-        explanation: "Logica supply chain.",
-        replacements: {},
-        brokenCode:
-          "SELECT azienda, CASE WHEN nazione = 'Italia' THEN 'Locale' WHEN nazione IN ('Francia', 'Germania', 'Spagna' THEN 'UE' ELSE 'Extra-UE' END FROM fornitori",
-        debugHint: "Manca la parentesi chiusa.",
-      },
-      {
-        titleTemplate: "Case Fascia Oraria (Simulato)",
-        descTemplate:
-          "Seleziona la colonna 'data_ordine' e una colonna calcolata 'FasciaOraria' che mostra 'Mattina' se l'ora di 'data_ordine' è minore di 12, 'Pomeriggio' se è minore di 18, altrimenti 'Sera' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT data_ordine, CASE WHEN HOUR(data_ordine) < 12 THEN 'Mattina' WHEN HOUR(data_ordine) < 18 THEN 'Pomeriggio' ELSE 'Sera' END FROM ordini",
-        hints: ["HOUR()"],
-        explanation: "Analisi temporale.",
-        replacements: {},
-        brokenCode:
-          "SELECT data_ordine, CASE WHEN HOR(data_ordine) < 12 THEN 'Mattina' WHEN HOUR(data_ordine) < 18 THEN 'Pomeriggio' ELSE 'Sera' END FROM ordini",
-        debugHint: "Errore di battitura in HOUR.",
-      },
-      {
-        titleTemplate: "Case Tipo Prodotto",
-        descTemplate:
-          "Seleziona la colonna 'nome' e una colonna calcolata 'TipoProdotto' che mostra 'Professional' se 'nome' contiene 'Pro' (LIKE '%Pro%'), 'Base' se contiene 'Lite' (LIKE '%Lite%'), altrimenti 'Standard' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN nome LIKE '%Pro%' THEN 'Professional' WHEN nome LIKE '%Lite%' THEN 'Base' ELSE 'Standard' END FROM prodotti",
-        hints: ["LIKE multiplo"],
-        explanation: "Categorizzazione stringa.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN nome LIKE '%Pro% THEN 'Professional' WHEN nome LIKE '%Lite%' THEN 'Base' ELSE 'Standard' END FROM prodotti",
-        debugHint: "Manca l'apice di chiusura.",
-      },
-      {
-        titleTemplate: "Case Margine (Simulato)",
-        descTemplate:
-          "Seleziona la colonna 'nome' e una colonna calcolata 'Margine' che mostra 'Alto' se il margine calcolato (prezzo - (prezzo * 0.5)) è maggiore di 50, altrimenti 'Basso' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN (prezzo - (prezzo * 0.5)) > 50 THEN 'Alto' ELSE 'Basso' END FROM prodotti",
-        hints: ["Calcolo aritmetico"],
-        explanation: "Analisi finanziaria.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, CASE WHEN (prezzo - (prezzo * 0.5) > 50 THEN 'Alto' ELSE 'Basso' END FROM prodotti",
-        debugHint: "Manca la parentesi chiusa.",
-      },
-      {
-        titleTemplate: "Case Disponibilità Immediata",
-        descTemplate:
-          "Seleziona 'prodotti.nome' e una colonna calcolata 'Disponibilita' che mostra 'Immediata' se 'prodotti.stock' > 0 E 'fornitori.nazione' = 'Italia', altrimenti 'Attesa' dalla tabella 'prodotti' in JOIN con 'fornitori'.",
-        queryTemplate:
-          "SELECT prodotti.nome, CASE WHEN prodotti.stock > 0 AND fornitori.nazione = 'Italia' THEN 'Immediata' ELSE 'Attesa' END FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        hints: ["AND con JOIN"],
-        explanation: "Logistica avanzata.",
-        replacements: {},
-        brokenCode:
-          "SELECT prodotti.nome, CASE WHEN prodotti.stock > 0 fornitori.nazione = 'Italia' THEN 'Immediata' ELSE 'Attesa' END FROM prodotti JOIN fornitori ON prodotti.fornitore_id = fornitori.id",
-        debugHint: "Manca l'operatore AND.",
-      },
+        brokenCode: "SELECT FORMAT(order_date, 'd-m-Y') FROM Orders",
+        debugHint: "In MySQL/AlaSQL si usa DATE_FORMAT con %."
+      }
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Case con ORDER BY",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' e ordina i risultati mettendo prima quelli con 'stock' = 0 (usando un CASE che restituisce 0 o 1), poi per 'prezzo' decrescente.",
-        queryTemplate:
-          "SELECT * FROM prodotti ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, prezzo DESC",
-        hints: [
-          "Usa un CASE nel blocco ORDER BY.",
-          "ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, prezzo DESC",
-        ],
-        explanation:
-          "Permette di portare in cima righe specifiche basandosi su una condizione.",
+        titleTemplate: "Ordini per Anno (Group By)",
+        descTemplate: "Conta quanti ordini ci sono per ogni anno.",
+        queryTemplate: "SELECT YEAR(order_date) as anno, COUNT(*) FROM Orders GROUP BY YEAR(order_date)",
+        hints: ["Raggruppa per YEAR(order_date)."],
+        explanation: "Aggregazione temporale.",
         replacements: {},
+        brokenCode: "SELECT YEAR(order_date), COUNT(*) FROM Orders GROUP BY order_date",
+        debugHint: "Se raggruppi per order_date (che include giorno), avrai troppi gruppi. Raggruppa per YEAR."
       },
       {
-        titleTemplate: "Case con ORDER BY Prezzo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' e ordina i risultati mettendo prima quelli con 'prezzo' > 100 (usando un CASE che restituisce 0 o 1), poi per 'prezzo' crescente.",
-        queryTemplate:
-          "SELECT * FROM prodotti ORDER BY CASE WHEN prezzo > 100 THEN 0 ELSE 1 END, prezzo ASC",
-        hints: [
-          "Assegna 0 ai costosi per metterli prima.",
-          "ORDER BY CASE WHEN prezzo > 100 ...",
-        ],
-        explanation: "Ordinamento a due livelli: logico e poi numerico.",
+        titleTemplate: "Media Giorni Spedizione",
+        descTemplate: "Calcola il tempo medio di spedizione (non abbiamo data spedizione in Orders, simula con NOW).",
+        queryTemplate: "SELECT AVG(DATEDIFF(NOW(), order_date)) FROM Orders",
+        hints: ["Media di una differenza date."],
+        explanation: "KPI logistico.",
         replacements: {},
+        brokenCode: "SELECT AVG(NOW() - order_date) FROM Orders",
+        debugHint: "Usa DATEDIFF dentro AVG."
       },
       {
-        titleTemplate: "Case con ORDER BY Voto",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' e ordina i risultati mettendo prima quelle con 'voto' >= 4 (usando un CASE che restituisce 0 o 1), poi per 'voto' decrescente.",
-        queryTemplate:
-          "SELECT * FROM recensioni ORDER BY CASE WHEN voto >= 4 THEN 0 ELSE 1 END, voto DESC",
-        hints: [
-          "Metti in evidenza i voti alti.",
-          "ORDER BY CASE WHEN voto >= 4 ...",
-        ],
-        explanation: "Utile per dashboard che evidenziano i top performer.",
+        titleTemplate: "Giorni Lavorativi (Simulazione)",
+        descTemplate: "Trova ordini fatti di Domenica (DayOfWeek = 1).",
+        queryTemplate: "SELECT * FROM Orders WHERE DAYOFWEEK(order_date) = 1",
+        hints: ["DAYOFWEEK(date) = 1 è Domenica."],
+        explanation: "Analisi per giorno della settimana.",
         replacements: {},
+        brokenCode: "SELECT * FROM Orders WHERE DAY(order_date) = 'Sunday'",
+        debugHint: "DAYOFWEEK restituisce un numero (1-7), non il nome."
       },
       {
-        titleTemplate: "Case con ORDER BY Quantità",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' e ordina i risultati mettendo prima quelli con 'quantita' > 5 (usando un CASE che restituisce 0 o 1), poi per 'quantita' crescente.",
-        queryTemplate:
-          "SELECT * FROM ordini ORDER BY CASE WHEN quantita > 5 THEN 0 ELSE 1 END, quantita ASC",
-        hints: [
-          "Separa gli ordini grandi dagli altri.",
-          "ORDER BY CASE WHEN quantita > 5 ...",
-        ],
-        explanation: "Segmentazione visiva degli ordini.",
+        titleTemplate: "Timestamp Diff (Ore)",
+        descTemplate: "Quante ore sono passate dall'ordine? (Usa TIMESTAMPDIFF se supportato, o DATEDIFF * 24).",
+        queryTemplate: "SELECT DATEDIFF(NOW(), order_date) * 24 FROM Orders",
+        hints: ["Differenza in giorni per 24."],
+        explanation: "Conversione unità temporale.",
         replacements: {},
+        brokenCode: "SELECT HOURS_BETWEEN(NOW(), order_date) FROM Orders",
+        debugHint: "Non esiste HOURS_BETWEEN standard."
       },
       {
-        titleTemplate: "Case con ORDER BY Multiplo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' e ordina i risultati mettendo prima quelli con 'stock' = 0 (usando un CASE che restituisce 0 o 1), poi per 'prezzo' decrescente.",
-        queryTemplate:
-          "SELECT * FROM prodotti ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, prezzo DESC",
-        hints: [
-          "Combina logica booleana e ordinamento standard.",
-          "ORDER BY CASE ... END, prezzo DESC",
-        ],
-        explanation: "Controllo fine sulla presentazione dei dati.",
+        titleTemplate: "Età Account",
+        descTemplate: "Calcola quanti anni sono passati dalla creazione dell'account utente (created_at).",
+        queryTemplate: "SELECT FLOOR(DATEDIFF(NOW(), created_at) / 365) FROM Users",
+        hints: ["Giorni diviso 365, arrotondato per difetto."],
+        explanation: "Approssimazione dell'età in anni.",
         replacements: {},
+        brokenCode: "SELECT YEAR(NOW()) - YEAR(created_at) FROM Users",
+        debugHint: "La differenza di anni solari è imprecisa (es. Dicembre vs Gennaio). Meglio DATEDIFF/365."
+      }
+    ]
+  },
+  [TopicId.Case]: {
+    [Difficulty.Easy]: [
+      {
+        titleTemplate: "Stock Status",
+        descTemplate: "Seleziona il nome del prodotto e una colonna 'status' che dice 'In Stock' se stock > 0, altrimenti 'Out of Stock'.",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'In Stock' ELSE 'Out of Stock' END AS status FROM Products",
+        hints: ["Usa CASE WHEN stock > 0 THEN ... ELSE ... END"],
+        explanation: "Logica condizionale semplice.",
+        replacements: {},
+        brokenCode: "SELECT name, IF(stock > 0, 'In Stock', 'Out of Stock') FROM Products",
+        debugHint: "La funzione IF non è standard SQL, usa CASE WHEN."
       },
       {
-        titleTemplate: "Case con WHERE",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove un CASE (che restituisce 'Disponibile' se 'stock' > 0, altrimenti 'Esaurito') è uguale a 'Disponibile'.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END = 'Disponibile'",
-        hints: [
-          "Puoi usare CASE dentro WHERE.",
-          "WHERE CASE ... END = 'Disponibile'",
-        ],
-        explanation:
-          "Filtra basandosi sul risultato di una logica condizionale.",
+        titleTemplate: "Fascia Prezzo",
+        descTemplate: "Etichetta i prodotti: 'Basso' se price < 50, altrimenti 'Alto'.",
+        queryTemplate: "SELECT name, price, CASE WHEN price < 50 THEN 'Basso' ELSE 'Alto' END AS fascia_prezzo FROM Products",
+        hints: ["CASE WHEN price < 50 ..."],
+        explanation: "Categorizzazione dinamica.",
         replacements: {},
+        brokenCode: "SELECT name, CASE price < 50 'Basso' ELSE 'Alto' END FROM Products",
+        debugHint: "Mancano le parole chiave WHEN e THEN."
       },
       {
-        titleTemplate: "Case con WHERE Prezzo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove un CASE (che restituisce 'Costoso' se 'prezzo' > 100, altrimenti 'Economico') è uguale a 'Costoso'.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE CASE WHEN prezzo > 100 THEN 'Costoso' ELSE 'Economico' END = 'Costoso'",
-        hints: [
-          "Confronta il risultato del CASE.",
-          "WHERE CASE ... END = 'Costoso'",
-        ],
-        explanation: "Selezione basata su classificazione dinamica.",
+        titleTemplate: "Premium Label",
+        descTemplate: "Per gli utenti, mostra 'VIP' se is_premium è true, altrimenti 'Standard'.",
+        queryTemplate: "SELECT name, CASE WHEN is_premium = true THEN 'VIP' ELSE 'Standard' END AS tipo_utente FROM Users",
+        hints: ["Controlla il booleano is_premium."],
+        explanation: "Traduzione di flag booleani in testo.",
         replacements: {},
+        brokenCode: "SELECT name, CASE WHEN is_premium THEN 'VIP' ELSE 'Standard' FROM Users",
+        debugHint: "Manca END alla fine del CASE."
       },
       {
-        titleTemplate: "Case con JOIN",
-        descTemplate:
-          "Classifica i prodotti in base alla categoria ('Elettronica' -> 'Tech', altro -> 'Altro').",
-        queryTemplate:
-          "SELECT prodotti.nome, CASE WHEN categorie.nome = 'Elettronica' THEN 'Tech' ELSE 'Altro' END FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        hints: [
-          "Usa CASE sui campi della tabella in join.",
-          "CASE WHEN categorie.nome = ...",
-        ],
-        explanation: "Arricchimento dati tramite relazioni.",
+        titleTemplate: "Valutazione Ordine",
+        descTemplate: "Se order_total > 500 scrivi 'Grande', altrimenti 'Piccolo'.",
+        queryTemplate: "SELECT id, order_total, CASE WHEN order_total > 500 THEN 'Grande' ELSE 'Piccolo' END AS taglia FROM Orders",
+        hints: ["CASE WHEN order_total > 500"],
+        explanation: "Etichettatura basata su valori numerici.",
         replacements: {},
+        brokenCode: "SELECT id, CASE order_total > 500 -> 'Grande' ELSE 'Piccolo' END FROM Orders",
+        debugHint: "La sintassi è WHEN ... THEN, non ->."
       },
       {
-        titleTemplate: "Case con Aggregazione",
-        descTemplate:
-          "Classifica le categorie come 'Popolari' se hanno più di 5 prodotti, altrimenti 'Normali'.",
-        queryTemplate:
-          "SELECT categoria_id, CASE WHEN COUNT(*) > 5 THEN 'Popolare' ELSE 'Normale' END FROM prodotti GROUP BY categoria_id",
-        hints: [
-          "Usa funzioni di aggregazione nel CASE.",
-          "CASE WHEN COUNT(*) > 5 ...",
-        ],
-        explanation: "Etichettatura basata su metriche aggregate.",
+        titleTemplate: "Controllo Nulli (CASE)",
+        descTemplate: "Se manager_id è NULL mostra 'Capo', altrimenti 'Subordinato'.",
+        queryTemplate: "SELECT name, CASE WHEN manager_id IS NULL THEN 'Capo' ELSE 'Subordinato' END AS ruolo FROM Employees",
+        hints: ["WHEN manager_id IS NULL"],
+        explanation: "Gestione logica dei NULL.",
         replacements: {},
-      },
-      {
-        titleTemplate: "Case con HAVING",
-        descTemplate:
-          "Filtro su Gruppi Calcolati: mostra solo le categorie classificate come 'Popolari' (più di 5 prodotti).",
-        queryTemplate:
-          "SELECT categoria_id, COUNT(*) FROM prodotti GROUP BY categoria_id HAVING CASE WHEN COUNT(*) > 5 THEN 'Popolare' ELSE 'Normale' END = 'Popolare'",
-        hints: ["Usa CASE dentro HAVING.", "HAVING CASE ... END = 'Popolare'"],
-        explanation: "Filtro post-aggregazione basato su logica condizionale.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Nidificato",
-        descTemplate:
-          "Logica a Cascata: classifica 'Premium Disponibile' (prezzo > 100 e stock > 20), 'Premium Limitato' (prezzo > 100), o 'Standard'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > 100 THEN CASE WHEN stock > 20 THEN 'Premium Disponibile' ELSE 'Premium Limitato' END ELSE 'Standard' END FROM prodotti",
-        hints: [
-          "Puoi mettere un CASE dentro un altro CASE.",
-          "CASE WHEN ... THEN CASE ... END ELSE ... END",
-        ],
-        explanation: "Gestisce alberi decisionali complessi.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Subquery",
-        descTemplate:
-          "Confronto Dinamico: classifica i prodotti come 'Sopra Media' o 'Sotto Media' rispetto al prezzo medio globale.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > (SELECT AVG(prezzo) FROM prodotti) THEN 'Sopra Media' ELSE 'Sotto Media' END FROM prodotti",
-        hints: [
-          "Usa una subquery nel confronto.",
-          "CASE WHEN prezzo > (SELECT AVG(prezzo)...)",
-        ],
-        explanation: "Classificazione relativa al contesto globale.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Calcolo Complesso",
-        descTemplate:
-          "Valutazione Asset: classifica il valore totale dello stock (prezzo * stock) in 'Alto', 'Medio', o 'Basso'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN (prezzo * stock) > 2000 THEN 'Alto' WHEN (prezzo * stock) > 1000 THEN 'Medio' ELSE 'Basso' END FROM prodotti",
-        hints: [
-          "Valuta espressioni matematiche.",
-          "CASE WHEN (prezzo * stock) > 2000 ...",
-        ],
-        explanation: "KPI calcolati al volo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Funzioni Multiple",
-        descTemplate:
-          "Analisi Avanzata: classifica come 'Lungo Costoso' se nome > 10 caratteri E prezzo > 50, altrimenti 'Altro'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN LENGTH(nome) > 10 AND prezzo > 50 THEN 'Lungo Costoso' ELSE 'Altro' END FROM prodotti",
-        hints: [
-          "Combina funzioni e operatori logici.",
-          "CASE WHEN LENGTH(nome) > 10 AND ...",
-        ],
-        explanation: "Regole di business multi-fattoriali.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con ORDER BY Complesso",
-        descTemplate:
-          "Ordinamento Misto: prima gli 'Esauriti', poi gli altri ordinati per valore totale dello stock decrescente.",
-        queryTemplate:
-          "SELECT * FROM prodotti ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, (prezzo * stock) DESC",
-        hints: [
-          "Combina stato booleano e calcolo numerico.",
-          "ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, (prezzo * stock) DESC",
-        ],
-        explanation: "Ordinamento gerarchico avanzato.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con WHERE e ORDER BY",
-        descTemplate:
-          "Report Filtrato e Ordinato: prodotti > 50€, classificati per disponibilità e ordinati per stato.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END AS stato FROM prodotti WHERE prezzo > 50 ORDER BY CASE WHEN stock > 0 THEN 0 ELSE 1 END, prezzo DESC",
-        hints: [
-          "Filtra, calcola, e poi ordina.",
-          "WHERE ... ORDER BY CASE ...",
-        ],
-        explanation: "Pipeline completa di manipolazione dati.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con JOIN e ORDER BY",
-        descTemplate:
-          "Seleziona 'prodotti.nome' e un CASE come 'tipo' che mostra 'Tech' se 'categorie.nome' = 'Elettronica', altrimenti 'Altro', ordinando per il CASE e poi per 'prodotti.prezzo' decrescente.",
-        queryTemplate:
-          "SELECT prodotti.nome, CASE WHEN categorie.nome = 'Elettronica' THEN 'Tech' ELSE 'Altro' END AS tipo FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id ORDER BY CASE WHEN categorie.nome = 'Elettronica' THEN 0 ELSE 1 END, prodotti.prezzo DESC",
-        hints: [
-          "Usa campi di tabelle collegate per l'ordinamento.",
-          "ORDER BY CASE WHEN categorie.nome ...",
-        ],
-        explanation: "Ordinamento basato su logica relazionale.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Aggregazione e HAVING",
-        descTemplate:
-          "Seleziona 'categoria_id' e un CASE come 'tipo' che mostra 'Popolare' se COUNT(*) > 5, altrimenti 'Normale', raggruppando per 'categoria_id' e filtrando (HAVING) dove il CASE è 'Popolare'.",
-        queryTemplate:
-          "SELECT categoria_id, CASE WHEN COUNT(*) > 5 THEN 'Popolare' ELSE 'Normale' END AS tipo FROM prodotti GROUP BY categoria_id HAVING CASE WHEN COUNT(*) > 5 THEN 'Popolare' ELSE 'Normale' END = 'Popolare'",
-        hints: [
-          "Filtra i risultati dell'aggregazione.",
-          "HAVING CASE ... END = 'Popolare'",
-        ],
-        explanation: "Selezione gruppi basata su etichetta calcolata.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Complesso Finale",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che classifica i prodotti in base a 'prezzo' e 'stock', ordinando i risultati in base alla stessa logica di classificazione.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > 100 AND stock > 20 THEN 'Premium Disponibile' WHEN prezzo > 100 THEN 'Premium Limitato' WHEN stock > 20 THEN 'Economico Disponibile' ELSE 'Standard' END AS tipo FROM prodotti ORDER BY CASE WHEN prezzo > 100 AND stock > 20 THEN 0 WHEN prezzo > 100 THEN 1 WHEN stock > 20 THEN 2 ELSE 3 END, prezzo DESC",
-        hints: [
-          "Replica la logica di classificazione nell'ordinamento.",
-          "ORDER BY CASE ... END",
-        ],
-        explanation: "Massimo controllo su classificazione e presentazione.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case in ORDER BY con Calcolo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' e ordina i risultati mettendo prima quelli con (prezzo * stock) > 1000 (usando un CASE che restituisce 0 o 1), poi per 'prezzo' decrescente.",
-        queryTemplate:
-          "SELECT * FROM prodotti ORDER BY CASE WHEN (prezzo * stock) > 1000 THEN 0 ELSE 1 END, prezzo DESC",
-        hints: [
-          "Ordina su un valore calcolato.",
-          "ORDER BY CASE WHEN (prezzo * stock) > 1000 ...",
-        ],
-        explanation: "Priorità basata su metriche derivate.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con WHERE Voto",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove un CASE (che restituisce 'Alta' se 'voto' >= 4, altrimenti 'Bassa') è uguale a 'Alta'.",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE CASE WHEN voto >= 4 THEN 'Alta' ELSE 'Bassa' END = 'Alta'",
-        hints: ["Filtra per qualità calcolata.", "WHERE CASE ... END = 'Alta'"],
-        explanation: "Filtro avanzato su dati derivati.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Nidificato Complesso",
-        descTemplate:
-          "Seleziona 'nome' e un CASE nidificato che classifica i prodotti in base a 'prezzo' (> 100) e poi 'stock' (> 20) in 4 categorie.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > 100 THEN CASE WHEN stock > 20 THEN 'Premium Disponibile' ELSE 'Premium Limitato' END ELSE CASE WHEN stock > 20 THEN 'Economico Disponibile' ELSE 'Standard' END END FROM prodotti",
-        hints: [
-          "Struttura decisionale ramificata.",
-          "CASE ... THEN CASE ... END ELSE CASE ... END END",
-        ],
-        explanation: "Logica condizionale profondamente nidificata.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Subquery Media",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Sopra Media' se 'prezzo' > (media globale dei prezzi), altrimenti 'Sotto Media' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > (SELECT AVG(prezzo) FROM prodotti) THEN 'Sopra Media' ELSE 'Sotto Media' END FROM prodotti",
-        hints: [
-          "Confronta con la media calcolata.",
-          "CASE WHEN prezzo > (SELECT AVG(prezzo)...)",
-        ],
-        explanation: "Analisi relativa delle performance.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Subquery Massimo",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Più Costoso' se 'prezzo' è uguale al prezzo massimo, altrimenti 'Altro' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo = (SELECT MAX(prezzo) FROM prodotti) THEN 'Più Costoso' ELSE 'Altro' END FROM prodotti",
-        hints: [
-          "Trova il massimo e confronta.",
-          "CASE WHEN prezzo = (SELECT MAX(prezzo)...)",
-        ],
-        explanation: "Evidenziazione di outlier specifici.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Funzione LENGTH",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Nome Lungo' se LENGTH(nome) > 15, 'Nome Medio' se LENGTH(nome) > 10, altrimenti 'Nome Corto' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN LENGTH(nome) > 15 THEN 'Nome Lungo' WHEN LENGTH(nome) > 10 THEN 'Nome Medio' ELSE 'Nome Corto' END FROM prodotti",
-        hints: [
-          "Segmenta in base alla lunghezza.",
-          "CASE WHEN LENGTH(nome) > 15 ...",
-        ],
-        explanation: "Categorizzazione basata su proprietà delle stringhe.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Funzione YEAR",
-        descTemplate:
-          "Seleziona 'data_ordine' e un CASE che mostra '2024' se YEAR(data_ordine) = 2024, '2023' se YEAR(data_ordine) = 2023, altrimenti 'Altro Anno' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT data_ordine, CASE WHEN YEAR(data_ordine) = 2024 THEN '2024' WHEN YEAR(data_ordine) = 2023 THEN '2023' ELSE 'Altro Anno' END FROM ordini",
-        hints: [
-          "Estrai l'anno e classifica.",
-          "CASE WHEN YEAR(data_ordine) = ...",
-        ],
-        explanation: "Raggruppamento temporale esplicito.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con JOIN e WHERE",
-        descTemplate:
-          "Seleziona 'prodotti.nome' e un CASE che mostra 'Tech Costoso' se 'categorie.nome' = 'Elettronica' AND 'prodotti.prezzo' > 100, altrimenti 'Altro' dalla tabella 'prodotti' JOIN 'categorie'.",
-        queryTemplate:
-          "SELECT prodotti.nome, CASE WHEN categorie.nome = 'Elettronica' AND prodotti.prezzo > 100 THEN 'Tech Costoso' ELSE 'Altro' END FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id",
-        hints: [
-          "Combina condizioni su tabelle diverse.",
-          "CASE WHEN categorie.nome = ... AND prodotti.prezzo ...",
-        ],
-        explanation: "Logica condizionale multi-tabella.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Aggregazione e WHERE",
-        descTemplate:
-          "Seleziona 'categoria_id' e un CASE come 'tipo' che mostra 'Popolare' se COUNT(*) > 5, altrimenti 'Normale', raggruppando per 'categoria_id' e filtrando (HAVING) dove AVG(prezzo) > 50.",
-        queryTemplate:
-          "SELECT categoria_id, CASE WHEN COUNT(*) > 5 THEN 'Popolare' ELSE 'Normale' END AS tipo FROM prodotti GROUP BY categoria_id HAVING AVG(prezzo) > 50",
-        hints: [
-          "Classifica e poi filtra il gruppo.",
-          "HAVING AVG(prezzo) > 50",
-        ],
-        explanation: "Combinazione di classificazione e filtro aggregato.",
-        replacements: {},
-      },
-      // NEW EXERCISES FOR CASE HARD
-      {
-        titleTemplate: "Case in Aggregazione",
-        descTemplate:
-          "Seleziona un CASE che classifica lo 'stock' (> 0 'Disponibile', altrimenti 'Esaurito') e conta il numero di prodotti per ogni gruppo, raggruppando per il CASE.",
-        queryTemplate:
-          "SELECT CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END AS stato, COUNT(*) FROM prodotti GROUP BY CASE WHEN stock > 0 THEN 'Disponibile' ELSE 'Esaurito' END",
-        hints: [
-          "Usa CASE sia nella SELECT che nel GROUP BY.",
-          "GROUP BY CASE ... END",
-        ],
-        explanation: "Raggruppa i dati basandosi su una categoria calcolata.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case in Aggregazione Voto",
-        descTemplate:
-          "Seleziona un CASE che classifica il 'voto' (>= 4 'Positivo', altrimenti 'Negativo') e conta il numero di recensioni per ogni gruppo, raggruppando per il CASE.",
-        queryTemplate:
-          "SELECT CASE WHEN voto >= 4 THEN 'Positivo' ELSE 'Negativo' END AS sentiment, COUNT(*) FROM recensioni GROUP BY CASE WHEN voto >= 4 THEN 'Positivo' ELSE 'Negativo' END",
-        hints: ["Raggruppa per sentiment calcolato.", "GROUP BY CASE ... END"],
-        explanation: "Analisi del sentiment dei feedback.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case in ORDER BY Custom",
-        descTemplate:
-          "Seleziona 'prodotti.nome' e 'categorie.nome', ordinando per un CASE che assegna 1 a 'Elettronica', 2 a 'Abbigliamento', e 3 agli altri.",
-        queryTemplate:
-          "SELECT prodotti.nome, categorie.nome FROM prodotti JOIN categorie ON prodotti.categoria_id = categorie.id ORDER BY CASE WHEN categorie.nome = 'Elettronica' THEN 1 WHEN categorie.nome = 'Abbigliamento' THEN 2 ELSE 3 END",
-        hints: [
-          "Assegna numeri per definire l'ordine.",
-          "ORDER BY CASE ... THEN 1 ... THEN 2 ...",
-        ],
-        explanation: "Forza un ordine non alfabetico specifico.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Pivot (Simulato)",
-        descTemplate:
-          "Seleziona la somma di un CASE (1 se 'prezzo' < 50, altrimenti 0) come 'Economici' e la somma di un CASE (1 se 'prezzo' >= 50, altrimenti 0) come 'Costosi' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT SUM(CASE WHEN prezzo < 50 THEN 1 ELSE 0 END) AS Economici, SUM(CASE WHEN prezzo >= 50 THEN 1 ELSE 0 END) AS Costosi FROM prodotti",
-        hints: [
-          "Usa SUM(CASE ...) per contare condizionalmente.",
-          "SUM(CASE WHEN prezzo < 50 THEN 1 ELSE 0 END)",
-        ],
-        explanation:
-          "Tecnica per creare colonne pivot (trasformare righe in colonne).",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case dentro AVG",
-        descTemplate:
-          "Seleziona la media (AVG) di un CASE che restituisce 'prezzo' se 'stock' > 0, altrimenti NULL (per ignorare il valore) dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT AVG(CASE WHEN stock > 0 THEN prezzo ELSE NULL END) as MediaDisponibili FROM prodotti",
-        hints: [
-          "Usa NULL per ignorare valori nella media.",
-          "AVG(CASE ... ELSE NULL END)",
-        ],
-        explanation: "Statistiche filtrate senza WHERE.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case dentro COUNT",
-        descTemplate:
-          "Seleziona il conteggio (COUNT) di recensioni 'Positive' (voto >= 4) e 'Negative' (voto <= 2) usando CASE che restituiscono 1 o NULL.",
-        queryTemplate:
-          "SELECT COUNT(CASE WHEN voto >= 4 THEN 1 END) as Positive, COUNT(CASE WHEN voto <= 2 THEN 1 END) as Negative FROM recensioni",
-        hints: ["COUNT ignora i NULL.", "COUNT(CASE ... THEN 1 END)"],
-        explanation: "Conteggi multipli in una sola passata.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Nidificato 3 Livelli",
-        descTemplate:
-          "Seleziona 'nome' e un CASE nidificato complesso che classifica gli utenti in 4 categorie basandosi su 'premium' e numero di ordini.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN premium THEN CASE WHEN (SELECT COUNT(*) FROM ordini WHERE utente_id = utenti.id) > 5 THEN 'VIP' ELSE 'Promettente' END ELSE CASE WHEN (SELECT COUNT(*) FROM ordini WHERE utente_id = utenti.id) > 5 THEN 'Fedele' ELSE 'Standard' END END FROM utenti",
-        hints: [
-          "Logica ramificata complessa.",
-          "CASE WHEN ... THEN CASE ... END ELSE CASE ... END END",
-        ],
-        explanation: "Segmentazione avanzata della clientela.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Update (Simulato con Select)",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' originale e un CASE che mostra il nuovo prezzo (prezzo * 1.10 se 'prezzo' < 50, altrimenti prezzo invariato) dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo, CASE WHEN prezzo < 50 THEN prezzo * 1.10 ELSE prezzo END AS nuovo_prezzo FROM prodotti",
-        hints: [
-          "Simula un aumento prezzi condizionale.",
-          "CASE WHEN prezzo < 50 THEN prezzo * 1.10 ...",
-        ],
-        explanation: "Anteprima di modifiche ai dati.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Window Function",
-        descTemplate:
-          "Seleziona 'nome', la differenza di prezzo col precedente (LAG), e un CASE che mostra 'Salto' se la differenza > 50, altrimenti 'Normale'.",
-        queryTemplate:
-          "SELECT nome, prezzo - LAG(prezzo) OVER (ORDER BY prezzo) as Diff, CASE WHEN (prezzo - LAG(prezzo) OVER (ORDER BY prezzo)) > 50 THEN 'Salto' ELSE 'Normale' END FROM prodotti",
-        hints: [
-          "Usa LAG per guardare la riga precedente.",
-          "CASE WHEN ... > 50",
-        ],
-        explanation: "Analisi di serie e sequenze.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case per Etichetta Temporale",
-        descTemplate:
-          "Seleziona 'data_ordine' e un CASE che mostra 'Weekend' se DAYOFWEEK(data_ordine) è 1 (Dom) o 7 (Sab), altrimenti 'Feriale' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT data_ordine, CASE WHEN DAYOFWEEK(data_ordine) IN (1, 7) THEN 'Weekend' ELSE 'Feriale' END FROM ordini",
-        hints: [
-          "Usa DAYOFWEEK (1=Dom, 7=Sab).",
-          "CASE WHEN DAYOFWEEK(...) IN (1, 7)",
-        ],
-        explanation: "Categorizzazione temporale.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case in HAVING Complesso",
-        descTemplate:
-          "Seleziona 'categoria_id' raggruppando per categoria e filtrando (HAVING) dove il numero di prodotti costosi (>100) è maggiore di quelli economici (<50) usando SUM e CASE.",
-        queryTemplate:
-          "SELECT categoria_id FROM prodotti GROUP BY categoria_id HAVING SUM(CASE WHEN prezzo > 100 THEN 1 ELSE 0 END) > SUM(CASE WHEN prezzo < 50 THEN 1 ELSE 0 END)",
-        hints: [
-          "Confronta due SUM condizionali.",
-          "HAVING SUM(...) > SUM(...)",
-        ],
-        explanation: "Filtri complessi su aggregati.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case con Subquery Correlata",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Sopra' se 'prezzo' > (media prezzi della stessa categoria), altrimenti 'Sotto' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, CASE WHEN prezzo > (SELECT AVG(p2.prezzo) FROM prodotti p2 WHERE p2.categoria_id = prodotti.categoria_id) THEN 'Sopra' ELSE 'Sotto' END FROM prodotti",
-        hints: [
-          "La subquery dipende dalla riga esterna.",
-          "SELECT AVG(...) WHERE categoria_id = prodotti.categoria_id",
-        ],
-        explanation: "Benchmarking contestuale.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Multi-Colonna",
-        descTemplate:
-          "Seleziona 'nome' e un CASE che mostra 'Raro' se 'stock' < 10, 'Caro' se 'prezzo' > 100, altrimenti 'Normale' (la prima condizione vera vince).",
-        queryTemplate:
-          "SELECT nome, CASE WHEN stock < 10 THEN 'Raro' WHEN prezzo > 100 THEN 'Caro' ELSE 'Normale' END FROM prodotti",
-        hints: [
-          "L'ordine delle clausole WHEN determina la priorità.",
-          "Prima controlla stock, poi prezzo.",
-        ],
-        explanation: "Gestione conflitti tra regole.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case Null Coalesce Logic",
-        descTemplate:
-          "Seleziona 'id' e un CASE che mostra 'Non Spedito' se 'codice_tracking' E 'data_spedizione' sono NULL, 'Non Tracciato' se solo 'codice_tracking' è NULL, altrimenti 'Ok' dalla tabella 'spedizioni'.",
-        queryTemplate:
-          "SELECT id, CASE WHEN codice_tracking IS NULL AND data_spedizione IS NULL THEN 'Non Spedito' WHEN codice_tracking IS NULL THEN 'Non Tracciato' ELSE 'Ok' END FROM spedizioni",
-        hints: [
-          "Gestisci le combinazioni di NULL.",
-          "CASE WHEN ... IS NULL AND ... IS NULL",
-        ],
-        explanation: "Pulizia e normalizzazione dati.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Case in JOIN Condition",
-        descTemplate:
-          "Seleziona 'p.nome' e 's.sconto' facendo una LEFT JOIN tra 'prodotti' (p) e 'sconti' (s) sulla condizione che 's.tipo' sia uguale a un CASE ('Alto' se 'p.prezzo' > 100, altrimenti 'Basso').",
-        queryTemplate:
-          "SELECT p.nome, s.sconto FROM prodotti p LEFT JOIN sconti s ON s.tipo = CASE WHEN p.prezzo > 100 THEN 'Alto' ELSE 'Basso' END",
-        hints: ["Usa CASE nella condizione ON.", "ON s.tipo = CASE ... END"],
-        explanation: "Relazioni condizionali tra tabelle.",
-        replacements: {},
-      },
+        brokenCode: "SELECT name, CASE WHEN manager_id = NULL THEN 'Capo' ELSE 'Subordinato' END FROM Employees",
+        debugHint: "Per i NULL usa IS NULL."
+      }
     ],
+    [Difficulty.Medium]: [
+      {
+        titleTemplate: "Aumento Prezzo Condizionale",
+        descTemplate: "Simula un nuovo prezzo: se stock < 10 aumenta del 10% (price * 1.1), altrimenti lascia invariato.",
+        queryTemplate: "SELECT name, price, CASE WHEN stock < 10 THEN price * 1.1 ELSE price END AS nuovo_prezzo FROM Products",
+        hints: ["CASE può restituire risultati di calcoli."],
+        explanation: "Logica di business applicata ai dati.",
+        replacements: {},
+        brokenCode: "SELECT name, CASE WHEN stock < 10 THEN price * 1.1 END FROM Products",
+        debugHint: "Manca ELSE price. Senza ELSE, i casi non soddisfatti diventano NULL."
+      },
+      {
+        titleTemplate: "Multi-Condizione (Categorizzazione)",
+        descTemplate: "Classifica prodotti: < 20 'Economico', 20-100 'Medio', > 100 'Costoso'.",
+        queryTemplate: "SELECT name, price, CASE WHEN price < 20 THEN 'Economico' WHEN price <= 100 THEN 'Medio' ELSE 'Costoso' END AS categoria FROM Products",
+        hints: ["Puoi usare più clausole WHEN."],
+        explanation: "CASE valuta le condizioni in ordine sequenziale.",
+        replacements: {},
+        brokenCode: "SELECT name, CASE WHEN price < 20 THEN 'Eco' AND WHEN price <= 100 THEN 'Med' END FROM Products",
+        debugHint: "Non usare AND tra i WHEN. Basta 'WHEN ... THEN ... WHEN ... THEN ...'."
+      },
+      {
+        titleTemplate: "Custom Sort (CASE in ORDER BY)",
+        descTemplate: "Ordina i prodotti mettendo prima quelli 'In Stock' (>0) e poi gli altri.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock > 0 THEN 0 ELSE 1 END, stock ASC",
+        hints: ["Usa CASE dentro ORDER BY."],
+        explanation: "Ordinamento personalizzato non alfabetico/numerico.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products ODER BY CASE stock > 0 THEN 0 ELSE 1 END",
+        debugHint: "Manca WHEN."
+      },
+      {
+        titleTemplate: "Pivot Count (SUM CASE)",
+        descTemplate: "Conta quanti utenti sono Premium usando SUM e CASE (senza GROUP BY, un solo totale).",
+        queryTemplate: "SELECT SUM(CASE WHEN is_premium = true THEN 1 ELSE 0 END) as total_premium FROM Users",
+        hints: ["SUM(CASE WHEN ... THEN 1 ELSE 0 END)"],
+        explanation: "Tecnica pivot per contare su condizioni specifiche.",
+        replacements: {},
+        brokenCode: "SELECT COUNT(CASE WHEN is_premium THEN 1 ELSE 0 END) FROM Users",
+        debugHint: "COUNT conta le righe non-null. Se ELSE è 0, lo conta comunque! Usa SUM o ELSE NULL."
+      },
+      {
+        titleTemplate: "Sconto Regionale",
+        descTemplate: "Se l'utente è 'Italy', sconto 20% 'Discount', altrimenti 'Full Price'.",
+        queryTemplate: "SELECT name, country, CASE WHEN country = 'Italy' THEN 'Discount' ELSE 'Full Price' END AS offer FROM Users",
+        hints: ["Controlla country = 'Italy'."],
+        explanation: "Logica legata a stringhe.",
+        replacements: {},
+        brokenCode: "SELECT name, CASE WHEN country IS 'Italy' THEN 'Discount' END FROM Users",
+        debugHint: "Usa = per le stringhe, non IS."
+      }
+    ],
+    [Difficulty.Hard]: [
+      {
+        titleTemplate: "Pivot per Paese",
+        descTemplate: "Calcola in una sola query: totale utenti Italy e totale utenti France.",
+        queryTemplate: "SELECT SUM(CASE WHEN country = 'Italy' THEN 1 ELSE 0 END) as users_italy, SUM(CASE WHEN country = 'France' THEN 1 ELSE 0 END) as users_france FROM Users",
+        hints: ["Due colonne con SUM(CASE...)."],
+        explanation: "Cross-tabulation (Pivot) manuale.",
+        replacements: {},
+        brokenCode: "SELECT COUNT(region = 'Italy') FROM Users",
+        debugHint: "SQL non supporta quella sintassi diretta."
+      },
+      {
+        titleTemplate: "Logica Complessa (AND/OR)",
+        descTemplate: "Etichetta 'Priority': Stock < 10 E Prezzo > 100 -> 'Urgent', Stock < 5 -> 'Warning', Altro 'OK'.",
+        queryTemplate: "SELECT name, CASE WHEN stock < 10 AND price > 100 THEN 'Urgent' WHEN stock < 5 THEN 'Warning' ELSE 'OK' END AS priority FROM Products",
+        hints: ["L'ordine dei WHEN è importante."],
+        explanation: "La prima condizione soddisfatta vince.",
+        replacements: {},
+        brokenCode: "SELECT name, CASE WHEN stock < 5 THEN 'Warning' WHEN stock < 10 AND price > 100 THEN 'Urgent' END FROM Products",
+        debugHint: "Se metti stock < 5 prima, 'Urgent' (che implica stock < 10) potrebbe essere mascherato se stock è 4."
+      },
+      {
+        titleTemplate: "Update Simulato",
+        descTemplate: "Se dovessimo aggiornare i prezzi: +10% per Electronics, -5% per Clothing. Mostra il nuovo prezzo.",
+        queryTemplate: "SELECT name, price, CASE WHEN category = 'Electronics' THEN price * 1.1 WHEN category = 'Clothing' THEN price * 0.95 ELSE price END as new_price FROM Products",
+        hints: ["CASE ... WHEN ... WHEN ... ELSE ..."],
+        explanation: "Simulazione di logiche di update.",
+        replacements: {},
+        brokenCode: "SELECT name, IF(category='Electronics', price*1.1, IF(category='Clothing', price*0.95, price))",
+        debugHint: "Evita IF annidati, usa CASE multi-ramo."
+      },
+      {
+        titleTemplate: "Validazione Dati",
+        descTemplate: "Mostra 'Invalid' se email non contiene '@', altrimenti 'Valid'.",
+        queryTemplate: "SELECT email, CASE WHEN email LIKE '%@%' THEN 'Valid' ELSE 'Invalid' END AS email_status FROM Users",
+        hints: ["Usa LIKE '%@%'."],
+        explanation: "Data quality check con SQL.",
+        replacements: {},
+        brokenCode: "SELECT email, CASE WHEN email CONTAINS '@' THEN 'Valid' END FROM Users",
+        debugHint: "Usa LIKE."
+      },
+      {
+        titleTemplate: "Etichetta Nulli Coalesce Logic",
+        descTemplate: "Se manager_id è null scrivi 'No Manager', se è uguale all'id scrivi 'Self', altrimenti 'Managed'.",
+        queryTemplate: "SELECT name, CASE WHEN manager_id IS NULL THEN 'No Manager' WHEN manager_id = id THEN 'Self' ELSE 'Managed' END AS status FROM Employees",
+        hints: ["Gestisci prima IS NULL."],
+        explanation: "Logica gerarchica.",
+        replacements: {},
+        brokenCode: "SELECT name, CASE WHEN manager_id = 0 THEN 'No Manager' ELSE 'Managed' END FROM Employees",
+        debugHint: "I null non sono 0."
+      }
+    ]
+  },
+  [TopicId.Joins]: {
+    [Difficulty.Easy]: [
+      {
+        titleTemplate: "Report Ordini e Utenti",
+        descTemplate: "Seleziona ID Ordine e Nome Utente per ogni ordine.",
+        queryTemplate: "SELECT Orders.id, Users.name FROM Orders JOIN Users ON Orders.user_id = Users.id",
+        hints: ["Orders JOIN Users ON Orders.user_id = Users.id"],
+        explanation: "Inner Join base tra ordini e clienti.",
+        replacements: {},
+        brokenCode: "SELECT Orders.id, Users.name FROM Orders, Users",
+        debugHint: "Usa la sintassi esplicita JOIN ... ON."
+      },
+      {
+        titleTemplate: "Email Cliente per Ordine",
+        descTemplate: "Mostra l'email del cliente per ogni ordine (Orders).",
+        queryTemplate: "SELECT Orders.id, Users.email FROM Orders JOIN Users ON Orders.user_id = Users.id",
+        hints: ["Collega Orders e Users."],
+        explanation: "Recupero dati anagrafici.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Orders JOIN Users",
+        debugHint: "Manca ON."
+      },
+      {
+        titleTemplate: "Dettagli Ordine: Prodotto",
+        descTemplate: "Per ogni riga di OrderItems, mostra il nome del prodotto.",
+        queryTemplate: "SELECT OrderItems.id, Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["OrderItems JOIN Products"],
+        explanation: "Lookup del nome prodotto.",
+        replacements: {},
+        brokenCode: "SELECT * FROM OrderItems JOIN Products ON product_id=id",
+        debugHint: "Ambiguo, usa Tabella.campo."
+      },
+      {
+        titleTemplate: "Prezzo Prodotto Ordinato",
+        descTemplate: "Mostra la quantità ordinata (OrderItems) e il prezzo di listino del prodotto (Products).",
+        queryTemplate: "SELECT OrderItems.quantity, Products.price FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Collega OrderItems a Products."],
+        explanation: "Confronto dati.",
+        replacements: {},
+        brokenCode: "SELECT quantity, price FROM OrderItems",
+        debugHint: "Price è in Products, serve JOIN."
+      },
+      {
+        titleTemplate: "Data Ordine per Item",
+        descTemplate: "Per ogni item venduto, mostra la data dell'ordine (Orders).",
+        queryTemplate: "SELECT OrderItems.id, Orders.order_date FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id",
+        hints: ["OrderItems -> Orders"],
+        explanation: "Propagazione data dalla testata alle righe.",
+        replacements: {},
+        brokenCode: "SELECT * FROM OrderItems JOIN Orders ON OrderItems.id = Orders.id",
+        debugHint: "Devi collegare order_id con id."
+      },
+      {
+        titleTemplate: "Status Ordine Cliente",
+        descTemplate: "Mostra nome utente e status di ogni suo ordine.",
+        queryTemplate: "SELECT Users.name, Orders.status FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Users JOIN Orders"],
+        explanation: "Lista storico ordini.",
+        replacements: {},
+        brokenCode: "SELECT Users.name, status FROM Orders",
+        debugHint: "Serve JOIN con Users."
+      },
+      {
+        titleTemplate: "Dipendente e Manager",
+        descTemplate: "Mostra 'nome dipendente' e 'nome manager' (Self Join).",
+        queryTemplate: "SELECT E.name as Employees, M.name as Manager FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Employees E JOIN Employees M"],
+        explanation: "Gerarchia interna.",
+        replacements: {},
+        brokenCode: "SELECT name, manager_id FROM Employees",
+        debugHint: "Serve fare JOIN con la stessa tabella."
+      },
+      {
+        titleTemplate: "Totale Ordine e Utente",
+        descTemplate: "Mostra il totale dell'ordine (order_total) e il paese dell'utente.",
+        queryTemplate: "SELECT Orders.order_total, Users.country FROM Orders JOIN Users ON Orders.user_id = Users.id",
+        hints: ["Orders JOIN Users"],
+        explanation: "Analisi geografica vendite.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Orders, Users",
+        debugHint: "Evita prodotto cartesiano."
+      },
+      {
+        titleTemplate: "Categoria Prodotto Venduto",
+        descTemplate: "Per ogni item venduto, mostra la categoria del prodotto.",
+        queryTemplate: "SELECT OrderItems.id, Products.category FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["OrderItems -> Products"],
+        explanation: "Analisi categorie vendute.",
+        replacements: {},
+        brokenCode: "SELECT category FROM OrderItems",
+        debugHint: "Category è in Products."
+      },
+      {
+        titleTemplate: "Utenti Premium Ordini",
+        descTemplate: "Mostra gli ordini solo degli utenti Premium (is_premium=true).",
+        queryTemplate: "SELECT Orders.id, Users.name FROM Orders JOIN Users ON Orders.user_id = Users.id WHERE Users.is_premium = true",
+        hints: ["JOIN ... WHERE is_premium=true"],
+        explanation: "Filtro su tabella relazionata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Orders WHERE is_premium=true",
+        debugHint: "is_premium è in Users."
+      },
+      {
+        titleTemplate: "Prodotti Low Stock Venduti",
+        descTemplate: "Mostra ID ordine per prodotti venduti che hanno stock < 10.",
+        queryTemplate: "SELECT OrderItems.order_id, Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id WHERE Products.stock < 10",
+        hints: ["JOIN ... WHERE stock < 10"],
+        explanation: "Allerta stock su venditem.",
+        replacements: {},
+        brokenCode: "SELECT * FROM OrderItems WHERE stock < 10",
+        debugHint: "Stock è in Products."
+      },
+      {
+        titleTemplate: "Ordini Francia",
+        descTemplate: "Mostra gli ordini di utenti francesi ('France').",
+        queryTemplate: "SELECT Orders.id FROM Orders JOIN Users ON Orders.user_id = Users.id WHERE Users.country = 'France'",
+        hints: ["Where country = 'France'"],
+        explanation: "Geo-filtro.",
+        replacements: {},
+        brokenCode: "SELECT id FROM Orders WHERE country='France'",
+        debugHint: "Country è in Users."
+      },
+      {
+        titleTemplate: "Listino vs Reale",
+        descTemplate: "Confronta unit_price (pagato) con Products.price (listino) per ogni item.",
+        queryTemplate: "SELECT OrderItems.unit_price, Products.price FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Select entrambe le colonne prezzo."],
+        explanation: "Audit sconti.",
+        replacements: {},
+        brokenCode: "SELECT price FROM OrderItems",
+        debugHint: "Serve JOIN."
+      },
+      {
+        titleTemplate: "Hire Date Manager",
+        descTemplate: "Mostra la data di assunzione del manager di ogni dipendente.",
+        queryTemplate: "SELECT E.name, M.hire_date FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Self Join: M.hire_date"],
+        explanation: "Confronto anzianità.",
+        replacements: {},
+        brokenCode: "SELECT hire_date FROM Employees WHERE manager_id IS NOT NULL",
+        debugHint: "Vuoi la data del manager, non del dipendente."
+      },
+      {
+        titleTemplate: "Utenti e ID Ordini",
+        descTemplate: "Lista semplice: Nome Utente e ID dei loro ordini.",
+        queryTemplate: "SELECT Users.name, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Users JOIN Orders"],
+        explanation: "Mapping base.",
+        replacements: {},
+        brokenCode: "SELECT name, id FROM Users JOIN Orders",
+        debugHint: "Ambiguo id."
+      }
+    ],
+    [Difficulty.Medium]: [
+      {
+        titleTemplate: "Utenti Senza Ordini (Left Join)",
+        descTemplate: "Trova utenti che non hanno mai ordinato.",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["LEFT JOIN ... WHERE Orders.id IS NULL"],
+        explanation: "Trovare elementi orfani.",
+        replacements: {},
+        brokenCode: "SELECT Users.name FROM Users JOIN Orders ...",
+        debugHint: "INNER Join nasconde i null."
+      },
+      {
+        titleTemplate: "Prodotti Invenduti",
+        descTemplate: "Prodotti mai comparsi in OrderItems.",
+        queryTemplate: "SELECT Products.name FROM Products LEFT JOIN OrderItems ON Products.id = OrderItems.product_id WHERE OrderItems.id IS NULL",
+        hints: ["LEFT JOIN ... IS NULL"],
+        explanation: "Dead stock analysis.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE id NOT IN OrderItems",
+        debugHint: "Sintassi NOT IN richiede subquery o Left Join."
+      },
+      {
+        titleTemplate: "Totale Speso per Utente",
+        descTemplate: "Calcola la somma (order_total) per ogni utente.",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["GROUP BY Users.name"],
+        explanation: "Aggregation dopo Join.",
+        replacements: {},
+        brokenCode: "SELECT Users.name, SUM(order_total) FROM Orders",
+        debugHint: "Manca JOIN con Users."
+      },
+      {
+        titleTemplate: "Media Ordine per Paese",
+        descTemplate: "Calcola il valore medio degli ordini per paese.",
+        queryTemplate: "SELECT Users.country, AVG(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.country",
+        hints: ["GROUP BY Country"],
+        explanation: "Report geografico.",
+        replacements: {},
+        brokenCode: "SELECT country, AVG(order_total) FROM Orders",
+        debugHint: "Country è su Users."
+      },
+      {
+        titleTemplate: "Vendite per Prodotto",
+        descTemplate: "Calcola la quantità totale venduta per ogni prodotto.",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["JOIN -> SUM(quantity) -> GROUP BY Name"],
+        explanation: "Volume vendite.",
+        replacements: {},
+        brokenCode: "SELECT name, SUM(quantity) FROM Products",
+        debugHint: "Quantity è in OrderItems."
+      },
+      {
+        titleTemplate: "Dipendenti senza Manager",
+        descTemplate: "Trova i dipendenti che non hanno un manager (Top Level).",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["IS NULL"],
+        explanation: "Filtro semplice (tecnicamente no join necessario, ma contesto gerarchia).",
+        replacements: {},
+        brokenCode: "SELECT * FROM Employees JOIN Employees ON ...",
+        debugHint: "Basta verificare IS NULL."
+      },
+      {
+        titleTemplate: "Numero Ordini per Utente",
+        descTemplate: "Conta quanti ordini ha fatto ogni utente (mostra anche chi ne ha fatti 0).",
+        queryTemplate: "SELECT Users.name, COUNT(Orders.id) FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["LEFT JOIN per includere gli zeri."],
+        explanation: "COUNT su colonna nullable conta solo i non-null.",
+        replacements: {},
+        brokenCode: "SELECT Users.name, COUNT(*) FROM Users JOIN Orders ...",
+        debugHint: "JOIN esclude chi ha 0 ordini."
+      },
+      {
+        titleTemplate: "Revenue per Categoria",
+        descTemplate: "Calcola l'incasso totale (item qty * unit_price) per ogni categoria di prodotto.",
+        queryTemplate: "SELECT Products.category, SUM(OrderItems.quantity * OrderItems.unit_price) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.category",
+        hints: ["GROUP BY category"],
+        explanation: "Financial report per categoria.",
+        replacements: {},
+        brokenCode: "SELECT category, SUM(total) FROM Products",
+        debugHint: "Join con OrderItems e calcola qty*price."
+      },
+      {
+        titleTemplate: "Manager e Sottoposti",
+        descTemplate: "Mostra nome manager e nome dipendente. Escludi chi non è manager.",
+        queryTemplate: "SELECT M.name as Manager, E.name as Dipendente FROM Employees M JOIN Employees E ON M.id = E.manager_id",
+        hints: ["Inner Self Join"],
+        explanation: "Lista inversa (Manager -> Dipendenti).",
+        replacements: {},
+        brokenCode: "SELECT * FROM Employees WHERE manager_id IS NOT NULL",
+        debugHint: "Serve Self Join per avere il nome del manager."
+      },
+      {
+        titleTemplate: "Clienti e Prodotti Acquistati",
+        descTemplate: "Lista unica di Clienti e Prodotti che hanno comprato (DISTINCT).",
+        queryTemplate: "SELECT DISTINCT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Join a 4 tabelle + DISTINCT"],
+        explanation: "Chi ha comprato cosa.",
+        replacements: {},
+        brokenCode: "SELECT Users.name, Products.name FROM Users, Products",
+        debugHint: "Prodotto cartesiano è sbagliato."
+      },
+      {
+        titleTemplate: "Ordini con Dettaglio Multiplo",
+        descTemplate: "Trova gli ordini che hanno più di 1 item (righe in OrderItems).",
+        queryTemplate: "SELECT order_id, COUNT(*) FROM OrderItems GROUP BY order_id HAVING COUNT(*) > 1",
+        hints: ["HAVING COUNT > 1"],
+        explanation: "Filtro su gruppi.",
+        replacements: {},
+        brokenCode: "SELECT order_id FROM OrderItems WHERE COUNT(*) > 1",
+        debugHint: "Usa HAVING."
+      },
+      {
+        titleTemplate: "Utenti > 1000 Spesa",
+        descTemplate: "Trova utenti che hanno speso in totale più di 1000.",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name HAVING SUM(Orders.order_total) > 1000",
+        hints: ["HAVING SUM(...) > 1000"],
+        explanation: "High value customers.",
+        replacements: {},
+        brokenCode: "SELECT Users.name FROM Users WHERE sum(total) > 1000",
+        debugHint: "WHERE non vede somme."
+      },
+      {
+        titleTemplate: "Cross Join (Analisi)",
+        descTemplate: "Mostra tutte le combinazioni possibili di Users e Products (Cross Join).",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users CROSS JOIN Products",
+        hints: ["CROSS JOIN"],
+        explanation: "Genera tutte le coppie.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Users JOIN Products",
+        debugHint: "Senza ON è cross join, ma usa sintassi esplicita."
+      },
+      {
+        titleTemplate: "Dipendenti stesso Dipartimento",
+        descTemplate: "Trova coppie di dipendenti che lavorano nello stesso dipartimento.",
+        queryTemplate: "SELECT E1.name, E2.name, E1.department FROM Employees E1 JOIN Employees E2 ON E1.department = E2.department AND E1.id < E2.id",
+        hints: ["Self Join su department. E1.id < E2.id per evitare duplicati speculari."],
+        explanation: "Relazioni orizzontali.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Employees GROUP BY department",
+        debugHint: "Group by raggruppa, Join accoppia."
+      }
+    ],
+    [Difficulty.Hard]: [
+      {
+        titleTemplate: "Top 3 Prodotti",
+        descTemplate: "I 3 prodotti più venduti (per quantità totale).",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) as tot FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name ORDER BY tot DESC LIMIT 3",
+        hints: ["ORDER BY ... LIMIT 3"],
+        explanation: "Ranking vendite.",
+        replacements: {},
+        brokenCode: "SELECT name, MAX(quantity) FROM Products",
+        debugHint: "Serve SUM e Order By."
+      },
+      {
+        titleTemplate: "Categorie Senza Vendite",
+        descTemplate: "Quali categorie non hanno mai venduto un prodotto?",
+        queryTemplate: "SELECT DISTINCT p1.category FROM Products p1 LEFT JOIN OrderItems oi ON p1.id = oi.product_id WHERE oi.id IS NULL",
+        hints: ["Left Join -> IS NULL on category."],
+        explanation: "Analisi categorie morte.",
+        replacements: {},
+        brokenCode: "SELECT category FROM Products WHERE id NOT IN Orders",
+        debugHint: "Join complessa."
+      },
+      {
+        titleTemplate: "Utenti Italia che hanno comprato Elettronica",
+        descTemplate: "Trova utenti 'Italy' che hanno comprato prodotti category='Electronics'.",
+        queryTemplate: "SELECT DISTINCT U.name FROM Users U JOIN Orders O ON U.id = O.user_id JOIN OrderItems OI ON O.id = OI.order_id JOIN Products P ON OI.product_id = P.id WHERE U.country = 'Italy' AND P.category = 'Electronics'",
+        hints: ["4 Tabelle + 2 filtri."],
+        explanation: "Segmentazione avanzata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Users WHERE country='Italy' AND bought='Electronics'",
+        debugHint: "Non esiste 'bought'."
+      },
+      {
+        titleTemplate: "Valore Magazzino Invenduto",
+        descTemplate: "Calcola il valore (price * stock) dei prodotti che non sono mai stati venduti.",
+        queryTemplate: "SELECT SUM(P.price * P.stock) FROM Products P LEFT JOIN OrderItems OI ON P.id = OI.product_id WHERE OI.id IS NULL",
+        hints: ["LEFT JOIN ... WHERE OI.id IS NULL -> SUM"],
+        explanation: "Financial KPI.",
+        replacements: {},
+        brokenCode: "SELECT SUM(price*stock) FROM Products",
+        debugHint: "Così conti tutto, anche i venduti."
+      },
+      {
+        titleTemplate: "Manager di Manager",
+        descTemplate: "Trova i dipendenti che sono manager di qualcuno che è a sua volta manager (2 livelli gerarchia).",
+        queryTemplate: "SELECT DISTINCT BigBoss.name FROM Employees BigBoss JOIN Employees MidBoss ON BigBoss.id = MidBoss.manager_id JOIN Employees Worker ON MidBoss.id = Worker.manager_id",
+        hints: ["3 Self Joins."],
+        explanation: "Gerarchie profonde.",
+        replacements: {},
+        brokenCode: "SELECT name FROM Employees WHERE manager_id IN (SELECT manager_id ...)",
+        debugHint: "Usa join esplicite."
+      },
+      {
+        titleTemplate: "Ordini sopra Media Utente",
+        descTemplate: "Ordini il cui totale è superiore alla media degli ordini di quell'utente (Correlated).",
+        queryTemplate: "SELECT O1.id, O1.order_total FROM Orders O1 WHERE O1.order_total > (SELECT AVG(O2.order_total) FROM Orders O2 WHERE O2.user_id = O1.user_id)",
+        hints: ["Subquery correlata user_id = user_id."],
+        explanation: "Confronto relativo.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Orders WHERE total > AVG(total)",
+        debugHint: "AVG richiede aggregazione o subquery."
+      },
+      {
+        titleTemplate: "Giorni tra Ordini",
+        descTemplate: "Per ogni utente, trova la differenza massima di giorni tra due suoi ordini.",
+        queryTemplate: "SELECT user_id, DATEDIFF(MAX(order_date), MIN(order_date)) FROM Orders GROUP BY user_id",
+        hints: ["MAX(date) - MIN(date)"],
+        explanation: "Frequency analysis.",
+        replacements: {},
+        brokenCode: "SELECT user_id, order_date - order_date FROM Orders",
+        debugHint: "Devi aggregare date."
+      },
+      {
+        titleTemplate: "Utenti Intersezioni",
+        descTemplate: "Trova utenti che hanno comprato SIA 'Product A' (id=1) CHE 'Product B' (id=2). (Simulazione)",
+        queryTemplate: "SELECT U.name FROM Users U JOIN Orders O1 ON U.id = O1.user_id JOIN OrderItems OI1 ON O1.id = OI1.order_id AND OI1.product_id = 1 JOIN Orders O2 ON U.id = O2.user_id JOIN OrderItems OI2 ON O2.id = OI2.order_id AND OI2.product_id = 2",
+        hints: ["Due branch di join separati."],
+        explanation: "Basket analysis (A and B).",
+        replacements: {},
+        brokenCode: "SELECT name FROM Users WHERE product_id = 1 AND product_id = 2",
+        debugHint: "Impossibile sulla stessa riga."
+      }
+    ]
   },
   [TopicId.Advanced]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Subquery Prezzo > Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è maggiore della media (AVG) di 'prezzo' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti)",
-        brokenCode:
-          "SELETC * FROM prodotti WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti)",
-        debugHint: "Errore di battitura nella parola chiave SELECT.",
-        hints: [
-          "Subquery in WHERE",
-          "WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti)",
-        ],
-        explanation: "Subquery per confronto con media.",
+        titleTemplate: "Prezzo Sopra la Media",
+        descTemplate: "Seleziona i prodotti che hanno un prezzo superiore alla media di tutti i prodotti.",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Usa una subquery per calcolare la media."],
+        explanation: "La subquery (tra parentesi) viene eseguita prima.",
         replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE price > AVG(price)",
+        debugHint: "Non puoi usare AVG direttamente nel WHERE, usa una subquery."
       },
       {
-        titleTemplate: "Subquery Prezzo < Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è minore della media (AVG) di 'prezzo' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti)",
-        brokenCode:
-          "SELECT * prodotti WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti)",
-        debugHint: "Manca la parola chiave FROM.",
-        hints: [
-          "Subquery in WHERE",
-          "WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti)",
-        ],
-        explanation: "Subquery per confronto con media minore.",
+        titleTemplate: "Utenti con Ordini",
+        descTemplate: "Seleziona gli utenti che hanno effettuato almeno un ordine (usando IN).",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["WHERE id IN (SELECT ...)"],
+        explanation: "IN verifica se un valore esiste in una lista restituita dalla subquery.",
         replacements: {},
+        brokenCode: "SELECT * FROM Users WHERE id = (SELECT user_id FROM Orders)",
+        debugHint: "Se la subquery restituisce più righe, usa IN invece di =."
       },
       {
-        titleTemplate: "Subquery Stock > Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'stock' è maggiore della media (AVG) di 'stock' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock > (SELECT AVG(stock) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock > (SELECT AV(stock) FROM prodotti)",
-        debugHint: "La funzione per la media è AVG, non AV.",
-        hints: [
-          "Subquery in WHERE",
-          "WHERE stock > (SELECT AVG(stock) FROM prodotti)",
-        ],
-        explanation: "Subquery per confronto stock.",
+        titleTemplate: "Prodotti in Ordini Recenti",
+        descTemplate: "Trova i prodotti (id) che sono stati ordinati nel 2024.",
+        queryTemplate: "SELECT * FROM Products WHERE id IN (SELECT product_id FROM OrderItems WHERE order_id IN (SELECT id FROM Orders WHERE YEAR(order_date) = 2024))",
+        hints: ["Subquery annidata o join."],
+        explanation: "Navigazione tra tabelle tramite subquery.",
         replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE id IN (SELECT product_id FROM Orders WHERE date=2024)",
+        debugHint: "OrderItems collega prodotti e ordini, non direttamente."
       },
       {
-        titleTemplate: "Subquery Stock < Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'stock' è minore della media (AVG) di 'stock' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock < (SELECT AVG(stock) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock < (AVG(stock) FROM prodotti)",
-        debugHint: "Manca la parola chiave SELECT nella subquery.",
-        hints: [
-          "Subquery in WHERE",
-          "WHERE stock < (SELECT AVG(stock) FROM prodotti)",
-        ],
-        explanation: "Subquery per confronto stock minore.",
+        titleTemplate: "Max di Categoria",
+        descTemplate: "Trova il prodotto più costoso per ogni categoria (Correlated Subquery).",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Usa alias per distinguere query esterna e interna."],
+        explanation: "Subquery correlata: dipende dalla riga esterna.",
         replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE price = MAX(price)",
+        debugHint: "MAX richiede GROUP BY o subquery."
       },
       {
-        titleTemplate: "Subquery Voto > Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'voto' è maggiore della media (AVG) di 'voto' di tutte le recensioni.",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE voto > (SELECT AVG(voto) FROM recensioni)",
-        brokenCode:
-          "SELECT * FROM recensioni WHER voto > (SELECT AVG(voto) FROM recensioni)",
-        debugHint: "Errore di battitura nella parola chiave WHERE.",
-        hints: [
-          "Subquery in WHERE",
-          "WHERE voto > (SELECT AVG(voto) FROM recensioni)",
-        ],
-        explanation: "Subquery per confronto voto.",
+        titleTemplate: "Dipendenti Manager",
+        descTemplate: "Seleziona i dipendenti che sono anche manager (il loro ID appare nella colonna manager_id).",
+        queryTemplate: "SELECT * FROM Employees WHERE id IN (SELECT manager_id FROM Employees)",
+        hints: ["id IN (SELECT manager_id ...)"],
+        explanation: "Trova chi ha subordinati.",
         replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Voto < Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'voto' è minore della media (AVG) di 'voto' di tutte le recensioni.",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE voto < (SELECT AVG(voto) FROM recensioni)",
-        brokenCode:
-          "SELECT * FROM recensioni WHERE voto < (SELECT AVG(voto) FROM recensioni",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-        hints: [
-          "Subquery in WHERE",
-          "WHERE voto < (SELECT AVG(voto) FROM recensioni)",
-        ],
-        explanation: "Subquery per confronto voto minore.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Quantità > Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'quantita' è maggiore della media (AVG) di 'quantita' di tutti gli ordini.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE quantita > (SELECT AVG(quantita) FROM ordini)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE quantita > (SELECT AGV(quantita) FROM ordini)",
-        debugHint: "Errore di battitura nella funzione AVG.",
-        hints: [
-          "Subquery in WHERE",
-          "WHERE quantita > (SELECT AVG(quantita) FROM ordini)",
-        ],
-        explanation: "Subquery per confronto quantità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Quantità < Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'quantita' è minore della media (AVG) di 'quantita' di tutti gli ordini.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE quantita < (SELECT AVG(quantita) FROM ordini)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE quantita < (SELECT AVG(quantita) ordini)",
-        debugHint: "Manca la parola chiave FROM nella subquery.",
-        hints: [
-          "Subquery in WHERE",
-          "WHERE quantita < (SELECT AVG(quantita) FROM ordini)",
-        ],
-        explanation: "Subquery per confronto quantità minore.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Prezzo = Massimo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è uguale al massimo (MAX) di 'prezzo' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo = (SELECT MAX(prezzo) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo = (SELECT MA(prezzo) FROM prodotti)",
-        debugHint: "Errore di battitura nella funzione MAX.",
-        hints: [
-          "Subquery con MAX",
-          "WHERE prezzo = (SELECT MAX(prezzo) FROM prodotti)",
-        ],
-        explanation: "Subquery con MAX.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Prezzo = Minimo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è uguale al minimo (MIN) di 'prezzo' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo = (SELECT MIN(prezzo) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo = (MIN(prezzo) FROM prodotti)",
-        debugHint: "Manca la parola chiave SELECT nella subquery.",
-        hints: [
-          "Subquery con MIN",
-          "WHERE prezzo = (SELECT MIN(prezzo) FROM prodotti)",
-        ],
-        explanation: "Subquery con MIN.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Stock = Massimo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'stock' è uguale al massimo (MAX) di 'stock' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock = (SELECT MAX(stock) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock = (SELECT MAX(stok) FROM prodotti)",
-        debugHint: "Errore di battitura nel nome della colonna 'stock'.",
-        hints: [
-          "Subquery con MAX",
-          "WHERE stock = (SELECT MAX(stock) FROM prodotti)",
-        ],
-        explanation: "Subquery con MAX su stock.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Stock = Minimo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'stock' è uguale al minimo (MIN) di 'stock' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock = (SELECT MIN(stock) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock = SELECT MIN(stock) FROM prodotti",
-        debugHint: "Le subquery devono essere racchiuse tra parentesi.",
-        hints: [
-          "Subquery con MIN",
-          "WHERE stock = (SELECT MIN(stock) FROM prodotti)",
-        ],
-        explanation: "Subquery con MIN su stock.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Voto = Massimo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'voto' è uguale al massimo (MAX) di 'voto' di tutte le recensioni.",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE voto = (SELECT MAX(voto) FROM recensioni)",
-        brokenCode:
-          "SELECT * FROM recensioni WHERE voto = (SELECT MAX(vot) FROM recensioni)",
-        debugHint: "Errore di battitura nel nome della colonna 'voto'.",
-        hints: [
-          "Subquery con MAX",
-          "WHERE voto = (SELECT MAX(voto) FROM recensioni)",
-        ],
-        explanation: "Subquery con MAX su voto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Voto = Minimo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'voto' è uguale al minimo (MIN) di 'voto' di tutte le recensioni.",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE voto = (SELECT MIN(voto) FROM recensioni)",
-        brokenCode:
-          "SELECT * recensioni WHERE voto = (SELECT MIN(voto) FROM recensioni)",
-        debugHint: "Manca la parola chiave FROM nella query principale.",
-        hints: [
-          "Subquery con MIN",
-          "WHERE voto = (SELECT MIN(voto) FROM recensioni)",
-        ],
-        explanation: "Subquery con MIN su voto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Quantità = Massimo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'quantita' è uguale al massimo (MAX) di 'quantita' di tutti gli ordini.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE quantita = (SELECT MAX(quantita) FROM ordini)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE quantita = (SELECT MAX(quantit) FROM ordini)",
-        debugHint: "Errore di battitura nel nome della colonna 'quantita'.",
-        hints: [
-          "Subquery con MAX",
-          "WHERE quantita = (SELECT MAX(quantita) FROM ordini)",
-        ],
-        explanation: "Subquery con MAX su quantità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Quantità = Minimo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'quantita' è uguale al minimo (MIN) di 'quantita' di tutti gli ordini.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE quantita = (SELECT MIN(quantita) FROM ordini)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE quantita = (SELECT MI(quantita) FROM ordini)",
-        debugHint: "Errore di battitura nella funzione MIN.",
-        hints: [
-          "Subquery con MIN",
-          "WHERE quantita = (SELECT MIN(quantita) FROM ordini)",
-        ],
-        explanation: "Subquery con MIN su quantità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Prezzo >= Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è maggiore o uguale alla media (AVG) di 'prezzo' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo >= (SELECT AVG(prezzo) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo >= (SELECT AV(prezzo) FROM prodotti)",
-        debugHint: "La funzione per la media è AVG, non AV.",
-        hints: [
-          "Subquery con >=",
-          "WHERE prezzo >= (SELECT AVG(prezzo) FROM prodotti)",
-        ],
-        explanation: "Subquery con >=",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Prezzo <= Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è minore o uguale alla media (AVG) di 'prezzo' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo <= (SELECT AVG(prezzo) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo <= (AVG(prezzo) FROM prodotti)",
-        debugHint: "Manca la parola chiave SELECT nella subquery.",
-        hints: [
-          "Subquery con <=",
-          "WHERE prezzo <= (SELECT AVG(prezzo) FROM prodotti)",
-        ],
-        explanation: "Subquery con <=",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Stock >= Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'stock' è maggiore o uguale alla media (AVG) di 'stock' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock >= (SELECT AVG(stock) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock >= (SELECT AVG(stoc) FROM prodotti)",
-        debugHint: "Errore di battitura nel nome della colonna 'stock'.",
-        hints: [
-          "Subquery con >=",
-          "WHERE stock >= (SELECT AVG(stock) FROM prodotti)",
-        ],
-        explanation: "Subquery con >= su stock.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Stock <= Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'stock' è minore o uguale alla media (AVG) di 'stock' di tutti i prodotti.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock <= (SELECT AVG(stock) FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock <= SELECT AVG(stock) FROM prodotti",
-        debugHint: "Le subquery devono essere racchiuse tra parentesi.",
-        hints: [
-          "Subquery con <=",
-          "WHERE stock <= (SELECT AVG(stock) FROM prodotti)",
-        ],
-        explanation: "Subquery con <= su stock.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Voto >= Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'voto' è maggiore o uguale alla media (AVG) di 'voto' di tutte le recensioni.",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE voto >= (SELECT AVG(voto) FROM recensioni)",
-        brokenCode:
-          "SELECT * FROM recensioni WHERE voto >= (SELECT AVG(vot) FROM recensioni)",
-        debugHint: "Errore di battitura nel nome della colonna 'voto'.",
-        hints: [
-          "Subquery con >=",
-          "WHERE voto >= (SELECT AVG(voto) FROM recensioni)",
-        ],
-        explanation: "Subquery con >= su voto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Voto <= Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'voto' è minore o uguale alla media (AVG) di 'voto' di tutte le recensioni.",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE voto <= (SELECT AVG(voto) FROM recensioni)",
-        brokenCode:
-          "SELECT * recensioni WHERE voto <= (SELECT AVG(voto) FROM recensioni)",
-        debugHint: "Manca la parola chiave FROM nella query principale.",
-        hints: [
-          "Subquery con <=",
-          "WHERE voto <= (SELECT AVG(voto) FROM recensioni)",
-        ],
-        explanation: "Subquery con <= su voto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Quantità >= Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'quantita' è maggiore o uguale alla media (AVG) di 'quantita' di tutti gli ordini.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE quantita >= (SELECT AVG(quantita) FROM ordini)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE quantita >= (SELECT AVG(quantit) FROM ordini)",
-        debugHint: "Errore di battitura nel nome della colonna 'quantita'.",
-        hints: [
-          "Subquery con >=",
-          "WHERE quantita >= (SELECT AVG(quantita) FROM ordini)",
-        ],
-        explanation: "Subquery con >= su quantità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Quantità <= Media",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'quantita' è minore o uguale alla media (AVG) di 'quantita' di tutti gli ordini.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE quantita <= (SELECT AVG(quantita) FROM ordini)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE quantita <= (SELECT AVG(quantita) ordini)",
-        debugHint: "Manca la parola chiave FROM nella subquery.",
-        hints: [
-          "Subquery con <=",
-          "WHERE quantita <= (SELECT AVG(quantita) FROM ordini)",
-        ],
-        explanation: "Subquery con <= su quantità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Prezzo > Massimo / 2",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è maggiore della metà del prezzo massimo (MAX(prezzo) / 2).",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo > (SELECT MAX(prezzo) / 2 FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo > (SELECT MA(prezzo) / 2 FROM prodotti)",
-        debugHint: "Errore di battitura nella funzione MAX.",
-        hints: [
-          "Subquery con calcolo",
-          "WHERE prezzo > (SELECT MAX(prezzo) / 2 FROM prodotti)",
-        ],
-        explanation: "Subquery con calcolo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Stock > Massimo / 2",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'stock' è maggiore della metà dello stock massimo (MAX(stock) / 2).",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock > (SELECT MAX(stock) / 2 FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock > (MAX(stock) / 2 FROM prodotti)",
-        debugHint: "Manca la parola chiave SELECT nella subquery.",
-        hints: [
-          "Subquery con calcolo",
-          "WHERE stock > (SELECT MAX(stock) / 2 FROM prodotti)",
-        ],
-        explanation: "Subquery con calcolo su stock.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Voto > Massimo / 2",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'voto' è maggiore della metà del voto massimo (MAX(voto) / 2).",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE voto > (SELECT MAX(voto) / 2 FROM recensioni)",
-        brokenCode:
-          "SELECT * FROM recensioni WHERE voto > (SELECT MAX(vot) / 2 FROM recensioni)",
-        debugHint: "Errore di battitura nel nome della colonna 'voto'.",
-        hints: [
-          "Subquery con calcolo",
-          "WHERE voto > (SELECT MAX(voto) / 2 FROM recensioni)",
-        ],
-        explanation: "Subquery con calcolo su voto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Quantità > Massimo / 2",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'quantita' è maggiore della metà della quantità massima (MAX(quantita) / 2).",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE quantita > (SELECT MAX(quantita) / 2 FROM ordini)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE quantita > SELECT MAX(quantita) / 2 FROM ordini",
-        debugHint: "Le subquery devono essere racchiuse tra parentesi.",
-        hints: [
-          "Subquery con calcolo",
-          "WHERE quantita > (SELECT MAX(quantita) / 2 FROM ordini)",
-        ],
-        explanation: "Subquery con calcolo su quantità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Prezzo > Minimo * 2",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è maggiore del doppio del prezzo minimo (MIN(prezzo) * 2).",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo > (SELECT MIN(prezzo) * 2 FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo > (SELECT MI(prezzo) * 2 FROM prodotti)",
-        debugHint: "Errore di battitura nella funzione MIN.",
-        hints: [
-          "Subquery con calcolo",
-          "WHERE prezzo > (SELECT MIN(prezzo) * 2 FROM prodotti)",
-        ],
-        explanation: "Subquery con calcolo minimo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery Stock < Massimo / 2",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'stock' è minore della metà dello stock massimo (MAX(stock) / 2).",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock < (SELECT MAX(stock) / 2 FROM prodotti)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock < (SELECT MAX(stock) / 2 prodotti)",
-        debugHint: "Manca la parola chiave FROM nella subquery.",
-        hints: [
-          "Subquery con calcolo",
-          "WHERE stock < (SELECT MAX(stock) / 2 FROM prodotti)",
-        ],
-        explanation: "Subquery con calcolo stock minore.",
-        replacements: {},
-      },
-      // NEW EXERCISES FOR ADVANCED EASY
-      {
-        titleTemplate: "Subquery IN Categorie",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'categoria_id' è IN una subquery che seleziona 'id' dalla tabella 'categorie' dove 'nome' è 'Elettronica' o 'Abbigliamento'.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE categoria_id IN (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE categoria_id I (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))",
-        debugHint: "Errore di battitura nell'operatore IN.",
-        hints: ["Subquery con IN"],
-        explanation: "Filtro su relazione.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery NOT IN Categorie",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'categoria_id' NON è IN una subquery che seleziona 'id' dalla tabella 'categorie' dove 'nome' è 'Elettronica' o 'Abbigliamento'.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE categoria_id NOT IN (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE categoria_id IN (SELECT id FROM categorie WHERE nome IN ('Elettronica', 'Abbigliamento'))",
-        debugHint: "Manca l'operatore NOT prima di IN.",
-        hints: ["Subquery con NOT IN"],
-        explanation: "Esclusione su relazione.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery IN Fornitori",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'fornitore_id' è IN una subquery che seleziona 'id' dalla tabella 'fornitori' dove 'nazione' è 'Italia'.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE fornitore_id IN (SELECT id FROM fornitori WHERE nazione = 'Italia')",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE fornitoreid IN (SELECT id FROM fornitori WHERE nazione = 'Italia')",
-        debugHint: "Errore di battitura nel nome della colonna 'fornitore_id'.",
-        hints: ["Subquery con IN"],
-        explanation: "Filtro geografico indiretto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery ANY Prezzo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è maggiore di ALMENO UNO (ANY) dei prezzi dei prodotti della categoria 1.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo > ANY (SELECT prezzo FROM prodotti WHERE categoria_id = 1)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo > AN (SELECT prezzo FROM prodotti WHERE categoria_id = 1)",
-        debugHint: "Errore di battitura nell'operatore ANY.",
-        hints: ["Subquery con ANY"],
-        explanation: "Confronto con insieme.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery ALL Prezzo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è maggiore di TUTTI (ALL) i prezzi dei prodotti della categoria 1.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo > ALL (SELECT prezzo FROM prodotti WHERE categoria_id = 1)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo > AL (SELECT prezzo FROM prodotti WHERE categoria_id = 1)",
-        debugHint: "Errore di battitura nell'operatore ALL.",
-        hints: ["Subquery con ALL"],
-        explanation: "Confronto totale.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery FROM (Derived Table)",
-        descTemplate:
-          "Seleziona la media (AVG) di 'p.prezzo' da una subquery nella clausola FROM (alias 'p') che seleziona tutti i prodotti con 'prezzo' > 100.",
-        queryTemplate:
-          "SELECT AVG(p.prezzo) FROM (SELECT * FROM prodotti WHERE prezzo > 100) as p",
-        brokenCode:
-          "SELECT AVG(p.prezzo) FROM (SELECT * FROM prodotti WHERE prezzo > 100)",
-        debugHint: "Manca l'alias per la tabella derivata (es. 'as p').",
-        hints: ["Subquery in FROM"],
-        explanation: "Tabella derivata.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery SELECT (Scalare)",
-        descTemplate:
-          "Seleziona 'nome' e la differenza tra 'prezzo' e la media globale (calcolata con una subquery SELECT AVG(prezzo) FROM prodotti) come 'DiffMedia' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo - (SELECT AVG(prezzo) FROM prodotti) as DiffMedia FROM prodotti",
-        brokenCode:
-          "SELECT nome, prezzo - (SELECT AVG(prezzo)) as DiffMedia FROM prodotti",
-        debugHint: "Manca la clausola FROM nella subquery.",
-        hints: ["Subquery in SELECT"],
-        explanation: "Calcolo relativo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery WHERE Data Recente",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'data_ordine' è maggiore di una data calcolata (MAX(data_ordine) meno 1 mese) usando una subquery.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE data_ordine > (SELECT DATE_SUB(MAX(data_ordine), INTERVAL 1 MONTH) FROM ordini)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE data_ordine > (SELECT DATESUB(MAX(data_ordine), INTERVAL 1 MONTH) FROM ordini)",
-        debugHint: "Errore di battitura nella funzione DATE_SUB.",
-        hints: ["Subquery data dinamica"],
-        explanation: "Filtro temporale relativo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery WHERE Utente Attivo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'utente_id' corrisponde all'utente che ha ordinato più quantità in totale (trovato con subquery LIMIT 1).",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE utente_id = (SELECT utente_id FROM ordini GROUP BY utente_id ORDER BY SUM(quantita * 10) DESC LIMIT 1)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE utente_id = (SELECT utente_id FROM ordini GROUP BY utente_id ORDER BY SUM(quantita * 10) DESC)",
-        debugHint: "Manca la clausola LIMIT 1 nella subquery.",
-        hints: ["Subquery con LIMIT"],
-        explanation: "Targeting utente top.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery WHERE Prodotto Popolare",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'prodotto_id' corrisponde al prodotto con più recensioni (trovato con subquery LIMIT 1).",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE prodotto_id = (SELECT prodotto_id FROM recensioni GROUP BY prodotto_id ORDER BY COUNT(*) DESC LIMIT 1)",
-        brokenCode:
-          "SELECT * FROM recensioni WHERE prodotto_id = (SELECT prodotto_id FROM recensioni GROUP BY prodotto_id ORDER BY CONT(*) DESC LIMIT 1)",
-        debugHint: "Errore di battitura nella funzione COUNT.",
-        hints: ["Subquery aggregata"],
-        explanation: "Focus su popolarità.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery IN Utenti Premium",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'utente_id' è IN una subquery che seleziona 'id' dalla tabella 'utenti' dove 'premium' è TRUE.",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE utente_id IN (SELECT id FROM utenti WHERE premium = TRUE)",
-        brokenCode:
-          "SELECT * FROM recensioni WHERE utente_id IN (SELECT id FROM utenti premium = TRUE)",
-        debugHint: "Manca la parola chiave WHERE nella subquery.",
-        hints: ["Subquery su booleano"],
-        explanation: "Filtro segmento utente.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery NOT IN Utenti Premium",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'ordini' dove 'utente_id' NON è IN una subquery che seleziona 'id' dalla tabella 'utenti' dove 'premium' è TRUE.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE utente_id NOT IN (SELECT id FROM utenti WHERE premium = TRUE)",
-        brokenCode:
-          "SELECT * FROM ordini WHERE utente_id NO IN (SELECT id FROM utenti WHERE premium = TRUE)",
-        debugHint: "Errore di battitura nella parola chiave NOT.",
-        hints: ["Subquery esclusione"],
-        explanation: "Analisi segmento standard.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery WHERE Prezzo > Minimo Categoria",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'prezzo' è maggiore del prezzo minimo (MIN) dei prodotti della categoria 1 (trovato con subquery).",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo > (SELECT MIN(prezzo) FROM prodotti WHERE categoria_id = 1)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo > (SELECT MIN(prezzo) WHERE categoria_id = 1)",
-        debugHint: "Manca la clausola FROM nella subquery.",
-        hints: ["Subquery specifica"],
-        explanation: "Confronto puntuale.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery WHERE Stock < Media Categoria",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'stock' è minore della media (AVG) dello stock dei prodotti della categoria 1 (trovato con subquery).",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock < (SELECT AVG(stock) FROM prodotti WHERE categoria_id = 1)",
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock < (SELECT AV(stock) FROM prodotti WHERE categoria_id = 1)",
-        debugHint: "Errore di battitura nella funzione AVG.",
-        hints: ["Subquery media parziale"],
-        explanation: "Analisi stock relativa.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Subquery WHERE Voto > Media Prodotto",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' dove 'voto' è maggiore della media (AVG) dei voti del prodotto 1 (trovato con subquery).",
-        queryTemplate:
-          "SELECT * FROM recensioni WHERE voto > (SELECT AVG(voto) FROM recensioni WHERE prodotto_id = 1)",
-        brokenCode:
-          "SELECT * FROM recensioni WHERE voto > (SELECT AVG(voto) FROM recensioni prodotto_id = 1)",
-        debugHint: "Manca la parola chiave WHERE nella subquery.",
-        hints: ["Subquery media specifica"],
-        explanation: "Analisi qualità relativa.",
-        replacements: {},
-      },
+        brokenCode: "SELECT * FROM Employees WHERE is_manager = true",
+        debugHint: "Non abbiamo la colonna is_manager, devi dedurlo."
+      }
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Utenti con Ordini (Exists)",
-        descTemplate:
-          "Seleziona gli utenti che hanno fatto almeno un ordine usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)",
-        hints: [
-          "EXISTS con subquery",
-          "WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)",
-        ],
-        explanation: "EXISTS per verificare esistenza.",
+        titleTemplate: "CTE Base (WITH)",
+        descTemplate: "Usa una CTE chiamata 'ExpensiveProducts' per selezionare i prodotti con prezzo > 100, poi seleziona tutto dalla CTE.",
+        queryTemplate: "WITH ExpensiveProducts AS (SELECT * FROM Products WHERE price > 100) SELECT * FROM ExpensiveProducts",
+        hints: ["WITH Alias AS (Query)..."],
+        explanation: "CTE (Common Table Expression) rende il codice più leggibile.",
         replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXIST (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)",
-        debugHint: "Errore di battitura nella parola chiave EXISTS.",
+        brokenCode: "WITH ExpensiveProducts (SELECT * FROM Products) SELECT *",
+        debugHint: "Sintassi: WITH nome AS (query)."
       },
       {
-        titleTemplate: "Utenti senza Ordini (NOT EXISTS)",
-        descTemplate:
-          "Seleziona gli utenti che NON hanno fatto ordini usando NOT EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE NOT EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)",
-        hints: [
-          "NOT EXISTS",
-          "WHERE NOT EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)",
-        ],
-        explanation: "NOT EXISTS per verificare assenza.",
+        titleTemplate: "Exists (Esistenza)",
+        descTemplate: "Seleziona gli utenti che hanno effettuato almeno un ordine (usa EXISTS).",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["WHERE EXISTS (SELECT ...)"],
+        explanation: "EXISTS è spesso più veloce di IN per grandi dataset.",
         replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE NO EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)",
-        debugHint: "Errore di battitura nella parola chiave NOT.",
+        brokenCode: "SELECT * FROM Users WHERE EXISTS (id)",
+        debugHint: "EXISTS richiede una subquery completa."
       },
       {
-        titleTemplate: "Prodotti con Recensioni (EXISTS)",
-        descTemplate:
-          "Seleziona i prodotti che hanno almeno una recensione usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id)",
-        hints: [
-          "EXISTS con recensioni",
-          "WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id)",
-        ],
-        explanation: "EXISTS per prodotti con recensioni.",
+        titleTemplate: "Subquery nel FROM",
+        descTemplate: "Calcola il prezzo medio delle categorie, poi seleziona le categorie con media > 50 (usa subquery nel FROM).",
+        queryTemplate: "SELECT * FROM (SELECT category, AVG(price) as avg_price FROM Products GROUP BY category) as sub WHERE avg_price > 50",
+        hints: ["SELECT ... FROM (SELECT ...) as alias"],
+        explanation: "La tabella derivata deve avere un alias.",
         replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
+        brokenCode: "SELECT * FROM (SELECT AVG(price) FROM Products) WHERE avg_price > 50",
+        debugHint: "Manca l'alias alla tabella derivata."
       },
       {
-        titleTemplate: "Prodotti senza Recensioni (NOT EXISTS)",
-        descTemplate:
-          "Seleziona i prodotti che NON hanno recensioni usando NOT EXISTS.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE NOT EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id)",
-        hints: [
-          "NOT EXISTS",
-          "WHERE NOT EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id)",
-        ],
-        explanation: "NOT EXISTS per prodotti senza recensioni.",
+        titleTemplate: "Order Total > Average",
+        descTemplate: "Trova gli ordini il cui totale è superiore alla media di tutti gli ordini.",
+        queryTemplate: "SELECT * FROM Orders WHERE order_total > (SELECT AVG(order_total) FROM Orders)",
+        hints: ["> (SELECT AVG...)"],
+        explanation: "Confronto con aggregato globale.",
         replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE NOT EXISTS SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id)",
-        debugHint: "Manca la parentesi di apertura della subquery.",
+        brokenCode: "SELECT * FROM Orders WHERE order_total > AVG(order_total)",
+        debugHint: "Usa subquery per la media."
       },
       {
-        titleTemplate: "Ordini con Spedizioni (EXISTS)",
-        descTemplate:
-          "Seleziona gli ordini che hanno una spedizione usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE EXISTS (SELECT 1 FROM spedizioni WHERE spedizioni.ordine_id = ordini.id)",
-        hints: [
-          "EXISTS con spedizioni",
-          "WHERE EXISTS (SELECT 1 FROM spedizioni WHERE spedizioni.ordine_id = ordini.id)",
-        ],
-        explanation: "EXISTS per ordini con spedizioni.",
+        titleTemplate: "Secondo Prezzo Più Alto",
+        descTemplate: "Trova il secondo prezzo più alto nei prodotti (usando OFFSET o subquery).",
+        queryTemplate: "SELECT DISTINCT price FROM Products ORDER BY price DESC LIMIT 1 OFFSET 1",
+        hints: ["LIMIT 1 OFFSET 1"],
+        explanation: "Tecnica classica per 'N-th highest'.",
         replacements: {},
-        brokenCode:
-          "SELECT * FROM ordini WHERE EXISTS (SELECT 1 FROM spedizioni spedizioni.ordine_id = ordini.id)",
-        debugHint: "Manca la parola chiave WHERE nella subquery.",
-      },
-      {
-        titleTemplate: "Ordini senza Spedizioni (NOT EXISTS)",
-        descTemplate:
-          "Seleziona gli ordini che NON hanno spedizioni usando NOT EXISTS.",
-        queryTemplate:
-          "SELECT * FROM ordini WHERE NOT EXISTS (SELECT 1 FROM spedizioni WHERE spedizioni.ordine_id = ordini.id)",
-        hints: [
-          "NOT EXISTS",
-          "WHERE NOT EXISTS (SELECT 1 FROM spedizioni WHERE spedizioni.ordine_id = ordini.id)",
-        ],
-        explanation: "NOT EXISTS per ordini senza spedizioni.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM ordini WHERE NOT EXISTS (SELECT 1 FROM spedizioni WHERE spedizioni.ordine_id = ordini.id",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "Utenti con Recensioni (EXISTS)",
-        descTemplate:
-          "Seleziona gli utenti che hanno scritto almeno una recensione usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.utente_id = utenti.id)",
-        hints: [
-          "EXISTS con recensioni",
-          "WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.utente_id = utenti.id)",
-        ],
-        explanation: "EXISTS per utenti con recensioni.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.utente_id = utenti.uid)",
-        debugHint: "Colonna 'uid' inesistente nella tabella utenti (usa 'id').",
-      },
-      {
-        titleTemplate: "Utenti senza Recensioni (NOT EXISTS)",
-        descTemplate:
-          "Seleziona gli utenti che NON hanno scritto recensioni usando NOT EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE NOT EXISTS (SELECT 1 FROM recensioni WHERE recensioni.utente_id = utenti.id)",
-        hints: [
-          "NOT EXISTS",
-          "WHERE NOT EXISTS (SELECT 1 FROM recensioni WHERE recensioni.utente_id = utenti.id)",
-        ],
-        explanation: "NOT EXISTS per utenti senza recensioni.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE NOT EXISTS (SELECT 1 FROM recensioni WHERE recensioni.utente_id = utenti.id",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE",
-        descTemplate:
-          "Seleziona gli utenti che hanno ordini dopo il 1 Gennaio 2023 usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id AND ordini.data_ordine > '2023-01-01')",
-        hints: [
-          "EXISTS con WHERE",
-          "WHERE EXISTS (SELECT 1 FROM ordini WHERE ... AND ordini.data_ordine > '2023-01-01')",
-        ],
-        explanation: "EXISTS con condizione aggiuntiva.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id ordini.data_ordine > '2023-01-01')",
-        debugHint: "Manca l'operatore AND nella subquery.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Prezzo",
-        descTemplate:
-          "Seleziona i prodotti che hanno recensioni con voto >= 4 usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.voto >= 4)",
-        hints: [
-          "EXISTS con WHERE",
-          "WHERE EXISTS (SELECT 1 FROM recensioni WHERE ... AND recensioni.voto >= 4)",
-        ],
-        explanation: "EXISTS con filtro voto.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.voto 4)",
-        debugHint: "Manca l'operatore di confronto (>=).",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Quantità",
-        descTemplate:
-          "Seleziona gli utenti che hanno ordini con quantità > 5 usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id AND ordini.quantita > 5)",
-        hints: [
-          "EXISTS con WHERE",
-          "WHERE EXISTS (SELECT 1 FROM ordini WHERE ... AND ordini.quantita > 5)",
-        ],
-        explanation: "EXISTS con filtro quantità.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id AND ordini.quantita > 5",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Prezzo Prodotto",
-        descTemplate:
-          "Seleziona gli utenti che hanno ordinato prodotti > 100 euro usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE ordini.utente_id = utenti.id AND prodotti.prezzo > 100)",
-        hints: [
-          "EXISTS con JOIN",
-          "WHERE EXISTS (SELECT 1 FROM ordini JOIN prodotti ... WHERE ... AND prodotti.prezzo > 100)",
-        ],
-        explanation: "EXISTS con JOIN nella subquery.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini JOIN prodotti ordini.prodotto_id = prodotti.id WHERE ordini.utente_id = utenti.id AND prodotti.prezzo > 100)",
-        debugHint: "Manca la parola chiave ON nella JOIN.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Categoria",
-        descTemplate:
-          "Seleziona gli utenti che hanno ordinato prodotti della categoria 1 usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE ordini.utente_id = utenti.id AND prodotti.categoria_id = 1)",
-        hints: [
-          "EXISTS con JOIN",
-          "WHERE EXISTS (SELECT 1 FROM ordini JOIN prodotti ... WHERE ... AND prodotti.categoria_id = 1)",
-        ],
-        explanation: "EXISTS con JOIN e filtro categoria.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini JOIN prodotti ON ordini.prodotto_id = prodotti.id WHERE ordini.utente_id = utenti.id AND prodotti.categoria_id 1)",
-        debugHint: "Manca l'operatore di uguaglianza (=).",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Fornitore",
-        descTemplate:
-          "Seleziona i prodotti che hanno recensioni e sono forniti da fornitore 1 usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id) AND prodotti.fornitore_id = 1",
-        hints: [
-          "EXISTS con AND",
-          "WHERE EXISTS (...) AND prodotti.fornitore_id = 1",
-        ],
-        explanation: "EXISTS con condizione aggiuntiva esterna.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id) prodotti.fornitore_id = 1",
-        debugHint: "Manca l'operatore AND.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Data",
-        descTemplate:
-          "Seleziona i prodotti che hanno recensioni dopo il 1 Gennaio 2023 usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.data_recensione > '2023-01-01')",
-        hints: [
-          "EXISTS con WHERE data",
-          "WHERE EXISTS (SELECT 1 FROM recensioni WHERE ... AND recensioni.data_recensione > '2023-01-01')",
-        ],
-        explanation: "EXISTS con filtro data.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.data_recensione > '2023-01-01'",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Voto",
-        descTemplate:
-          "Seleziona i prodotti che hanno recensioni con voto = 5 usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.voto = 5)",
-        hints: [
-          "EXISTS con WHERE voto",
-          "WHERE EXISTS (SELECT 1 FROM recensioni WHERE ... AND recensioni.voto = 5)",
-        ],
-        explanation: "EXISTS con filtro voto specifico.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.voto = 5",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Stock",
-        descTemplate:
-          "Seleziona i prodotti con stock > 10 che hanno recensioni usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE stock > 10 AND EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id)",
-        hints: ["EXISTS con AND", "WHERE stock > 10 AND EXISTS (...)"],
-        explanation: "EXISTS con condizione esterna.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE stock > 10 EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id)",
-        debugHint: "Manca l'operatore AND.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Prezzo",
-        descTemplate:
-          "Seleziona i prodotti con prezzo > 50 che hanno recensioni usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo > 50 AND EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id)",
-        hints: ["EXISTS con AND", "WHERE prezzo > 50 AND EXISTS (...)"],
-        explanation: "EXISTS con filtro prezzo esterno.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo > 50 AND EXIST (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id)",
-        debugHint: "Errore di battitura nella parola chiave EXISTS.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Premium",
-        descTemplate:
-          "Seleziona gli utenti Premium che hanno ordini usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE premium = TRUE AND EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)",
-        hints: ["EXISTS con AND", "WHERE premium = TRUE AND EXISTS (...)"],
-        explanation: "EXISTS con filtro premium.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE premium = TRUE AND EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Paese",
-        descTemplate:
-          "Seleziona gli utenti italiani che hanno ordini usando EXISTS.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE paese = 'Italia' AND EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)",
-        hints: ["EXISTS con AND", "WHERE paese = 'Italia' AND EXISTS (...)"],
-        explanation: "EXISTS con filtro paese.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE paese = 'Italia' EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id)",
-        debugHint: "Manca l'operatore AND.",
-      },
-      {
-        titleTemplate: "EXISTS con ORDER BY",
-        descTemplate:
-          "Seleziona gli utenti che hanno ordini, ordinati per nome A-Z.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id) ORDER BY nome ASC",
-        hints: ["EXISTS con ORDER BY", "WHERE EXISTS (...) ORDER BY nome ASC"],
-        explanation: "EXISTS con ordinamento.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id) ORDER BY nome",
-        debugHint: "Manca la direzione dell'ordinamento (ASC).",
-      },
-      {
-        titleTemplate: "EXISTS con ORDER BY Prezzo",
-        descTemplate:
-          "Seleziona i prodotti che hanno recensioni, ordinati per prezzo decrescente.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id) ORDER BY prezzo DESC",
-        hints: [
-          "EXISTS con ORDER BY",
-          "WHERE EXISTS (...) ORDER BY prezzo DESC",
-        ],
-        explanation: "EXISTS con ordinamento prezzo.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id) ORDER BY prezzo",
-        debugHint: "Manca la direzione dell'ordinamento (DESC).",
-      },
-      {
-        titleTemplate: "EXISTS con LIMIT",
-        descTemplate: "Seleziona i primi 5 utenti che hanno ordini.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id) LIMIT 5",
-        hints: ["EXISTS con LIMIT", "WHERE EXISTS (...) LIMIT 5"],
-        explanation: "EXISTS con LIMIT.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id) LIMIT",
-        debugHint: "Manca il numero di righe per il LIMIT.",
-      },
-      {
-        titleTemplate: "EXISTS con ORDER BY e LIMIT",
-        descTemplate:
-          "Seleziona i primi 5 prodotti che hanno recensioni, ordinati per prezzo decrescente.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id) ORDER BY prezzo DESC LIMIT 5",
-        hints: [
-          "EXISTS con ORDER BY e LIMIT",
-          "WHERE EXISTS (...) ORDER BY prezzo DESC LIMIT 5",
-        ],
-        explanation: "EXISTS con ordinamento e LIMIT.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id) ORDER BY prezzo DESC LIMIT",
-        debugHint: "Manca il numero di righe per il LIMIT.",
-      },
-      {
-        titleTemplate: "EXISTS Complesso Finale",
-        descTemplate:
-          "Seleziona gli utenti Premium italiani che hanno ordini dopo il 1 Gennaio 2023, ordinati per nome A-Z.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE premium = TRUE AND paese = 'Italia' AND EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id AND ordini.data_ordine > '2023-01-01') ORDER BY nome ASC",
-        hints: [
-          "EXISTS complesso",
-          "WHERE premium = TRUE AND paese = 'Italia' AND EXISTS (...) ORDER BY nome ASC",
-        ],
-        explanation: "EXISTS complesso con filtri multipli e ordinamento.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE premium = TRUE AND paese = 'Italia' AND EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id AND ordini.data_ordine > '2023-01-01') ORDER BY nome",
-        debugHint: "Manca la direzione dell'ordinamento (ASC).",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE e LIMIT",
-        descTemplate:
-          "Seleziona i primi 3 utenti che hanno ordini dopo il 1 Gennaio 2023.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id AND ordini.data_ordine > '2023-01-01') LIMIT 3",
-        hints: ["EXISTS con WHERE e LIMIT", "WHERE EXISTS (...) LIMIT 3"],
-        explanation: "EXISTS con WHERE e LIMIT.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id AND ordini.data_ordine > '2023-01-01') LIMIT",
-        debugHint: "Manca il numero di righe per il LIMIT.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Prezzo e ORDER BY",
-        descTemplate:
-          "Seleziona i prodotti che hanno recensioni con voto >= 4, ordinati per prezzo decrescente.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.voto >= 4) ORDER BY prezzo DESC",
-        hints: [
-          "EXISTS con WHERE e ORDER BY",
-          "WHERE EXISTS (...) ORDER BY prezzo DESC",
-        ],
-        explanation: "EXISTS con WHERE e ordinamento.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.voto >= 4) ORDER BY prezzo",
-        debugHint: "Manca la direzione dell'ordinamento (DESC).",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Quantità e LIMIT",
-        descTemplate:
-          "Seleziona i primi 5 utenti che hanno ordini con quantità > 5.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id AND ordini.quantita > 5) LIMIT 5",
-        hints: ["EXISTS con WHERE e LIMIT", "WHERE EXISTS (...) LIMIT 5"],
-        explanation: "EXISTS con WHERE quantità e LIMIT.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE EXISTS (SELECT 1 FROM ordini WHERE ordini.utente_id = utenti.id AND ordini.quantita > 5) LIMIT",
-        debugHint: "Manca il numero di righe per il LIMIT.",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Data e ORDER BY",
-        descTemplate:
-          "Seleziona i prodotti che hanno recensioni dopo il 1 Gennaio 2023, ordinati per prezzo crescente.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.data_recensione > '2023-01-01') ORDER BY prezzo ASC",
-        hints: [
-          "EXISTS con WHERE data e ORDER BY",
-          "WHERE EXISTS (...) ORDER BY prezzo ASC",
-        ],
-        explanation: "EXISTS con WHERE data e ordinamento.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.data_recensione > '2023-01-01') ORDER BY prezzo",
-        debugHint: "Manca la direzione dell'ordinamento (ASC).",
-      },
-      {
-        titleTemplate: "EXISTS con WHERE Voto e LIMIT",
-        descTemplate:
-          "Seleziona i primi 3 prodotti che hanno recensioni con voto = 5.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.voto = 5) LIMIT 3",
-        hints: ["EXISTS con WHERE voto e LIMIT", "WHERE EXISTS (...) LIMIT 3"],
-        explanation: "EXISTS con WHERE voto e LIMIT.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE EXISTS (SELECT 1 FROM recensioni WHERE recensioni.prodotto_id = prodotti.id AND recensioni.voto = 5) LIMIT",
-        debugHint: "Manca il numero di righe per il LIMIT.",
-      },
-      // NEW EXERCISES FOR ADVANCED MEDIUM
-      {
-        titleTemplate: "Correlated Subquery Prezzo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' (alias p1) dove 'prezzo' è maggiore della media dei prezzi dei prodotti della STESSA categoria (calcolata con subquery correlata su p2.categoria_id = p1.categoria_id).",
-        queryTemplate:
-          "SELECT * FROM prodotti p1 WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti p2 WHERE p2.categoria_id = p1.categoria_id)",
-        hints: ["Subquery correlata"],
-        explanation: "Confronto relativo al gruppo.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti p1 WHERE prezzo > (SELECT AVG(prezzo) FROM prodotti p2 WHERE p2.categoria_id = p1.id)",
-        debugHint:
-          "La condizione di correlazione è errata: dovrebbe confrontare le categorie (categoria_id).",
-      },
-      {
-        titleTemplate: "Correlated Subquery Stock",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' (alias p1) dove 'stock' è minore della media dello stock dei prodotti della STESSA categoria (calcolata con subquery correlata su p2.categoria_id = p1.categoria_id).",
-        queryTemplate:
-          "SELECT * FROM prodotti p1 WHERE stock < (SELECT AVG(stock) FROM prodotti p2 WHERE p2.categoria_id = p1.categoria_id)",
-        hints: ["Subquery correlata stock"],
-        explanation: "Analisi inventario relativa.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti p1 WHERE stock < (SELECT AVG(stock) FROM prodotti p2 WHERE p2.categoria_id = p1.id)",
-        debugHint:
-          "La condizione di correlazione è errata: dovrebbe confrontare le categorie (categoria_id).",
-      },
-      {
-        titleTemplate: "Correlated Subquery Voto",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'recensioni' (alias r1) dove 'voto' è maggiore della media dei voti delle recensioni dello STESSO prodotto (calcolata con subquery correlata su r2.prodotto_id = r1.prodotto_id).",
-        queryTemplate:
-          "SELECT * FROM recensioni r1 WHERE voto > (SELECT AVG(voto) FROM recensioni r2 WHERE r2.prodotto_id = r1.prodotto_id)",
-        hints: ["Subquery correlata voto"],
-        explanation: "Analisi sentiment relativa.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM recensioni r1 WHERE voto > (SELECT AVG(voto) FROM recensioni r2 WHERE r2.prodotto_id = r1.id)",
-        debugHint:
-          "La condizione di correlazione è errata: dovrebbe confrontare i prodotti (prodotto_id).",
-      },
-      {
-        titleTemplate: "Subquery SELECT Conteggio",
-        descTemplate:
-          "Seleziona 'nome' e il numero di prodotti (calcolato con subquery SELECT COUNT(*) correlata) come 'NumProdotti' dalla tabella 'categorie'.",
-        queryTemplate:
-          "SELECT nome, (SELECT COUNT(*) FROM prodotti WHERE categoria_id = categorie.id) as NumProdotti FROM categorie",
-        hints: ["Subquery in SELECT"],
-        explanation: "Conteggio correlato.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, (SELECT COUNT(*) FROM prodotti WHERE categoria_id = categorie.id) NumProdotti FROM categorie",
-        debugHint: "Manca la parola chiave AS per l'alias di colonna.",
-      },
-      {
-        titleTemplate: "Subquery SELECT Media Prezzo",
-        descTemplate:
-          "Seleziona 'azienda' e il prezzo medio dei prodotti (calcolato con subquery SELECT AVG(prezzo) correlata) come 'PrezzoMedio' dalla tabella 'fornitori'.",
-        queryTemplate:
-          "SELECT azienda, (SELECT AVG(prezzo) FROM prodotti WHERE fornitore_id = fornitori.id) as PrezzoMedio FROM fornitori",
-        hints: ["Subquery in SELECT media"],
-        explanation: "Aggregazione correlata.",
-        replacements: {},
-        brokenCode:
-          "SELECT azienda, (SELECT AVG(prezzo) FROM prodotti WHERE fornitore_id = fornitori.id) PrezzoMedio FROM fornitori",
-        debugHint: "Manca la parola chiave AS per l'alias di colonna.",
-      },
-      {
-        titleTemplate: "Subquery SELECT Ultimo Ordine",
-        descTemplate:
-          "Seleziona 'nome' e la data dell'ultimo ordine (calcolata con subquery SELECT MAX(data_ordine) correlata) come 'UltimoOrdine' dalla tabella 'utenti'.",
-        queryTemplate:
-          "SELECT nome, (SELECT MAX(data_ordine) FROM ordini WHERE utente_id = utenti.id) as UltimoOrdine FROM utenti",
-        hints: ["Subquery in SELECT max"],
-        explanation: "Data correlata.",
-        replacements: {},
-        brokenCode:
-          "SELECT nome, (SELECT MAX(data_ordine) FROM ordini WHERE utente_id = utenti.id) UltimoOrdine FROM utenti",
-        debugHint: "Manca la parola chiave AS per l'alias di colonna.",
-      },
-      {
-        titleTemplate: "EXISTS Utenti Attivi Recenti",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'utenti' (alias u) dove ESISTE (EXISTS) un ordine recente (data_ordine > '2023-12-01') nella tabella 'ordini' (alias o) per lo stesso utente.",
-        queryTemplate:
-          "SELECT * FROM utenti u WHERE EXISTS (SELECT 1 FROM ordini o WHERE o.utente_id = u.id AND o.data_ordine > '2023-12-01')",
-        hints: ["EXISTS con data"],
-        explanation: "Filtro attività recente.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti u WHERE EXISTS (SELECT 1 FROM ordini o WHERE o.utente_id = u.id AND o.data_ordine > '2023-12-01'",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "NOT EXISTS Prodotti Invenduti",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' (alias p) dove NON ESISTE (NOT EXISTS) un ordine nella tabella 'ordini' (alias o) per lo stesso prodotto.",
-        queryTemplate:
-          "SELECT * FROM prodotti p WHERE NOT EXISTS (SELECT 1 FROM ordini o WHERE o.prodotto_id = p.id)",
-        hints: ["NOT EXISTS ordini"],
-        explanation: "Analisi invenduto.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti p WHERE NOT EXISTS (SELECT 1 FROM ordini o WHERE o.prodotto_id = p.id",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "NOT EXISTS Utenti Inattivi",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'utenti' (alias u) dove NON ESISTE (NOT EXISTS) un ordine nella tabella 'ordini' (alias o) per lo stesso utente.",
-        queryTemplate:
-          "SELECT * FROM utenti u WHERE NOT EXISTS (SELECT 1 FROM ordini o WHERE o.utente_id = u.id)",
-        hints: ["NOT EXISTS utenti"],
-        explanation: "Analisi churn.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti u WHERE NOT EXISTS (SELECT 1 FROM ordini o WHERE o.utente_id = u.id",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "Subquery WHERE IN Multiplo",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'id' è IN una subquery che seleziona 'prodotto_id' da 'ordini' JOIN 'utenti' dove 'utenti.premium' è TRUE.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE id IN (SELECT prodotto_id FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.premium = TRUE)",
-        hints: ["IN con JOIN"],
-        explanation: "Filtro trasversale.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE id IN (SELECT prodotto_id FROM ordini JOIN utenti ON ordini.utente_id = utenti.id WHERE utenti.premium = TRUE",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "Subquery WHERE IN Aggregato",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'utenti' dove 'id' è IN una subquery che seleziona 'utente_id' da 'ordini' raggruppati per 'utente_id' con conteggio > 5.",
-        queryTemplate:
-          "SELECT * FROM utenti WHERE id IN (SELECT utente_id FROM ordini GROUP BY utente_id HAVING COUNT(*) > 5)",
-        hints: ["IN con HAVING"],
-        explanation: "Filtro su aggregati.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM utenti WHERE id IN (SELECT utente_id FROM ordini GROUP BY utente_id HAVING COUNT(*) > 5",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "Subquery WHERE IN Media Alta",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' dove 'id' è IN una subquery che seleziona 'prodotto_id' da 'recensioni' raggruppati per 'prodotto_id' con media voti > 4.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE id IN (SELECT prodotto_id FROM recensioni GROUP BY prodotto_id HAVING AVG(voto) > 4)",
-        hints: ["IN con HAVING AVG"],
-        explanation: "Qualità alta.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE id IN (SELECT prodotto_id FROM recensioni GROUP BY prodotto_id HAVING AVG(voto) > 4",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
-      {
-        titleTemplate: "Correlated Subquery Max",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' (alias p1) dove 'prezzo' è uguale al prezzo massimo dei prodotti della STESSA categoria (calcolato con subquery correlata).",
-        queryTemplate:
-          "SELECT * FROM prodotti p1 WHERE prezzo = (SELECT MAX(prezzo) FROM prodotti p2 WHERE p2.categoria_id = p1.categoria_id)",
-        hints: ["Subquery max correlata"],
-        explanation: "Top per gruppo.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti p1 WHERE prezzo = (SELECT MAX(prezzo) FROM prodotti p2 WHERE p2.categoria_id = p1.id)",
-        debugHint:
-          "La condizione di correlazione è errata: dovrebbe confrontare le categorie (categoria_id).",
-      },
-      {
-        titleTemplate: "Correlated Subquery Min",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' (alias p1) dove 'prezzo' è uguale al prezzo minimo dei prodotti dello STESSO fornitore (calcolato con subquery correlata).",
-        queryTemplate:
-          "SELECT * FROM prodotti p1 WHERE prezzo = (SELECT MIN(prezzo) FROM prodotti p2 WHERE p2.fornitore_id = p1.fornitore_id)",
-        hints: ["Subquery min correlata"],
-        explanation: "Best price per fornitore.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti p1 WHERE prezzo = (SELECT MIN(prezzo) FROM prodotti p2 WHERE p2.fornitore_id = p1.id)",
-        debugHint:
-          "La condizione di correlazione è errata: dovrebbe confrontare i fornitori (fornitore_id).",
-      },
-      {
-        titleTemplate: "Subquery in UPDATE (Simulato)",
-        descTemplate:
-          "Seleziona tutti i campi dalla tabella 'prodotti' che verrebbero aggiornati se modificassimo i prodotti con prezzo inferiore alla media globale.",
-        queryTemplate:
-          "SELECT * FROM prodotti WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti)",
-        hints: ["Simulazione update"],
-        explanation: "Targeting massivo.",
-        replacements: {},
-        brokenCode:
-          "SELECT * FROM prodotti WHERE prezzo < (SELECT AVG(prezzo) FROM prodotti",
-        debugHint: "Manca la parentesi di chiusura della subquery.",
-      },
+        brokenCode: "SELECT MAX(price) FROM Products WHERE price < MAX(price)",
+        debugHint: "Logica valida ma sintassi errata per MAX nel WHERE."
+      }
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Ranking Prodotti",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e il rango (RANK) dei prodotti in base al 'prezzo' decrescente come 'rango' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo, RANK() OVER (ORDER BY prezzo DESC) as rango FROM prodotti",
-        hints: ["RANK() OVER", "RANK() OVER (ORDER BY prezzo DESC) as rango"],
-        explanation: "Window Function RANK.",
+        titleTemplate: "Window Function (RANK)",
+        descTemplate: "Assegna una classifica (RANK) ai prodotti in base al prezzo decrescente.",
+        queryTemplate: "SELECT name, price, RANK() OVER (ORDER BY price DESC) as rnk FROM Products",
+        hints: ["RANK() OVER (ORDER BY ...)"],
+        explanation: "Window function per ranking.",
         replacements: {},
+        brokenCode: "SELECT name, RANK(price) FROM Products",
+        debugHint: "RANK() richiede la clausola OVER."
       },
       {
-        titleTemplate: "Ranking Stock",
-        descTemplate:
-          "Seleziona 'nome', 'stock' e il rango (RANK) dei prodotti in base allo 'stock' decrescente come 'rango' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, stock, RANK() OVER (ORDER BY stock DESC) as rango FROM prodotti",
-        hints: ["RANK() OVER", "RANK() OVER (ORDER BY stock DESC) as rango"],
-        explanation: "RANK su stock.",
+        titleTemplate: "Running Total (Somma Cumulativa)",
+        descTemplate: "Calcola il totale progressivo degli ordini ordinati per data.",
+        queryTemplate: "SELECT id, order_date, order_total, SUM(order_total) OVER (ORDER BY order_date) as running_total FROM Orders",
+        hints: ["SUM(...) OVER (ORDER BY ...)"],
+        explanation: "Somma cumulativa riga per riga.",
         replacements: {},
+        brokenCode: "SELECT SUM(order_total) GROUP BY order_date",
+        debugHint: "GROUP BY aggrega, OVER mantiene le righe singole."
       },
       {
-        titleTemplate: "Ranking Voti",
-        descTemplate:
-          "Seleziona 'voto' e il rango (RANK) delle recensioni in base al 'voto' decrescente come 'rango' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT voto, RANK() OVER (ORDER BY voto DESC) as rango FROM recensioni",
-        hints: ["RANK() OVER", "RANK() OVER (ORDER BY voto DESC) as rango"],
-        explanation: "RANK su voti.",
+        titleTemplate: "Row Number per Categoria",
+        descTemplate: "Assegna un numero sequenziale ai prodotti, ricominciando da 1 per ogni categoria (PARTITION BY).",
+        queryTemplate: "SELECT name, category, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) as rn FROM Products",
+        hints: ["PARTITION BY category"],
+        explanation: "Numerazione isolata per gruppo.",
         replacements: {},
+        brokenCode: "SELECT ROW_NUMBER(category) FROM Products",
+        debugHint: "ROW_NUMBER() non accetta argomenti, usa OVER."
       },
       {
-        titleTemplate: "Ranking Quantità",
-        descTemplate:
-          "Seleziona 'quantita' e il rango (RANK) degli ordini in base alla 'quantita' decrescente come 'rango' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT quantita, RANK() OVER (ORDER BY quantita DESC) as rango FROM ordini",
-        hints: ["RANK() OVER", "RANK() OVER (ORDER BY quantita DESC) as rango"],
-        explanation: "RANK su quantità.",
+        titleTemplate: "Differenza dal Precedente (LAG)",
+        descTemplate: "Per ogni ordine, mostra la differenza di importo rispetto all'ordine precedente (in ordine di tempo).",
+        queryTemplate: "SELECT id, order_total - LAG(order_total) OVER (ORDER BY order_date) as diff FROM Orders",
+        hints: ["LAG(colonna) accede alla riga precedente."],
+        explanation: "Calcolo delta temporale.",
         replacements: {},
+        brokenCode: "SELECT order_total - PREV(order_total) FROM Orders",
+        debugHint: "La funzione standard è LAG."
       },
       {
-        titleTemplate: "DENSE_RANK Prodotti",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e il rango denso (DENSE_RANK) dei prodotti in base al 'prezzo' decrescente come 'rango' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo, DENSE_RANK() OVER (ORDER BY prezzo DESC) as rango FROM prodotti",
-        hints: [
-          "DENSE_RANK() OVER",
-          "DENSE_RANK() OVER (ORDER BY prezzo DESC) as rango",
-        ],
-        explanation: "Window Function DENSE_RANK.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "DENSE_RANK Stock",
-        descTemplate:
-          "Seleziona 'nome', 'stock' e il rango denso (DENSE_RANK) dei prodotti in base allo 'stock' decrescente come 'rango' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, stock, DENSE_RANK() OVER (ORDER BY stock DESC) as rango FROM prodotti",
-        hints: [
-          "DENSE_RANK() OVER",
-          "DENSE_RANK() OVER (ORDER BY stock DESC) as rango",
-        ],
-        explanation: "DENSE_RANK su stock.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "ROW_NUMBER Prodotti",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e il numero di riga (ROW_NUMBER) dei prodotti in base al 'prezzo' decrescente come 'numero' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo, ROW_NUMBER() OVER (ORDER BY prezzo DESC) as numero FROM prodotti",
-        hints: [
-          "ROW_NUMBER() OVER",
-          "ROW_NUMBER() OVER (ORDER BY prezzo DESC) as numero",
-        ],
-        explanation: "Window Function ROW_NUMBER.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "ROW_NUMBER Stock",
-        descTemplate:
-          "Seleziona 'nome', 'stock' e il numero di riga (ROW_NUMBER) dei prodotti in base allo 'stock' decrescente come 'numero' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, stock, ROW_NUMBER() OVER (ORDER BY stock DESC) as numero FROM prodotti",
-        hints: [
-          "ROW_NUMBER() OVER",
-          "ROW_NUMBER() OVER (ORDER BY stock DESC) as numero",
-        ],
-        explanation: "ROW_NUMBER su stock.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "RANK con PARTITION BY Categoria",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo' e il rango (RANK) partizionato per 'categoria_id' e ordinato per 'prezzo' decrescente come 'rango' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as rango FROM prodotti",
-        hints: [
-          "RANK() OVER PARTITION BY",
-          "RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as rango",
-        ],
-        explanation: "RANK con PARTITION BY.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "DENSE_RANK con PARTITION BY Categoria",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo' e il rango denso (DENSE_RANK) partizionato per 'categoria_id' e ordinato per 'prezzo' decrescente come 'rango' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, DENSE_RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as rango FROM prodotti",
-        hints: [
-          "DENSE_RANK() OVER PARTITION BY",
-          "DENSE_RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as rango",
-        ],
-        explanation: "DENSE_RANK con PARTITION BY.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "ROW_NUMBER con PARTITION BY Categoria",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo' e il numero di riga (ROW_NUMBER) partizionato per 'categoria_id' e ordinato per 'prezzo' decrescente come 'numero' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, ROW_NUMBER() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as numero FROM prodotti",
-        hints: [
-          "ROW_NUMBER() OVER PARTITION BY",
-          "ROW_NUMBER() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as numero",
-        ],
-        explanation: "ROW_NUMBER con PARTITION BY.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "RANK con PARTITION BY Utente",
-        descTemplate:
-          "Seleziona 'utente_id', 'quantita' e il rango (RANK) partizionato per 'utente_id' e ordinato per 'quantita' decrescente come 'rango' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT utente_id, quantita, RANK() OVER (PARTITION BY utente_id ORDER BY quantita DESC) as rango FROM ordini",
-        hints: [
-          "RANK() OVER PARTITION BY",
-          "RANK() OVER (PARTITION BY utente_id ORDER BY quantita DESC) as rango",
-        ],
-        explanation: "RANK con PARTITION BY utente.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "DENSE_RANK con PARTITION BY Prodotto",
-        descTemplate:
-          "Seleziona 'prodotto_id', 'voto' e il rango denso (DENSE_RANK) partizionato per 'prodotto_id' e ordinato per 'voto' decrescente come 'rango' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT prodotto_id, voto, DENSE_RANK() OVER (PARTITION BY prodotto_id ORDER BY voto DESC) as rango FROM recensioni",
-        hints: [
-          "DENSE_RANK() OVER PARTITION BY",
-          "DENSE_RANK() OVER (PARTITION BY prodotto_id ORDER BY voto DESC) as rango",
-        ],
-        explanation: "DENSE_RANK con PARTITION BY prodotto.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "ROW_NUMBER con PARTITION BY Utente",
-        descTemplate:
-          "Seleziona 'utente_id', 'data_ordine' e il numero di riga (ROW_NUMBER) partizionato per 'utente_id' e ordinato per 'data_ordine' decrescente come 'numero' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT utente_id, data_ordine, ROW_NUMBER() OVER (PARTITION BY utente_id ORDER BY data_ordine DESC) as numero FROM ordini",
-        hints: [
-          "ROW_NUMBER() OVER PARTITION BY",
-          "ROW_NUMBER() OVER (PARTITION BY utente_id ORDER BY data_ordine DESC) as numero",
-        ],
-        explanation: "ROW_NUMBER con PARTITION BY utente.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "RANK con WHERE",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e il rango (RANK) in base al 'prezzo' decrescente come 'rango' dalla tabella 'prodotti' dove 'prezzo' > 50.",
-        queryTemplate:
-          "SELECT nome, prezzo, RANK() OVER (ORDER BY prezzo DESC) as rango FROM prodotti WHERE prezzo > 50",
-        hints: ["RANK() con WHERE", "WHERE prezzo > 50"],
-        explanation: "RANK con filtro.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "DENSE_RANK con WHERE",
-        descTemplate:
-          "Seleziona 'nome', 'stock' e il rango denso (DENSE_RANK) in base allo 'stock' decrescente come 'rango' dalla tabella 'prodotti' dove 'stock' > 10.",
-        queryTemplate:
-          "SELECT nome, stock, DENSE_RANK() OVER (ORDER BY stock DESC) as rango FROM prodotti WHERE stock > 10",
-        hints: ["DENSE_RANK() con WHERE", "WHERE stock > 10"],
-        explanation: "DENSE_RANK con filtro.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "ROW_NUMBER con WHERE",
-        descTemplate:
-          "Seleziona 'voto' e il numero di riga (ROW_NUMBER) in base al 'voto' decrescente come 'numero' dalla tabella 'recensioni' dove 'voto' >= 4.",
-        queryTemplate:
-          "SELECT voto, ROW_NUMBER() OVER (ORDER BY voto DESC) as numero FROM recensioni WHERE voto >= 4",
-        hints: ["ROW_NUMBER() con WHERE", "WHERE voto >= 4"],
-        explanation: "ROW_NUMBER con filtro.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "RANK con LIMIT",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e il rango (RANK) in base al 'prezzo' decrescente come 'rango' dalla tabella 'prodotti', ordinati per 'prezzo' decrescente e limitati a 5.",
-        queryTemplate:
-          "SELECT nome, prezzo, RANK() OVER (ORDER BY prezzo DESC) as rango FROM prodotti ORDER BY prezzo DESC LIMIT 5",
-        hints: ["RANK() con LIMIT", "ORDER BY prezzo DESC LIMIT 5"],
-        explanation: "RANK con LIMIT.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "DENSE_RANK con LIMIT",
-        descTemplate:
-          "Seleziona 'nome', 'stock' e il rango denso (DENSE_RANK) in base allo 'stock' decrescente come 'rango' dalla tabella 'prodotti', ordinati per 'stock' decrescente e limitati a 5.",
-        queryTemplate:
-          "SELECT nome, stock, DENSE_RANK() OVER (ORDER BY stock DESC) as rango FROM prodotti ORDER BY stock DESC LIMIT 5",
-        hints: ["DENSE_RANK() con LIMIT", "ORDER BY stock DESC LIMIT 5"],
-        explanation: "DENSE_RANK con LIMIT.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "ROW_NUMBER con LIMIT",
-        descTemplate:
-          "Seleziona 'voto' e il numero di riga (ROW_NUMBER) in base al 'voto' decrescente come 'numero' dalla tabella 'recensioni', ordinati per 'voto' decrescente e limitati a 5.",
-        queryTemplate:
-          "SELECT voto, ROW_NUMBER() OVER (ORDER BY voto DESC) as numero FROM recensioni ORDER BY voto DESC LIMIT 5",
-        hints: ["ROW_NUMBER() con LIMIT", "ORDER BY voto DESC LIMIT 5"],
-        explanation: "ROW_NUMBER con LIMIT.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "RANK con PARTITION BY e WHERE",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo' e il rango (RANK) partizionato per 'categoria_id' e ordinato per 'prezzo' decrescente come 'rango' dalla tabella 'prodotti' dove 'prezzo' > 50.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as rango FROM prodotti WHERE prezzo > 50",
-        hints: ["RANK() OVER PARTITION BY con WHERE", "WHERE prezzo > 50"],
-        explanation: "RANK con PARTITION BY e filtro.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "DENSE_RANK con PARTITION BY e WHERE",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'stock' e il rango denso (DENSE_RANK) partizionato per 'categoria_id' e ordinato per 'stock' decrescente come 'rango' dalla tabella 'prodotti' dove 'stock' > 10.",
-        queryTemplate:
-          "SELECT nome, categoria_id, stock, DENSE_RANK() OVER (PARTITION BY categoria_id ORDER BY stock DESC) as rango FROM prodotti WHERE stock > 10",
-        hints: ["DENSE_RANK() OVER PARTITION BY con WHERE", "WHERE stock > 10"],
-        explanation: "DENSE_RANK con PARTITION BY e filtro.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "ROW_NUMBER con PARTITION BY e WHERE",
-        descTemplate:
-          "Seleziona 'utente_id', 'quantita' e il numero di riga (ROW_NUMBER) partizionato per 'utente_id' e ordinato per 'quantita' decrescente come 'numero' dalla tabella 'ordini' dove 'quantita' > 3.",
-        queryTemplate:
-          "SELECT utente_id, quantita, ROW_NUMBER() OVER (PARTITION BY utente_id ORDER BY quantita DESC) as numero FROM ordini WHERE quantita > 3",
-        hints: [
-          "ROW_NUMBER() OVER PARTITION BY con WHERE",
-          "WHERE quantita > 3",
-        ],
-        explanation: "ROW_NUMBER con PARTITION BY e filtro.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "RANK con PARTITION BY e LIMIT",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo' e il rango (RANK) partizionato per 'categoria_id' e ordinato per 'prezzo' decrescente come 'rango' dalla tabella 'prodotti', filtrando dove il rango è <= 3.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as rango FROM prodotti WHERE RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) <= 3",
-        hints: [
-          "RANK() OVER PARTITION BY con filtro",
-          "WHERE RANK() OVER (...) <= 3",
-        ],
-        explanation: "RANK con PARTITION BY e LIMIT simulato.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function Complessa Finale",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo' e il rango denso (DENSE_RANK) partizionato per 'categoria_id' e ordinato per 'prezzo' decrescente come 'rango' dalla tabella 'prodotti', dove 'prezzo' > 50 e il rango è <= 3.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, DENSE_RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as rango FROM prodotti WHERE prezzo > 50 AND DENSE_RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) <= 3",
-        hints: [
-          "DENSE_RANK() OVER PARTITION BY complesso",
-          "WHERE prezzo > 50 AND DENSE_RANK() OVER (...) <= 3",
-        ],
-        explanation:
-          "Window Function complessa con PARTITION BY, WHERE e LIMIT simulato.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "RANK con PARTITION BY e ORDER BY Multiplo",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo', 'stock' e il rango (RANK) partizionato per 'categoria_id' e ordinato per 'prezzo' decrescente e 'stock' decrescente come 'rango' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, stock, RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC, stock DESC) as rango FROM prodotti",
-        hints: [
-          "RANK() OVER PARTITION BY con ORDER BY multiplo",
-          "RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC, stock DESC) as rango",
-        ],
-        explanation: "RANK con PARTITION BY e ORDER BY multiplo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "DENSE_RANK con PARTITION BY e ORDER BY Multiplo",
-        descTemplate:
-          "Seleziona 'utente_id', 'quantita', 'data_ordine' e il rango denso (DENSE_RANK) partizionato per 'utente_id' e ordinato per 'quantita' decrescente e 'data_ordine' decrescente come 'rango' dalla tabella 'ordini'.",
-        queryTemplate:
-          "SELECT utente_id, quantita, data_ordine, DENSE_RANK() OVER (PARTITION BY utente_id ORDER BY quantita DESC, data_ordine DESC) as rango FROM ordini",
-        hints: [
-          "DENSE_RANK() OVER PARTITION BY con ORDER BY multiplo",
-          "DENSE_RANK() OVER (PARTITION BY utente_id ORDER BY quantita DESC, data_ordine DESC) as rango",
-        ],
-        explanation: "DENSE_RANK con PARTITION BY e ORDER BY multiplo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "ROW_NUMBER con PARTITION BY e ORDER BY Multiplo",
-        descTemplate:
-          "Seleziona 'prodotto_id', 'voto', 'data_recensione' e il numero di riga (ROW_NUMBER) partizionato per 'prodotto_id' e ordinato per 'voto' decrescente e 'data_recensione' decrescente come 'numero' dalla tabella 'recensioni'.",
-        queryTemplate:
-          "SELECT prodotto_id, voto, data_recensione, ROW_NUMBER() OVER (PARTITION BY prodotto_id ORDER BY voto DESC, data_recensione DESC) as numero FROM recensioni",
-        hints: [
-          "ROW_NUMBER() OVER PARTITION BY con ORDER BY multiplo",
-          "ROW_NUMBER() OVER (PARTITION BY prodotto_id ORDER BY voto DESC, data_recensione DESC) as numero",
-        ],
-        explanation: "ROW_NUMBER con PARTITION BY e ORDER BY multiplo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "RANK con PARTITION BY e WHERE Complesso",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo', 'stock' e il rango (RANK) partizionato per 'categoria_id' e ordinato per 'prezzo' decrescente come 'rango' dalla tabella 'prodotti' dove 'prezzo' > 50 e 'stock' > 10.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, stock, RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC) as rango FROM prodotti WHERE prezzo > 50 AND stock > 10",
-        hints: [
-          "RANK() OVER PARTITION BY con WHERE multiplo",
-          "WHERE prezzo > 50 AND stock > 10",
-        ],
-        explanation: "RANK con PARTITION BY e WHERE multiplo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function Finale Complessa",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo' e il rango denso (DENSE_RANK) partizionato per 'categoria_id' e ordinato per 'prezzo' decrescente e 'stock' decrescente come 'rango' dalla tabella 'prodotti' dove 'prezzo' > 50 e il rango è <= 3.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, DENSE_RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC, stock DESC) as rango FROM prodotti WHERE prezzo > 50 AND DENSE_RANK() OVER (PARTITION BY categoria_id ORDER BY prezzo DESC, stock DESC) <= 3",
-        hints: [
-          "DENSE_RANK() OVER PARTITION BY finale",
-          "WHERE prezzo > 50 AND DENSE_RANK() OVER (...) <= 3",
-        ],
-        explanation:
-          "Window Function finale complessa con PARTITION BY, WHERE multiplo e ORDER BY multiplo.",
-        replacements: {},
-      },
-      // NEW EXERCISES FOR ADVANCED HARD
-      {
-        titleTemplate: "CTE Semplice",
-        descTemplate:
-          "Usa una CTE chiamata 'MediaPrezzi' per calcolare la media dei prezzi (come 'avg_p') e poi seleziona tutti i campi dalla tabella 'prodotti' e 'MediaPrezzi' dove 'prezzo' è maggiore di 'avg_p'.",
-        queryTemplate:
-          "WITH MediaPrezzi AS (SELECT AVG(prezzo) as avg_p FROM prodotti) SELECT * FROM prodotti, MediaPrezzi WHERE prezzo > avg_p",
-        hints: ["WITH CTE"],
-        explanation: "CTE base.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "CTE Multipla",
-        descTemplate:
-          "Usa due CTE: 'Costosi' (prezzo > 100) e 'Economici' (prezzo < 20), poi seleziona tutto da 'Costosi' UNION tutto da 'Economici'.",
-        queryTemplate:
-          "WITH Costosi AS (SELECT * FROM prodotti WHERE prezzo > 100), Economici AS (SELECT * FROM prodotti WHERE prezzo < 20) SELECT * FROM Costosi UNION SELECT * FROM Economici",
-        hints: ["WITH CTE1, CTE2"],
-        explanation: "CTE multiple.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "CTE con Aggregazione",
-        descTemplate:
-          "Usa una CTE chiamata 'SpeseUtenti' per calcolare il totale vendite per utente (SUM(quantita * 10) come 'totale'), poi seleziona tutti i campi da 'SpeseUtenti' dove 'totale' > 1000.",
-        queryTemplate:
-          "WITH SpeseUtenti AS (SELECT utente_id, SUM(quantita * 10) as totale FROM ordini GROUP BY utente_id) SELECT * FROM SpeseUtenti WHERE totale > 1000",
-        hints: ["CTE Group By"],
-        explanation: "CTE per pre-aggregazione.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function LAG",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e il prezzo precedente (LAG(prezzo)) ordinato per 'prezzo' come 'PrezzoPrecedente' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo, LAG(prezzo) OVER (ORDER BY prezzo) as PrezzoPrecedente FROM prodotti",
-        hints: ["LAG() OVER"],
-        explanation: "Accesso riga precedente.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function LEAD",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e il prezzo successivo (LEAD(prezzo)) ordinato per 'prezzo' come 'PrezzoSuccessivo' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo, LEAD(prezzo) OVER (ORDER BY prezzo) as PrezzoSuccessivo FROM prodotti",
-        hints: ["LEAD() OVER"],
-        explanation: "Accesso riga successiva.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function NTILE",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e il quartile (NTILE(4)) ordinato per 'prezzo' come 'Quartile' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo, NTILE(4) OVER (ORDER BY prezzo) as Quartile FROM prodotti",
-        hints: ["NTILE(4)"],
-        explanation: "Statistica descrittiva.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function Running Total",
-        descTemplate:
-          "Seleziona 'id', 'stock' e la somma cumulativa dello 'stock' (SUM(stock) OVER) ordinata per 'id' come 'StockCumulativo' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT id, stock, SUM(stock) OVER (ORDER BY id) as StockCumulativo FROM prodotti",
-        hints: ["SUM() OVER ORDER BY"],
-        explanation: "Totale progressivo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function Moving Avg",
-        descTemplate:
-          "Seleziona 'id', 'prezzo' e la media mobile del 'prezzo' (AVG(prezzo) OVER) sugli ultimi 3 prodotti (ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) ordinati per 'id' come 'MediaMobile' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT id, prezzo, AVG(prezzo) OVER (ORDER BY id ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as MediaMobile FROM prodotti",
-        hints: ["ROWS BETWEEN"],
-        explanation: "Media mobile.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "CTE Ricorsiva (Simulata)",
-        descTemplate:
-          "Usa una CTE Ricorsiva chiamata 'Numeri' per generare una sequenza da 1 a 5, poi seleziona tutto da 'Numeri'.",
-        queryTemplate:
-          "WITH RECURSIVE Numeri AS (SELECT 1 as n UNION ALL SELECT n + 1 FROM Numeri WHERE n < 5) SELECT * FROM Numeri",
+        titleTemplate: "CTE Ricorsiva (Simulazione)",
+        descTemplate: "Esercizio concettuale: Genera numeri da 1 a 5 (in molti DB richiede RECURSIVE).",
+        queryTemplate: "WITH RECURSIVE cnt(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM cnt WHERE x<5) SELECT x FROM cnt",
         hints: ["WITH RECURSIVE"],
-        explanation: "Generazione sequenza.",
+        explanation: "Generazione dati.",
         replacements: {},
-      },
-      {
-        titleTemplate: "CTE per Classifica",
-        descTemplate:
-          "Usa una CTE chiamata 'Classifica' per calcolare il rango vendite per utente (RANK() su COUNT(*) DESC come 'rnk'), poi seleziona tutto da 'Classifica' dove 'rnk' <= 3.",
-        queryTemplate:
-          "WITH Classifica AS (SELECT utente_id, RANK() OVER (ORDER BY COUNT(*) DESC) as rnk FROM ordini GROUP BY utente_id) SELECT * FROM Classifica WHERE rnk <= 3",
-        hints: ["CTE con Window Func"],
-        explanation: "Ranking pulito.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function Percent Rank",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e il rango percentuale (PERCENT_RANK()) ordinato per 'prezzo' come 'PctRank' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo, PERCENT_RANK() OVER (ORDER BY prezzo) as PctRank FROM prodotti",
-        hints: ["PERCENT_RANK()"],
-        explanation: "Statistica avanzata.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function First Value",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo' e il primo valore di 'prezzo' (FIRST_VALUE) partizionato per 'categoria_id' e ordinato per 'prezzo' ASC come 'PrezzoMinCategoria' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, FIRST_VALUE(prezzo) OVER (PARTITION BY categoria_id ORDER BY prezzo ASC) as PrezzoMinCategoria FROM prodotti",
-        hints: ["FIRST_VALUE()"],
-        explanation: "Confronto con primo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function Last Value",
-        descTemplate:
-          "Seleziona 'nome', 'categoria_id', 'prezzo' e l'ultimo valore di 'prezzo' (LAST_VALUE) partizionato per 'categoria_id' e ordinato per 'prezzo' ASC (con frame UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) come 'PrezzoMaxCategoria' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, categoria_id, prezzo, LAST_VALUE(prezzo) OVER (PARTITION BY categoria_id ORDER BY prezzo ASC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as PrezzoMaxCategoria FROM prodotti",
-        hints: ["LAST_VALUE() con Frame"],
-        explanation: "Confronto con ultimo.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "CTE con Join Complessa",
-        descTemplate:
-          "Usa due CTE: 'Venduti' (DISTINCT prodotto_id da ordini) e 'Recensiti' (DISTINCT prodotto_id da recensioni), poi seleziona tutto dalla JOIN tra 'Venduti' e 'Recensiti'.",
-        queryTemplate:
-          "WITH Venduti AS (SELECT DISTINCT prodotto_id FROM ordini), Recensiti AS (SELECT DISTINCT prodotto_id FROM recensioni) SELECT * FROM Venduti JOIN Recensiti ON Venduti.prodotto_id = Recensiti.prodotto_id",
-        hints: ["CTE Join"],
-        explanation: "Logica a step.",
-        replacements: {},
-      },
-      {
-        titleTemplate: "Window Function Partition Avg Diff",
-        descTemplate:
-          "Seleziona 'nome', 'prezzo' e la differenza tra 'prezzo' e la media di categoria (AVG(prezzo) OVER PARTITION BY categoria_id) come 'DiffDaMedia' dalla tabella 'prodotti'.",
-        queryTemplate:
-          "SELECT nome, prezzo, prezzo - AVG(prezzo) OVER (PARTITION BY categoria_id) as DiffDaMedia FROM prodotti",
-        hints: ["AVG() OVER PARTITION"],
-        explanation: "Scostamento dalla media.",
-        replacements: {},
-      },
-    ],
-  },
+        brokenCode: "WITH cnt AS (SELECT 1 UNION SELECT x+1)",
+        debugHint: "Serve RECURSIVE e condizione di stop."
+      }
+    ]
+  }
 };
 
+// --- GENERATOR FUNCTION ---
 export const generateExercises = (
   topicId: TopicId,
-  difficulty: Difficulty
+  difficulty: Difficulty,
+  count: number = 5
 ): Exercise[] => {
-  const exercises: Exercise[] = [];
-  const TOTAL = 30; // 30 per difficoltà = 90 totali per topic
+  const topicData = QUESTION_DATABASE[topicId];
+  if (!topicData) return [];
 
-  try {
-    const topicData = QUESTION_DATABASE[topicId];
-    // Fallback logic
-    let blueprints = topicData?.[difficulty];
-    if (!blueprints || blueprints.length === 0)
-      blueprints = topicData?.[Difficulty.Easy];
-    if (!blueprints || blueprints.length === 0) {
-      return [
-        {
-          id: "empty",
-          topicId,
-          difficulty,
-          title: "Nessun Esercizio",
-          description: "Cambia argomento o difficoltà.",
-          initialQuery: "",
-          solutionQuery: "SELECT 1",
-          hints: [],
-          explanation: "",
-        },
-      ];
-    }
+  const blueprints = topicData[difficulty] || [];
+  if (blueprints.length === 0) return [];
 
-    // Ensure we have enough unique blueprints
-    if (blueprints.length < TOTAL) {
-      console.warn(
-        `Warning: Only ${blueprints.length} blueprints available for ${topicId}/${difficulty}, need ${TOTAL}`
-      );
-    }
+  // Shuffle and pick
+  const selectedBlueprints = shuffleArray(blueprints).slice(0, count);
 
-    // Shuffle blueprints for variety on regeneration
-    const shuffledBlueprints = shuffleArray(blueprints);
+  return selectedBlueprints.map((bp, index) => {
+    let title = bp.titleTemplate;
+    let description = bp.descTemplate;
+    let query = bp.queryTemplate;
+    let brokenCode = bp.brokenCode;
+    let explanation = bp.explanation;
+    let debugHint = bp.debugHint;
 
-    // Track used blueprint combinations to avoid duplicates
-    const usedCombinations = new Set<string>();
-
-    // Generate exercises ensuring uniqueness
-    let attempts = 0;
-    const maxAttempts = TOTAL * 10; // Prevent infinite loops
-
-    while (exercises.length < TOTAL && attempts < maxAttempts) {
-      attempts++;
-
-      // Cycle through blueprints, then use random if needed
-      const bpIndex =
-        exercises.length < shuffledBlueprints.length
-          ? exercises.length
-          : Math.floor(Math.random() * shuffledBlueprints.length);
-      const bp = shuffledBlueprints[bpIndex];
-
-      // Generate replacements
-      let title = bp.titleTemplate;
-      let desc = bp.descTemplate;
-      let query = bp.queryTemplate;
-      let hints = [...bp.hints];
-      const replacementValues: Record<string, string | number> = {};
-
-      if (bp.replacements) {
-        Object.keys(bp.replacements).forEach((key) => {
-          const vals = bp.replacements![key];
-          const val = getRandomItem(vals);
-          replacementValues[key] = val;
-          const regex = new RegExp(`\\{${key}\\}`, "g");
-
-          title = title.replace(regex, String(val));
-          desc = desc.replace(regex, String(val));
-          query = query.replace(regex, String(val));
-          hints = hints.map((h) => h.replace(regex, String(val)));
-        });
-      }
-
-      // Create unique key for this combination
-      const combinationKey = `${bp.titleTemplate}_${JSON.stringify(
-        replacementValues
-      )}`;
-
-      // Skip if this exact combination was already used
-      if (usedCombinations.has(combinationKey)) {
-        continue;
-      }
-
-      usedCombinations.add(combinationKey);
-
-      // Add timestamp and random ID for uniqueness
-      exercises.push({
-        id: `${topicId}_${difficulty}_${
-          exercises.length
-        }_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-        topicId,
-        difficulty,
-        title,
-        description: desc,
-        initialQuery: "",
-        solutionQuery: query,
-        brokenCode: bp.brokenCode, // Add broken code for Debug Mode
-        debugHint: bp.debugHint, // Add debug hint for Debug Mode
-        hints: hints,
-        explanation: bp.explanation,
+    // Perform replacements if any
+    if (bp.replacements) {
+      Object.entries(bp.replacements).forEach(([key, values]) => {
+        const replacement = getRandomItem(values);
+        const regex = new RegExp(`{${key}}`, "g");
+        const replacementStr = String(replacement);
+        title = title.replace(regex, replacementStr);
+        description = description.replace(regex, replacementStr);
+        query = query.replace(regex, replacementStr);
+        brokenCode = brokenCode.replace(regex, replacementStr);
       });
     }
 
-    // Final shuffle to mix exercises
-    return shuffleArray(exercises);
-  } catch (e) {
-    console.error("Generator Error:", e);
-    return [
-      {
-        id: "error",
-        topicId,
-        difficulty,
-        title: "Errore",
-        description: "Si è verificato un errore nella generazione.",
-        initialQuery: "",
-        solutionQuery: "SELECT 1",
-        hints: [],
-        explanation: "",
-      },
-    ];
-  }
+    return {
+      id: `${topicId}-${difficulty}-${index}-${Date.now()}`,
+      topicId,
+      difficulty,
+      title,
+      description,
+      initialQuery: brokenCode,
+      solutionQuery: query,
+      hints: bp.hints,
+      explanation,
+      debugHint
+    };
+  });
 };
