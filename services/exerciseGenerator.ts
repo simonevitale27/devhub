@@ -101,2042 +101,8062 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
   [TopicId.Basics]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Audit Totale: {table}",
-        descTemplate: "Il Responsabile IT richiede un'estrazione completa della tabella '{table}' per controlli di integrità. Seleziona tutte le colonne e tutte le righe.",
-        queryTemplate: "SELECT * FROM {table}",
-        hints: ["Usa SELECT * per selezionare tutto.", "La sintassi è: SELECT * FROM {table}"],
-        explanation: "SELECT * è il comando standard per ispezionare l'intero contenuto di una tabella.",
-        replacements: { table: ["Users", "Products", "Orders", "Employees"] },
-        brokenCode: "SELETC * FROM {table}",
-        debugHint: "Controlla attentamente come hai scritto il comando 'SELECT'. C'è un errore di battitura."
+        titleTemplate: "Tutti i dati di Users",
+        descTemplate: "Seleziona tutte le colonne dalla tabella Users.",
+        queryTemplate: "SELECT * FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Users FROM *",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Lista {col} Utenti",
-        descTemplate: "Il team Marketing necessita di una lista contenente solo la colonna '{col}' dalla tabella 'Users' per una campagna mirata.",
-        queryTemplate: "SELECT {col} FROM Users",
-        hints: ["Usa SELECT {col} FROM Users"],
-        explanation: "Selezionare solo le colonne necessarie ottimizza le performance e la privacy.",
-        replacements: { col: ["email", "name", "country", "is_premium"] },
-        brokenCode: "SELECT {col} FORM Users",
-        debugHint: "La parola chiave 'FROM' sembra scritta male. Verifica lo spelling."
+        titleTemplate: "Tutti i dati di Products",
+        descTemplate: "Seleziona tutte le colonne dalla tabella Products.",
+        queryTemplate: "SELECT * FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Products FROM *",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Catalogo: {col}",
-        descTemplate: "Genera un report rapido che mostri esclusivamente la colonna '{col}' dalla tabella 'Products'.",
-        queryTemplate: "SELECT {col} FROM Products",
-        hints: ["Usa SELECT {col} FROM Products"],
-        explanation: "La proiezione (selezione di colonne specifiche) permette di creare report focalizzati.",
-        replacements: { col: ["name", "price", "stock", "category"] },
-        brokenCode: "SELECT {col} FROM Poducts",
-        debugHint: "Il nome della tabella 'Products' contiene un errore. Controlla le lettere."
-      },
-      {
-        titleTemplate: "Tutte le Righe Ordini",
-        descTemplate: "Il reparto Logistica deve analizzare gli ordini. Visualizza l'elenco completo di tutti i record nella tabella 'Orders'.",
+        titleTemplate: "Tutti i dati di Orders",
+        descTemplate: "Seleziona tutte le colonne dalla tabella Orders.",
         queryTemplate: "SELECT * FROM Orders",
-        hints: ["Usa SELECT * FROM Orders"],
-        explanation: "Visualizzare tutti i record permette l'analisi operativa.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders,",
-        debugHint: "Hai lasciato una virgola di troppo alla fine della query? In SQL la virgola separa le colonne, non chiude l'istruzione."
+        brokenCode: "SELECT Orders FROM *",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Elenco Dipendenti",
-        descTemplate: "L'ufficio HR sta aggiornando l'anagrafica. Estrai tutti i dati relativi ai dipendenti ('Employees').",
-        queryTemplate: "SELECT * FROM Employees",
-        hints: ["Usa SELECT * FROM Employees"],
-        explanation: "Mantenere l'anagrafica dipendenti accessibile è cruciale.",
-        replacements: {},
-        brokenCode: "SELECT * form Employees",
-        debugHint: "Attenzione alla parola chiave 'FROM'. È scritta correttamente?"
-      },
-      {
-        titleTemplate: "Info Prodotto: {col1}, {col2}",
-        descTemplate: "Il manager chiede un report flash con solo {col1} e {col2} dalla tabella 'Products'.",
-        queryTemplate: "SELECT {col1}, {col2} FROM Products",
-        hints: ["Seleziona le due colonne separate da virgola.", "L'ordine richiesto è importante."],
-        explanation: "I report ad-hoc richiedono spesso solo un sottoinsieme dei dati.",
-        replacements: { col1: ["name"], col2: ["price", "stock"] },
-        brokenCode: "SELECT {col1} {col2} FROM Products",
-        debugHint: "Manca la virgola per separare le due colonne."
-      },
-      {
-        titleTemplate: "Email e Paese",
-        descTemplate: "Per analizzare la provenienza degli utenti, estrai le colonne 'email' e 'country' da tutti i record in 'Users'.",
-        queryTemplate: "SELECT email, country FROM Users",
-        hints: ["Usa SELECT email, country FROM Users"],
-        explanation: "La segmentazione geografica aiuta il marketing.",
-        replacements: {},
-        brokenCode: "SELECT email; country FROM Users",
-        debugHint: "Usa la virgola (,) per separare le colonne, non il punto e virgola (;)."
-      },
-      {
-        titleTemplate: "Dettaglio Ordini: Data e Status",
-        descTemplate: "Il customer care vuole controllare lo stato degli ordini. Seleziona 'order_date' e 'status' dalla tabella 'Orders'.",
-        queryTemplate: "SELECT order_date, status FROM Orders",
-        hints: ["Seleziona le colonne separate da virgola."],
-        explanation: "Monitorare data e stato è essenziale per il tracking.",
-        replacements: {},
-        brokenCode: "SELECT order_date, status FROM Orders WHERE",
-        debugHint: "Rimuovi la clausola WHERE se non stai filtrando nulla."
-      },
-      {
-        titleTemplate: "Items Ordine",
-        descTemplate: "Per verifica contabile, estrai tutte le righe dalla tabella di dettaglio 'OrderItems'.",
+        titleTemplate: "Tutti i dati di OrderItems",
+        descTemplate: "Seleziona tutte le colonne dalla tabella OrderItems.",
         queryTemplate: "SELECT * FROM OrderItems",
-        hints: ["Usa SELECT *"],
-        explanation: "La tabella di dettaglio contiene i singoli prodotti per ordine.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT ALL FROM OrderItems",
-        debugHint: "Per selezionare tutto si usa l'asterisco (*), non 'ALL'."
+        brokenCode: "SELECT OrderItems FROM *",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Nomi Dipendenti",
-        descTemplate: "Per la rubrica interna, estrai solo la colonna 'name' dalla tabella 'Employees'.",
-        queryTemplate: "SELECT name FROM Employees",
-        hints: ["Seleziona la colonna 'name'."],
-        explanation: "L'estrazione di nomi è la base per qualsiasi directory.",
+        titleTemplate: "Tutti i dati di Employees",
+        descTemplate: "Seleziona tutte le colonne dalla tabella Employees.",
+        queryTemplate: "SELECT * FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name form Employees",
-        debugHint: "Typo su FROM."
-      }
+        brokenCode: "SELECT Employees FROM *",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna name di Users",
+        descTemplate: "Seleziona solo la colonna name dalla tabella Users.",
+        queryTemplate: "SELECT name FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Users FROM name",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna email di Users",
+        descTemplate: "Seleziona solo la colonna email dalla tabella Users.",
+        queryTemplate: "SELECT email FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Users FROM email",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna country di Users",
+        descTemplate: "Seleziona solo la colonna country dalla tabella Users.",
+        queryTemplate: "SELECT country FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Users FROM country",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna name di Products",
+        descTemplate: "Seleziona solo la colonna name dalla tabella Products.",
+        queryTemplate: "SELECT name FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Products FROM name",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna category di Products",
+        descTemplate: "Seleziona solo la colonna category dalla tabella Products.",
+        queryTemplate: "SELECT category FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Products FROM category",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna price di Products",
+        descTemplate: "Seleziona solo la colonna price dalla tabella Products.",
+        queryTemplate: "SELECT price FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Products FROM price",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna id di Orders",
+        descTemplate: "Seleziona solo la colonna id dalla tabella Orders.",
+        queryTemplate: "SELECT id FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Orders FROM id",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna user_id di Orders",
+        descTemplate: "Seleziona solo la colonna user_id dalla tabella Orders.",
+        queryTemplate: "SELECT user_id FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Orders FROM user_id",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna order_date di Orders",
+        descTemplate: "Seleziona solo la colonna order_date dalla tabella Orders.",
+        queryTemplate: "SELECT order_date FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Orders FROM order_date",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna id di OrderItems",
+        descTemplate: "Seleziona solo la colonna id dalla tabella OrderItems.",
+        queryTemplate: "SELECT id FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT OrderItems FROM id",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna order_id di OrderItems",
+        descTemplate: "Seleziona solo la colonna order_id dalla tabella OrderItems.",
+        queryTemplate: "SELECT order_id FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT OrderItems FROM order_id",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna product_id di OrderItems",
+        descTemplate: "Seleziona solo la colonna product_id dalla tabella OrderItems.",
+        queryTemplate: "SELECT product_id FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT OrderItems FROM product_id",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna name di Employees",
+        descTemplate: "Seleziona solo la colonna name dalla tabella Employees.",
+        queryTemplate: "SELECT name FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Employees FROM name",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna department di Employees",
+        descTemplate: "Seleziona solo la colonna department dalla tabella Employees.",
+        queryTemplate: "SELECT department FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Employees FROM department",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Colonna hire_date di Employees",
+        descTemplate: "Seleziona solo la colonna hire_date dalla tabella Employees.",
+        queryTemplate: "SELECT hire_date FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT Employees FROM hire_date",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Due colonne di Users",
+        descTemplate: "Seleziona name e email da Users.",
+        queryTemplate: "SELECT name, email FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name email FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Altra coppia di Users",
+        descTemplate: "Seleziona email e name da Users.",
+        queryTemplate: "SELECT email, name FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT email AND name FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Due colonne di Products",
+        descTemplate: "Seleziona name e category da Products.",
+        queryTemplate: "SELECT name, category FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name category FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Altra coppia di Products",
+        descTemplate: "Seleziona category e name da Products.",
+        queryTemplate: "SELECT category, name FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT category AND name FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Due colonne di Orders",
+        descTemplate: "Seleziona id e user_id da Orders.",
+        queryTemplate: "SELECT id, user_id FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT id user_id FROM Orders",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Altra coppia di Orders",
+        descTemplate: "Seleziona user_id e id da Orders.",
+        queryTemplate: "SELECT user_id, id FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT user_id AND id FROM Orders",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Due colonne di OrderItems",
+        descTemplate: "Seleziona id e order_id da OrderItems.",
+        queryTemplate: "SELECT id, order_id FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT id order_id FROM OrderItems",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Altra coppia di OrderItems",
+        descTemplate: "Seleziona order_id e id da OrderItems.",
+        queryTemplate: "SELECT order_id, id FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT order_id AND id FROM OrderItems",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Due colonne di Employees",
+        descTemplate: "Seleziona name e department da Employees.",
+        queryTemplate: "SELECT name, department FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name department FROM Employees",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Altra coppia di Employees",
+        descTemplate: "Seleziona department e name da Employees.",
+        queryTemplate: "SELECT department, name FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT department AND name FROM Employees",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Alias Prodotto",
-        descTemplate: "Il report richiede intestazioni in italiano. Seleziona 'name' dalla tabella 'Products' e rinominala come 'Nome_Prodotto'.",
-        queryTemplate: "SELECT name AS Nome_Prodotto FROM Products",
-        hints: ["Usa AS per l'alias.", "SELECT name AS Nome_Prodotto ..."],
-        explanation: "Gli alias (AS) rendono i report più leggibili.",
+        titleTemplate: "Alias per name",
+        descTemplate: "Seleziona name renaming it as 'Valore'.",
+        queryTemplate: "SELECT name AS Valore FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name Nome_Prodotto FROM Products",
-        debugHint: "Manca la parola chiave 'AS' per definire l'alias."
+        brokenCode: "SELECT name IS Valore FROM Users",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Calcolo Valore Stock",
-        descTemplate: "Calcola il valore totale per ogni prodotto moltiplicando 'price' per 'stock'. Rinomina il risultato come 'Valore_Totale'. Estrai anche il nome.",
-        queryTemplate: "SELECT name, price * stock AS Valore_Totale FROM Products",
-        hints: ["Moltiplica le colonne.", "Usa AS per rinominare il calcolo."],
-        explanation: "SQL permette calcoli matematici diretti sulle colonne.",
+        titleTemplate: "Distinct name",
+        descTemplate: "Seleziona valori unici di name.",
+        queryTemplate: "SELECT DISTINCT name FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, price * stock Valore_Totale FROM Products",
-        debugHint: "Manca AS prima dell'alias."
+        brokenCode: "SELECT UNIQUE name FROM Users",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Prezzo Scontato ({perc}%)",
-        descTemplate: "Simula uno sconto del {perc}%. Seleziona 'name' e il prezzo moltiplicato per 0.{perc_decimal}, rinominandolo 'Prezzo_Scontato'.",
-        queryTemplate: "SELECT name, price * 0.{perc_decimal} AS Prezzo_Scontato FROM Products",
-        hints: ["Moltiplica per il fattore decimale.", "Rinomina con AS."],
-        explanation: "I calcoli di sconto sono comuni nei report di vendita.",
-        replacements: { perc: ["10", "20"], perc_decimal: ["90", "80"] },
-        brokenCode: "SELECT name, price * 0.{perc_decimal} AS Prezzo-Scontato FROM Products",
-        debugHint: "Usa underscore (_) invece del trattino (-) nell'alias."
+        titleTemplate: "Alias per name",
+        descTemplate: "Seleziona name renaming it as 'Valore'.",
+        queryTemplate: "SELECT name AS Valore FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name IS Valore FROM Products",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Stima IVA (22%)",
-        descTemplate: "Calcola il prezzo con IVA (x 1.22) per ogni prodotto. Mostra 'name' e 'price * 1.22' con alias 'Prezzo_Ivato'.",
-        queryTemplate: "SELECT name, price * 1.22 AS Prezzo_Ivato FROM Products",
-        hints: ["Moltiplica per 1.22", "Usa AS."],
-        explanation: "L'aggiunta dell'IVA è un calcolo standard.",
+        titleTemplate: "Distinct name",
+        descTemplate: "Seleziona valori unici di name.",
+        queryTemplate: "SELECT DISTINCT name FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, price * 1,22 AS Prezzo_Ivato FROM Products",
-        debugHint: "Usa il punto (.) per i decimali, non la virgola."
+        brokenCode: "SELECT UNIQUE name FROM Products",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Alias Multipli",
-        descTemplate: "Estrai da 'Users': 'name' come 'Cliente', 'email' come 'Contatto' e 'country' come 'Nazione'.",
-        queryTemplate: "SELECT name AS Cliente, email AS Contatto, country AS Nazione FROM Users",
-        hints: ["Usa AS per ogni colonna.", "Separa con virgole."],
-        explanation: "Rinominare più colonne crea report pronti all'uso.",
+        titleTemplate: "Alias per id",
+        descTemplate: "Seleziona id renaming it as 'Valore'.",
+        queryTemplate: "SELECT id AS Valore FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name AS Cliente email AS Contatto FROM Users",
-        debugHint: "Manca la virgola tra le definizioni delle colonne."
-      }
+        brokenCode: "SELECT id IS Valore FROM Orders",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Distinct id",
+        descTemplate: "Seleziona valori unici di id.",
+        queryTemplate: "SELECT DISTINCT id FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT UNIQUE id FROM Orders",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias per id",
+        descTemplate: "Seleziona id renaming it as 'Valore'.",
+        queryTemplate: "SELECT id AS Valore FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT id IS Valore FROM OrderItems",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Distinct id",
+        descTemplate: "Seleziona valori unici di id.",
+        queryTemplate: "SELECT DISTINCT id FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT UNIQUE id FROM OrderItems",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias per name",
+        descTemplate: "Seleziona name renaming it as 'Valore'.",
+        queryTemplate: "SELECT name AS Valore FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name IS Valore FROM Employees",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Distinct name",
+        descTemplate: "Seleziona valori unici di name.",
+        queryTemplate: "SELECT DISTINCT name FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT UNIQUE name FROM Employees",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Calcolo su price",
+        descTemplate: "Seleziona price moltiplicato per 2.",
+        queryTemplate: "SELECT price * 2 FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT price x 2 FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Calcolo IVA price",
+        descTemplate: "Seleziona price e il valore con IVA (1.22).",
+        queryTemplate: "SELECT price, price * 1.22 FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT price + 22% FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Calcolo su stock",
+        descTemplate: "Seleziona stock moltiplicato per 2.",
+        queryTemplate: "SELECT stock * 2 FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT stock x 2 FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Calcolo IVA stock",
+        descTemplate: "Seleziona stock e il valore con IVA (1.22).",
+        queryTemplate: "SELECT stock, stock * 1.22 FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT stock + 22% FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Calcolo su order_total",
+        descTemplate: "Seleziona order_total moltiplicato per 2.",
+        queryTemplate: "SELECT order_total * 2 FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT order_total x 2 FROM Orders",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Calcolo IVA order_total",
+        descTemplate: "Seleziona order_total e il valore con IVA (1.22).",
+        queryTemplate: "SELECT order_total, order_total * 1.22 FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT order_total + 22% FROM Orders",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Calcolo su quantity",
+        descTemplate: "Seleziona quantity moltiplicato per 2.",
+        queryTemplate: "SELECT quantity * 2 FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT quantity x 2 FROM OrderItems",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Calcolo IVA quantity",
+        descTemplate: "Seleziona quantity e il valore con IVA (1.22).",
+        queryTemplate: "SELECT quantity, quantity * 1.22 FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT quantity + 22% FROM OrderItems",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 0",
+        descTemplate: "Seleziona name come 'Colonna_0'.",
+        queryTemplate: "SELECT name AS Colonna_0 FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name = Colonna_0 FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 1",
+        descTemplate: "Seleziona name come 'Colonna_1'.",
+        queryTemplate: "SELECT name AS Colonna_1 FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name = Colonna_1 FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 2",
+        descTemplate: "Seleziona id come 'Colonna_2'.",
+        queryTemplate: "SELECT id AS Colonna_2 FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT id = Colonna_2 FROM Orders",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 3",
+        descTemplate: "Seleziona id come 'Colonna_3'.",
+        queryTemplate: "SELECT id AS Colonna_3 FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT id = Colonna_3 FROM OrderItems",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 4",
+        descTemplate: "Seleziona name come 'Colonna_4'.",
+        queryTemplate: "SELECT name AS Colonna_4 FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name = Colonna_4 FROM Employees",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 5",
+        descTemplate: "Seleziona name come 'Colonna_5'.",
+        queryTemplate: "SELECT name AS Colonna_5 FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name = Colonna_5 FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 6",
+        descTemplate: "Seleziona name come 'Colonna_6'.",
+        queryTemplate: "SELECT name AS Colonna_6 FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name = Colonna_6 FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 7",
+        descTemplate: "Seleziona id come 'Colonna_7'.",
+        queryTemplate: "SELECT id AS Colonna_7 FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT id = Colonna_7 FROM Orders",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 8",
+        descTemplate: "Seleziona id come 'Colonna_8'.",
+        queryTemplate: "SELECT id AS Colonna_8 FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT id = Colonna_8 FROM OrderItems",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 9",
+        descTemplate: "Seleziona name come 'Colonna_9'.",
+        queryTemplate: "SELECT name AS Colonna_9 FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name = Colonna_9 FROM Employees",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 10",
+        descTemplate: "Seleziona name come 'Colonna_10'.",
+        queryTemplate: "SELECT name AS Colonna_10 FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name = Colonna_10 FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Alias Misto 11",
+        descTemplate: "Seleziona name come 'Colonna_11'.",
+        queryTemplate: "SELECT name AS Colonna_11 FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name = Colonna_11 FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Database Offset ({start}-{end})",
-        descTemplate: "L'auditor sta controllando un campione centrale. Estrai tutti i dati da 'Users' limitando a 20 righe e saltando le prime {skip}.",
-        queryTemplate: "SELECT * FROM Users LIMIT 20 OFFSET {skip}",
-        hints: ["Usa LIMIT insieme a OFFSET."],
-        explanation: "LIMIT e OFFSET sono la base della paginazione.",
-        replacements: { skip: ["50", "100", "200"] },
-        brokenCode: "SELECT * FROM Users LIMIT 20 SKIP {skip}",
-        debugHint: "Usa 'OFFSET', non 'SKIP'."
-      },
-      {
-        titleTemplate: "Paginazione Prodotti",
-        descTemplate: "Estrai i 10 prodotti per la pagina {page} (salta i primi {skip}). Tabella: 'Products'.",
-        queryTemplate: "SELECT * FROM Products LIMIT 10 OFFSET {skip}",
-        hints: ["LIMIT 10 OFFSET {skip}"],
-        explanation: "Paginazione standard.",
-        replacements: { page: ["2", "3"], skip: ["10", "20"] },
-        brokenCode: "SELECT * FROM Products LIMIT 10, {skip}",
-        debugHint: "Usa la sintassi standard 'LIMIT ... OFFSET ...'."
-      },
-      {
-        titleTemplate: "Distinct Multiplo",
-        descTemplate: "L'analista vuole le combinazioni uniche di 'country' e 'is_premium' da 'Users'.",
-        queryTemplate: "SELECT DISTINCT country, is_premium FROM Users",
-        hints: ["SELECT DISTINCT col1, col2 ..."],
-        explanation: "DISTINCT su più colonne mostra combinazioni uniche.",
+        titleTemplate: "Costante per Users",
+        descTemplate: "Seleziona tutte le colonne di Users e una colonna fissa 'Test'.",
+        queryTemplate: "SELECT *, 'Test' as Label FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT DISTINCT country AND is_premium FROM Users",
-        debugHint: "Usa la virgola per separare le colonne."
+        brokenCode: "SELECT *, Test FROM Users",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Distinct Ordinato",
-        descTemplate: "Estrai la lista dei paesi unici ('country') da 'Users' e ordinali alfabeticamente.",
-        queryTemplate: "SELECT DISTINCT country FROM Users ORDER BY country",
-        hints: ["DISTINCT ... ORDER BY ..."],
-        explanation: "Puoi ordinare i risultati unici.",
+        titleTemplate: "Costante per Products",
+        descTemplate: "Seleziona tutte le colonne di Products e una colonna fissa 'Test'.",
+        queryTemplate: "SELECT *, 'Test' as Label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT DISTINCT country ORDER BY country FROM Users",
-        debugHint: "ORDER BY va dopo FROM."
+        brokenCode: "SELECT *, Test FROM Products",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini Paginati",
-        descTemplate: "Mostra gli ordini (Orders) dal numero 11 al 20 (LIMIT 10, OFFSET 10).",
-        queryTemplate: "SELECT * FROM Orders LIMIT 10 OFFSET 10",
-        hints: ["OFFSET 10 salta i primi 10."],
-        explanation: "Scorrere grandi dataset in parti gestibili.",
+        titleTemplate: "Costante per Orders",
+        descTemplate: "Seleziona tutte le colonne di Orders e una colonna fissa 'Test'.",
+        queryTemplate: "SELECT *, 'Test' as Label FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders OFFSET 10 LIMIT 10",
-        debugHint: "Scrivi prima LIMIT e poi OFFSET."
+        brokenCode: "SELECT *, Test FROM Orders",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Top {x} Prodotti",
-        descTemplate: "Estrai solo i primi {x} prodotti dalla tabella 'Products'.",
-        queryTemplate: "SELECT * FROM Products LIMIT {x}",
-        hints: ["Usa LIMIT."],
-        explanation: "Utile per dashboard e anteprime.",
-        replacements: { x: ["3", "5", "8"] },
-        brokenCode: "SELECT * FROM Products TOP {x}",
-        debugHint: "Usa LIMIT {x} al posto di TOP."
-      },
-      {
-        titleTemplate: "Combinazioni Categoria/Prezzo",
-        descTemplate: "Estrai le combinazioni uniche di 'category' e 'price' dalla tabella 'Products'.",
-        queryTemplate: "SELECT DISTINCT category, price FROM Products",
-        hints: ["DISTINCT su due campi."],
-        explanation: "Analisi della struttura dell'offerta.",
+        titleTemplate: "Costante per OrderItems",
+        descTemplate: "Seleziona tutte le colonne di OrderItems e una colonna fissa 'Test'.",
+        queryTemplate: "SELECT *, 'Test' as Label FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT DISTINCT (category, price) FROM Products",
-        debugHint: "Rimuovi le parentesi."
+        brokenCode: "SELECT *, Test FROM OrderItems",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Offset Iniziale",
-        descTemplate: "Visualizza id e data degli ordini da 'Orders', saltando i primi 5 e mostrandone 5.",
-        queryTemplate: "SELECT id, order_date FROM Orders LIMIT 5 OFFSET 5",
-        hints: ["LIMIT 5 OFFSET 5"],
-        explanation: "Ignorare i dati di testa.",
+        titleTemplate: "Costante per Employees",
+        descTemplate: "Seleziona tutte le colonne di Employees e una colonna fissa 'Test'.",
+        queryTemplate: "SELECT *, 'Test' as Label FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT id, order_date FROM Orders OFFSET 5",
-        debugHint: "OFFSET richiede solitamente un LIMIT."
+        brokenCode: "SELECT *, Test FROM Employees",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Mercati (Alias Distinct)",
-        descTemplate: "Estrai i paesi unici da 'Users' e rinomina la colonna come 'Market'.",
-        queryTemplate: "SELECT DISTINCT country AS Market FROM Users",
-        hints: ["AS funziona anche con DISTINCT."],
-        explanation: "Alias sul risultato finale.",
+        titleTemplate: "Primi 3 Users",
+        descTemplate: "Seleziona le prime 3 righe da Users.",
+        queryTemplate: "SELECT * FROM Users LIMIT 3",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT DISTINCT country Market FROM Users",
-        debugHint: "Manca 'AS'."
+        brokenCode: "SELECT TOP 3 * FROM Users",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Profili Utente (Concat)",
-        descTemplate: "Crea una lista unica: 'name <email>' da 'Users', chiamando la colonna 'Contact'.",
-        queryTemplate: "SELECT DISTINCT name || ' <' || email || '>' AS Contact FROM Users",
-        hints: ["Usa || per concatenare.", "DISTINCT rimuove duplicati."],
-        explanation: "Concatena stringhe e rimuovi duplicati in un colpo solo.",
+        titleTemplate: "Offset Users",
+        descTemplate: "Seleziona 2 righe da Users saltando la prima.",
+        queryTemplate: "SELECT * FROM Users LIMIT 2 OFFSET 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT DISTINCT name + ' ' + email AS Contact FROM Users",
-        debugHint: "Usa || per le stringhe."
-      }
+        brokenCode: "SELECT * FROM Users SKIP 1 LIMIT 2",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Primi 3 Products",
+        descTemplate: "Seleziona le prime 3 righe da Products.",
+        queryTemplate: "SELECT * FROM Products LIMIT 3",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT TOP 3 * FROM Products",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Offset Products",
+        descTemplate: "Seleziona 2 righe da Products saltando la prima.",
+        queryTemplate: "SELECT * FROM Products LIMIT 2 OFFSET 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products SKIP 1 LIMIT 2",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Primi 3 Orders",
+        descTemplate: "Seleziona le prime 3 righe da Orders.",
+        queryTemplate: "SELECT * FROM Orders LIMIT 3",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT TOP 3 * FROM Orders",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Offset Orders",
+        descTemplate: "Seleziona 2 righe da Orders saltando la prima.",
+        queryTemplate: "SELECT * FROM Orders LIMIT 2 OFFSET 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Orders SKIP 1 LIMIT 2",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Primi 3 OrderItems",
+        descTemplate: "Seleziona le prime 3 righe da OrderItems.",
+        queryTemplate: "SELECT * FROM OrderItems LIMIT 3",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT TOP 3 * FROM OrderItems",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Offset OrderItems",
+        descTemplate: "Seleziona 2 righe da OrderItems saltando la prima.",
+        queryTemplate: "SELECT * FROM OrderItems LIMIT 2 OFFSET 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM OrderItems SKIP 1 LIMIT 2",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Primi 3 Employees",
+        descTemplate: "Seleziona le prime 3 righe da Employees.",
+        queryTemplate: "SELECT * FROM Employees LIMIT 3",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT TOP 3 * FROM Employees",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Offset Employees",
+        descTemplate: "Seleziona 2 righe da Employees saltando la prima.",
+        queryTemplate: "SELECT * FROM Employees LIMIT 2 OFFSET 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Employees SKIP 1 LIMIT 2",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 15",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 16",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 17",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 18",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 19",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 20",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 21",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 22",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 23",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 24",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 25",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 26",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 27",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 28",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Select Complex 29",
+        descTemplate: "Seleziona nome e email con alias specifici.",
+        queryTemplate: "SELECT name as N, email as E FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT name N, email E FROM Users",
+        debugHint: "Controlla la sintassi."
+      },
     ]
   },
   [TopicId.Filtering]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Filtra per Paese",
-        descTemplate: "Seleziona tutti gli utenti che provengono dall'Italia.",
+        titleTemplate: "Filtra ID Users",
+        descTemplate: "Seleziona da Users dove id = 1.",
+        queryTemplate: "SELECT * FROM Users WHERE id = 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Users IF id = 1",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra ID Products",
+        descTemplate: "Seleziona da Products dove id = 1.",
+        queryTemplate: "SELECT * FROM Products WHERE id = 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products IF id = 1",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra ID Orders",
+        descTemplate: "Seleziona da Orders dove id = 1.",
+        queryTemplate: "SELECT * FROM Orders WHERE id = 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Orders IF id = 1",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra ID OrderItems",
+        descTemplate: "Seleziona da OrderItems dove id = 1.",
+        queryTemplate: "SELECT * FROM OrderItems WHERE id = 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM OrderItems IF id = 1",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra ID Employees",
+        descTemplate: "Seleziona da Employees dove id = 1.",
+        queryTemplate: "SELECT * FROM Employees WHERE id = 1",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Employees IF id = 1",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra country 0",
+        descTemplate: "Seleziona da Users dove country è 'Italy'.",
         queryTemplate: "SELECT * FROM Users WHERE country = 'Italy'",
-        hints: ["Usa WHERE country = 'Italy'"],
-        explanation: "La clausola WHERE filtra le righe in base a una condizione.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users WHERE country Is 'Italy'",
-        debugHint: "Usa l'operatore '=' per i confronti esatti."
+        brokenCode: "SELECT * FROM Users WHERE country IS 'Italy'",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Filtra per Prezzo",
-        descTemplate: "Seleziona tutti i prodotti con un prezzo inferiore a 50.",
-        queryTemplate: "SELECT * FROM Products WHERE price < 50",
-        hints: ["Usa l'operatore minore (<)."],
-        explanation: "Gli operatori di confronto (<, >, =) sono fondamentali.",
+        titleTemplate: "Filtra country 1",
+        descTemplate: "Seleziona da Users dove country è 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE price less 50",
-        debugHint: "Usa il simbolo '<' invece della parola 'less'."
+        brokenCode: "SELECT * FROM Users WHERE country IS 'Italy'",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini Spediti",
-        descTemplate: "Trova tutti gli ordini con lo status 'Shipped'.",
+        titleTemplate: "Filtra country 2",
+        descTemplate: "Seleziona da Users dove country è 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Users WHERE country IS 'Italy'",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra country 3",
+        descTemplate: "Seleziona da Users dove country è 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Users WHERE country IS 'Italy'",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra country 4",
+        descTemplate: "Seleziona da Users dove country è 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Users WHERE country IS 'Italy'",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra category 0",
+        descTemplate: "Seleziona da Products dove category è 'Electronics'.",
+        queryTemplate: "SELECT * FROM Products WHERE category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE category IS 'Electronics'",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra category 1",
+        descTemplate: "Seleziona da Products dove category è 'Electronics'.",
+        queryTemplate: "SELECT * FROM Products WHERE category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE category IS 'Electronics'",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra category 2",
+        descTemplate: "Seleziona da Products dove category è 'Electronics'.",
+        queryTemplate: "SELECT * FROM Products WHERE category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE category IS 'Electronics'",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra category 3",
+        descTemplate: "Seleziona da Products dove category è 'Electronics'.",
+        queryTemplate: "SELECT * FROM Products WHERE category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE category IS 'Electronics'",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra category 4",
+        descTemplate: "Seleziona da Products dove category è 'Electronics'.",
+        queryTemplate: "SELECT * FROM Products WHERE category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE category IS 'Electronics'",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra status 0",
+        descTemplate: "Seleziona da Orders dove status è 'Shipped'.",
         queryTemplate: "SELECT * FROM Orders WHERE status = 'Shipped'",
-        hints: ["Filtra per status = 'Shipped'."],
-        explanation: "Filtrare per stato è comune nei workflow.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE status 'Shipped'",
-        debugHint: "Manca l'operatore '='."
+        brokenCode: "SELECT * FROM Orders WHERE status IS 'Shipped'",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Utenti Premium",
-        descTemplate: "Seleziona solo gli utenti che hanno l'abbonamento premium attivo.",
-        queryTemplate: "SELECT * FROM Users WHERE is_premium = true",
-        hints: ["is_premium è un campo booleano (true/false)."],
-        explanation: "I campi booleani si filtrano con true o false.",
+        titleTemplate: "Filtra status 1",
+        descTemplate: "Seleziona da Orders dove status è 'Shipped'.",
+        queryTemplate: "SELECT * FROM Orders WHERE status = 'Shipped'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users WHERE is_premium = 'yes'",
-        debugHint: "Usa true (senza virgolette) per i booleani."
+        brokenCode: "SELECT * FROM Orders WHERE status IS 'Shipped'",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Stock Basso",
-        descTemplate: "Trova i prodotti con meno di 10 unità in magazzino.",
-        queryTemplate: "SELECT * FROM Products WHERE stock < 10",
-        hints: ["Usa stock < 10"],
-        explanation: "Utile per gestire i riordini.",
+        titleTemplate: "Filtra status 2",
+        descTemplate: "Seleziona da Orders dove status è 'Shipped'.",
+        queryTemplate: "SELECT * FROM Orders WHERE status = 'Shipped'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE stock < '10'",
-        debugHint: "I numeri non vanno tra virgolette, anche se spesso funziona lo stesso."
+        brokenCode: "SELECT * FROM Orders WHERE status IS 'Shipped'",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Dipendenti IT",
-        descTemplate: "Seleziona tutti i dipendenti del dipartimento 'IT'.",
-        queryTemplate: "SELECT * FROM Employees WHERE department = 'IT'",
-        hints: ["Filtra per department."],
-        explanation: "Filtrare per dipartimento organizza le risorse umane.",
+        titleTemplate: "Filtra status 3",
+        descTemplate: "Seleziona da Orders dove status è 'Shipped'.",
+        queryTemplate: "SELECT * FROM Orders WHERE status = 'Shipped'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Employees WHERE department = IT",
-        debugHint: "Le stringhe devono essere racchiuse tra apici singoli ('IT')."
+        brokenCode: "SELECT * FROM Orders WHERE status IS 'Shipped'",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini Recenti",
-        descTemplate: "Trova gli ordini effettuati il '2024-01-01'.",
-        queryTemplate: "SELECT * FROM Orders WHERE order_date = '2024-01-01'",
-        hints: ["Le date vanno tra apici singoli."],
-        explanation: "Le date in SQL sono stringhe formattate YYYY-MM-DD.",
+        titleTemplate: "Filtra status 4",
+        descTemplate: "Seleziona da Orders dove status è 'Shipped'.",
+        queryTemplate: "SELECT * FROM Orders WHERE status = 'Shipped'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE order_date IS '2024-01-01'",
-        debugHint: "Per le date precise usa '=', non 'IS'."
+        brokenCode: "SELECT * FROM Orders WHERE status IS 'Shipped'",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Filtra per ID",
-        descTemplate: "Trova l'utente specifico con ID 5.",
-        queryTemplate: "SELECT * FROM Users WHERE id = 5",
-        hints: ["L'ID è univoco."],
-        explanation: "La ricerca per ID è la più veloce.",
+        titleTemplate: "Filtra price > 10",
+        descTemplate: "Seleziona da Products dove price > 10.",
+        queryTemplate: "SELECT * FROM Products WHERE price > 10",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users WHERE id == 5",
-        debugHint: "In SQL l'uguaglianza si esprime con un singolo '='."
-      }
+        brokenCode: "SELECT * FROM Products WHERE price BIGGER 10",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra price > 10",
+        descTemplate: "Seleziona da Products dove price > 10.",
+        queryTemplate: "SELECT * FROM Products WHERE price > 10",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE price BIGGER 10",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra price > 10",
+        descTemplate: "Seleziona da Products dove price > 10.",
+        queryTemplate: "SELECT * FROM Products WHERE price > 10",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE price BIGGER 10",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra price > 10",
+        descTemplate: "Seleziona da Products dove price > 10.",
+        queryTemplate: "SELECT * FROM Products WHERE price > 10",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE price BIGGER 10",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra stock > 5",
+        descTemplate: "Seleziona da Products dove stock > 5.",
+        queryTemplate: "SELECT * FROM Products WHERE stock > 5",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE stock BIGGER 5",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra stock > 5",
+        descTemplate: "Seleziona da Products dove stock > 5.",
+        queryTemplate: "SELECT * FROM Products WHERE stock > 5",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE stock BIGGER 5",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra stock > 5",
+        descTemplate: "Seleziona da Products dove stock > 5.",
+        queryTemplate: "SELECT * FROM Products WHERE stock > 5",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE stock BIGGER 5",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra stock > 5",
+        descTemplate: "Seleziona da Products dove stock > 5.",
+        queryTemplate: "SELECT * FROM Products WHERE stock > 5",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Products WHERE stock BIGGER 5",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra order_total > 100",
+        descTemplate: "Seleziona da Orders dove order_total > 100.",
+        queryTemplate: "SELECT * FROM Orders WHERE order_total > 100",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Orders WHERE order_total BIGGER 100",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Filtra order_total > 100",
+        descTemplate: "Seleziona da Orders dove order_total > 100.",
+        queryTemplate: "SELECT * FROM Orders WHERE order_total > 100",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "SELECT * FROM Orders WHERE order_total BIGGER 100",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Range di Prezzo",
-        descTemplate: "Trova i prodotti con prezzo compreso tra 20 e 100 (inclusi).",
-        queryTemplate: "SELECT * FROM Products WHERE price BETWEEN 20 AND 100",
-        hints: ["Usa l'operatore BETWEEN ... AND ..."],
-        explanation: "BETWEEN semplifica i filtri su intervalli.",
+        titleTemplate: "Logica AND 0",
+        descTemplate: "Filtra Users con id > 0 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 0 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE price > 20 AND < 100",
-        debugHint: "Devi ripetere il nome della colonna: 'price > 20 AND price < 100', oppure usare BETWEEN."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Paesi Multipli (IN)",
-        descTemplate: "Seleziona gli utenti che vivono in 'Italy' o 'France'.",
-        queryTemplate: "SELECT * FROM Users WHERE country IN ('Italy', 'France')",
-        hints: ["Usa l'operatore IN con una lista."],
-        explanation: "IN è più compatto di tanti OR.",
+        titleTemplate: "Logica OR 1",
+        descTemplate: "Filtra Users con id > 1 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 1 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users WHERE country IN 'Italy', 'France'",
-        debugHint: "La lista dopo IN deve essere tra parentesi tonde."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ricerca Testuale (LIKE)",
-        descTemplate: "Trova tutti i prodotti il cui nome inizia con la lettera 'S'.",
-        queryTemplate: "SELECT * FROM Products WHERE name LIKE 'S%'",
-        hints: ["Usa LIKE 'S%'."],
-        explanation: "Il simbolo % è un jolly che indica 'qualsiasi testo'.",
+        titleTemplate: "Logica AND 2",
+        descTemplate: "Filtra Users con id > 2 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 2 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE name = 'S%'",
-        debugHint: "Per i pattern matching si usa LIKE, non =."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Filtro Composto (AND)",
-        descTemplate: "Trova gli utenti 'France' che sono anche Premium.",
-        queryTemplate: "SELECT * FROM Users WHERE country = 'France' AND is_premium = true",
-        hints: ["Usa AND per combinare le condizioni."],
-        explanation: "AND richiede che entrambe le condizioni siano vere.",
+        titleTemplate: "Logica OR 3",
+        descTemplate: "Filtra Users con id > 3 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 3 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users WHERE country = 'France' & is_premium = true",
-        debugHint: "Usa 'AND', non il simbolo '&'."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Esclusione (NOT)",
-        descTemplate: "Seleziona tutti gli ordini che NON sono 'Pending'.",
-        queryTemplate: "SELECT * FROM Orders WHERE status != 'Pending'",
-        hints: ["Usa l'operatore diverso (!= o <>)."],
-        explanation: "Escludere status è utile per vedere ordini chiusi o spediti.",
+        titleTemplate: "Logica AND 4",
+        descTemplate: "Filtra Users con id > 4 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 4 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE status NOT 'Pending'",
-        debugHint: "La sintassi è 'colonna != valore' o 'NOT colonna = valore'."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 5",
+        descTemplate: "Filtra Users con id > 5 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 5 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 6",
+        descTemplate: "Filtra Users con id > 6 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 6 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 7",
+        descTemplate: "Filtra Users con id > 7 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 7 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 8",
+        descTemplate: "Filtra Users con id > 8 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 8 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 9",
+        descTemplate: "Filtra Users con id > 9 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 9 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 10",
+        descTemplate: "Filtra Users con id > 10 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 10 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 11",
+        descTemplate: "Filtra Users con id > 11 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 11 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 12",
+        descTemplate: "Filtra Users con id > 12 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 12 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 13",
+        descTemplate: "Filtra Users con id > 13 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 13 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 14",
+        descTemplate: "Filtra Users con id > 14 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 14 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 15",
+        descTemplate: "Filtra Users con id > 15 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 15 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 16",
+        descTemplate: "Filtra Users con id > 16 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 16 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 17",
+        descTemplate: "Filtra Users con id > 17 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 17 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 18",
+        descTemplate: "Filtra Users con id > 18 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 18 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 19",
+        descTemplate: "Filtra Users con id > 19 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 19 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 20",
+        descTemplate: "Filtra Users con id > 20 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 20 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 21",
+        descTemplate: "Filtra Users con id > 21 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 21 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 22",
+        descTemplate: "Filtra Users con id > 22 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 22 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 23",
+        descTemplate: "Filtra Users con id > 23 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 23 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 24",
+        descTemplate: "Filtra Users con id > 24 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 24 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 25",
+        descTemplate: "Filtra Users con id > 25 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 25 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 26",
+        descTemplate: "Filtra Users con id > 26 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 26 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 27",
+        descTemplate: "Filtra Users con id > 27 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 27 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica AND 28",
+        descTemplate: "Filtra Users con id > 28 AND country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 28 AND country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Logica OR 29",
+        descTemplate: "Filtra Users con id > 29 OR country = 'Italy'.",
+        queryTemplate: "SELECT * FROM Users WHERE id > 29 OR country = 'Italy'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Logica Complessa (OR/AND)",
-        descTemplate: "Trova i prodotti che sono nella categoria 'Electronics' OPPURE che costano meno di 10 euro.",
-        queryTemplate: "SELECT * FROM Products WHERE category = 'Electronics' OR price < 10",
-        hints: ["Usa OR per unire le condizioni."],
-        explanation: "OR richiede che almeno una delle condizioni sia vera.",
+        titleTemplate: "Like 0",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE category = 'Electronics' AND price < 10",
-        debugHint: "AND restringe troppo; per 'o l'uno o l'altro' serve OR."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Filtro Nulla (IS NULL)",
-        descTemplate: "Trova i dipendenti che non hanno un manager assegnato (manager_id è nullo).",
+        titleTemplate: "Like 1",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Like 2",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Like 3",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Like 4",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Like 5",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Like 6",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Like 7",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Like 8",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Like 9",
+        descTemplate: "Email contains '@gmail'.",
+        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail%'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Null Check 0",
+        descTemplate: "Manager IS NULL",
         queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
-        hints: ["Usa IS NULL."],
-        explanation: "I valori NULL si controllano solo con IS NULL, non con =.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Employees WHERE manager_id = NULL",
-        debugHint: "In SQL, nulla è uguale a NULL. Usa 'IS NULL'."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Priorità Operatori",
-        descTemplate: "Trova i prodotti 'Electronics' che costano più di 500, OPPURE qualsiasi prodotto 'Accessories'. Fai attenzione alle parentesi.",
-        queryTemplate: "SELECT * FROM Products WHERE (category = 'Electronics' AND price > 500) OR category = 'Accessories'",
-        hints: ["Usa parentesi per raggruppare la logica."],
-        explanation: "AND ha priorità su OR, le parentesi chiarezano l'intento.",
+        titleTemplate: "Null Check 1",
+        descTemplate: "Manager IS NULL",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE category = 'Electronics' AND price > 500 OR category = 'Accessories'",
-        debugHint: "Senza parentesi, l'interpretazione potrebbe essere diversa da quella voluta."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Pattern Matching Avanzato",
-        descTemplate: "Trova gli utenti con email che termina con '.com'.",
-        queryTemplate: "SELECT * FROM Users WHERE email LIKE '%.com'",
-        hints: ["Usa LIKE con % all'inizio."],
-        explanation: "Il jolly % può stare ovunque.",
+        titleTemplate: "Null Check 2",
+        descTemplate: "Manager IS NULL",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users WHERE email CONTAINS '.com'",
-        debugHint: "SQL standard non ha CONTAINS, usa LIKE."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Range Date",
-        descTemplate: "Trova gli ordini effettuati nel mese di Gennaio 2024 (dal 01 al 31).",
-        queryTemplate: "SELECT * FROM Orders WHERE order_date BETWEEN '2024-01-01' AND '2024-01-31'",
-        hints: ["Date tra apici, usa BETWEEN."],
-        explanation: "Filtrare per range temporali.",
+        titleTemplate: "Null Check 3",
+        descTemplate: "Manager IS NULL",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE order_date > '2024-01-01'",
-        debugHint: "Serve anche un limite superiore."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Null Check 4",
+        descTemplate: "Manager IS NULL",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Null Check 5",
+        descTemplate: "Manager IS NULL",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Null Check 6",
+        descTemplate: "Manager IS NULL",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Null Check 7",
+        descTemplate: "Manager IS NULL",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Null Check 8",
+        descTemplate: "Manager IS NULL",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Null Check 9",
+        descTemplate: "Manager IS NULL",
+        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 0",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 1",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 2",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 3",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 4",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 5",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 6",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 7",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 8",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex 9",
+        descTemplate: "AND + OR usage.",
+        queryTemplate: "SELECT * FROM Products WHERE (price < 10 OR stock > 50) AND category = 'Electronics'",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ]
   },
   [TopicId.Sorting]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Nomi Utenti A-Z",
-        descTemplate: "Ordina la lista degli utenti alfabeticamente per nome.",
+        titleTemplate: "Ordina Users name",
+        descTemplate: "Ordina Users per name crescente.",
         queryTemplate: "SELECT * FROM Users ORDER BY name ASC",
-        hints: ["Usa ORDER BY name ASC"],
-        explanation: "L'ordine alfabetico è il default per le stringhe.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users ORDER BY name",
-        debugHint: "Anche se ASC è il default, è buona pratica specificarlo per chiarezza negli esercizi."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Prezzi Decrescenti",
-        descTemplate: "Visualizza i prodotti dal più costoso al più economico.",
-        queryTemplate: "SELECT * FROM Products ORDER BY price DESC",
-        hints: ["Usa ORDER BY price DESC"],
-        explanation: "DESC inverte l'ordine standard.",
+        titleTemplate: "Ordina Users name DESC",
+        descTemplate: "Ordina Users per name decrescente.",
+        queryTemplate: "SELECT * FROM Users ORDER BY name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY price DES",
-        debugHint: "Typo in DESC."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini per Data",
-        descTemplate: "Mostra gli ordini ordinati per data (dal più vecchio).",
-        queryTemplate: "SELECT * FROM Orders ORDER BY order_date ASC",
-        hints: ["Usa ORDER BY order_date ASC"],
-        explanation: "Le date vengono ordinate cronologicamente con ASC.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Orders ORDER BY date ASC",
-        debugHint: "La colonna si chiama 'order_date'."
-      },
-      {
-        titleTemplate: "Stock Prodotti",
-        descTemplate: "Ordina i prodotti per quantità in magazzino (crescente).",
-        queryTemplate: "SELECT * FROM Products ORDER BY stock ASC",
-        hints: ["Usa ORDER BY stock ASC"],
-        explanation: "Utile per vedere cosa sta finendo.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY stock",
-        debugHint: "Specifica ASC."
-      },
-      {
-        titleTemplate: "Dipendenti per Reparto",
-        descTemplate: "Ordina i dipendenti in base al loro dipartimento.",
-        queryTemplate: "SELECT * FROM Employees ORDER BY department ASC",
-        hints: ["Usa ORDER BY department"],
-        explanation: "Raggruppa visivamente i dipendenti.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Employees SORT BY department",
-        debugHint: "In SQL si usa 'ORDER BY', non 'SORT BY'."
-      },
-      {
-        titleTemplate: "Ordini per Status",
-        descTemplate: "Ordina gli ordini alfabeticamente per il loro stato.",
-        queryTemplate: "SELECT * FROM Orders ORDER BY status ASC",
-        hints: ["Usa ORDER BY status ASC"],
-        explanation: "Crea gruppi di stati simili.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Orders ORDER status ASC",
-        debugHint: "Manca 'BY'."
-      },
-      {
-        titleTemplate: "Utenti per Paese",
-        descTemplate: "Ordina gli utenti per paese di provenienza (Z-A).",
-        queryTemplate: "SELECT * FROM Users ORDER BY country DESC",
-        hints: ["Usa ORDER BY country DESC"],
-        explanation: "Ordine alfabetico inverso.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Users ORDER BY country DOWN",
-        debugHint: "Si usa DESC, non DOWN."
-      },
-      {
-        titleTemplate: "Prodotti per Categoria",
-        descTemplate: "Ordina i prodotti in base alla loro categoria.",
-        queryTemplate: "SELECT * FROM Products ORDER BY category ASC",
-        hints: ["Usa ORDER BY category"],
-        explanation: "Raggruppa i prodotti simili.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY cat ASC",
-        debugHint: "Nome colonna errato."
-      },
-      {
-        titleTemplate: "Ordina per ID",
-        descTemplate: "Ripristina l'ordinamento naturale per ID decrescente (ultimi inseriti).",
-        queryTemplate: "SELECT * FROM Users ORDER BY id DESC",
-        hints: ["Usa ORDER BY id DESC"],
-        explanation: "Gli ID sequenziali mostrano l'ordine di inserimento.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Users ORDER BY id -1",
-        debugHint: "Usa DESC per l'invio inverso."
-      },
-      {
-        titleTemplate: "Email Ordinate",
-        descTemplate: "Ordina gli utenti per indirizzo email.",
+        titleTemplate: "Ordina Users email",
+        descTemplate: "Ordina Users per email crescente.",
         queryTemplate: "SELECT * FROM Users ORDER BY email ASC",
-        hints: ["Usa ORDER BY email"],
-        explanation: "Utile per liste di distribuzione.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users ORDER BY mail ASC",
-        debugHint: "La colonna è 'email'."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Users email DESC",
+        descTemplate: "Ordina Users per email decrescente.",
+        queryTemplate: "SELECT * FROM Users ORDER BY email DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Products name",
+        descTemplate: "Ordina Products per name crescente.",
+        queryTemplate: "SELECT * FROM Products ORDER BY name ASC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Products name DESC",
+        descTemplate: "Ordina Products per name decrescente.",
+        queryTemplate: "SELECT * FROM Products ORDER BY name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Products category",
+        descTemplate: "Ordina Products per category crescente.",
+        queryTemplate: "SELECT * FROM Products ORDER BY category ASC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Products category DESC",
+        descTemplate: "Ordina Products per category decrescente.",
+        queryTemplate: "SELECT * FROM Products ORDER BY category DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Orders id",
+        descTemplate: "Ordina Orders per id crescente.",
+        queryTemplate: "SELECT * FROM Orders ORDER BY id ASC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Orders id DESC",
+        descTemplate: "Ordina Orders per id decrescente.",
+        queryTemplate: "SELECT * FROM Orders ORDER BY id DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Orders user_id",
+        descTemplate: "Ordina Orders per user_id crescente.",
+        queryTemplate: "SELECT * FROM Orders ORDER BY user_id ASC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Orders user_id DESC",
+        descTemplate: "Ordina Orders per user_id decrescente.",
+        queryTemplate: "SELECT * FROM Orders ORDER BY user_id DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina OrderItems id",
+        descTemplate: "Ordina OrderItems per id crescente.",
+        queryTemplate: "SELECT * FROM OrderItems ORDER BY id ASC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina OrderItems id DESC",
+        descTemplate: "Ordina OrderItems per id decrescente.",
+        queryTemplate: "SELECT * FROM OrderItems ORDER BY id DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina OrderItems order_id",
+        descTemplate: "Ordina OrderItems per order_id crescente.",
+        queryTemplate: "SELECT * FROM OrderItems ORDER BY order_id ASC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina OrderItems order_id DESC",
+        descTemplate: "Ordina OrderItems per order_id decrescente.",
+        queryTemplate: "SELECT * FROM OrderItems ORDER BY order_id DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Employees name",
+        descTemplate: "Ordina Employees per name crescente.",
+        queryTemplate: "SELECT * FROM Employees ORDER BY name ASC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Employees name DESC",
+        descTemplate: "Ordina Employees per name decrescente.",
+        queryTemplate: "SELECT * FROM Employees ORDER BY name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Employees department",
+        descTemplate: "Ordina Employees per department crescente.",
+        queryTemplate: "SELECT * FROM Employees ORDER BY department ASC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Ordina Employees department DESC",
+        descTemplate: "Ordina Employees per department decrescente.",
+        queryTemplate: "SELECT * FROM Employees ORDER BY department DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Top 3 Prodotti Costosi",
-        descTemplate: "Trova i 3 prodotti con il prezzo più alto.",
-        queryTemplate: "SELECT * FROM Products ORDER BY price DESC LIMIT 3",
-        hints: ["ORDER BY ... DESC LIMIT 3"],
-        explanation: "Combina ordinamento e limite per le classifiche.",
+        titleTemplate: "Sort Multi 0",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products LIMIT 3 ORDER BY price DESC",
-        debugHint: "ORDER BY deve venire prima di LIMIT."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ultimi 5 Ordini",
-        descTemplate: "Trova i 5 ordini più recenti.",
-        queryTemplate: "SELECT * FROM Orders ORDER BY order_date DESC LIMIT 5",
-        hints: ["Ordina per data decrescente."],
-        explanation: "Il modo standard per vedere le ultime attività.",
+        titleTemplate: "Sort Multi 1",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders TOP 5 ORDER BY order_date DESC",
-        debugHint: "Usa LIMIT alla fine della query."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordinamento Multiplo",
-        descTemplate: "Ordina i prodotti per categoria e, a parità di categoria, per prezzo decrescente.",
-        queryTemplate: "SELECT * FROM Products ORDER BY category ASC, price DESC",
-        hints: ["Usa virgola per separare i criteri."],
-        explanation: "L'ordinamento secondario risolve i 'pareggi'.",
+        titleTemplate: "Sort Multi 2",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY category AND price",
-        debugHint: "Usa la virgola, non AND."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Utenti per Paese e Nome",
-        descTemplate: "Ordina utenti per paese e poi per nome.",
-        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name ASC",
-        hints: ["country ASC, name ASC"],
-        explanation: "Organizzazione gerarchica dei dati.",
+        titleTemplate: "Sort Multi 3",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users ORDER BY country, name DESC",
-        debugHint: "Il nome deve essere ASC come richiesto."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Prodotti Economici (Offset)",
-        descTemplate: "Salta i 3 prodotti più economici e mostra i successivi 3.",
-        queryTemplate: "SELECT * FROM Products ORDER BY price ASC LIMIT 3 OFFSET 3",
-        hints: ["LIMIT 3 OFFSET 3"],
-        explanation: "Paginazione su dati ordinati.",
+        titleTemplate: "Sort Multi 4",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY price ASC OFFSET 3",
-        debugHint: "OFFSET richiede LIMIT (o fetch)."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Alias nell'Ordinamento",
-        descTemplate: "Estrai 'name' come 'Prodotto' e ordina usando l'alias.",
-        queryTemplate: "SELECT name AS Prodotto FROM Products ORDER BY Prodotto ASC",
-        hints: ["Puoi usare l'alias in ORDER BY."],
-        explanation: "SQL permette di riferirsi agli alias definiti nella SELECT.",
+        titleTemplate: "Sort Multi 5",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name AS Prodotto FROM Products ORDER BY name ASC",
-        debugHint: "Funziona, ma prova a usare l'alias 'Prodotto' nell'ORDER BY."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordina per Calcolo",
-        descTemplate: "Ordina i prodotti per valore totale (prezzo * stock) decrescente.",
-        queryTemplate: "SELECT * FROM Products ORDER BY price * stock DESC",
-        hints: ["Puoi scrivere formule in ORDER BY."],
-        explanation: "L'ordinamento dinamico su valori calcolati è potente.",
+        titleTemplate: "Sort Multi 6",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY total_value DESC",
-        debugHint: "Non avendo definito 'total_value' in SELECT, devi ripetere la formula."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Dipendenti per Assunzione",
-        descTemplate: "Chi sono i primi 3 dipendenti assunti? Ordina per data assunzione.",
-        queryTemplate: "SELECT * FROM Employees ORDER BY hire_date ASC LIMIT 3",
-        hints: ["hire_date ASC"],
-        explanation: "L'anzianità si calcola sulla data di assunzione.",
+        titleTemplate: "Sort Multi 7",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Employees ORDER BY hired ASC",
-        debugHint: "Colonna 'hire_date'."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini Urgenti",
-        descTemplate: "Mostra gli ordini 'Processing' ordinati per data (i più vecchi prima).",
-        queryTemplate: "SELECT * FROM Orders WHERE status = 'Processing' ORDER BY order_date ASC",
-        hints: ["WHERE prima di ORDER BY."],
-        explanation: "Ordine corretto delle clausole: SELECT, FROM, WHERE, ORDER BY.",
+        titleTemplate: "Sort Multi 8",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders ORDER BY order_date WHERE status = 'Processing'",
-        debugHint: "Clause WHERE deve venire prima di ORDER BY."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Seconda Pagina Utenti",
-        descTemplate: "Mostra gli utenti dal 6° al 10° in ordine alfabetico.",
-        queryTemplate: "SELECT * FROM Users ORDER BY name ASC LIMIT 5 OFFSET 5",
-        hints: ["LIMIT 5 OFFSET 5"],
-        explanation: "Paginazione alfabetica.",
+        titleTemplate: "Sort Multi 9",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users ORDER BY name LIMIT 5, 5",
-        debugHint: "Meglio usare la sintassi esplicita OFFSET."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 10",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 11",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 12",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 13",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 14",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 15",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 16",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 17",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 18",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 19",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 20",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 21",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 22",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 23",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 24",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 25",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 26",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 27",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 28",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Multi 29",
+        descTemplate: "Sort by Country ASC, Name DESC",
+        queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Ordinamento Posizionale",
-        descTemplate: "Ordina i prodotti usando il numero della colonna (es. 3 per prezzo) invece del nome.",
-        queryTemplate: "SELECT id, name, price FROM Products ORDER BY 3 DESC",
-        hints: ["ORDER BY 3 fa riferimento alla terza colonna selezionata."],
-        explanation: "Scorciatoia storica, ma meno leggibile del nome.",
+        titleTemplate: "Sort Calc 0",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT id, name, price FROM Products ORDER BY column 3",
-        debugHint: "Scrivi solo il numero: ORDER BY 3."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Nulls First/Last",
-        descTemplate: "Ordina i dipendenti per manager_id. Quelli senza manager (NULL) devono apparire alla fine.",
-        queryTemplate: "SELECT * FROM Employees ORDER BY manager_id ASC NULLS LAST",
-        hints: ["Usa NULLS LAST."],
-        explanation: "Gestione fine dei valori nulli nell'ordinamento.",
+        titleTemplate: "Sort Calc 1",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Employees ORDER BY manager_id ASC LAST NULLS",
-        debugHint: "Sintassi: NULLS LAST."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Random Order",
-        descTemplate: "Seleziona 3 prodotti a caso.",
-        queryTemplate: "SELECT * FROM Products ORDER BY RAND() LIMIT 3",
-        hints: ["Usa RAND() o RANDOM() in ORDER BY."],
-        explanation: "Utile per campionamenti casuali.",
+        titleTemplate: "Sort Calc 2",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY RANDOM LIMIT 3",
-        debugHint: "RAND() è una funzione, servono le parentesi."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Best Customers (Subquery simulation)",
-        descTemplate: "Ordina gli utenti per 'is_premium' (prima i true) e poi per data creazione decrescente.",
-        queryTemplate: "SELECT * FROM Users ORDER BY is_premium DESC, created_at DESC",
-        hints: ["I booleani si ordinano come 1 (true) e 0 (false)."],
-        explanation: "Ordinare per booleano mette i TRUE prima dei FALSE (se DESC).",
+        titleTemplate: "Sort Calc 3",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users ORDER BY is_premium, created_at",
-        debugHint: "Specifica DESC per il booleano se vuoi i Premium prima."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Lunghezza Nome",
-        descTemplate: "Ordina i prodotti in base alla lunghezza del loro nome (dal più corto).",
-        queryTemplate: "SELECT * FROM Products ORDER BY LEN(name) ASC",
-        hints: ["Usa la funzione LEN() o LENGTH()."],
-        explanation: "Puoi ordinare sul risultato di funzioni.",
+        titleTemplate: "Sort Calc 4",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY SIZE(name)",
-        debugHint: "In SQL standard è LENGTH o LEN."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Paginazione Avanzata",
-        descTemplate: "Visualizza la pagina 4 (items 31-40) degli ordini ordinati per ID.",
-        queryTemplate: "SELECT * FROM Orders ORDER BY id ASC LIMIT 10 OFFSET 30",
-        hints: ["Offset = (pagina-1) * limit."],
-        explanation: "Calcolo offset: (4-1)*10 = 30.",
+        titleTemplate: "Sort Calc 5",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders ORDER BY id LIMIT 10 OFFSET 40",
-        debugHint: "Pagina 4 inizia dopo 30 items, non 40."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Sorting su CASE",
-        descTemplate: "Ordina i prodotti: prima quelli con stock < 10 ('Urgent'), poi gli altri.",
-        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock < 10 THEN 0 ELSE 1 END, stock ASC",
-        hints: ["Usa CASE WHEN in ORDER BY."],
-        explanation: "Ordinamento logico personalizzato.",
+        titleTemplate: "Sort Calc 6",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY stock < 10",
-        debugHint: "I booleani in ORDER BY variano tra database, CASE è più sicuro."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Filtra e Ordina Multi",
-        descTemplate: "Prendi prodotti 'Electronics', ordina per stock desc e poi prezzo asc.",
-        queryTemplate: "SELECT * FROM Products WHERE category = 'Electronics' ORDER BY stock DESC, price ASC",
-        hints: ["WHERE ... ORDER BY col1, col2"],
-        explanation: "Combina tutte le clausole.",
+        titleTemplate: "Sort Calc 7",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE category = 'Electronics' ORDER BY stock, price",
-        debugHint: "Definisci la direzione (DESC/ASC) per ogni colonna chiave."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Top 1 per Categoria (Simulato)",
-        descTemplate: "Estrai il prodotto più costoso in assoluto.",
-        queryTemplate: "SELECT * FROM Products ORDER BY price DESC LIMIT 1",
-        hints: ["Solo il primo record."],
-        explanation: "Il modo più semplice per trovare il max/min dell'intera tabella.",
+        titleTemplate: "Sort Calc 8",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products ORDER BY price LIMIT 1",
-        debugHint: "Senza DESC ottieni il più economico."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ultimi Arrivi Premium",
-        descTemplate: "Utenti premium recenti (ultimi 5).",
-        queryTemplate: "SELECT * FROM Users WHERE is_premium = true ORDER BY created_at DESC LIMIT 5",
-        hints: ["WHERE is_premium ... ORDER BY ..."],
-        explanation: "Dashboard tipica.",
+        titleTemplate: "Sort Calc 9",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users ORDER BY created_at WHERE is_premium = true",
-        debugHint: "L'ordine delle clausole è errato."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 10",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 11",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 12",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 13",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 14",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 15",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 16",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 17",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 18",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 19",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 20",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 21",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 22",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 23",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 24",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 25",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 26",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 27",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 28",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Calc 29",
+        descTemplate: "Sort by price * stock",
+        queryTemplate: "SELECT *, price * stock as val FROM Products ORDER BY price * stock DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ]
   },
   [TopicId.Aggregation]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Conta Utenti",
-        descTemplate: "Calcola il numero totale di utenti registrati.",
+        titleTemplate: "Conta totale Users",
+        descTemplate: "Conta quante righe ci sono in Users.",
         queryTemplate: "SELECT COUNT(*) FROM Users",
-        hints: ["Usa COUNT(*)"],
-        explanation: "COUNT(*) conta tutte le righe della tabella.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT COUNT FROM Users",
-        debugHint: "COUNT è una funzione, servono le parentesi."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Conta Prodotti",
-        descTemplate: "Quanti prodotti ci sono nel catalogo?",
+        titleTemplate: "Conta totale Products",
+        descTemplate: "Conta quante righe ci sono in Products.",
         queryTemplate: "SELECT COUNT(*) FROM Products",
-        hints: ["Usa COUNT(*)"],
-        explanation: "La funzione di aggregazione base.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT COUNT(*) Products",
-        debugHint: "Manca 'FROM'."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Prezzo Medio",
-        descTemplate: "Calcola il prezzo medio dei prodotti.",
-        queryTemplate: "SELECT AVG(price) FROM Products",
-        hints: ["Usa AVG(price)"],
-        explanation: "AVG calcola la media aritmetica.",
-        replacements: {},
-        brokenCode: "SELECT AVERAGE(price) FROM Products",
-        debugHint: "In SQL la funzione è AVG, non AVERAGE."
-      },
-      {
-        titleTemplate: "Totale Valore Ordini",
-        descTemplate: "Calcola la somma totale di tutti gli 'order_total' negli ordini.",
-        queryTemplate: "SELECT SUM(order_total) FROM Orders",
-        hints: ["Usa SUM(order_total)"],
-        explanation: "SUM somma tutti i valori di una colonna numerica.",
-        replacements: {},
-        brokenCode: "SELECT SUM(order_total) FROM Orders WHERE",
-        debugHint: "Rimuovi WHERE se vuoi il totale globale."
-      },
-      {
-        titleTemplate: "Stock Minimo",
-        descTemplate: "Trova la quantità minima di stock presente per un prodotto.",
-        queryTemplate: "SELECT MIN(stock) FROM Products",
-        hints: ["Usa MIN(stock)"],
-        explanation: "MIN trova il valore più basso.",
-        replacements: {},
-        brokenCode: "SELECT MINIMUM(stock) FROM Products",
-        debugHint: "Usa MIN, non MINIMUM."
-      },
-      {
-        titleTemplate: "Prezzo Massimo",
-        descTemplate: "Qual è il prezzo più alto nel catalogo?",
-        queryTemplate: "SELECT MAX(price) FROM Products",
-        hints: ["Usa MAX(price)"],
-        explanation: "MAX trova il valore più alto.",
-        replacements: {},
-        brokenCode: "SELECT MAX(price) FROM Products ORDER BY price",
-        debugHint: "Con MAX ottieni una sola riga, ORDER BY non serve."
-      },
-      {
-        titleTemplate: "Conta Ordini",
-        descTemplate: "Conta quanti ordini sono stati effettuati.",
+        titleTemplate: "Conta totale Orders",
+        descTemplate: "Conta quante righe ci sono in Orders.",
         queryTemplate: "SELECT COUNT(*) FROM Orders",
-        hints: ["Usa COUNT(*)"],
-        explanation: "Conta le righe in Orders.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT COUNT * FROM Orders",
-        debugHint: "Le parentesi sono obbligatorie: COUNT(*)."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Stipendio Medio (Simulato)",
-        descTemplate: "Non c'è stipendio, ma calcoliamo la media dei prezzi come esercizio.",
-        queryTemplate: "SELECT AVG(price) FROM Products",
-        hints: ["Usa AVG."],
-        explanation: "Esercizio di media.",
+        titleTemplate: "Conta totale OrderItems",
+        descTemplate: "Conta quante righe ci sono in OrderItems.",
+        queryTemplate: "SELECT COUNT(*) FROM OrderItems",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT AVG(price, stock) FROM Products",
-        debugHint: "AVG accetta un solo argomento."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Conta totale Employees",
+        descTemplate: "Conta quante righe ci sono in Employees.",
+        queryTemplate: "SELECT COUNT(*) FROM Employees",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "SUM di price",
+        descTemplate: "Calcola SUM della colonna price in Products.",
+        queryTemplate: "SELECT SUM(price) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "SUM price Alias",
+        descTemplate: "Calcola SUM di price come 'Valore'.",
+        queryTemplate: "SELECT SUM(price) as Valore FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "SUM di stock",
+        descTemplate: "Calcola SUM della colonna stock in Products.",
+        queryTemplate: "SELECT SUM(stock) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "SUM stock Alias",
+        descTemplate: "Calcola SUM di stock come 'Valore'.",
+        queryTemplate: "SELECT SUM(stock) as Valore FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "SUM di order_total",
+        descTemplate: "Calcola SUM della colonna order_total in Orders.",
+        queryTemplate: "SELECT SUM(order_total) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "SUM order_total Alias",
+        descTemplate: "Calcola SUM di order_total come 'Valore'.",
+        queryTemplate: "SELECT SUM(order_total) as Valore FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "AVG di price",
+        descTemplate: "Calcola AVG della colonna price in Products.",
+        queryTemplate: "SELECT AVG(price) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "AVG price Alias",
+        descTemplate: "Calcola AVG di price come 'Valore'.",
+        queryTemplate: "SELECT AVG(price) as Valore FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "AVG di stock",
+        descTemplate: "Calcola AVG della colonna stock in Products.",
+        queryTemplate: "SELECT AVG(stock) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "AVG stock Alias",
+        descTemplate: "Calcola AVG di stock come 'Valore'.",
+        queryTemplate: "SELECT AVG(stock) as Valore FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "AVG di order_total",
+        descTemplate: "Calcola AVG della colonna order_total in Orders.",
+        queryTemplate: "SELECT AVG(order_total) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "AVG order_total Alias",
+        descTemplate: "Calcola AVG di order_total come 'Valore'.",
+        queryTemplate: "SELECT AVG(order_total) as Valore FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MIN di price",
+        descTemplate: "Calcola MIN della colonna price in Products.",
+        queryTemplate: "SELECT MIN(price) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MIN price Alias",
+        descTemplate: "Calcola MIN di price come 'Valore'.",
+        queryTemplate: "SELECT MIN(price) as Valore FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MIN di order_total",
+        descTemplate: "Calcola MIN della colonna order_total in Orders.",
+        queryTemplate: "SELECT MIN(order_total) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MIN order_total Alias",
+        descTemplate: "Calcola MIN di order_total come 'Valore'.",
+        queryTemplate: "SELECT MIN(order_total) as Valore FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MIN di created_at",
+        descTemplate: "Calcola MIN della colonna created_at in Users.",
+        queryTemplate: "SELECT MIN(created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MIN created_at Alias",
+        descTemplate: "Calcola MIN di created_at come 'Valore'.",
+        queryTemplate: "SELECT MIN(created_at) as Valore FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MAX di price",
+        descTemplate: "Calcola MAX della colonna price in Products.",
+        queryTemplate: "SELECT MAX(price) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MAX price Alias",
+        descTemplate: "Calcola MAX di price come 'Valore'.",
+        queryTemplate: "SELECT MAX(price) as Valore FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MAX di order_total",
+        descTemplate: "Calcola MAX della colonna order_total in Orders.",
+        queryTemplate: "SELECT MAX(order_total) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MAX order_total Alias",
+        descTemplate: "Calcola MAX di order_total come 'Valore'.",
+        queryTemplate: "SELECT MAX(order_total) as Valore FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MAX di created_at",
+        descTemplate: "Calcola MAX della colonna created_at in Users.",
+        queryTemplate: "SELECT MAX(created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "MAX created_at Alias",
+        descTemplate: "Calcola MAX di created_at come 'Valore'.",
+        queryTemplate: "SELECT MAX(created_at) as Valore FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Aggregazione Extra",
+        descTemplate: "...",
+        queryTemplate: "SELECT COUNT(*) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Utenti per Paese",
-        descTemplate: "Conta quanti utenti ci sono per ogni paese.",
+        titleTemplate: "Group by country",
+        descTemplate: "Conta righe per country.",
         queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country",
-        hints: ["Usa GROUP BY country."],
-        explanation: "Raggruppa le righe per paese e conta le occorrenze.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT country, COUNT(*) FROM Users",
-        debugHint: "Se selezioni una colonna non aggregata (country), devi usarla in GROUP BY."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Prodotti per Categoria",
-        descTemplate: "Conta quanti prodotti ci sono in ogni categoria.",
+        titleTemplate: "Avg per country",
+        descTemplate: "Media per country.",
+        queryTemplate: "SELECT country, AVG(id) FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group by category",
+        descTemplate: "Conta righe per category.",
         queryTemplate: "SELECT category, COUNT(*) FROM Products GROUP BY category",
-        hints: ["GROUP BY category"],
-        explanation: "Analisi della distribuzione dei prodotti.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT category, count FROM Products GROUP BY category",
-        debugHint: "COUNT(*) è la funzione corretta."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Media Prezzi per Categoria",
-        descTemplate: "Calcola il prezzo medio dei prodotti per ogni categoria.",
-        queryTemplate: "SELECT category, AVG(price) FROM Products GROUP BY category",
-        hints: ["AVG(price) ... GROUP BY category"],
-        explanation: "Aggregazione numerica per gruppo.",
+        titleTemplate: "Avg per category",
+        descTemplate: "Media per category.",
+        queryTemplate: "SELECT category, AVG(id) FROM Products GROUP BY category",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT category, AVG(price) FROM Products GROUP BY price",
-        debugHint: "Devi raggruppare per la colonna dimensionale (category), non quella metrica (price)."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group by status",
+        descTemplate: "Conta righe per status.",
+        queryTemplate: "SELECT status, COUNT(*) FROM Orders GROUP BY status",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Avg per status",
+        descTemplate: "Media per status.",
+        queryTemplate: "SELECT status, AVG(id) FROM Orders GROUP BY status",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group by department",
+        descTemplate: "Conta righe per department.",
+        queryTemplate: "SELECT department, COUNT(*) FROM Employees GROUP BY department",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Avg per department",
+        descTemplate: "Media per department.",
+        queryTemplate: "SELECT department, AVG(id) FROM Employees GROUP BY department",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Media Prezzo per Categoria",
+        descTemplate: "...",
+        queryTemplate: "SELECT category, AVG(price) FROM Products GROUP BY category",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
         titleTemplate: "Totale Ordini per Status",
-        descTemplate: "Per ogni status ordine, calcola la somma degli importi (order_total).",
+        descTemplate: "...",
         queryTemplate: "SELECT status, SUM(order_total) FROM Orders GROUP BY status",
-        hints: ["SUM(order_total) ... GROUP BY status"],
-        explanation: "Analisi del fatturato per stato ordine.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT status, SUM(order_total) FROM Orders",
-        debugHint: "Manca GROUP BY status."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Max Stock per Fornitore",
-        descTemplate: "Trova lo stock massimo posseduto per ogni fornitore (fornitore_id).",
-        queryTemplate: "SELECT fornitore_id, MAX(stock) FROM Products GROUP BY fornitore_id",
-        hints: ["GROUP BY fornitore_id"],
-        explanation: "Massimi locali per gruppo.",
+        titleTemplate: "Group By Variation 0",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_0 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT fornitore_id, MAX(stock) FROM Products GROUP BY stock",
-        debugHint: "Raggruppa per fornitore_id."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Conta Utenti Premium per Paese",
-        descTemplate: "Conta gli utenti raggruppati per paese e status premium.",
-        queryTemplate: "SELECT country, is_premium, COUNT(*) FROM Users GROUP BY country, is_premium",
-        hints: ["GROUP BY country, is_premium"],
-        explanation: "Raggruppamento su più colonne.",
+        titleTemplate: "Group By Variation 1",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_1 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT country, is_premium, COUNT(*) FROM Users GROUP BY country",
-        debugHint: "Devi includere entrambe le colonne non aggregate nel GROUP BY."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Min/Max Prezzo Categoria",
-        descTemplate: "Per ogni categoria, mostra il prezzo minimo e massimo.",
-        queryTemplate: "SELECT category, MIN(price), MAX(price) FROM Products GROUP BY category",
-        hints: ["Puoi usare più funzioni di aggregazione."],
-        explanation: "Statistiche multiple per gruppo.",
+        titleTemplate: "Group By Variation 2",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_2 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT category, MIN(price), MAX(price) FROM Products",
-        debugHint: "Manca GROUP BY category."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 3",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_3 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 4",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_4 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 5",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_5 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 6",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_6 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 7",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_7 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 8",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_8 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 9",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_9 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 10",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_10 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 11",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_11 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 12",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_12 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 13",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_13 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 14",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_14 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 15",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_15 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 16",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_16 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 17",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_17 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 18",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_18 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Group By Variation 19",
+        descTemplate: "...",
+        queryTemplate: "SELECT country, COUNT(*) as cnt_19 FROM Users GROUP BY country",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Filtro su Aggregazione (HAVING)",
-        descTemplate: "Trova i paesi che hanno più di 5 utenti.",
-        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 5",
-        hints: ["Usa HAVING per filtrare dopo l'aggregazione."],
-        explanation: "WHERE filtra le righe prima del raggruppamento, HAVING filtra i gruppi.",
+        titleTemplate: "Having Count > 0",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 0.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 0",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT country, COUNT(*) FROM Users GROUP BY country WHERE COUNT(*) > 5",
-        debugHint: "Non puoi usare WHERE su risultati aggregati, usa HAVING."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Categorie Costose",
-        descTemplate: "Trova le categorie dove il prezzo medio dei prodotti è superiore a 50.",
-        queryTemplate: "SELECT category, AVG(price) FROM Products GROUP BY category HAVING AVG(price) > 50",
-        hints: ["HAVING AVG(price) > 50"],
-        explanation: "Filtrare gruppi basandosi su una media.",
+        titleTemplate: "Having Count > 10",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 10.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 10",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT category, AVG(price) FROM Products GROUP BY category HAVING price > 50",
-        debugHint: "In HAVING devi ripetere la funzione di aggregazione: AVG(price)."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Conta Distinti",
-        descTemplate: "Conta quanti paesi diversi ci sono nella tabella Users.",
-        queryTemplate: "SELECT COUNT(DISTINCT country) FROM Users",
-        hints: ["COUNT(DISTINCT ...)"],
-        explanation: "Conta i valori unici, ignorando i duplicati.",
+        titleTemplate: "Having Count > 20",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 20.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 20",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT DISTINCT COUNT(country) FROM Users",
-        debugHint: "La sintassi è COUNT(DISTINCT colonna)."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Having con Somma",
-        descTemplate: "Trova gli status ordine che hanno generato un totale ordini superiore a 1000.",
-        queryTemplate: "SELECT status, SUM(order_total) FROM Orders GROUP BY status HAVING SUM(order_total) > 1000",
-        hints: ["HAVING SUM(...) > 1000"],
-        explanation: "Analisi di fatturato per gruppo con soglia.",
+        titleTemplate: "Having Count > 30",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 30.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 30",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT status, SUM(order_total) FROM Orders WHERE SUM(order_total) > 1000 GROUP BY status",
-        debugHint: "WHERE non vede la SUM. Usa HAVING dopo GROUP BY."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Alias in Group By (Dialetto)",
-        descTemplate: "Raggruppa per un calcolo. Estrai la lunghezza del nome e conta quanti prodotti hanno quella lunghezza.",
-        queryTemplate: "SELECT LENGTH(name) as len, COUNT(*) FROM Products GROUP BY LENGTH(name)",
-        hints: ["Raggruppa per l'espressione LENGTH(name)."],
-        explanation: "Puoi raggruppare per il risultato di una funzione.",
+        titleTemplate: "Having Count > 40",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 40.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 40",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT LENGTH(name), COUNT(*) FROM Products GROUP BY name",
-        debugHint: "Devi raggruppare per la lunghezza, non per il nome."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Media Filtrata (CASE)",
-        descTemplate: "Calcola il prezzo medio, ma considerando solo i prodotti con stock > 0.",
-        queryTemplate: "SELECT AVG(CASE WHEN stock > 0 THEN price ELSE NULL END) FROM Products",
-        hints: ["AVG ignora i NULL."],
-        explanation: "Tecnica avanzata per fare aggregazioni condizionali.",
+        titleTemplate: "Having Count > 50",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 50.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 50",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT AVG(price) FROM Products WHERE stock > 0",
-        debugHint: "Questa è corretta ma filtra le righe. L'esercizio chiedeva la tecnica con CASE? No, WHERE è meglio qui."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 60",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 60.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 60",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 70",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 70.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 70",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 80",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 80.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 80",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 90",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 90.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 90",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 100",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 100.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 100",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 110",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 110.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 110",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 120",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 120.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 120",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 130",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 130.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 130",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 140",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 140.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 140",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 150",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 150.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 150",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 160",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 160.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 160",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 170",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 170.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 170",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 180",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 180.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 180",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 190",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 190.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 190",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 200",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 200.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 200",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 210",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 210.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 210",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 220",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 220.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 220",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 230",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 230.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 230",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 240",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 240.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 240",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 250",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 250.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 250",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 260",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 260.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 260",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 270",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 270.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 270",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 280",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 280.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 280",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Having Count > 290",
+        descTemplate: "Raggruppa per country e mostra solo quelli con count > 290.",
+        queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) > 290",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ]
   },
   [TopicId.Functions]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Nomi Maiuscoli",
-        descTemplate: "Seleziona i nomi degli utenti convertiti in maiuscolo.",
+        titleTemplate: "Upper Users name",
+        descTemplate: "Maiuscolo",
         queryTemplate: "SELECT UPPER(name) FROM Users",
-        hints: ["Usa la funzione UPPER()."],
-        explanation: "UPPER converte la stringa in maiuscolo.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT UP(name) FROM Users",
-        debugHint: "La funzione standard è UPPER."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Email Minuscole",
-        descTemplate: "Seleziona le email degli utenti convertite in minuscolo.",
-        queryTemplate: "SELECT LOWER(email) FROM Users",
-        hints: ["Usa la funzione LOWER()."],
-        explanation: "LOWER converte la stringa in minuscolo.",
+        titleTemplate: "Lower Users name",
+        descTemplate: "Minuscolo",
+        queryTemplate: "SELECT LOWER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT LOW(email) FROM Users",
-        debugHint: "La funzione standard è LOWER."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Arrotonda Prezzo",
-        descTemplate: "Seleziona i prezzi dei prodotti arrotondati all'intero più vicino.",
-        queryTemplate: "SELECT ROUND(price) FROM Products",
-        hints: ["Usa ROUND()."],
-        explanation: "ROUND arrotonda i numeri decimali.",
+        titleTemplate: "Length Users name",
+        descTemplate: "Lunghezza",
+        queryTemplate: "SELECT LENGTH(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT AROUND(price) FROM Products",
-        debugHint: "La funzione è ROUND."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Lunghezza Nome",
-        descTemplate: "Calcola la lunghezza (numero di caratteri) dei nomi dei prodotti.",
+        titleTemplate: "Upper Products name",
+        descTemplate: "Maiuscolo",
+        queryTemplate: "SELECT UPPER(name) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lower Products name",
+        descTemplate: "Minuscolo",
+        queryTemplate: "SELECT LOWER(name) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Length Products name",
+        descTemplate: "Lunghezza",
         queryTemplate: "SELECT LENGTH(name) FROM Products",
-        hints: ["Usa LENGTH()."],
-        explanation: "LENGTH restituisce la lunghezza della stringa.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT LEN(name) FROM Products",
-        debugHint: "In SQL standard è spesso LENGTH, anche se LEN funziona in alcuni DB."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Primi Caratteri",
-        descTemplate: "Estrai i primi 3 caratteri del nome di ogni prodotto.",
-        queryTemplate: "SELECT LEFT(name, 3) FROM Products",
-        hints: ["Usa LEFT(colonna, 3)."],
-        explanation: "LEFT estrae caratteri dall'inizio della stringa.",
+        titleTemplate: "ROUND Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT ROUND(price) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT START(name, 3) FROM Products",
-        debugHint: "Usa LEFT."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Concatenazione Base",
-        descTemplate: "Unisci nome e dipartimento dei dipendenti.",
-        queryTemplate: "SELECT CONCAT(name, department) FROM Employees",
-        hints: ["Usa CONCAT()."],
-        explanation: "CONCAT unisce due o più stringhe.",
+        titleTemplate: "CEIL Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT CEIL(price) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name + department FROM Employees",
-        debugHint: "In SQL standard si usa CONCAT o ||, non sempre +."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Valore Assoluto",
-        descTemplate: "Calcola il valore assoluto dello stock (anche se è sempre positivo, è un esercizio).",
-        queryTemplate: "SELECT ABS(stock) FROM Products",
-        hints: ["Usa ABS()."],
-        explanation: "ABS restituisce il valore senza segno.",
+        titleTemplate: "FLOOR Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT FLOOR(price) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT ABSOLUTE(stock) FROM Products",
-        debugHint: "La funzione è ABS."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 0",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 1",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 2",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 3",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 4",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 5",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 6",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 7",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 8",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 9",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 10",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 11",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 12",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 13",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 14",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 15",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 16",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 17",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 18",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Func Extra 19",
+        descTemplate: "...",
+        queryTemplate: "SELECT UPPER(name) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Arrotonda Decimali",
-        descTemplate: "Seleziona i prezzi arrotondati a 1 cifra decimale.",
-        queryTemplate: "SELECT ROUND(price, 1) FROM Products",
-        hints: ["Usa ROUND(colonna, decimali)."],
-        explanation: "Il secondo argomento di ROUND specifica la precisione.",
+        titleTemplate: "Concat 0",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT ROUND(price, 0.1) FROM Products",
-        debugHint: "Il secondo argomento deve essere un numero intero (es. 1)."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Sottostringa Centrale",
-        descTemplate: "Estrai 3 caratteri dal nome, partendo dal 2° carattere.",
-        queryTemplate: "SELECT SUBSTR(name, 2, 3) FROM Users",
-        hints: ["Usa SUBSTR(col, start, length)."],
-        explanation: "SUBSTR (o SUBSTRING) taglia una parte interna della stringa.",
+        titleTemplate: "Concat 1",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT MID(name, 2, 3) FROM Users",
-        debugHint: "Usa SUBSTR per compatibilità standard."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Gestione Nulli (COALESCE)",
-        descTemplate: "Seleziona manager_id dai dipendenti. Se è NULL, mostra 0.",
-        queryTemplate: "SELECT COALESCE(manager_id, 0) FROM Employees",
-        hints: ["Usa COALESCE(colonna, valore_default)."],
-        explanation: "COALESCE restituisce il primo valore non nullo.",
+        titleTemplate: "Concat 2",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT IFNULL(manager_id, 0) FROM Employees",
-        debugHint: "IFNULL è specifico (MySQL/SQLite), COALESCE è lo standard ANSI."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Concatenazione Formattata",
-        descTemplate: "Crea una stringa 'Nome (Paese)' per ogni utente.",
-        queryTemplate: "SELECT CONCAT(name, ' (', country, ')') FROM Users",
-        hints: ["CONCAT accetta più argomenti."],
-        explanation: "Puoi unire colonne e testo fisso.",
+        titleTemplate: "Concat 3",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name || ' (' || country || ')' FROM Users",
-        debugHint: "Corretto in molti DB, ma qui esercitiamo la funzione CONCAT()."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Trim Spazi",
-        descTemplate: "Rimuovi eventuali spazi iniziali e finali dai nomi dei prodotti.",
-        queryTemplate: "SELECT TRIM(name) FROM Products",
-        hints: ["Usa TRIM()."],
-        explanation: "TRIM pulisce le stringhe.",
+        titleTemplate: "Concat 4",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT CLEAN(name) FROM Products",
-        debugHint: "La funzione è TRIM."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Anno dell'Ordine",
-        descTemplate: "Estrai solo l'anno dalla data dell'ordine.",
-        queryTemplate: "SELECT YEAR(order_date) FROM Orders",
-        hints: ["Usa YEAR() su una data."],
-        explanation: "Funzioni di data per estrarre componenti.",
+        titleTemplate: "Concat 5",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT DATE_PART('year', order_date) FROM Orders",
-        debugHint: "Usa la funzione semplificata YEAR()."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Sostituzione Testo",
-        descTemplate: "Nel nome dei prodotti, sostituisci 'Pro' con 'Professional'.",
-        queryTemplate: "SELECT REPLACE(name, 'Pro', 'Professional') FROM Products",
-        hints: ["Usa REPLACE(testo, cerca, sostituisci)."],
-        explanation: "REPLACE modifica il contenuto delle stringhe al volo.",
+        titleTemplate: "Concat 6",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT SUBSTITUTE(name, 'Pro', 'Professional') FROM Products",
-        debugHint: "La funzione è REPLACE."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Concat 7",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Concat 8",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Concat 9",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Concat 10",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Concat 11",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Concat 12",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Concat 13",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Concat 14",
+        descTemplate: "Name + Email",
+        queryTemplate: "SELECT CONCAT(name, email) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 0",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 1",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 2",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 3",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 4",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 5",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 6",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 7",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 8",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 9",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 10",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 11",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 12",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 13",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Substr 14",
+        descTemplate: "First 3 chars",
+        queryTemplate: "SELECT SUBSTR(name, 1, 3) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Funzioni Annidate",
-        descTemplate: "Mostra i primi 3 caratteri del nome utente, convertiti in maiuscolo.",
-        queryTemplate: "SELECT UPPER(LEFT(name, 3)) FROM Users",
-        hints: ["Applica UPPER al risultato di LEFT."],
-        explanation: "Le funzioni possono essere annidate.",
+        titleTemplate: "Nested 0",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT LEFT(UPPER(name), 3 FROM Users",
-        debugHint: "Attento alle parentesi di chiusura."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Filtro su Anno",
-        descTemplate: "Trova gli ordini effettuati nel 2023 usando la funzione YEAR.",
-        queryTemplate: "SELECT * FROM Orders WHERE YEAR(order_date) = 2023",
-        hints: ["WHERE YEAR(order_date) = 2023"],
-        explanation: "Puoi usare funzioni nella clausola WHERE.",
+        titleTemplate: "Nested 1",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders HAVING YEAR(order_date) = 2023",
-        debugHint: "Usa WHERE, non HAVING (che è per i gruppi)."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Lunghezza Condizionale",
-        descTemplate: "Trova i prodotti il cui nome è più lungo di 10 caratteri.",
-        queryTemplate: "SELECT * FROM Products WHERE LENGTH(name) > 10",
-        hints: ["WHERE LENGTH(...) > 10"],
-        explanation: "Filtro basato su proprietà della stringa.",
+        titleTemplate: "Nested 2",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE LEN > 10",
-        debugHint: "Devi applicare LENGTH alla colonna 'name'."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Formattazione Prezzo",
-        descTemplate: "Concatena il simbolo '$' davanti al prezzo.",
-        queryTemplate: "SELECT CONCAT('$', price) FROM Products",
-        hints: ["CONCAT('$', price)"],
-        explanation: "Formattazione valuta base.",
+        titleTemplate: "Nested 3",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT '$' + price FROM Products",
-        debugHint: "Usa CONCAT per sicurezza sui tipi."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Coalesce Multiplo",
-        descTemplate: "Se manager_id è NULL, prova a mostrare department_id (simulato come 999), altrimenti 0.",
-        queryTemplate: "SELECT COALESCE(manager_id, 999) FROM Employees",
-        hints: ["COALESCE accetta vari fallback."],
-        explanation: "COALESCE scorre gli argomenti finché non trova un non-NULL.",
+        titleTemplate: "Nested 4",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT COALESCE(manager_id) FROM Employees",
-        debugHint: "Servono almeno due argomenti per avere un fallback."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Calcolo Giorni (Simulato)",
-        descTemplate: "Calcola quanti giorni sono passati dall'ordine a oggi (usa NOW()).",
-        queryTemplate: "SELECT DATEDIFF(order_date, NOW()) FROM Orders",
-        hints: ["Usa DATEDIFF."],
-        explanation: "Calcoli temporali.",
+        titleTemplate: "Nested 5",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT order_date - NOW() FROM Orders",
-        debugHint: "Usa DATEDIFF(date1, date2)."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 6",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 7",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 8",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 9",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 10",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 11",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 12",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 13",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 14",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 15",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 16",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 17",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 18",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 19",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 20",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 21",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 22",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 23",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 24",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 25",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 26",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 27",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 28",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Nested 29",
+        descTemplate: "Length of Upper",
+        queryTemplate: "SELECT LENGTH(UPPER(name)) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ]
   },
   [TopicId.Dates]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Filtra per Anno",
-        descTemplate: "Seleziona tutti gli ordini effettuati nell'anno 2023.",
-        queryTemplate: "SELECT * FROM Orders WHERE YEAR(order_date) = 2023",
-        hints: ["Usa la funzione YEAR()."],
-        explanation: "YEAR estrae l'anno da una data.",
+        titleTemplate: "YEAR OrderDate",
+        descTemplate: "...",
+        queryTemplate: "SELECT YEAR(order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE order_date = 2023",
-        debugHint: "order_date è una data completa, usa YEAR(order_date) per confrontare con l'anno."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini Futuri (Errore Dati)",
-        descTemplate: "Trova eventuali ordini con data successiva a oggi (NOW).",
-        queryTemplate: "SELECT * FROM Orders WHERE order_date > NOW()",
-        hints: ["Usa NOW() per la data corrente."],
-        explanation: "Confrontare date è standard per validazioni temporali.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE order_date > TODAY()",
-        debugHint: "La funzione standard è NOW() (o CURRENT_DATE in alcuni DB)."
-      },
-      {
-        titleTemplate: "Mese dell'Ordine",
-        descTemplate: "Estrai solo il mese dagli ordini.",
+        titleTemplate: "MONTH OrderDate",
+        descTemplate: "...",
         queryTemplate: "SELECT MONTH(order_date) FROM Orders",
-        hints: ["Usa MONTH()."],
-        explanation: "Estrae il numero del mese (1-12).",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT MON(order_date) FROM Orders",
-        debugHint: "La funzione è MONTH."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Giorno della Settimana",
-        descTemplate: "Estrai il giorno della settimana (1-7) dalla data dell'ordine.",
-        queryTemplate: "SELECT DAYOFWEEK(order_date) FROM Orders",
-        hints: ["Usa DAYOFWEEK()."],
-        explanation: "Utile per analisi settimanali.",
+        titleTemplate: "DAY OrderDate",
+        descTemplate: "...",
+        queryTemplate: "SELECT DAY(order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT WEEKDAY(order_date) FROM Orders",
-        debugHint: "WEEKDAY parte spesso da 0, DAYOFWEEK è più sicuro (1=Domenica)."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini Recenti (Filtro Data)",
-        descTemplate: "Trova gli ordini dopo il '2024-01-01'.",
-        queryTemplate: "SELECT * FROM Orders WHERE order_date >= '2024-01-01'",
-        hints: ["Usa >= con la data tra apici."],
-        explanation: "Le date letterali in SQL sono formato 'YYYY-MM-DD'.",
+        titleTemplate: "HOUR OrderDate",
+        descTemplate: "...",
+        queryTemplate: "SELECT HOUR(order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE order_date >= 2024-01-01",
-        debugHint: "Le date devono essere stringhe: '2024-01-01'."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 0",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 1",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 2",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 3",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 4",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 5",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 6",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 7",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 8",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 9",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 10",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 11",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 12",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 13",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 14",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 15",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 16",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 17",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 18",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 19",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 20",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 21",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 22",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 23",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Date Func 24",
+        descTemplate: "...",
+        queryTemplate: "SELECT NOW()",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Differenza Giorni (DATEDIFF)",
-        descTemplate: "Calcola quanti giorni sono passati tra la data dell'ordine e oggi.",
-        queryTemplate: "SELECT DATEDIFF(NOW(), order_date) FROM Orders",
-        hints: ["Usa DATEDIFF(date1, date2)."],
-        explanation: "DATEDIFF restituisce la differenza in giorni.",
+        titleTemplate: "DateDiff 0",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT NOW() - order_date FROM Orders",
-        debugHint: "Usa la funzione DATEDIFF."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Aggiungi Giorni (DATE_ADD)",
-        descTemplate: "Calcola la data di scadenza (30 giorni dopo l'ordine).",
-        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 30 DAY) FROM Orders",
-        hints: ["DATE_ADD(date, INTERVAL 30 DAY)"],
-        explanation: "Calcolo di scadenze.",
+        titleTemplate: "DateDiff 1",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT order_date + 30 FROM Orders",
-        debugHint: "SQL richiede sintassi specifica per sommare giorni: DATE_ADD."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini nel Range (BETWEEN)",
-        descTemplate: "Trova gli ordini del primo trimestre 2024 (Gen-Mar).",
-        queryTemplate: "SELECT * FROM Orders WHERE order_date BETWEEN '2024-01-01' AND '2024-03-31'",
-        hints: ["Usa BETWEEN date1 AND date2."],
-        explanation: "Standard per intervalli temporali.",
+        titleTemplate: "DateDiff 2",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE order_date > '2024-01-01' AND < '2024-03-31'",
-        debugHint: "Sintassi BETWEEN: col BETWEEN val1 AND val2."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ultimo Giorno Mese",
-        descTemplate: "Trova l'ultimo giorno del mese per ogni ordine (LAST_DAY).",
-        queryTemplate: "SELECT LAST_DAY(order_date) FROM Orders",
-        hints: ["Usa LAST_DAY()."],
-        explanation: "Utile per reportistica mensile.",
+        titleTemplate: "DateDiff 3",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT END_OF_MONTH(order_date) FROM Orders",
-        debugHint: "La funzione è LAST_DAY."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Formatta Data",
-        descTemplate: "Mostra la data come 'Giorno-Mese-Anno' (es '01-12-2024').",
-        queryTemplate: "SELECT DATE_FORMAT(order_date, '%d-%m-%Y') FROM Orders",
-        hints: ["Usa DATE_FORMAT()."],
-        explanation: "Formattazione custom per display.",
+        titleTemplate: "DateDiff 4",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT FORMAT(order_date, 'd-m-Y') FROM Orders",
-        debugHint: "In MySQL/AlaSQL si usa DATE_FORMAT con %."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 5",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 6",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 7",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 8",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 9",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 10",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 11",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 12",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 13",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateDiff 14",
+        descTemplate: "Diff Now - Created",
+        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) FROM Users",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 0",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 0 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 1",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 1 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 2",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 2 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 3",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 3 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 4",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 4 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 5",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 5 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 6",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 6 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 7",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 7 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 8",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 8 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 9",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 9 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 10",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 10 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 11",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 11 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 12",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 12 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 13",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 13 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "DateAdd 14",
+        descTemplate: "Add days",
+        queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 14 DAY) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Ordini per Anno (Group By)",
-        descTemplate: "Conta quanti ordini ci sono per ogni anno.",
-        queryTemplate: "SELECT YEAR(order_date) as anno, COUNT(*) FROM Orders GROUP BY YEAR(order_date)",
-        hints: ["Raggruppa per YEAR(order_date)."],
-        explanation: "Aggregazione temporale.",
+        titleTemplate: "Format Date 0",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT YEAR(order_date), COUNT(*) FROM Orders GROUP BY order_date",
-        debugHint: "Se raggruppi per order_date (che include giorno), avrai troppi gruppi. Raggruppa per YEAR."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Media Giorni Spedizione",
-        descTemplate: "Calcola il tempo medio di spedizione (non abbiamo data spedizione in Orders, simula con NOW).",
-        queryTemplate: "SELECT AVG(DATEDIFF(NOW(), order_date)) FROM Orders",
-        hints: ["Media di una differenza date."],
-        explanation: "KPI logistico.",
+        titleTemplate: "Format Date 1",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT AVG(NOW() - order_date) FROM Orders",
-        debugHint: "Usa DATEDIFF dentro AVG."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Giorni Lavorativi (Simulazione)",
-        descTemplate: "Trova ordini fatti di Domenica (DayOfWeek = 1).",
-        queryTemplate: "SELECT * FROM Orders WHERE DAYOFWEEK(order_date) = 1",
-        hints: ["DAYOFWEEK(date) = 1 è Domenica."],
-        explanation: "Analisi per giorno della settimana.",
+        titleTemplate: "Format Date 2",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE DAY(order_date) = 'Sunday'",
-        debugHint: "DAYOFWEEK restituisce un numero (1-7), non il nome."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Timestamp Diff (Ore)",
-        descTemplate: "Quante ore sono passate dall'ordine? (Usa TIMESTAMPDIFF se supportato, o DATEDIFF * 24).",
-        queryTemplate: "SELECT DATEDIFF(NOW(), order_date) * 24 FROM Orders",
-        hints: ["Differenza in giorni per 24."],
-        explanation: "Conversione unità temporale.",
+        titleTemplate: "Format Date 3",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT HOURS_BETWEEN(NOW(), order_date) FROM Orders",
-        debugHint: "Non esiste HOURS_BETWEEN standard."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Età Account",
-        descTemplate: "Calcola quanti anni sono passati dalla creazione dell'account utente (created_at).",
-        queryTemplate: "SELECT FLOOR(DATEDIFF(NOW(), created_at) / 365) FROM Users",
-        hints: ["Giorni diviso 365, arrotondato per difetto."],
-        explanation: "Approssimazione dell'età in anni.",
+        titleTemplate: "Format Date 4",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT YEAR(NOW()) - YEAR(created_at) FROM Users",
-        debugHint: "La differenza di anni solari è imprecisa (es. Dicembre vs Gennaio). Meglio DATEDIFF/365."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 5",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 6",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 7",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 8",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 9",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 10",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 11",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 12",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 13",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 14",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 15",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 16",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 17",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 18",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 19",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 20",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 21",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 22",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 23",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 24",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 25",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 26",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 27",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 28",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Format Date 29",
+        descTemplate: "Format YYYY-MM",
+        queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ]
   },
   [TopicId.Case]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Stock Status",
-        descTemplate: "Seleziona il nome del prodotto e una colonna 'status' che dice 'In Stock' se stock > 0, altrimenti 'Out of Stock'.",
-        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'In Stock' ELSE 'Out of Stock' END AS status FROM Products",
-        hints: ["Usa CASE WHEN stock > 0 THEN ... ELSE ... END"],
-        explanation: "Logica condizionale semplice.",
+        titleTemplate: "Prezzo Alto 10",
+        descTemplate: "Se prezzo > 10 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 10 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, IF(stock > 0, 'In Stock', 'Out of Stock') FROM Products",
-        debugHint: "La funzione IF non è standard SQL, usa CASE WHEN."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Fascia Prezzo",
-        descTemplate: "Etichetta i prodotti: 'Basso' se price < 50, altrimenti 'Alto'.",
-        queryTemplate: "SELECT name, price, CASE WHEN price < 50 THEN 'Basso' ELSE 'Alto' END AS fascia_prezzo FROM Products",
-        hints: ["CASE WHEN price < 50 ..."],
-        explanation: "Categorizzazione dinamica.",
+        titleTemplate: "Prezzo Alto 20",
+        descTemplate: "Se prezzo > 20 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 20 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, CASE price < 50 'Basso' ELSE 'Alto' END FROM Products",
-        debugHint: "Mancano le parole chiave WHEN e THEN."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Premium Label",
-        descTemplate: "Per gli utenti, mostra 'VIP' se is_premium è true, altrimenti 'Standard'.",
-        queryTemplate: "SELECT name, CASE WHEN is_premium = true THEN 'VIP' ELSE 'Standard' END AS tipo_utente FROM Users",
-        hints: ["Controlla il booleano is_premium."],
-        explanation: "Traduzione di flag booleani in testo.",
+        titleTemplate: "Prezzo Alto 30",
+        descTemplate: "Se prezzo > 30 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 30 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, CASE WHEN is_premium THEN 'VIP' ELSE 'Standard' FROM Users",
-        debugHint: "Manca END alla fine del CASE."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Valutazione Ordine",
-        descTemplate: "Se order_total > 500 scrivi 'Grande', altrimenti 'Piccolo'.",
-        queryTemplate: "SELECT id, order_total, CASE WHEN order_total > 500 THEN 'Grande' ELSE 'Piccolo' END AS taglia FROM Orders",
-        hints: ["CASE WHEN order_total > 500"],
-        explanation: "Etichettatura basata su valori numerici.",
+        titleTemplate: "Prezzo Alto 40",
+        descTemplate: "Se prezzo > 40 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 40 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT id, CASE order_total > 500 -> 'Grande' ELSE 'Piccolo' END FROM Orders",
-        debugHint: "La sintassi è WHEN ... THEN, non ->."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Controllo Nulli (CASE)",
-        descTemplate: "Se manager_id è NULL mostra 'Capo', altrimenti 'Subordinato'.",
-        queryTemplate: "SELECT name, CASE WHEN manager_id IS NULL THEN 'Capo' ELSE 'Subordinato' END AS ruolo FROM Employees",
-        hints: ["WHEN manager_id IS NULL"],
-        explanation: "Gestione logica dei NULL.",
+        titleTemplate: "Prezzo Alto 50",
+        descTemplate: "Se prezzo > 50 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 50 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, CASE WHEN manager_id = NULL THEN 'Capo' ELSE 'Subordinato' END FROM Employees",
-        debugHint: "Per i NULL usa IS NULL."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Prezzo Alto 60",
+        descTemplate: "Se prezzo > 60 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 60 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Prezzo Alto 70",
+        descTemplate: "Se prezzo > 70 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 70 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Prezzo Alto 80",
+        descTemplate: "Se prezzo > 80 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 80 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Prezzo Alto 90",
+        descTemplate: "Se prezzo > 90 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 90 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Prezzo Alto 100",
+        descTemplate: "Se prezzo > 100 allora 'Caro' else 'Economico'.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 THEN 'Caro' ELSE 'Economico' END as label FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 0",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 1",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 2",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 3",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 4",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 5",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 6",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 7",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 8",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Status Label 9",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, CASE WHEN status = 'Shipped' THEN 'OK' ELSE 'Wait' END FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 0",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 1",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 2",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 3",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 4",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 5",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 6",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 7",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 8",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Stock Label 9",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, CASE WHEN stock > 0 THEN 'Available' ELSE 'OOS' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Aumento Prezzo Condizionale",
-        descTemplate: "Simula un nuovo prezzo: se stock < 10 aumenta del 10% (price * 1.1), altrimenti lascia invariato.",
-        queryTemplate: "SELECT name, price, CASE WHEN stock < 10 THEN price * 1.1 ELSE price END AS nuovo_prezzo FROM Products",
-        hints: ["CASE può restituire risultati di calcoli."],
-        explanation: "Logica di business applicata ai dati.",
+        titleTemplate: "Categories Case 0",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, CASE WHEN stock < 10 THEN price * 1.1 END FROM Products",
-        debugHint: "Manca ELSE price. Senza ELSE, i casi non soddisfatti diventano NULL."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Multi-Condizione (Categorizzazione)",
-        descTemplate: "Classifica prodotti: < 20 'Economico', 20-100 'Medio', > 100 'Costoso'.",
-        queryTemplate: "SELECT name, price, CASE WHEN price < 20 THEN 'Economico' WHEN price <= 100 THEN 'Medio' ELSE 'Costoso' END AS categoria FROM Products",
-        hints: ["Puoi usare più clausole WHEN."],
-        explanation: "CASE valuta le condizioni in ordine sequenziale.",
+        titleTemplate: "Categories Case 1",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, CASE WHEN price < 20 THEN 'Eco' AND WHEN price <= 100 THEN 'Med' END FROM Products",
-        debugHint: "Non usare AND tra i WHEN. Basta 'WHEN ... THEN ... WHEN ... THEN ...'."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Custom Sort (CASE in ORDER BY)",
-        descTemplate: "Ordina i prodotti mettendo prima quelli 'In Stock' (>0) e poi gli altri.",
-        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock > 0 THEN 0 ELSE 1 END, stock ASC",
-        hints: ["Usa CASE dentro ORDER BY."],
-        explanation: "Ordinamento personalizzato non alfabetico/numerico.",
+        titleTemplate: "Categories Case 2",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products ODER BY CASE stock > 0 THEN 0 ELSE 1 END",
-        debugHint: "Manca WHEN."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Pivot Count (SUM CASE)",
-        descTemplate: "Conta quanti utenti sono Premium usando SUM e CASE (senza GROUP BY, un solo totale).",
-        queryTemplate: "SELECT SUM(CASE WHEN is_premium = true THEN 1 ELSE 0 END) as total_premium FROM Users",
-        hints: ["SUM(CASE WHEN ... THEN 1 ELSE 0 END)"],
-        explanation: "Tecnica pivot per contare su condizioni specifiche.",
+        titleTemplate: "Categories Case 3",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT COUNT(CASE WHEN is_premium THEN 1 ELSE 0 END) FROM Users",
-        debugHint: "COUNT conta le righe non-null. Se ELSE è 0, lo conta comunque! Usa SUM o ELSE NULL."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Sconto Regionale",
-        descTemplate: "Se l'utente è 'Italy', sconto 20% 'Discount', altrimenti 'Full Price'.",
-        queryTemplate: "SELECT name, country, CASE WHEN country = 'Italy' THEN 'Discount' ELSE 'Full Price' END AS offer FROM Users",
-        hints: ["Controlla country = 'Italy'."],
-        explanation: "Logica legata a stringhe.",
+        titleTemplate: "Categories Case 4",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, CASE WHEN country IS 'Italy' THEN 'Discount' END FROM Users",
-        debugHint: "Usa = per le stringhe, non IS."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 5",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 6",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 7",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 8",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 9",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 10",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 11",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 12",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 13",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Categories Case 14",
+        descTemplate: "Categoria A, B o C in base al prezzo.",
+        queryTemplate: "SELECT name, CASE WHEN price < 10 THEN 'C' WHEN price < 50 THEN 'B' ELSE 'A' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 0",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 1",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 2",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 3",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 4",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 5",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 6",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 7",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 8",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 9",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 10",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 11",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 12",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 13",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Pivot Count 14",
+        descTemplate: "Conta ordini Shipped vs Pending.",
+        queryTemplate: "SELECT SUM(CASE WHEN status='Shipped' THEN 1 ELSE 0 END) as shipped_count FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Pivot per Paese",
-        descTemplate: "Calcola in una sola query: totale utenti Italy e totale utenti France.",
-        queryTemplate: "SELECT SUM(CASE WHEN country = 'Italy' THEN 1 ELSE 0 END) as users_italy, SUM(CASE WHEN country = 'France' THEN 1 ELSE 0 END) as users_france FROM Users",
-        hints: ["Due colonne con SUM(CASE...)."],
-        explanation: "Cross-tabulation (Pivot) manuale.",
+        titleTemplate: "Complex Logic 0",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT COUNT(region = 'Italy') FROM Users",
-        debugHint: "SQL non supporta quella sintassi diretta."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Logica Complessa (AND/OR)",
-        descTemplate: "Etichetta 'Priority': Stock < 10 E Prezzo > 100 -> 'Urgent', Stock < 5 -> 'Warning', Altro 'OK'.",
-        queryTemplate: "SELECT name, CASE WHEN stock < 10 AND price > 100 THEN 'Urgent' WHEN stock < 5 THEN 'Warning' ELSE 'OK' END AS priority FROM Products",
-        hints: ["L'ordine dei WHEN è importante."],
-        explanation: "La prima condizione soddisfatta vince.",
+        titleTemplate: "Complex Logic 1",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, CASE WHEN stock < 5 THEN 'Warning' WHEN stock < 10 AND price > 100 THEN 'Urgent' END FROM Products",
-        debugHint: "Se metti stock < 5 prima, 'Urgent' (che implica stock < 10) potrebbe essere mascherato se stock è 4."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Update Simulato",
-        descTemplate: "Se dovessimo aggiornare i prezzi: +10% per Electronics, -5% per Clothing. Mostra il nuovo prezzo.",
-        queryTemplate: "SELECT name, price, CASE WHEN category = 'Electronics' THEN price * 1.1 WHEN category = 'Clothing' THEN price * 0.95 ELSE price END as new_price FROM Products",
-        hints: ["CASE ... WHEN ... WHEN ... ELSE ..."],
-        explanation: "Simulazione di logiche di update.",
+        titleTemplate: "Complex Logic 2",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, IF(category='Electronics', price*1.1, IF(category='Clothing', price*0.95, price))",
-        debugHint: "Evita IF annidati, usa CASE multi-ramo."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Validazione Dati",
-        descTemplate: "Mostra 'Invalid' se email non contiene '@', altrimenti 'Valid'.",
-        queryTemplate: "SELECT email, CASE WHEN email LIKE '%@%' THEN 'Valid' ELSE 'Invalid' END AS email_status FROM Users",
-        hints: ["Usa LIKE '%@%'."],
-        explanation: "Data quality check con SQL.",
+        titleTemplate: "Complex Logic 3",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT email, CASE WHEN email CONTAINS '@' THEN 'Valid' END FROM Users",
-        debugHint: "Usa LIKE."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Etichetta Nulli Coalesce Logic",
-        descTemplate: "Se manager_id è null scrivi 'No Manager', se è uguale all'id scrivi 'Self', altrimenti 'Managed'.",
-        queryTemplate: "SELECT name, CASE WHEN manager_id IS NULL THEN 'No Manager' WHEN manager_id = id THEN 'Self' ELSE 'Managed' END AS status FROM Employees",
-        hints: ["Gestisci prima IS NULL."],
-        explanation: "Logica gerarchica.",
+        titleTemplate: "Complex Logic 4",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, CASE WHEN manager_id = 0 THEN 'No Manager' ELSE 'Managed' END FROM Employees",
-        debugHint: "I null non sono 0."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 5",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 6",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 7",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 8",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 9",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 10",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 11",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 12",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 13",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Complex Logic 14",
+        descTemplate: "AND/OR in Case.",
+        queryTemplate: "SELECT name, CASE WHEN price > 100 AND stock < 5 THEN 'Urgent Restock' ELSE 'Normal' END FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 0",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 1",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 2",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 3",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 4",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 5",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 6",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 7",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 8",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 9",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 10",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 11",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 12",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 13",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sort Custom 14",
+        descTemplate: "Ordina: Stock=0 first.",
+        queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock = 0 THEN 0 ELSE 1 END, price DESC",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ]
   },
   [TopicId.Joins]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Report Ordini e Utenti",
-        descTemplate: "Seleziona ID Ordine e Nome Utente per ogni ordine.",
-        queryTemplate: "SELECT Orders.id, Users.name FROM Orders JOIN Users ON Orders.user_id = Users.id",
-        hints: ["Orders JOIN Users ON Orders.user_id = Users.id"],
-        explanation: "Inner Join base tra ordini e clienti.",
-        replacements: {},
-        brokenCode: "SELECT Orders.id, Users.name FROM Orders, Users",
-        debugHint: "Usa la sintassi esplicita JOIN ... ON."
-      },
-      {
-        titleTemplate: "Email Cliente per Ordine",
-        descTemplate: "Mostra l'email del cliente per ogni ordine (Orders).",
-        queryTemplate: "SELECT Orders.id, Users.email FROM Orders JOIN Users ON Orders.user_id = Users.id",
-        hints: ["Collega Orders e Users."],
-        explanation: "Recupero dati anagrafici.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Orders JOIN Users",
-        debugHint: "Manca ON."
-      },
-      {
-        titleTemplate: "Dettagli Ordine: Prodotto",
-        descTemplate: "Per ogni riga di OrderItems, mostra il nome del prodotto.",
-        queryTemplate: "SELECT OrderItems.id, Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
-        hints: ["OrderItems JOIN Products"],
-        explanation: "Lookup del nome prodotto.",
-        replacements: {},
-        brokenCode: "SELECT * FROM OrderItems JOIN Products ON product_id=id",
-        debugHint: "Ambiguo, usa Tabella.campo."
-      },
-      {
-        titleTemplate: "Prezzo Prodotto Ordinato",
-        descTemplate: "Mostra la quantità ordinata (OrderItems) e il prezzo di listino del prodotto (Products).",
-        queryTemplate: "SELECT OrderItems.quantity, Products.price FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
-        hints: ["Collega OrderItems a Products."],
-        explanation: "Confronto dati.",
-        replacements: {},
-        brokenCode: "SELECT quantity, price FROM OrderItems",
-        debugHint: "Price è in Products, serve JOIN."
-      },
-      {
-        titleTemplate: "Data Ordine per Item",
-        descTemplate: "Per ogni item venduto, mostra la data dell'ordine (Orders).",
-        queryTemplate: "SELECT OrderItems.id, Orders.order_date FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id",
-        hints: ["OrderItems -> Orders"],
-        explanation: "Propagazione data dalla testata alle righe.",
-        replacements: {},
-        brokenCode: "SELECT * FROM OrderItems JOIN Orders ON OrderItems.id = Orders.id",
-        debugHint: "Devi collegare order_id con id."
-      },
-      {
-        titleTemplate: "Status Ordine Cliente",
-        descTemplate: "Mostra nome utente e status di ogni suo ordine.",
-        queryTemplate: "SELECT Users.name, Orders.status FROM Users JOIN Orders ON Users.id = Orders.user_id",
-        hints: ["Users JOIN Orders"],
-        explanation: "Lista storico ordini.",
-        replacements: {},
-        brokenCode: "SELECT Users.name, status FROM Orders",
-        debugHint: "Serve JOIN con Users."
-      },
-      {
-        titleTemplate: "Dipendente e Manager",
-        descTemplate: "Mostra 'nome dipendente' e 'nome manager' (Self Join).",
-        queryTemplate: "SELECT E.name as Employees, M.name as Manager FROM Employees E JOIN Employees M ON E.manager_id = M.id",
-        hints: ["Employees E JOIN Employees M"],
-        explanation: "Gerarchia interna.",
-        replacements: {},
-        brokenCode: "SELECT name, manager_id FROM Employees",
-        debugHint: "Serve fare JOIN con la stessa tabella."
-      },
-      {
-        titleTemplate: "Totale Ordine e Utente",
-        descTemplate: "Mostra il totale dell'ordine (order_total) e il paese dell'utente.",
-        queryTemplate: "SELECT Orders.order_total, Users.country FROM Orders JOIN Users ON Orders.user_id = Users.id",
-        hints: ["Orders JOIN Users"],
-        explanation: "Analisi geografica vendite.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Orders, Users",
-        debugHint: "Evita prodotto cartesiano."
-      },
-      {
-        titleTemplate: "Categoria Prodotto Venduto",
-        descTemplate: "Per ogni item venduto, mostra la categoria del prodotto.",
-        queryTemplate: "SELECT OrderItems.id, Products.category FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
-        hints: ["OrderItems -> Products"],
-        explanation: "Analisi categorie vendute.",
-        replacements: {},
-        brokenCode: "SELECT category FROM OrderItems",
-        debugHint: "Category è in Products."
-      },
-      {
-        titleTemplate: "Utenti Premium Ordini",
-        descTemplate: "Mostra gli ordini solo degli utenti Premium (is_premium=true).",
-        queryTemplate: "SELECT Orders.id, Users.name FROM Orders JOIN Users ON Orders.user_id = Users.id WHERE Users.is_premium = true",
-        hints: ["JOIN ... WHERE is_premium=true"],
-        explanation: "Filtro su tabella relazionata.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE is_premium=true",
-        debugHint: "is_premium è in Users."
-      },
-      {
-        titleTemplate: "Prodotti Low Stock Venduti",
-        descTemplate: "Mostra ID ordine per prodotti venduti che hanno stock < 10.",
-        queryTemplate: "SELECT OrderItems.order_id, Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id WHERE Products.stock < 10",
-        hints: ["JOIN ... WHERE stock < 10"],
-        explanation: "Allerta stock su venditem.",
-        replacements: {},
-        brokenCode: "SELECT * FROM OrderItems WHERE stock < 10",
-        debugHint: "Stock è in Products."
-      },
-      {
-        titleTemplate: "Ordini Francia",
-        descTemplate: "Mostra gli ordini di utenti francesi ('France').",
-        queryTemplate: "SELECT Orders.id FROM Orders JOIN Users ON Orders.user_id = Users.id WHERE Users.country = 'France'",
-        hints: ["Where country = 'France'"],
-        explanation: "Geo-filtro.",
-        replacements: {},
-        brokenCode: "SELECT id FROM Orders WHERE country='France'",
-        debugHint: "Country è in Users."
-      },
-      {
-        titleTemplate: "Listino vs Reale",
-        descTemplate: "Confronta unit_price (pagato) con Products.price (listino) per ogni item.",
-        queryTemplate: "SELECT OrderItems.unit_price, Products.price FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
-        hints: ["Select entrambe le colonne prezzo."],
-        explanation: "Audit sconti.",
-        replacements: {},
-        brokenCode: "SELECT price FROM OrderItems",
-        debugHint: "Serve JOIN."
-      },
-      {
-        titleTemplate: "Hire Date Manager",
-        descTemplate: "Mostra la data di assunzione del manager di ogni dipendente.",
-        queryTemplate: "SELECT E.name, M.hire_date FROM Employees E JOIN Employees M ON E.manager_id = M.id",
-        hints: ["Self Join: M.hire_date"],
-        explanation: "Confronto anzianità.",
-        replacements: {},
-        brokenCode: "SELECT hire_date FROM Employees WHERE manager_id IS NOT NULL",
-        debugHint: "Vuoi la data del manager, non del dipendente."
-      },
-      {
-        titleTemplate: "Utenti e ID Ordini",
-        descTemplate: "Lista semplice: Nome Utente e ID dei loro ordini.",
+        titleTemplate: "User name and Order",
+        descTemplate: "Join Users-Orders select name.",
         queryTemplate: "SELECT Users.name, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
-        hints: ["Users JOIN Orders"],
-        explanation: "Mapping base.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, id FROM Users JOIN Orders",
-        debugHint: "Ambiguo id."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User name and Order",
+        descTemplate: "Join Users-Orders select name.",
+        queryTemplate: "SELECT Users.name, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User name and Order",
+        descTemplate: "Join Users-Orders select name.",
+        queryTemplate: "SELECT Users.name, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User name and Order",
+        descTemplate: "Join Users-Orders select name.",
+        queryTemplate: "SELECT Users.name, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User email and Order",
+        descTemplate: "Join Users-Orders select email.",
+        queryTemplate: "SELECT Users.email, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User email and Order",
+        descTemplate: "Join Users-Orders select email.",
+        queryTemplate: "SELECT Users.email, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User email and Order",
+        descTemplate: "Join Users-Orders select email.",
+        queryTemplate: "SELECT Users.email, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User email and Order",
+        descTemplate: "Join Users-Orders select email.",
+        queryTemplate: "SELECT Users.email, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User country and Order",
+        descTemplate: "Join Users-Orders select country.",
+        queryTemplate: "SELECT Users.country, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User country and Order",
+        descTemplate: "Join Users-Orders select country.",
+        queryTemplate: "SELECT Users.country, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User country and Order",
+        descTemplate: "Join Users-Orders select country.",
+        queryTemplate: "SELECT Users.country, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "User country and Order",
+        descTemplate: "Join Users-Orders select country.",
+        queryTemplate: "SELECT Users.country, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product name",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product name",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product name",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product name",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product price",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.price FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product price",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.price FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product price",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.price FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product price",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.price FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product category",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.category FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product category",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.category FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product category",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.category FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Item Product category",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Products.category FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Order Date Item 0",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Orders.order_date FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Order Date Item 1",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Orders.order_date FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Order Date Item 2",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Orders.order_date FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Order Date Item 3",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Orders.order_date FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Order Date Item 4",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Orders.order_date FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Order Date Item 5",
+        descTemplate: "...",
+        queryTemplate: "SELECT OrderItems.id, Orders.order_date FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "Utenti Senza Ordini (Left Join)",
-        descTemplate: "Trova utenti che non hanno mai ordinato.",
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
         queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
-        hints: ["LEFT JOIN ... WHERE Orders.id IS NULL"],
-        explanation: "Trovare elementi orfani.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT Users.name FROM Users JOIN Orders ...",
-        debugHint: "INNER Join nasconde i null."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Prodotti Invenduti",
-        descTemplate: "Prodotti mai comparsi in OrderItems.",
-        queryTemplate: "SELECT Products.name FROM Products LEFT JOIN OrderItems ON Products.id = OrderItems.product_id WHERE OrderItems.id IS NULL",
-        hints: ["LEFT JOIN ... IS NULL"],
-        explanation: "Dead stock analysis.",
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE id NOT IN OrderItems",
-        debugHint: "Sintassi NOT IN richiede subquery o Left Join."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Totale Speso per Utente",
-        descTemplate: "Calcola la somma (order_total) per ogni utente.",
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users No Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id WHERE Orders.id IS NULL",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
         queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
-        hints: ["GROUP BY Users.name"],
-        explanation: "Aggregation dopo Join.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT Users.name, SUM(order_total) FROM Orders",
-        debugHint: "Manca JOIN con Users."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Media Ordine per Paese",
-        descTemplate: "Calcola il valore medio degli ordini per paese.",
-        queryTemplate: "SELECT Users.country, AVG(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.country",
-        hints: ["GROUP BY Country"],
-        explanation: "Report geografico.",
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT country, AVG(order_total) FROM Orders",
-        debugHint: "Country è su Users."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Vendite per Prodotto",
-        descTemplate: "Calcola la quantità totale venduta per ogni prodotto.",
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Sum Spent",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
         queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
-        hints: ["JOIN -> SUM(quantity) -> GROUP BY Name"],
-        explanation: "Volume vendite.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, SUM(quantity) FROM Products",
-        debugHint: "Quantity è in OrderItems."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Dipendenti senza Manager",
-        descTemplate: "Trova i dipendenti che non hanno un manager (Top Level).",
-        queryTemplate: "SELECT * FROM Employees WHERE manager_id IS NULL",
-        hints: ["IS NULL"],
-        explanation: "Filtro semplice (tecnicamente no join necessario, ma contesto gerarchia).",
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Employees JOIN Employees ON ...",
-        debugHint: "Basta verificare IS NULL."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Numero Ordini per Utente",
-        descTemplate: "Conta quanti ordini ha fatto ogni utente (mostra anche chi ne ha fatti 0).",
-        queryTemplate: "SELECT Users.name, COUNT(Orders.id) FROM Users LEFT JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
-        hints: ["LEFT JOIN per includere gli zeri."],
-        explanation: "COUNT su colonna nullable conta solo i non-null.",
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT Users.name, COUNT(*) FROM Users JOIN Orders ...",
-        debugHint: "JOIN esclude chi ha 0 ordini."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Revenue per Categoria",
-        descTemplate: "Calcola l'incasso totale (item qty * unit_price) per ogni categoria di prodotto.",
-        queryTemplate: "SELECT Products.category, SUM(OrderItems.quantity * OrderItems.unit_price) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.category",
-        hints: ["GROUP BY category"],
-        explanation: "Financial report per categoria.",
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT category, SUM(total) FROM Products",
-        debugHint: "Join con OrderItems e calcola qty*price."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Manager e Sottoposti",
-        descTemplate: "Mostra nome manager e nome dipendente. Escludi chi non è manager.",
-        queryTemplate: "SELECT M.name as Manager, E.name as Dipendente FROM Employees M JOIN Employees E ON M.id = E.manager_id",
-        hints: ["Inner Self Join"],
-        explanation: "Lista inversa (Manager -> Dipendenti).",
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Employees WHERE manager_id IS NOT NULL",
-        debugHint: "Serve Self Join per avere il nome del manager."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Clienti e Prodotti Acquistati",
-        descTemplate: "Lista unica di Clienti e Prodotti che hanno comprato (DISTINCT).",
-        queryTemplate: "SELECT DISTINCT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
-        hints: ["Join a 4 tabelle + DISTINCT"],
-        explanation: "Chi ha comprato cosa.",
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT Users.name, Products.name FROM Users, Products",
-        debugHint: "Prodotto cartesiano è sbagliato."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini con Dettaglio Multiplo",
-        descTemplate: "Trova gli ordini che hanno più di 1 item (righe in OrderItems).",
-        queryTemplate: "SELECT order_id, COUNT(*) FROM OrderItems GROUP BY order_id HAVING COUNT(*) > 1",
-        hints: ["HAVING COUNT > 1"],
-        explanation: "Filtro su gruppi.",
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT order_id FROM OrderItems WHERE COUNT(*) > 1",
-        debugHint: "Usa HAVING."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Utenti > 1000 Spesa",
-        descTemplate: "Trova utenti che hanno speso in totale più di 1000.",
-        queryTemplate: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name HAVING SUM(Orders.order_total) > 1000",
-        hints: ["HAVING SUM(...) > 1000"],
-        explanation: "High value customers.",
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT Users.name FROM Users WHERE sum(total) > 1000",
-        debugHint: "WHERE non vede somme."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Cross Join (Analisi)",
-        descTemplate: "Mostra tutte le combinazioni possibili di Users e Products (Cross Join).",
-        queryTemplate: "SELECT Users.name, Products.name FROM Users CROSS JOIN Products",
-        hints: ["CROSS JOIN"],
-        explanation: "Genera tutte le coppie.",
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users JOIN Products",
-        debugHint: "Senza ON è cross join, ma usa sintassi esplicita."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Dipendenti stesso Dipartimento",
-        descTemplate: "Trova coppie di dipendenti che lavorano nello stesso dipartimento.",
-        queryTemplate: "SELECT E1.name, E2.name, E1.department FROM Employees E1 JOIN Employees E2 ON E1.department = E2.department AND E1.id < E2.id",
-        hints: ["Self Join su department. E1.id < E2.id per evitare duplicati speculari."],
-        explanation: "Relazioni orizzontali.",
+        titleTemplate: "Count Sold",
+        descTemplate: "...",
+        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Employees GROUP BY department",
-        debugHint: "Group by raggruppa, Join accoppia."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Top 3 Prodotti",
-        descTemplate: "I 3 prodotti più venduti (per quantità totale).",
-        queryTemplate: "SELECT Products.name, SUM(OrderItems.quantity) as tot FROM Products JOIN OrderItems ON Products.id = OrderItems.product_id GROUP BY Products.name ORDER BY tot DESC LIMIT 3",
-        hints: ["ORDER BY ... LIMIT 3"],
-        explanation: "Ranking vendite.",
+        titleTemplate: "3-Table Chain 0",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, MAX(quantity) FROM Products",
-        debugHint: "Serve SUM e Order By."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Categorie Senza Vendite",
-        descTemplate: "Quali categorie non hanno mai venduto un prodotto?",
-        queryTemplate: "SELECT DISTINCT p1.category FROM Products p1 LEFT JOIN OrderItems oi ON p1.id = oi.product_id WHERE oi.id IS NULL",
-        hints: ["Left Join -> IS NULL on category."],
-        explanation: "Analisi categorie morte.",
+        titleTemplate: "3-Table Chain 1",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT category FROM Products WHERE id NOT IN Orders",
-        debugHint: "Join complessa."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Utenti Italia che hanno comprato Elettronica",
-        descTemplate: "Trova utenti 'Italy' che hanno comprato prodotti category='Electronics'.",
-        queryTemplate: "SELECT DISTINCT U.name FROM Users U JOIN Orders O ON U.id = O.user_id JOIN OrderItems OI ON O.id = OI.order_id JOIN Products P ON OI.product_id = P.id WHERE U.country = 'Italy' AND P.category = 'Electronics'",
-        hints: ["4 Tabelle + 2 filtri."],
-        explanation: "Segmentazione avanzata.",
+        titleTemplate: "3-Table Chain 2",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users WHERE country='Italy' AND bought='Electronics'",
-        debugHint: "Non esiste 'bought'."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Valore Magazzino Invenduto",
-        descTemplate: "Calcola il valore (price * stock) dei prodotti che non sono mai stati venduti.",
-        queryTemplate: "SELECT SUM(P.price * P.stock) FROM Products P LEFT JOIN OrderItems OI ON P.id = OI.product_id WHERE OI.id IS NULL",
-        hints: ["LEFT JOIN ... WHERE OI.id IS NULL -> SUM"],
-        explanation: "Financial KPI.",
+        titleTemplate: "3-Table Chain 3",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT SUM(price*stock) FROM Products",
-        debugHint: "Così conti tutto, anche i venduti."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Manager di Manager",
-        descTemplate: "Trova i dipendenti che sono manager di qualcuno che è a sua volta manager (2 livelli gerarchia).",
-        queryTemplate: "SELECT DISTINCT BigBoss.name FROM Employees BigBoss JOIN Employees MidBoss ON BigBoss.id = MidBoss.manager_id JOIN Employees Worker ON MidBoss.id = Worker.manager_id",
-        hints: ["3 Self Joins."],
-        explanation: "Gerarchie profonde.",
+        titleTemplate: "3-Table Chain 4",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name FROM Employees WHERE manager_id IN (SELECT manager_id ...)",
-        debugHint: "Usa join esplicite."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Ordini sopra Media Utente",
-        descTemplate: "Ordini il cui totale è superiore alla media degli ordini di quell'utente (Correlated).",
-        queryTemplate: "SELECT O1.id, O1.order_total FROM Orders O1 WHERE O1.order_total > (SELECT AVG(O2.order_total) FROM Orders O2 WHERE O2.user_id = O1.user_id)",
-        hints: ["Subquery correlata user_id = user_id."],
-        explanation: "Confronto relativo.",
+        titleTemplate: "3-Table Chain 5",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE total > AVG(total)",
-        debugHint: "AVG richiede aggregazione o subquery."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Giorni tra Ordini",
-        descTemplate: "Per ogni utente, trova la differenza massima di giorni tra due suoi ordini.",
-        queryTemplate: "SELECT user_id, DATEDIFF(MAX(order_date), MIN(order_date)) FROM Orders GROUP BY user_id",
-        hints: ["MAX(date) - MIN(date)"],
-        explanation: "Frequency analysis.",
+        titleTemplate: "3-Table Chain 6",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT user_id, order_date - order_date FROM Orders",
-        debugHint: "Devi aggregare date."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Utenti Intersezioni",
-        descTemplate: "Trova utenti che hanno comprato SIA 'Product A' (id=1) CHE 'Product B' (id=2). (Simulazione)",
-        queryTemplate: "SELECT U.name FROM Users U JOIN Orders O1 ON U.id = O1.user_id JOIN OrderItems OI1 ON O1.id = OI1.order_id AND OI1.product_id = 1 JOIN Orders O2 ON U.id = O2.user_id JOIN OrderItems OI2 ON O2.id = OI2.order_id AND OI2.product_id = 2",
-        hints: ["Due branch di join separati."],
-        explanation: "Basket analysis (A and B).",
+        titleTemplate: "3-Table Chain 7",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name FROM Users WHERE product_id = 1 AND product_id = 2",
-        debugHint: "Impossibile sulla stessa riga."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "3-Table Chain 8",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "3-Table Chain 9",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, OrderItems.quantity FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 0",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 1",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 2",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 3",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 4",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 5",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 6",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 7",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 8",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "4-Table Chain 9",
+        descTemplate: "...",
+        queryTemplate: "SELECT Users.name, Products.name FROM Users JOIN Orders ON Users.id = Orders.user_id JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 0",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 1",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 2",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 3",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 4",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 5",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 6",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 7",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 8",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Self Join 9",
+        descTemplate: "Dipendente e Manager",
+        queryTemplate: "SELECT E.name, M.name FROM Employees E JOIN Employees M ON E.manager_id = M.id",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ]
   },
   [TopicId.Advanced]: {
     [Difficulty.Easy]: [
       {
-        titleTemplate: "Prezzo Sopra la Media",
-        descTemplate: "Seleziona i prodotti che hanno un prezzo superiore alla media di tutti i prodotti.",
-        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
-        hints: ["Usa una subquery per calcolare la media."],
-        explanation: "La subquery (tra parentesi) viene eseguita prima.",
-        replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE price > AVG(price)",
-        debugHint: "Non puoi usare AVG direttamente nel WHERE, usa una subquery."
-      },
-      {
-        titleTemplate: "Utenti con Ordini",
-        descTemplate: "Seleziona gli utenti che hanno effettuato almeno un ordine (usando IN).",
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
         queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
-        hints: ["WHERE id IN (SELECT ...)"],
-        explanation: "IN verifica se un valore esiste in una lista restituita dalla subquery.",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users WHERE id = (SELECT user_id FROM Orders)",
-        debugHint: "Se la subquery restituisce più righe, usa IN invece di =."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Prodotti in Ordini Recenti",
-        descTemplate: "Trova i prodotti (id) che sono stati ordinati nel 2024.",
-        queryTemplate: "SELECT * FROM Products WHERE id IN (SELECT product_id FROM OrderItems WHERE order_id IN (SELECT id FROM Orders WHERE YEAR(order_date) = 2024))",
-        hints: ["Subquery annidata o join."],
-        explanation: "Navigazione tra tabelle tramite subquery.",
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE id IN (SELECT product_id FROM Orders WHERE date=2024)",
-        debugHint: "OrderItems collega prodotti e ordini, non direttamente."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Max di Categoria",
-        descTemplate: "Trova il prodotto più costoso per ogni categoria (Correlated Subquery).",
-        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
-        hints: ["Usa alias per distinguere query esterna e interna."],
-        explanation: "Subquery correlata: dipende dalla riga esterna.",
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Products WHERE price = MAX(price)",
-        debugHint: "MAX richiede GROUP BY o subquery."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Dipendenti Manager",
-        descTemplate: "Seleziona i dipendenti che sono anche manager (il loro ID appare nella colonna manager_id).",
-        queryTemplate: "SELECT * FROM Employees WHERE id IN (SELECT manager_id FROM Employees)",
-        hints: ["id IN (SELECT manager_id ...)"],
-        explanation: "Trova chi ha subordinati.",
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Employees WHERE is_manager = true",
-        debugHint: "Non abbiamo la colonna is_manager, devi dedurlo."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Users in Orders",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Price > Avg",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Exists Users",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Medium]: [
       {
-        titleTemplate: "CTE Base (WITH)",
-        descTemplate: "Usa una CTE chiamata 'ExpensiveProducts' per selezionare i prodotti con prezzo > 100, poi seleziona tutto dalla CTE.",
-        queryTemplate: "WITH ExpensiveProducts AS (SELECT * FROM Products WHERE price > 100) SELECT * FROM ExpensiveProducts",
-        hints: ["WITH Alias AS (Query)..."],
-        explanation: "CTE (Common Table Expression) rende il codice più leggibile.",
+        titleTemplate: "CTE Basic 0",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "WITH ExpensiveProducts (SELECT * FROM Products) SELECT *",
-        debugHint: "Sintassi: WITH nome AS (query)."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Exists (Esistenza)",
-        descTemplate: "Seleziona gli utenti che hanno effettuato almeno un ordine (usa EXISTS).",
-        queryTemplate: "SELECT * FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE Orders.user_id = Users.id)",
-        hints: ["WHERE EXISTS (SELECT ...)"],
-        explanation: "EXISTS è spesso più veloce di IN per grandi dataset.",
+        titleTemplate: "CTE Basic 1",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Users WHERE EXISTS (id)",
-        debugHint: "EXISTS richiede una subquery completa."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Subquery nel FROM",
-        descTemplate: "Calcola il prezzo medio delle categorie, poi seleziona le categorie con media > 50 (usa subquery nel FROM).",
-        queryTemplate: "SELECT * FROM (SELECT category, AVG(price) as avg_price FROM Products GROUP BY category) as sub WHERE avg_price > 50",
-        hints: ["SELECT ... FROM (SELECT ...) as alias"],
-        explanation: "La tabella derivata deve avere un alias.",
+        titleTemplate: "CTE Basic 2",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM (SELECT AVG(price) FROM Products) WHERE avg_price > 50",
-        debugHint: "Manca l'alias alla tabella derivata."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Order Total > Average",
-        descTemplate: "Trova gli ordini il cui totale è superiore alla media di tutti gli ordini.",
-        queryTemplate: "SELECT * FROM Orders WHERE order_total > (SELECT AVG(order_total) FROM Orders)",
-        hints: ["> (SELECT AVG...)"],
-        explanation: "Confronto con aggregato globale.",
+        titleTemplate: "CTE Basic 3",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders WHERE order_total > AVG(order_total)",
-        debugHint: "Usa subquery per la media."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Secondo Prezzo Più Alto",
-        descTemplate: "Trova il secondo prezzo più alto nei prodotti (usando OFFSET o subquery).",
-        queryTemplate: "SELECT DISTINCT price FROM Products ORDER BY price DESC LIMIT 1 OFFSET 1",
-        hints: ["LIMIT 1 OFFSET 1"],
-        explanation: "Tecnica classica per 'N-th highest'.",
+        titleTemplate: "CTE Basic 4",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT MAX(price) FROM Products WHERE price < MAX(price)",
-        debugHint: "Logica valida ma sintassi errata per MAX nel WHERE."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 5",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 6",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 7",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 8",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 9",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 10",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 11",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 12",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 13",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "CTE Basic 14",
+        descTemplate: "...",
+        queryTemplate: "WITH tmp AS (SELECT * FROM Products WHERE price > 50) SELECT * FROM tmp",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 0",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 1",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 2",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 3",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 4",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 5",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 6",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 7",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 8",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 9",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 10",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 11",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 12",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 13",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Correlated Max 14",
+        descTemplate: "...",
+        queryTemplate: "SELECT * FROM Products p1 WHERE price = (SELECT MAX(price) FROM Products p2 WHERE p2.category = p1.category)",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ],
     [Difficulty.Hard]: [
       {
-        titleTemplate: "Window Function (RANK)",
-        descTemplate: "Assegna una classifica (RANK) ai prodotti in base al prezzo decrescente.",
-        queryTemplate: "SELECT name, price, RANK() OVER (ORDER BY price DESC) as rnk FROM Products",
-        hints: ["RANK() OVER (ORDER BY ...)"],
-        explanation: "Window function per ranking.",
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT name, RANK(price) FROM Products",
-        debugHint: "RANK() richiede la clausola OVER."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Running Total (Somma Cumulativa)",
-        descTemplate: "Calcola il totale progressivo degli ordini ordinati per data.",
-        queryTemplate: "SELECT id, order_date, order_total, SUM(order_total) OVER (ORDER BY order_date) as running_total FROM Orders",
-        hints: ["SUM(...) OVER (ORDER BY ...)"],
-        explanation: "Somma cumulativa riga per riga.",
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT SUM(order_total) GROUP BY order_date",
-        debugHint: "GROUP BY aggrega, OVER mantiene le righe singole."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Row Number per Categoria",
-        descTemplate: "Assegna un numero sequenziale ai prodotti, ricominciando da 1 per ogni categoria (PARTITION BY).",
-        queryTemplate: "SELECT name, category, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) as rn FROM Products",
-        hints: ["PARTITION BY category"],
-        explanation: "Numerazione isolata per gruppo.",
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT ROW_NUMBER(category) FROM Products",
-        debugHint: "ROW_NUMBER() non accetta argomenti, usa OVER."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "Differenza dal Precedente (LAG)",
-        descTemplate: "Per ogni ordine, mostra la differenza di importo rispetto all'ordine precedente (in ordine di tempo).",
-        queryTemplate: "SELECT id, order_total - LAG(order_total) OVER (ORDER BY order_date) as diff FROM Orders",
-        hints: ["LAG(colonna) accede alla riga precedente."],
-        explanation: "Calcolo delta temporale.",
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "SELECT order_total - PREV(order_total) FROM Orders",
-        debugHint: "La funzione standard è LAG."
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
       },
       {
-        titleTemplate: "CTE Ricorsiva (Simulazione)",
-        descTemplate: "Esercizio concettuale: Genera numeri da 1 a 5 (in molti DB richiede RECURSIVE).",
-        queryTemplate: "WITH RECURSIVE cnt(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM cnt WHERE x<5) SELECT x FROM cnt",
-        hints: ["WITH RECURSIVE"],
-        explanation: "Generazione dati.",
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
         replacements: {},
-        brokenCode: "WITH cnt AS (SELECT 1 UNION SELECT x+1)",
-        debugHint: "Serve RECURSIVE e condizione di stop."
-      }
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Rank Price",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, RANK() OVER (ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Row Number Cat",
+        descTemplate: "...",
+        queryTemplate: "SELECT name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) FROM Products",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
+      {
+        titleTemplate: "Lag Order",
+        descTemplate: "...",
+        queryTemplate: "SELECT id, LAG(order_total) OVER (ORDER BY order_date) FROM Orders",
+        hints: ["Hint generico"],
+        explanation: "Spiegazione generata.",
+        replacements: {},
+        brokenCode: "...",
+        debugHint: "Controlla la sintassi."
+      },
     ]
-  }
+  },
 };
 
 // --- GENERATOR FUNCTION ---
 export const generateExercises = (
   topicId: TopicId,
   difficulty: Difficulty,
-  count: number = 5
+  count: number = 30
 ): Exercise[] => {
   const topicData = QUESTION_DATABASE[topicId];
   if (!topicData) return [];
