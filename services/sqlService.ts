@@ -99,10 +99,10 @@ export const initDatabase = (_difficulty: Difficulty) => {
         console.error('❌ Error inserting Users:', e);
     }
 
-    // --- PRODUCTS (50 rows) ---
+    // --- PRODUCTS (50 rows + Specific Items) ---
     let productsData: any[] = [];
     try {
-        for (let i = 1; i <= 49; i++) {
+        for (let i = 1; i <= 48; i++) { // Generate 48 random
             const cat = getRandom(categories);
             const name = `${cat} ${getRandom(productAdjectives)} ${getRandom(productNouns)} ${getRandomInt(100, 900)}`;
             productsData.push({
@@ -113,6 +113,24 @@ export const initDatabase = (_difficulty: Difficulty) => {
                 stock: getRandomInt(0, 150)
             });
         }
+        
+        // Specific items for Exercises
+        productsData.push({
+            id: 49,
+            name: 'Monitor 4K', // For "Stessa Categoria" exercise
+            category: 'Electronics',
+            price: 399.99,
+            stock: 10
+        });
+        
+        productsData.push({
+            id: 50,
+            name: 'Lampada Smart',
+            category: 'Home', // For "Concorrenza Interna" and "Concorrenza Home" exercises
+            price: 49.99,
+            stock: 25
+        });
+
         productsData.push({
             id: 99,
             name: 'Quantum Computer Prototype',
