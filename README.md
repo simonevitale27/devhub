@@ -1,6 +1,6 @@
 # DevHub - Piattaforma di Training SQL Serverless
 
-![DevHub Banner](https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6)
+![DevHub Homepage](./public/homepage_preview.png)
 
 **Una piattaforma professionale per praticare SQL e analisi dati, interamente client-side. Nessun backend richiesto, esecuzione query istantanea, 800+ esercizi pratici.**
 
@@ -28,10 +28,10 @@ DevHub e una Progressive Web App (PWA) progettata per Data Analyst e sviluppator
 
 Il modulo principale per l'allenamento SQL, strutturato per un apprendimento progressivo.
 
-**Argomenti Coperti**
+#### Argomenti Coperti
 
 | Argomento | Descrizione | Keyword SQL |
-|-----------|-------------|-------------|
+| --------- | ----------- | ----------- |
 | Select Base | Fondamenti delle query | SELECT, FROM, DISTINCT, ALIAS |
 | Filtri | Operatori logici e condizionali | WHERE, AND/OR, IN, LIKE, NULL |
 | Ordinamento | Controllo dell'ordine dei risultati | ORDER BY, ASC, DESC, LIMIT |
@@ -42,14 +42,15 @@ Il modulo principale per l'allenamento SQL, strutturato per un apprendimento pro
 | Logica Condizionale | Espressioni condizionali | CASE WHEN... THEN... END |
 | Avanzate | Tecniche complesse | SUBQUERIES, WINDOW FUNCTIONS, CTE |
 
-**Livelli di Difficolta**
+#### Livelli di Difficolta
 
 Ogni argomento include esercizi su tre livelli:
+
 - **Easy**: hint espliciti con keyword dirette
 - **Medium**: hint meno diretti, richiedono maggiore ragionamento
 - **Hard**: hint concettuali, nessuna keyword suggerita
 
-**Funzionalita dell'Editor**
+#### Funzionalita dell'Editor
 
 - Syntax highlighting in tempo reale
 - Auto-formatting delle query
@@ -57,9 +58,10 @@ Ogni argomento include esercizi su tre livelli:
 - Ghost text suggestions durante la digitazione
 - Validazione istantanea con confronto risultati
 
-**Debug Mode**
+#### Debug Mode
 
 Modalita speciale dove le query contengono errori intenzionali. L'utente deve identificare e correggere:
+
 - Errori di sintassi (virgole mancanti, typo nelle keyword)
 - Errori logici (WHERE vs HAVING, operatori sbagliati)
 - Errori avanzati (OVER mancante, parentesi delle subquery)
@@ -72,7 +74,7 @@ Tre livelli di difficolta negli errori, con hint calibrati per ogni livello.
 
 Ambiente sandbox per analisi dati su file propri.
 
-**Funzionalita**
+#### Funzionalita
 
 - **Import CSV**: drag-and-drop o selezione multipla di file
 - **Query SQL**: interroga i dati caricati con sintassi SQL standard
@@ -86,7 +88,7 @@ Ambiente sandbox per analisi dati su file propri.
   - Statistiche per colonna (min, max, media, deviazione standard)
   - Rilevamento valori anomali
 
-**Esportazione**
+#### Esportazione
 
 - **PDF Report**: documento professionale con:
   - Header con logo e metadati
@@ -95,7 +97,7 @@ Ambiente sandbox per analisi dati su file propri.
   - Statistiche calcolate
 - **CSV**: esportazione raw dei risultati
 
-**Conversione SQL to Python**
+#### Conversione SQL to Python
 
 Generazione automatica di codice Pandas equivalente alle query SQL, utile per chi sta imparando Python per Data Analysis.
 
@@ -105,7 +107,7 @@ Generazione automatica di codice Pandas equivalente alle query SQL, utile per ch
 
 L'applicazione utilizza uno schema e-commerce realistico per gli esercizi:
 
-```
+```text
 Users (id, name, email, country, is_premium, created_at)
    |
    +--< Orders (id, user_id, order_date, status, order_total)
@@ -124,7 +126,7 @@ Lo schema include chiavi primarie, chiavi esterne e relazioni one-to-many per es
 ## Stack Tecnologico
 
 | Categoria | Tecnologia | Versione |
-|-----------|-----------|----------|
+| --------- | ---------- | -------- |
 | Frontend | React | 19.2 |
 | Linguaggio | TypeScript | 5.8 |
 | Database | AlaSQL | 4.9 (in-memory) |
@@ -143,19 +145,21 @@ Lo schema include chiavi primarie, chiavi esterne e relazioni one-to-many per es
 ### Filosofia Serverless
 
 L'intera applicazione e progettata per funzionare senza backend:
+
 - Il database vive in memoria nel browser (AlaSQL)
 - I dati vengono pre-caricati all'avvio
 - Le query vengono eseguite localmente con latenza zero
 - I file CSV vengono parsati client-side
 
 Questo approccio garantisce:
+
 - Instant feedback durante l'apprendimento
 - Privacy totale (i dati non lasciano mai il browser)
 - Funzionamento offline dopo il primo caricamento
 
 ### Struttura Directory
 
-```
+```text
 devhub/
 ├── components/           # Componenti React UI
 │   ├── SqlGym.tsx       # Modulo esercizi SQL (1300+ righe)
@@ -253,25 +257,29 @@ L'applicazione non richiede variabili d'ambiente o API key. Tutto funziona out-o
 
 ### Competenze Dimostrate
 
-**Data Engineering**
+#### Data Engineering
+
 - Progettazione schema relazionale
 - Generazione procedurale di 800+ esercizi
 - Parsing e validazione CSV robusto
 - Analisi qualita dati automatizzata
 
-**Frontend Development**
+#### Frontend Development
+
 - Gestione stato complesso con React hooks
 - Type safety rigorosa con TypeScript
 - UI responsive con Tailwind CSS
 - Editor custom con syntax highlighting
 
-**Architettura Software**
+#### Architettura Software
+
 - Approccio serverless completo
 - Separazione logica componenti/servizi/utility
 - PWA con Service Worker
 - Zero-backend philosophy
 
-**User Experience**
+#### User Experience
+
 - Feedback istantaneo
 - Progressive disclosure delle informazioni
 - Gestione errori user-friendly
