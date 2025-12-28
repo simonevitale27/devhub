@@ -18,6 +18,7 @@ export enum TopicId {
 }
 
 export enum Page {
+  Landing = 'landing',
   Home = 'home',
   SqlGym = 'sql_gym',
   DataLab = 'data_lab',
