@@ -72,7 +72,7 @@ export const initDatabase = (_difficulty: Difficulty) => {
     // --- USERS (50 rows) ---
     try {
         const usersData: any[] = [];
-        for (let i = 1; i <= 49; i++) {
+        for (let i = 1; i <= 99; i++) {
             const fname = getRandom(firstNames);
             const lname = getRandom(lastNames);
             usersData.push({
@@ -85,7 +85,7 @@ export const initDatabase = (_difficulty: Difficulty) => {
             });
         }
         usersData.push({
-            id: 50,
+            id: 100,
             name: 'Ghost User',
             email: 'ghost@nowhere.com',
             country: 'Antarctica',
@@ -151,7 +151,7 @@ export const initDatabase = (_difficulty: Difficulty) => {
         for (let i = 1; i <= 60; i++) {
             ordersData.push({
                 id: i,
-                user_id: getRandomInt(1, 49),
+                user_id: getRandomInt(1, 99),
                 order_date: getRandomDate(2023, 2024),
                 status: getRandom(statuses),
                 order_total: Number((getRandomInt(50, 3000) + 0.99).toFixed(2))
