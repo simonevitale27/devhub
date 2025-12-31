@@ -59,7 +59,7 @@ export const initDatabase = (_difficulty: Difficulty) => {
         alasql('CREATE TABLE Products (id INT PRIMARY KEY, name VARCHAR, category VARCHAR, price DECIMAL, stock INT)');
         alasql('CREATE TABLE Orders (id INT PRIMARY KEY, user_id INT, order_date DATE, status VARCHAR, order_total DECIMAL)'); // Renamed total -> order_total
         alasql('CREATE TABLE OrderItems (id INT PRIMARY KEY, order_id INT, product_id INT, quantity INT, unit_price DECIMAL)');
-        alasql('CREATE TABLE Employees (id INT PRIMARY KEY, name VARCHAR, department VARCHAR, hire_date DATE, manager_id INT)');
+        alasql('CREATE TABLE Employees (id INT PRIMARY KEY, name VARCHAR, email VARCHAR, department VARCHAR, hire_date DATE, manager_id INT)');
         console.log('✅ Tables created');
     } catch (e) {
         console.error('❌ Error creating tables:', e);
@@ -93,12 +93,22 @@ export const initDatabase = (_difficulty: Difficulty) => {
             created_at: '2024-01-01'
         });
 
+        // Explicit Dormant User
+        usersData.push({
+            id: 101,
+            name: 'Dormant User',
+            email: 'dormant@sleepy.com',
+            country: 'Italy',
+            is_premium: true,
+            created_at: '2020-01-01'
+        });
+        
         usersData.forEach(r => alasql(`INSERT INTO Users VALUES (${r.id}, '${r.name.replace(/'/g, "''")}', '${r.email}', '${r.country}', ${r.is_premium}, '${r.created_at}')`));
         console.log(`✅ Users inserted: ${usersData.length}`);
     } catch (e) {
         console.error('❌ Error inserting Users:', e);
     }
-
+    
     // --- PRODUCTS (50 rows + Specific Items) ---
     let productsData: any[] = [];
     try {
@@ -139,6 +149,30 @@ export const initDatabase = (_difficulty: Difficulty) => {
             stock: 1
         });
 
+        productsData.push({
+            id: 51,
+            name: 'Keyboard',
+            category: 'Electronics',
+            price: 29.99,
+            stock: 50
+        });
+
+        productsData.push({
+            id: 52,
+            name: 'Smartphone',
+            category: 'Electronics',
+            price: 599.99,
+            stock: 30
+        });
+
+        productsData.push({
+            id: 53,
+            name: 'Divano Luxury',
+            category: 'Home',
+            price: 1500.00,
+            stock: 5
+        });
+
         productsData.forEach(r => alasql(`INSERT INTO Products VALUES (${r.id}, '${r.name.replace(/'/g, "''")}', '${r.category.replace(/'/g, "''")}', ${r.price}, ${r.stock})`));
         console.log(`✅ Products inserted: ${productsData.length}`);
     } catch (e) {
@@ -149,10 +183,21 @@ export const initDatabase = (_difficulty: Difficulty) => {
     try {
         const ordersData: any[] = [];
         for (let i = 1; i <= 60; i++) {
+            let oDate;
+            if (i <= 10) { oDate = getRandomDate(2021, 2021); } 
+            else if (i <= 50) { oDate = getRandomDate(2023, 2024); }
+            else { oDate = getRandomDate(2025, 2025); } 
+
+            // Force specific Users to specific Order IDs for advanced logic
+            let uid = getRandomInt(1, 99);
+            if (i === 1) uid = 2; // User 2 (For Monitor only)
+            if (i === 2) uid = 3; // User 3 (For Monitor + Keyboard)
+            if (i === 3) uid = 4; // User 4 (For Keyboard only)
+
             ordersData.push({
                 id: i,
-                user_id: getRandomInt(1, 99),
-                order_date: getRandomDate(2023, 2024),
+                user_id: uid,
+                order_date: oDate,
                 status: getRandom(statuses),
                 order_total: Number((getRandomInt(50, 3000) + 0.99).toFixed(2))
             });
@@ -167,11 +212,28 @@ export const initDatabase = (_difficulty: Difficulty) => {
     try {
         const orderItemsData: any[] = [];
         let itemId = 1;
+        
         for (let oid = 1; oid <= 60; oid++) {
+            // FORCED ITEMS for specific Orders
+            if (oid === 1) { // User 2: Monitor ONLY
+                 orderItemsData.push({ id: itemId++, order_id: oid, product_id: 49, quantity: 1, unit_price: 399.99 });
+                 continue;
+            }
+            if (oid === 2) { // User 3: Monitor AND Keyboard
+                 orderItemsData.push({ id: itemId++, order_id: oid, product_id: 49, quantity: 1, unit_price: 399.99 });
+                 orderItemsData.push({ id: itemId++, order_id: oid, product_id: 51, quantity: 1, unit_price: 29.99 });
+                 continue;
+            }
+            if (oid === 3) { // User 4: Keyboard ONLY
+                 orderItemsData.push({ id: itemId++, order_id: oid, product_id: 51, quantity: 1, unit_price: 29.99 });
+                 continue;
+            }
+
+            // Random items for others
             const numItems = getRandomInt(1, 4);
             for (let k = 0; k < numItems; k++) {
                 if (productsData.length > 0) {
-                    const prod = productsData[getRandomInt(0, Math.min(48, productsData.length - 1))]; // Ensure safe index
+                    const prod = productsData[getRandomInt(0, Math.min(48, productsData.length - 1))];
                     if (prod) {
                         orderItemsData.push({
                             id: itemId++,
@@ -212,7 +274,8 @@ export const initDatabase = (_difficulty: Difficulty) => {
 
         employeesData.forEach(r => {
              const managerVal = r.manager_id === null ? 'NULL' : r.manager_id;
-             alasql(`INSERT INTO Employees VALUES (${r.id}, '${r.name.replace(/'/g, "''")}', '${r.department.replace(/'/g, "''")}', '${r.hire_date}', ${managerVal})`);
+             const email = r.name.toLowerCase().replace(/ /g, '.').replace(/'/g, '') + '@techstore.com';
+             alasql(`INSERT INTO Employees VALUES (${r.id}, '${r.name.replace(/'/g, "''")}', '${email}', '${r.department.replace(/'/g, "''")}', '${r.hire_date}', ${managerVal})`);
         });
         console.log(`✅ Employees inserted: ${employeesData.length}`);
     } catch (e) {
