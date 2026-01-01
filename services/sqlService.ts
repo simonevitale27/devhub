@@ -59,7 +59,7 @@ export const initDatabase = (_difficulty: Difficulty) => {
         alasql('CREATE TABLE Products (id INT PRIMARY KEY, name VARCHAR, category VARCHAR, price DECIMAL, stock INT)');
         alasql('CREATE TABLE Orders (id INT PRIMARY KEY, user_id INT, order_date DATE, status VARCHAR, order_total DECIMAL)'); // Renamed total -> order_total
         alasql('CREATE TABLE OrderItems (id INT PRIMARY KEY, order_id INT, product_id INT, quantity INT, unit_price DECIMAL)');
-        alasql('CREATE TABLE Employees (id INT PRIMARY KEY, name VARCHAR, email VARCHAR, department VARCHAR, hire_date DATE, manager_id INT)');
+        alasql('CREATE TABLE Employees (id INT PRIMARY KEY, name VARCHAR, email VARCHAR, department VARCHAR, hire_date DATE, manager_id INT, salary DECIMAL)');
         console.log('✅ Tables created');
     } catch (e) {
         console.error('❌ Error creating tables:', e);
@@ -173,6 +173,28 @@ export const initDatabase = (_difficulty: Difficulty) => {
             stock: 5
         });
 
+        // High-End Servers for Complex Aggregation (AVG > 50 AND SUM > 100)
+        for(let k=0; k<5; k++) {
+            productsData.push({
+                id: 300 + k,
+                name: `Pro Server ${k}`,
+                category: 'Servers',
+                price: 2000.00, // High Price
+                stock: 50       // 5 * 50 = 250 Total Stock
+            });
+        }
+
+        // Bulk insert to guarantee "Category with > 10 items" and "High Stock"
+        for(let j=0; j<15; j++) {
+             productsData.push({
+                id: 200 + j,
+                name: `Bulk Item ${j}`,
+                category: 'Accessories', // Target category for Aggregation stats
+                price: 15.00,
+                stock: 100 // 15 * 100 = 1500 total stock, > 1000 threshold
+            });
+        }
+
         productsData.forEach(r => alasql(`INSERT INTO Products VALUES (${r.id}, '${r.name.replace(/'/g, "''")}', '${r.category.replace(/'/g, "''")}', ${r.price}, ${r.stock})`));
         console.log(`✅ Products inserted: ${productsData.length}`);
     } catch (e) {
@@ -193,13 +215,22 @@ export const initDatabase = (_difficulty: Difficulty) => {
             if (i === 1) uid = 2; // User 2 (For Monitor only)
             if (i === 2) uid = 3; // User 3 (For Monitor + Keyboard)
             if (i === 3) uid = 4; // User 4 (For Keyboard only)
+            if (i === 4) uid = 5; // User 5 (EXACTLY ONE ORDER - Single Order User)
+
+            // Prevent random assignment to User 5 (id 5) in other iterations
+            if (i > 4 && uid === 5) uid = 6; 
+
+            // Force Sequential Orders for User 6 (for "Compare Previous Order" exercise)
+            let currentTotal = Number((getRandomInt(50, 3000) + 0.99).toFixed(2));
+            if (i === 10) { uid = 6; currentTotal = 500.00; }
+            if (i === 11) { uid = 6; currentTotal = 400.00; } // 400 < 500 -> "Decreasing"
 
             ordersData.push({
                 id: i,
                 user_id: uid,
                 order_date: oDate,
                 status: getRandom(statuses),
-                order_total: Number((getRandomInt(50, 3000) + 0.99).toFixed(2))
+                order_total: currentTotal
             });
         }
         ordersData.forEach(r => alasql(`INSERT INTO Orders VALUES (${r.id}, ${r.user_id}, '${r.order_date}', '${r.status.replace(/'/g, "''")}', ${r.order_total})`));
@@ -255,27 +286,28 @@ export const initDatabase = (_difficulty: Difficulty) => {
     // --- EMPLOYEES (15 rows) ---
     try {
         const employeesData = [
-            {id: 1, name: 'Alessandro Romano', department: 'Executive', hire_date: '2015-03-01', manager_id: null}, // CEO
-            {id: 2, name: 'Giulia Bianchi', department: 'Sales', hire_date: '2016-05-15', manager_id: 1},
-            {id: 3, name: 'Marco Rossi', department: 'Engineering', hire_date: '2017-02-20', manager_id: 1},
-            {id: 4, name: 'Sofia Verdi', department: 'Marketing', hire_date: '2018-07-10', manager_id: 1},
-            {id: 5, name: 'Luca Esposito', department: 'Sales', hire_date: '2019-01-10', manager_id: 2},
-            {id: 6, name: 'Francesca Ricci', department: 'Sales', hire_date: '2019-04-25', manager_id: 2},
-            {id: 7, name: 'Matteo Gallo', department: 'Engineering', hire_date: '2020-03-12', manager_id: 3},
-            {id: 8, name: 'Chiara Conti', department: 'Engineering', hire_date: '2020-08-01', manager_id: 3},
-            {id: 9, name: 'Andrea Bruno', department: 'Engineering', hire_date: '2021-01-15', manager_id: 3},
-            {id: 10, name: 'Elena Marino', department: 'Marketing', hire_date: '2021-05-20', manager_id: 4},
-            {id: 11, name: 'Davide Greco', department: 'Support', hire_date: '2022-02-10', manager_id: 6},
-            {id: 12, name: 'Sara Barbieri', department: 'Support', hire_date: '2022-06-30', manager_id: 6},
-            {id: 13, name: 'Lorenzo Fontana', department: 'Engineering', hire_date: '2023-01-01', manager_id: 7},
-            {id: 14, name: 'Alice Santoro', department: 'HR', hire_date: '2019-11-01', manager_id: 1},
-            {id: 15, name: 'Simone Rinaldi', department: 'Finance', hire_date: '2018-09-15', manager_id: 1},
+            {id: 1, name: 'Alessandro Romano', department: 'Executive', hire_date: '2015-03-01', manager_id: null, salary: 120000}, // CEO
+            {id: 2, name: 'Giulia Bianchi', department: 'Sales', hire_date: '2016-05-15', manager_id: 1, salary: 70000}, // Manager
+            {id: 3, name: 'Marco Rossi', department: 'Engineering', hire_date: '2017-02-20', manager_id: 1, salary: 95000}, // Manager
+            {id: 4, name: 'Sofia Verdi', department: 'Marketing', hire_date: '2018-07-10', manager_id: 1, salary: 80000}, // Manager
+            {id: 5, name: 'Luca Esposito', department: 'Sales', hire_date: '2019-01-10', manager_id: 2, salary: 75000}, // Salary > Manager (75k > 70k) - ANOMALY
+            {id: 6, name: 'Francesca Ricci', department: 'Sales', hire_date: '2019-04-25', manager_id: 2, salary: 60000},
+            {id: 7, name: 'Matteo Gallo', department: 'Engineering', hire_date: '2020-03-12', manager_id: 3, salary: 85000},
+            {id: 8, name: 'Chiara Conti', department: 'Engineering', hire_date: '2020-08-01', manager_id: 3, salary: 88000},
+            {id: 9, name: 'Andrea Bruno', department: 'Engineering', hire_date: '2021-01-15', manager_id: 3, salary: 82000},
+            {id: 10, name: 'Elena Marino', department: 'Marketing', hire_date: '2021-05-20', manager_id: 4, salary: 65000},
+            {id: 11, name: 'Davide Greco', department: 'Support', hire_date: '2022-02-10', manager_id: 6, salary: 40000},
+            {id: 12, name: 'Sara Barbieri', department: 'Support', hire_date: '2022-06-30', manager_id: 6, salary: 42000},
+            {id: 13, name: 'Lorenzo Fontana', department: 'Engineering', hire_date: '2023-01-01', manager_id: 7, salary: 60000},
+            {id: 14, name: 'Alice Santoro', department: 'HR', hire_date: '2019-11-01', manager_id: 1, salary: 70000},
+            {id: 15, name: 'Simone Rinaldi', department: 'Finance', hire_date: '2018-09-15', manager_id: 1, salary: 75000},
         ];
 
         employeesData.forEach(r => {
+             // Generate email if not present in object (though previous logic did it in loop, we can just do it here)
+             const email = `${r.name.split(' ')[0].toLowerCase()}.${r.name.split(' ')[1].toLowerCase()}@techstore.com`;
              const managerVal = r.manager_id === null ? 'NULL' : r.manager_id;
-             const email = r.name.toLowerCase().replace(/ /g, '.').replace(/'/g, '') + '@techstore.com';
-             alasql(`INSERT INTO Employees VALUES (${r.id}, '${r.name.replace(/'/g, "''")}', '${email}', '${r.department.replace(/'/g, "''")}', '${r.hire_date}', ${managerVal})`);
+             alasql(`INSERT INTO Employees VALUES (${r.id}, '${r.name.replace(/'/g, "''")}', '${email}', '${r.department.replace(/'/g, "''")}', '${r.hire_date}', ${managerVal}, ${r.salary})`);
         });
         console.log(`✅ Employees inserted: ${employeesData.length}`);
     } catch (e) {

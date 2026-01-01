@@ -1,16 +1,17 @@
 
 import React, { useState } from 'react';
 import { TableSchema } from '../types';
-import { Table as TableIcon, ChevronRight, ChevronDown, Eye, Columns, Hash, Type as TypeIcon, Calendar, ToggleLeft, Maximize2 } from 'lucide-react';
+import { Table as TableIcon, ChevronRight, ChevronDown, Eye, Columns, Hash, Type as TypeIcon, Calendar, ToggleLeft, Maximize2, Copy } from 'lucide-react';
 import { getTablePreview } from '../services/sqlService';
 
 interface SchemaViewerProps {
   schemas: TableSchema[];
   onInspect?: (schema: TableSchema) => void;
   onColumnClick?: (columnName: string) => void;
+  onTableClick?: (tableName: string) => void;
 }
 
-const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas, onInspect, onColumnClick }) => {
+const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas, onInspect, onColumnClick, onTableClick }) => {
   const [expandedTable, setExpandedTable] = useState<string | null>(null);
   const [previewData, setPreviewData] = useState<any[]>([]);
 
@@ -54,6 +55,17 @@ const SchemaViewer: React.FC<SchemaViewerProps> = ({ schemas, onInspect, onColum
                 <div className="flex flex-col items-start">
                     <span className={`font-semibold text-sm transition-colors duration-200 ${isExpanded ? 'text-white' : 'text-slate-300'}`}>{schema.tableName}</span>
                 </div>
+                {/* Copy Table Name Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onTableClick?.(schema.tableName);
+                  }}
+                  className="p-1.5 rounded-md bg-[#1a1a1a] text-slate-400 hover:text-blue-400 hover:bg-blue-600/20 transition-all duration-200 active:scale-95"
+                  title={`Inserisci "${schema.tableName}" nella query`}
+                >
+                  <Copy size={12} />
+                </button>
               </div>
               <ChevronDown 
                 size={14} 

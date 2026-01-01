@@ -27,7 +27,7 @@ const DATA = {
   columns_products: ["name", "category", "price", "stock"],
   columns_orders: ["user_id", "order_date", "status", "order_total"],
   columns_orderitems: ["order_id", "product_id", "quantity", "unit_price"],
-  columns_employees: ["name", "department", "email", "hire_date", "manager_id"],
+  columns_employees: ["name", "department", "email", "hire_date", "manager_id", "salary"],
   countries: [
     "Italy",
     "France",
@@ -1582,8 +1582,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       },
       {
         titleTemplate: "Filtro Boolean False",
-        descTemplate: "Utenti non premium e attivi (supponiamo active=1).",
-        queryTemplate: "SELECT * FROM Users WHERE is_premium = 0 AND active = 1",
+        descTemplate: "Utenti non premium e con email specificata (IS NOT NULL).",
+        queryTemplate: "SELECT * FROM Users WHERE is_premium = 0 AND email IS NOT NULL",
         hints: ["AND tra booleani"],
         explanation: "Segmentazione utenza.",
         replacements: {},
@@ -1633,8 +1633,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "Usa NOT (condizione OR condizione)."
       },
       {
-        titleTemplate: "Ordini senza Tracking",
-        descTemplate: "Ordini spediti ma senza tracking number (supponiamo colonne ipotetiche o logicamente deducibili: status='Shipped' e tracking IS NULL).",
+        titleTemplate: "Ordini senza Tracking (Simulato)",
+        descTemplate: "Seleziona gli ordini 'Shipped', verificando con una subquery che il loro ID NON sia nella lista degli ordini 'Pending' (Questo è un esercizio di logica NOT IN).",
         queryTemplate: "SELECT * FROM Orders WHERE status = 'Shipped' AND id NOT IN (SELECT id FROM Orders WHERE status = 'Pending')",
         hints: ["Simuliamo: id NOT IN (...)"],
         explanation: "Subquery filter.",
@@ -2249,10 +2249,10 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "DESC sulla data."
       },
       {
-        titleTemplate: "Ordina Ruolo e Nome",
-        descTemplate: "Ordina dipendenti per ruolo e poi per nome.",
-        queryTemplate: "SELECT * FROM Employees ORDER BY role ASC, name ASC",
-        hints: ["ORDER BY role, name"],
+        titleTemplate: "Ordina Stipendio e Nome",
+        descTemplate: "Ordina dipendenti per salario (salary) e poi per nome.",
+        queryTemplate: "SELECT * FROM Employees ORDER BY salary ASC, name ASC",
+        hints: ["ORDER BY salary, name"],
         explanation: "Multi-column sort.",
         replacements: {},
         brokenCode: "...",
@@ -2490,9 +2490,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       },
       {
         titleTemplate: "Ordina Multiplo Dipendenti",
-        descTemplate: "Department ASC, Role ASC, Name ASC.",
-        queryTemplate: "SELECT * FROM Employees ORDER BY department ASC, role ASC, name ASC",
-        hints: ["Tre colonne"],
+        descTemplate: "Department ASC, Salary ASC, Name ASC.",
+        queryTemplate: "SELECT * FROM Employees ORDER BY department ASC, salary ASC, name ASC",
+        hints: ["Tre colonne: department, salary, name"],
         explanation: "Gerarchia completa.",
         replacements: {},
         brokenCode: "...",
@@ -3774,8 +3774,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       },
       {
         titleTemplate: "Concatenazione Base",
-        descTemplate: "Unisci nome e ruolo degli impiegati in una sola stringa.",
-        queryTemplate: "SELECT CONCAT(name, ' - ', role) as badge_info FROM Employees",
+        descTemplate: "Unisci nome e dipartimento degli impiegati in una sola stringa.",
+        queryTemplate: "SELECT CONCAT(name, ' - ', department) as badge_info FROM Employees",
         hints: ["Usa CONCAT()", "Separa i campi con una virgola e aggiungi un separatore come ' - '"],
         explanation: "CONCAT unisce due o più stringhe in una sola.",
         replacements: {},
@@ -3783,9 +3783,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "Anche se '+' funziona in alcuni DB, lo standard sicuro qui è CONCAT(a, b)."
       },
       {
-        titleTemplate: "Valore Assoluto",
-        descTemplate: "Calcola la differenza assoluta dei punti utente rispetto a 100.",
-        queryTemplate: "SELECT points, ABS(points - 100) as diff FROM Users",
+        titleTemplate: "Differenza Prezzo da 100",
+        descTemplate: "Calcola la differenza assoluta del prezzo dei prodotti rispetto a 100.",
+        queryTemplate: "SELECT price, ABS(price - 100) as diff FROM Products",
         hints: ["Usa ABS()", "Scrivi la sottrazione dentro la funzione"],
         explanation: "ABS restituisce il valore assoluto di un numero, ignorando il segno negativo.",
         replacements: {},

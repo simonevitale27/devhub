@@ -1,13 +1,14 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown, Copy, Check, History as HistoryIcon, XCircle as XCircleIcon } from 'lucide-react';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { generateUnifiedPDF } from '../utils/pdfExport';
 import alasql from 'alasql';
+import * as XLSX from 'xlsx';
 import { CsvData } from '../types';
 import { parseCsvFile, loadCsvToAlaSQL, executeQuery, generateTableName, clearAlaSQLTable, renameTableInAlaSQL, renameColumnInAlaSQL, dropColumnInAlaSQL } from '../utils/csvParser';
 import ResultsTable from './ResultsTable';
 import TableInspectorModal from './TableInspectorModal';
 import ResultStats from './ResultStats';
+import QuickChart from './QuickChart';
 import TableManagerSidebar, { TableData } from './TableManagerSidebar';
 import SyntaxHighlightedEditor from './SyntaxHighlightedEditor';
 import DataVisualization from './DataVisualization';
@@ -37,8 +38,13 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [showTableInspector, setShowTableInspector] = useState(false);
     const [selectedTableForInspector, setSelectedTableForInspector] = useState<string | null>(null);
-    const [showStatsModal, setShowStatsModal] = useState(false);
+    const [showSaveModal, setShowSaveModal] = useState(false);
     const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
+    const [showStatsModal, setShowStatsModal] = useState(false);
+    const [showChartModal, setShowChartModal] = useState(false);
+    const [newTableName, setNewTableName] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [cursorPosition, setCursorPosition] = useState(0);
 
@@ -61,7 +67,24 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     const [showPythonPanel, setShowPythonPanel] = useState(false);
     const [pythonCode, setPythonCode] = useState('');
     const [copiedCode, setCopiedCode] = useState(false);
-    const [queryHistory, setQueryHistory] = useState<string[]>([]);
+    const [queryHistory, setQueryHistory] = useState<string[]>(() => {
+        // Load from localStorage on init
+        try {
+            const saved = localStorage.getItem('dataLab_queryHistory');
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    });
+
+    // Persist query history to localStorage
+    useEffect(() => {
+        try {
+            localStorage.setItem('dataLab_queryHistory', JSON.stringify(queryHistory));
+        } catch {
+            // localStorage might be full or disabled
+        }
+    }, [queryHistory]);
 
     // Get unique values for a column - memoized and LIMITED for performance
     const getUniqueValues = useCallback((column: string): string[] => {
@@ -503,13 +526,8 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         }
     };
 
-    // Save as Table State
-    const [showSaveModal, setShowSaveModal] = useState(false);
-    const [newTableName, setNewTableName] = useState('');
-    const [saveError, setSaveError] = useState<string | null>(null);
-
     // Handle Save as Table
-    const handleSaveTable = () => {
+    const handleSaveAsTable = async () => {
         if (!newTableName.trim()) {
             setSaveError('Inserisci un nome valido per la tabella');
             return;
@@ -529,6 +547,9 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
             setSaveError('Nessun dato da salvare');
             return;
         }
+
+        setIsSaving(true);
+        setSaveError(null);
 
         try {
             // 1. Create Table in AlaSQL
@@ -573,15 +594,14 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 rowCount: dataToSave.length,
                 headers: headers,
                 rows: dataToSave.map(row => Object.values(row)), // Convert to array of arrays for TableData consistency if needed, but TableData interface says rows: any[][]. 
-                // Wait, parseCsvFile returns rows as any[][]? No, parseCsvFile returns CsvData where rows is any[][].
+                // Wait, parseCsvFile returns rows as any[][]. No, parseCsvFile returns CsvData where rows is any[][].
                 // But loadCsvToAlaSQL converts it to array of objects.
                 // Let's check TableData definition in TableManagerSidebar.
                 // It says rows: any[][].
                 // But wait, queryResult is array of objects.
                 // So I need to convert queryResult (objects) to array of arrays for TableData.
                 // Actually, TableData.rows is used for... let's check. 
-                // It seems TableData.rows is NOT used for querying, only for metadata?
-                // Let's check TableManagerSidebar usage. It doesn't seem to use .rows for display, only rowCount.
+                // It seems TableData.rows is NOT used for display, only for metadata?
                 // But to be safe, let's convert.
             };
             
@@ -601,6 +621,8 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
         } catch (err: any) {
             setSaveError(`Errore: ${err.message}`);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -614,303 +636,8 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
             return;
         }
 
-        try {
-            // Determine orientation based on number of columns
-            const numColumns = dataToExport.length > 0 ? Object.keys(dataToExport[0]).length : 0;
-            const orientation = numColumns > 6 ? 'landscape' : 'portrait';
-            
-            let doc: any;
-            try {
-                doc = new jsPDF({ orientation });
-                console.log(`generatePDF: jsPDF initialized (${orientation})`);
-            } catch (e) {
-                console.warn('new jsPDF() failed, trying default export', e);
-                try {
-                    doc = new (jsPDF as any).default({ orientation });
-                } catch (e2) {
-                    setError('CRITICAL ERROR: Failed to initialize jsPDF. ' + (e as any).message);
-                    return;
-                }
-            }
-
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-            
-            // --- COLORS ---
-            const colors = {
-                primary: [59, 130, 246], // Blue 500 (Replaces Emerald)
-                blue: [59, 130, 246], // Blue 500 (DevHub Brand)
-                darkBg: [0, 0, 0], // Pure Black
-                textLight: [248, 250, 252], // Slate 50
-                textDark: [51, 65, 85], // Slate 700
-                textMuted: [148, 163, 184], // Slate 400
-                cardBg: [248, 250, 252], // Slate 50
-                cardBorder: [226, 232, 240] // Slate 200
-            };
-
-            // --- HEADER SECTION ---
-            // Dark Background Strip
-            doc.setFillColor(colors.darkBg[0], colors.darkBg[1], colors.darkBg[2]);
-            doc.rect(0, 0, pageWidth, 40, 'F');
-
-            // Logo Drawing: Blue Hexagon with Dot
-            const drawLogo = (x: number, y: number, size: number) => {
-                doc.setDrawColor(colors.blue[0], colors.blue[1], colors.blue[2]);
-                doc.setLineWidth(2.5); // Thicker lines
-                
-                // Hexagon
-                const angle = Math.PI / 3;
-                const points: [number, number][] = [];
-                for (let i = 0; i < 6; i++) {
-                    points.push([
-                        x + size * Math.cos(i * angle),
-                        y + size * Math.sin(i * angle)
-                    ]);
-                }
-                
-                for (let i = 0; i < 6; i++) {
-                    const next = (i + 1) % 6;
-                    doc.line(points[i][0], points[i][1], points[next][0], points[next][1]);
-                }
-                
-                // Center Dot
-                doc.setFillColor(colors.blue[0], colors.blue[1], colors.blue[2]);
-                doc.circle(x, y, 2, 'F'); // Slightly larger dot
-            };
-
-            drawLogo(25, 20, 8);
-
-            // Title: DEV (White) HUB (Blue)
-            doc.setFontSize(24);
-            doc.setFont('helvetica', 'bold');
-            
-            doc.setTextColor(255, 255, 255);
-            doc.text('DEV', 40, 22);
-            
-            const devWidth = doc.getTextWidth('DEV');
-            doc.setTextColor(colors.blue[0], colors.blue[1], colors.blue[2]);
-            doc.text('HUB', 40 + devWidth, 22);
-
-            // Metadata (Right aligned)
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('it-IT', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric'
-            });
-            const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-            
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-            doc.text(dateStr, pageWidth - 15, 18, { align: 'right' });
-            doc.text(timeStr, pageWidth - 15, 24, { align: 'right' });
-
-            let yPosition = 55;
-            
-            // --- STATISTICS SECTION ---
-            if (dataToExport.length > 0) {
-                const columns = Object.keys(dataToExport[0]);
-                const numericColumns = columns.filter(col => {
-                    return dataToExport.every(row => 
-                        row[col] === null || row[col] === undefined || !isNaN(Number(row[col]))
-                    );
-                });
-                
-                if (numericColumns.length > 0) {
-                    doc.setFontSize(12);
-                    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('STATISTICHE RAPIDE', 15, yPosition);
-                    
-                    // Decorative line under title
-                    doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-                    doc.setLineWidth(0.5);
-                    doc.line(15, yPosition + 2, 60, yPosition + 2);
-                    
-                    yPosition += 10;
-                    
-                    // Calculate stats
-                    const statsData = numericColumns.slice(0, 4).map(col => {
-                        const values = dataToExport
-                            .map(row => Number(row[col]))
-                            .filter(val => !isNaN(val));
-                        
-                        if (values.length === 0) return null;
-                        
-                        const sum = values.reduce((a, b) => a + b, 0);
-                        const avg = sum / values.length;
-                        const min = Math.min(...values);
-                        const max = Math.max(...values);
-                        
-                        return {
-                            col,
-                            avg: avg.toLocaleString('it-IT', { maximumFractionDigits: 2 }),
-                            min: min.toLocaleString('it-IT'),
-                            max: max.toLocaleString('it-IT'),
-                            sum: sum.toLocaleString('it-IT', { maximumFractionDigits: 2 })
-                        };
-                    }).filter(Boolean);
-                    
-                    // Draw Cards
-                    if (statsData.length > 0) {
-                        const cardWidth = 85;
-                        const cardHeight = 35; // Increased height for better spacing
-                        const gap = 10;
-                        
-                        statsData.forEach((stat, index) => {
-                            if (stat) {
-                                const colIndex = index % 2;
-                                const rowIndex = Math.floor(index / 2);
-                                const xPos = 15 + (colIndex * (cardWidth + gap));
-                                const yPos = yPosition + (rowIndex * (cardHeight + gap));
-                                
-                                // Card Background
-                                doc.setFillColor(colors.cardBg[0], colors.cardBg[1], colors.cardBg[2]);
-                                doc.setDrawColor(colors.cardBorder[0], colors.cardBorder[1], colors.cardBorder[2]);
-                                doc.roundedRect(xPos, yPos, cardWidth, cardHeight, 2, 2, 'FD');
-                                
-                                // Accent Border (Left)
-                                doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-                                doc.rect(xPos, yPos, 3, cardHeight, 'F'); // Thicker accent
-                                
-                                // --- Content Layout ---
-                                const contentX = xPos + 8;
-                                
-                                // Label (Top Left)
-                                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-                                doc.setFontSize(7);
-                                doc.setFont('helvetica', 'bold');
-                                doc.text(stat.col.toUpperCase(), contentX, yPos + 8);
-                                
-                                // Main Value (Average) - Large & Bold
-                                doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-                                doc.setFontSize(14);
-                                doc.text(stat.avg, contentX, yPos + 20);
-                                
-                                // Sub-label "Media" below value
-                                doc.setFontSize(7);
-                                doc.setFont('helvetica', 'normal');
-                                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-                                doc.text('Media', contentX, yPos + 26);
-
-                                // Secondary Stats (Right Side)
-                                const rightX = xPos + cardWidth - 8;
-                                
-                                doc.setFontSize(7);
-                                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-                                
-                                // Min
-                                doc.text('Min', rightX, yPos + 14, { align: 'right' });
-                                doc.setFontSize(9);
-                                doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-                                doc.text(stat.min, rightX, yPos + 20, { align: 'right' });
-                                
-                                // Max
-                                doc.setFontSize(7);
-                                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-                                doc.text('Max', rightX, yPos + 26, { align: 'right' });
-                                doc.setFontSize(9);
-                                doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-                                doc.text(stat.max, rightX, yPos + 32, { align: 'right' });
-                            }
-                        });
-                        
-                        yPosition += Math.ceil(statsData.length / 2) * (cardHeight + gap) + 15;
-                    }
-                }
-            }
-            
-                // --- TABLE SECTION ---
-            try {
-                doc.setFontSize(12);
-                doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-                doc.setFont('helvetica', 'bold');
-                doc.text('DATI QUERY', 15, yPosition);
-                
-                // Decorative line
-                doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-                doc.setLineWidth(0.5);
-                doc.line(15, yPosition + 2, 45, yPosition + 2);
-                
-                yPosition += 8;
-                
-                const tableColumns = Object.keys(dataToExport[0]).map(key => ({
-                    header: key,
-                    dataKey: key
-                }));
-                
-                // Dynamic styling based on column count
-                const isWideTable = numColumns > 6;
-                
-                // Explicit usage of autoTable with optimized settings for wide tables
-                autoTable(doc, {
-                    startY: yPosition,
-                    columns: tableColumns,
-                    body: dataToExport,
-                    styles: {
-                        fontSize: isWideTable ? 6 : 9,
-                        cellPadding: isWideTable ? 1.5 : 3,
-                        textColor: [51, 65, 85], // Slate 700
-                        lineColor: [226, 232, 240], // Slate 200
-                        lineWidth: 0.1,
-                        overflow: 'linebreak',
-                        cellWidth: 'wrap',
-                    },
-                    headStyles: {
-                        fillColor: [59, 130, 246], // Blue 500
-                        textColor: [255, 255, 255],
-                        fontStyle: 'bold',
-                        halign: 'left',
-                        fontSize: isWideTable ? 7 : 10,
-                    },
-                    alternateRowStyles: {
-                        fillColor: [248, 250, 252], // Slate 50
-                    },
-                    margin: { left: 15, right: 15 },
-                    tableWidth: 'auto',
-                    columnStyles: isWideTable ? Object.fromEntries(
-                        tableColumns.map((col, idx) => [
-                            idx,
-                            { cellWidth: 'auto', minCellWidth: 15 }
-                        ])
-                    ) : {},
-                });
-                console.log('generatePDF: Table generated');
-
-            } catch (tableError) {
-                console.error('Error generating table:', tableError);
-                doc.text('Errore nella generazione della tabella: ' + (tableError as any).message, 15, yPosition + 10);
-            }
-            
-            // --- FOOTER ---
-            const pageCount = (doc as any).internal.getNumberOfPages();
-            for(let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                const footerY = pageHeight - 10;
-                
-                // Separator line
-                doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-                doc.setLineWidth(0.5);
-                doc.line(15, footerY - 5, pageWidth - 15, footerY - 5);
-                
-                doc.setFontSize(8);
-                doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-                doc.text('Generated by DevHub - Serverless SQL', 15, footerY);
-                doc.text(`Pagina ${i} di ${pageCount}`, pageWidth - 15, footerY, { align: 'right' });
-            }
-            
-            
-            // Save PDF directly (most reliable method)
-            const filename = `DevHub_Report_${new Date().getTime()}.pdf`;
-            doc.save(filename);
-            console.log('generatePDF: File saved as', filename);
-            
-            
-        } catch (err: any) {
-            console.error('Error generating PDF:', err);
-            setError('Errore nella generazione del PDF: ' + err.message);
-        }
+        generateUnifiedPDF(dataToExport, `datalab_report_${new Date().getTime()}.pdf`, 'DataLab Export');
+        setIsDownloadMenuOpen(false);
     };
 
     // Generate CSV Export
@@ -962,6 +689,46 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         }
     };
 
+    // Generate Excel Export
+    const generateExcel = () => {
+        const dataToExport = filteredResult || queryResult;
+        
+        if (!dataToExport || dataToExport.length === 0) {
+            setError('Nessun dato da esportare.');
+            return;
+        }
+
+        try {
+            // Create workbook and worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(dataToExport);
+            
+            // Auto-fit column widths
+            const colWidths = Object.keys(dataToExport[0]).map(key => ({
+                wch: Math.max(
+                    key.length,
+                    ...dataToExport.slice(0, 100).map(row => 
+                        String(row[key] ?? '').length
+                    )
+                ) + 2
+            }));
+            ws['!cols'] = colWidths;
+            
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Query Results');
+            
+            // Generate and download file
+            XLSX.writeFile(wb, `DevHub_Export_${new Date().getTime()}.xlsx`);
+            
+            setIsDownloadMenuOpen(false);
+            console.log('generateExcel: Download completed');
+            
+        } catch (err: any) {
+            console.error('Error generating Excel:', err);
+            setError('Errore nella generazione dell\'Excel: ' + err.message);
+        }
+    };
+
     return (
         <div className="flex h-screen bg-transparent text-slate-200 font-sans overflow-hidden selection:bg-emerald-500 selection:text-white">
             
@@ -982,28 +749,14 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                     </div>
                 </div>
 
-                {/* Three-Column Layout: 25% Tables | 25% Upload/Editor | 50% Results */}
+                {/* Two-Column Layout: 20% Sidebar | 80% Main Content */}
                 <div className="flex-1 flex gap-4 min-h-0 overflow-hidden">
                     
-                    {/* LEFT COLUMN - Table Manager (25%) */}
-                    <div className="w-1/4 flex flex-col pb-6">
-                        <TableManagerSidebar
-                            tables={tables}
-                            onRenameTable={handleRenameTable}
-                            onDeleteTable={handleDeleteTable}
-                            onQueryTable={handleOpenTableInspector}
-                            onInsertColumn={handleInsertColumn}
-                            onRenameColumn={handleRenameColumn}
-                            onDeleteColumn={handleDropColumn}
-                            onHealthCheck={handleHealthCheck}
-                        />
-                    </div>
-
-                    {/* MIDDLE COLUMN - Upload + SQL Editor (25%) */}
-                    <div className="w-1/4 flex flex-col gap-4 pb-6 h-full">
+                    {/* LEFT COLUMN - Sidebar (20%) */}
+                    <div className="w-1/5 flex flex-col gap-4 pb-6 min-w-[250px]">
                         
-                        {/* UPLOAD AREA (30% of column height) */}
-                        <div className="h-[30%] bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex-shrink-0">
+                        {/* UPLOAD AREA (20% height) */}
+                        <div className="h-[20%] bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex-shrink-0">
                             <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                             
                             <div
@@ -1017,17 +770,17 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 }`}
                             >
                                 {/* Content */}
-                                <div className="relative z-10 flex flex-col items-center justify-center gap-4 w-full">
+                                <div className="relative z-10 flex flex-col items-center justify-center gap-4 w-full h-full">
                                     <div className="text-center">
                                         <p className="text-base text-slate-200 font-semibold">Trascina CSV qui</p>
-                                        <p className="text-sm text-slate-400 mt-0.5">Multi-file • Max 10MB</p>
+                                        <p className="text-xs text-slate-400 mt-0.5">Multi-file • Max 10MB</p>
                                     </div>
                                     
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="px-5 py-2 bg-gradient-to-b from-emerald-500/30 to-emerald-600/5 backdrop-blur-xl border border-white/10 shadow-[0_0_15px_rgba(16,185,129,0.4)_inset] shadow-lg shadow-emerald-500/20 rounded-lg text-emerald-300 hover:text-emerald-200 text-sm font-bold transition-all duration-300 hover:from-emerald-500/40 hover:to-emerald-600/10 active:scale-95 flex items-center gap-2"
+                                        className="px-3 py-1.5 bg-gradient-to-b from-emerald-500/30 to-emerald-600/5 backdrop-blur-xl border border-white/10 shadow-[0_0_15px_rgba(16,185,129,0.4)_inset] shadow-lg shadow-emerald-500/20 rounded-lg text-emerald-300 hover:text-emerald-200 text-xs font-bold transition-all duration-300 hover:from-emerald-500/40 hover:to-emerald-600/10 active:scale-95 flex items-center gap-2"
                                     >
-                                        <Upload size={14} />
+                                        <Upload size={12} />
                                         Scegli File
                                     </button>
 
@@ -1043,9 +796,26 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             </div>
                         </div>
 
-                        {/* SQL EDITOR / PYTHON PANEL SECTION (70% of column height) */}
-                        {/* SQL EDITOR / PYTHON PANEL SECTION (70% of column height) */}
-                        <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex flex-col min-h-0">
+                        {/* TABLE MANAGER (80% height) */}
+                        <div className="h-[80%] flex flex-col relative overflow-hidden">
+                            <TableManagerSidebar
+                                tables={tables}
+                                onRenameTable={handleRenameTable}
+                                onDeleteTable={handleDeleteTable}
+                                onQueryTable={handleOpenTableInspector}
+                                onInsertColumn={handleInsertColumn}
+                                onRenameColumn={handleRenameColumn}
+                                onDeleteColumn={handleDropColumn}
+                                onHealthCheck={handleHealthCheck}
+                            />
+                        </div>
+                    </div>
+
+                    {/* RIGHT COLUMN - Main Content (80%) */}
+                    <div className="flex-1 flex flex-col gap-4 pb-6 h-full min-w-0">
+
+                        {/* TOP: SQL EDITOR / PYTHON PANEL (60%) */}
+                        <div className="h-[60%] bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex flex-col min-h-0">
                             <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
                             
                             {/* Persistent Header */}
@@ -1054,7 +824,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     activeEditor={showPythonPanel ? 'python' : 'sql'}
                                     onToggle={(editor) => {
                                         if (editor === 'python') {
-                                            // ON-DEMAND TRANSLATION: Only translate when switching to Python
+                                            // ON-DEMAND TRANSLATION
                                             if (!sqlQuery || !sqlQuery.trim()) {
                                                 setPythonCode('# Scrivi una query SQL e premi il toggle per convertirla in Python');
                                                 setShowPythonPanel(true);
@@ -1082,8 +852,8 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         }
                                     }}
                                 />
-                                <div className="flex flex-col items-end gap-2">
-                                    {/* Format Button - works in both SQL and Python modes */}
+                                <div className="flex items-center gap-2">
+                                    {/* Format Button */}
                                     <button
                                         onClick={() => {
                                             if (showPythonPanel) {
@@ -1100,7 +870,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         <Code2 size={12} />
                                         Formatta
                                     </button>
-                                    {/* Copy Code Button - Always visible */}
+                                    {/* Copy Code Button */}
                                     <button
                                         onClick={async () => {
                                             const codeToCopy = showPythonPanel ? pythonCode : sqlQuery;
@@ -1152,46 +922,40 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         />
                                     </div>
 
-                                    {/* Query History */}
-                                    {/* Query History */}
-                                    {queryHistory.length > 0 && (
-                                        <div className="bg-[#121212]/70 backdrop-blur-md rounded-xl p-2 mt-2">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-300 uppercase tracking-wider">
-                                                    <HistoryIcon size={12} />
-                                                    Cronologia
-                                                </div>
-                                                <button
-                                                    onClick={() => setQueryHistory([])}
-                                                    className="text-[10px] px-1.5 py-0.5 rounded text-slate-400 hover:text-red-400 hover:bg-red-950/30 transition-colors flex items-center gap-1"
-                                                    title="Cancella cronologia"
-                                                >
-                                                    <XCircleIcon size={10} />
-                                                    Cancella
-                                                </button>
-                                            </div>
-                                            <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
-                                                {queryHistory.map((query, idx) => (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => setSqlQuery(query)}
-                                                        className="shrink-0 max-w-[200px] text-[10px] text-left bg-[#121212]/70 backdrop-blur-xl hover:bg-white/5 text-slate-300 hover:text-slate-200 rounded-lg px-2 py-1.5 transition-all truncate font-mono shadow-sm shadow-black/20 border border-white/5"
-                                                        title={query}
+                                    <div className="flex items-center gap-2 mt-2">
+                                        {/* History Bar (Compact) */}
+                                        {queryHistory.length > 0 ? (
+                                            <div className="flex-1 min-w-0 bg-[#121212]/70 backdrop-blur-md rounded-lg p-1.5 flex items-center gap-2 overflow-hidden border border-white/5 shadow-inner">
+                                                <div className="flex items-center gap-2 pl-2 pr-3 border-r border-white/10 shrink-0">
+                                                    <HistoryIcon size={12} className="text-slate-400" />
+                                                    <button 
+                                                        onClick={() => setQueryHistory([])} 
+                                                        className="text-slate-500 hover:text-red-400 transition-colors" 
+                                                        title="Cancella tutto"
                                                     >
-                                                        {query.length > 40
-                                                            ? query.substring(0, 40) + "..."
-                                                            : query}
+                                                        <XCircleIcon size={12} />
                                                     </button>
-                                                ))}
+                                                </div>
+                                                <div className="flex gap-2 overflow-x-auto custom-scrollbar items-center pb-0.5 mask-linear-fade">
+                                                    {queryHistory.map((query, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => setSqlQuery(query)}
+                                                            className="shrink-0 max-w-[150px] text-[10px] text-left bg-black/40 hover:bg-white/10 text-slate-300 hover:text-white rounded px-2 py-1 transition-all truncate font-mono border border-white/5"
+                                                            title={query}
+                                                        >
+                                                            {query}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        ) : <div className="flex-1" />}
 
-                                    <div className="flex justify-end mt-4">
+                                        {/* Execute Button */}
                                         <button
                                             onClick={handleExecuteQuery}
                                             disabled={isExecuting}
-                                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg ${
+                                            className={`h-[34px] px-4 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shrink-0 ${
                                                 isExecuting
                                                     ? 'bg-[#0a0a0a]/80 text-slate-400 shadow-black/20'
                                                     : 'bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 active:bg-emerald-500/20 active:text-emerald-300 active:shadow-[0_0_15px_rgba(16,185,129,0.3)_inset] active:shadow-emerald-500/20 active:scale-95'
@@ -1205,7 +969,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                             ) : (
                                                 <>
                                                     <Play size={12} fill="currentColor" />
-                                                    Esegui Query
+                                                    Esegui
                                                 </>
                                             )}
                                         </button>
@@ -1214,263 +978,277 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             )}
                         </div>
 
-                    </div>
-
-                    {/* RIGHT COLUMN - Results (50%) */}
-                    <div className="w-1/2 flex flex-col gap-4 pb-6">
-                        
-                        {/* ERROR MESSAGE */}
-                        {error && (
-                            <div className="bg-red-900/20 border border-red-900/50 rounded-xl p-4 flex items-start gap-3 shadow-lg animate-in slide-in-from-top-2">
-                                <AlertCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
-                                <div className="flex-1">
-                                    <div className="text-sm font-bold text-red-400 mb-1">Errore</div>
-                                    <div className="text-sm text-slate-200">{error}</div>
-                                </div>
-                                <button
-                                    onClick={() => setError(null)}
-                                    className="p-1 text-slate-400 hover:text-white rounded transition-colors"
-                                >
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        )}
-
-                        {/* QUERY RESULTS */}
-                        {queryResult && queryResult.length > 0 && (
-                            <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
-                                <div className="absolute top-0 left-0 w-1 h-full bg-slate-500 shadow-[0_0_10px_rgba(100,116,139,0.5)]"></div>
-                                
-                                {/* Results Header */}
-                                <div className="px-6 py-4 border-b border-white/5">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                                            <TrendingUp size={14} className="text-slate-400" />
-                                            Risultati ({filteredResult ? filteredResult.length : queryResult.length} di {queryResult.length})
-                                        </h3>
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setQueryResult(null);
-                                                    setFilteredResult(null);
-                                                    setSqlQuery('');
-                                                    setSearchQuery('');
-                                                    setFilters({});
-                                                    setSortConfig(null);
-                                                    setError(null);
-                                                }}
-                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-red-300 shadow-lg shadow-black/20 active:scale-95"
-                                                title="Reset risultati e query"
-                                            >
-                                                <X size={12} />
-                                                Reset
-                                            </button>
-                                            <button
-                                                onClick={() => setShowSaveModal(true)}
-                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
-                                                title="Salva come nuova tabella"
-                                            >
-                                                <FileSpreadsheet size={12} />
-                                                Salva come Tabella
-                                            </button>
-                                            <div className="relative">
-                                                <button
-                                                    onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
-                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-blue-300 shadow-lg shadow-black/20 active:scale-95"
-                                                    title="Scarica risultati"
-                                                >
-                                                    <FileDown size={12} />
-                                                    Scarica
-                                                    <ChevronDown size={12} className={`transition-transform duration-200 ${isDownloadMenuOpen ? 'rotate-180' : ''}`} />
-                                                </button>
-                                                
-                                                {isDownloadMenuOpen && (
-                                                    <div className="absolute top-full right-0 mt-2 w-36 bg-[#121212]/90 backdrop-blur-xl border border-white/10 rounded-xl shadow-xl shadow-black/50 overflow-hidden z-50 flex flex-col py-1">
-                                                        <button
-                                                            onClick={() => {
-                                                                generatePDF();
-                                                                setIsDownloadMenuOpen(false);
-                                                            }}
-                                                            className="px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
-                                                        >
-                                                            <FileDown size={12} className="text-red-400" />
-                                                            Scarica PDF
-                                                        </button>
-                                                        <button
-                                                            onClick={generateCSV}
-                                                            className="px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
-                                                        >
-                                                            <FileSpreadsheet size={12} className="text-emerald-400" />
-                                                            Scarica CSV
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <button
-                                                onClick={() => setShowStatsModal(true)}
-                                                className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-purple-300 shadow-lg shadow-black/20 active:scale-95"
-                                                title="Visualizza statistiche dettagliate"
-                                            >
-                                                <BarChart3 size={12} />
-                                                Statistiche
-                                            </button>
-                                        </div>
+                        {/* BOTTOM: RESULTS (40%) */}
+                        <div className="h-[40%] flex flex-col min-h-0 relative">
+                            {/* ERROR MESSAGE */}
+                            {error && (
+                                <div className="absolute top-0 inset-x-0 z-50 bg-red-900/90 backdrop-blur border border-red-900/50 rounded-xl p-4 flex items-start gap-3 shadow-lg animate-in slide-in-from-top-2 mx-4 mt-2">
+                                    <AlertCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
+                                    <div className="flex-1">
+                                        <div className="text-sm font-bold text-red-400 mb-1">Errore</div>
+                                        <div className="text-sm text-slate-200">{error}</div>
                                     </div>
+                                    <button
+                                        onClick={() => setError(null)}
+                                        className="p-1 text-slate-400 hover:text-white rounded transition-colors"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* QUERY RESULTS */}
+                            {queryResult && queryResult.length > 0 && (
+                                <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-slate-500 shadow-[0_0_10px_rgba(100,116,139,0.5)]"></div>
                                     
-                                    {/* Search & Filter Bar */}
-                                    <div className="flex gap-2 relative">
-                                        <div className="relative flex-1">
-                                            <input
-                                                type="text"
-                                                value={searchQuery}
-                                                onChange={(e) => handleSearchResults(e.target.value)}
-                                                placeholder="Cerca nei risultati..."
-                                                className="w-full px-4 py-2 pl-10 bg-black/40 border border-white/10 rounded-lg text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-white/20 transition-colors"
-                                            />
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
-                                                <TrendingUp size={16} />
+                                    {/* Results Header */}
+                                    <div className="px-6 py-4 border-b border-white/5 flex-shrink-0">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                                <TrendingUp size={14} className="text-slate-400" />
+                                                Risultati ({filteredResult ? filteredResult.length : queryResult.length} di {queryResult.length})
+                                            </h3>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setQueryResult(null);
+                                                        setFilteredResult(null);
+                                                        setSqlQuery('');
+                                                        setSearchQuery('');
+                                                        setFilters({});
+                                                        setSortConfig(null);
+                                                        setError(null);
+                                                    }}
+                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-red-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    title="Reset risultati e query"
+                                                >
+                                                    <X size={12} />
+                                                    Reset
+                                                </button>
+                                                <button
+                                                    onClick={() => setShowSaveModal(true)}
+                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    title="Salva come nuova tabella"
+                                                >
+                                                    <FileSpreadsheet size={12} />
+                                                    Salva come Tabella
+                                                </button>
+                                                <div className="relative">
+                                                    <button
+                                                        onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
+                                                        className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-blue-300 shadow-lg shadow-black/20 active:scale-95"
+                                                        title="Scarica risultati"
+                                                    >
+                                                        <FileDown size={12} />
+                                                        Scarica
+                                                        <ChevronDown size={12} className={`transition-transform duration-200 ${isDownloadMenuOpen ? 'rotate-180' : ''}`} />
+                                                    </button>
+                                                    
+                                                    {isDownloadMenuOpen && (
+                                                        <div className="absolute top-full right-0 mt-2 w-36 bg-[#121212]/90 backdrop-blur-xl border border-white/10 rounded-xl shadow-xl shadow-black/50 overflow-hidden z-20 flex flex-col py-1">
+                                                            <button
+                                                                onClick={() => {
+                                                                    generatePDF();
+                                                                    setIsDownloadMenuOpen(false);
+                                                                }}
+                                                                className="px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                                            >
+                                                                <FileDown size={12} className="text-red-400" />
+                                                                Scarica PDF
+                                                            </button>
+                                                            <button
+                                                                onClick={generateCSV}
+                                                                className="px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                                            >
+                                                                <FileSpreadsheet size={12} className="text-emerald-400" />
+                                                                Scarica CSV
+                                                            </button>
+                                                            <button
+                                                                onClick={generateExcel}
+                                                                className="px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                                            >
+                                                                <FileSpreadsheet size={12} className="text-blue-400" />
+                                                                Scarica Excel
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    onClick={() => setShowStatsModal(true)}
+                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-purple-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    title="Visualizza statistiche dettagliate"
+                                                >
+                                                    <BarChart3 size={12} />
+                                                    Statistiche
+                                                </button>
+                                                <button
+                                                    onClick={() => setShowChartModal(true)}
+                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-orange-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    title="Crea grafico dai risultati"
+                                                >
+                                                    <TrendingUp size={12} />
+                                                    Grafico
+                                                </button>
                                             </div>
                                         </div>
                                         
-                                        {/* Filter Button */}
-                                        <div className="relative">
-                                            <div className={`h-full rounded-lg border transition-colors flex items-center ${
-                                                showFilterMenu || Object.keys(filters).length > 0
-                                                    ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
-                                                    : 'bg-black/40 border-white/10 text-slate-400 hover:bg-white/5 hover:text-slate-200'
-                                            }`}>
-                                                <button
-                                                    onClick={() => setShowFilterMenu(!showFilterMenu)}
-                                                    className="h-full px-3 flex items-center gap-2"
-                                                    title="Filtra e Ordina"
-                                                >
-                                                    <Filter size={18} />
-                                                    {Object.keys(filters).length > 0 && (
-                                                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-black">
-                                                            {Object.keys(filters).length}
-                                                        </span>
-                                                    )}
-                                                </button>
-                                                
-                                                {Object.keys(filters).length > 0 && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setFilters({});
-                                                        }}
-                                                        className="h-full px-2 border-l border-emerald-500/30 hover:bg-emerald-500/30 hover:text-emerald-200 transition-colors rounded-r-lg"
-                                                        title="Rimuovi tutti i filtri"
-                                                    >
-                                                        <X size={14} />
-                                                    </button>
-                                                )}
+                                        {/* Search & Filter Bar */}
+                                        <div className="flex gap-2 relative">
+                                            <div className="relative flex-1">
+                                                <input
+                                                    type="text"
+                                                    value={searchQuery}
+                                                    onChange={(e) => handleSearchResults(e.target.value)}
+                                                    placeholder="Cerca nei risultati..."
+                                                    className="w-full px-4 py-2 pl-10 bg-black/40 border border-white/10 rounded-lg text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-white/20 transition-colors"
+                                                />
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                                                    <TrendingUp size={16} />
+                                                </div>
                                             </div>
-
-                                            {/* Filter Popover */}
-                                            {showFilterMenu && (
-                                                <div className="absolute right-0 top-full mt-2 w-64 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl shadow-black/50 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                                                    <div className="p-3 border-b border-white/5">
-                                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Colonna</h4>
-                                                        <select
-                                                            value={activeFilterColumn || ''}
-                                                            onChange={(e) => setActiveFilterColumn(e.target.value)}
-                                                            className="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500/50"
+                                            
+                                            {/* Filter Button */}
+                                            <div className="relative">
+                                                <div className={`h-full rounded-lg border transition-colors flex items-center ${
+                                                    showFilterMenu || Object.keys(filters).length > 0
+                                                        ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
+                                                        : 'bg-black/40 border-white/10 text-slate-400 hover:bg-white/5 hover:text-slate-200'
+                                                }`}>
+                                                    <button
+                                                        onClick={() => setShowFilterMenu(!showFilterMenu)}
+                                                        className="h-full px-3 flex items-center gap-2"
+                                                        title="Filtra e Ordina"
+                                                    >
+                                                        <Filter size={18} />
+                                                        {Object.keys(filters).length > 0 && (
+                                                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-black">
+                                                                {Object.keys(filters).length}
+                                                            </span>
+                                                        )}
+                                                    </button>
+                                                    
+                                                    {Object.keys(filters).length > 0 && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setFilters({});
+                                                            }}
+                                                            className="h-full px-2 border-l border-emerald-500/30 hover:bg-emerald-500/30 hover:text-emerald-200 transition-colors rounded-r-lg"
+                                                            title="Rimuovi tutti i filtri"
                                                         >
-                                                            <option value="" disabled>Seleziona colonna...</option>
-                                                            {queryResult && queryResult.length > 0 && Object.keys(queryResult[0] || {}).map(col => (
-                                                                <option key={col} value={col}>{col}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-
-                                                    {activeFilterColumn && queryResult && queryResult.length > 0 && (
-                                                        <>
-                                                            {/* Sorting */}
-                                                            <div className="p-3 border-b border-white/5 flex gap-2">
-                                                                <button
-                                                                    onClick={() => handleSort(activeFilterColumn, 'asc')}
-                                                                    className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs transition-colors ${
-                                                                        sortConfig?.key === activeFilterColumn && sortConfig.direction === 'asc'
-                                                                            ? 'bg-emerald-500/20 text-emerald-300'
-                                                                            : 'bg-white/5 text-slate-400 hover:bg-white/10'
-                                                                    }`}
-                                                                >
-                                                                    <ArrowDownAZ size={14} /> A-Z
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleSort(activeFilterColumn, 'desc')}
-                                                                    className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs transition-colors ${
-                                                                        sortConfig?.key === activeFilterColumn && sortConfig.direction === 'desc'
-                                                                            ? 'bg-emerald-500/20 text-emerald-300'
-                                                                            : 'bg-white/5 text-slate-400 hover:bg-white/10'
-                                                                    }`}
-                                                                >
-                                                                    <ArrowUpAZ size={14} /> Z-A
-                                                                </button>
-                                                            </div>
-
-                                                            {/* Values */}
-                                                            <div className="max-h-48 overflow-y-auto custom-scrollbar p-2">
-                                                                <div className="flex items-center justify-between mb-2 px-1">
-                                                                    <span className="text-xs font-bold text-slate-500">Valori</span>
-                                                                    <div className="flex gap-2">
-                                                                        <button onClick={() => selectAllFilters(activeFilterColumn)} className="text-[10px] text-emerald-400 hover:underline">Tutti</button>
-                                                                        <button onClick={() => clearAllFilters(activeFilterColumn)} className="text-[10px] text-red-400 hover:underline">Nessuno</button>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="space-y-1">
-                                                                    {getUniqueValues(activeFilterColumn!).map((val: string) => (
-                                                                        <button
-                                                                            key={val}
-                                                                            onClick={() => toggleFilterValue(activeFilterColumn!, val)}
-                                                                            className="w-full flex items-center gap-2 px-2 py-1 rounded hover:bg-white/5 text-left group"
-                                                                        >
-                                                                            <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors ${
-                                                                                isValueSelected(activeFilterColumn!, val)
-                                                                                    ? 'bg-emerald-500 border-emerald-500'
-                                                                                    : 'border-slate-600 group-hover:border-slate-500'
-                                                                            }`}>
-                                                                                {isValueSelected(activeFilterColumn!, val) && <CheckSquare size={10} className="text-black" />}
-                                                                                {!isValueSelected(activeFilterColumn!, val) && <Square size={10} className="text-slate-600 group-hover:text-slate-500" />}
-                                                                            </div>
-                                                                            <span className="text-xs text-slate-300 truncate">{val}</span>
-                                                                        </button>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        </>
+                                                            <X size={14} />
+                                                        </button>
                                                     )}
                                                 </div>
-                                            )}
+
+                                                {/* Filter Popover */}
+                                                {showFilterMenu && (
+                                                    <div className="absolute right-0 top-full mt-2 w-64 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl shadow-black/50 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                                                        <div className="p-3 border-b border-white/5">
+                                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Colonna</h4>
+                                                            <select
+                                                                value={activeFilterColumn || ''}
+                                                                onChange={(e) => setActiveFilterColumn(e.target.value)}
+                                                                className="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500/50"
+                                                            >
+                                                                <option value="" disabled>Seleziona colonna...</option>
+                                                                {queryResult && queryResult.length > 0 && Object.keys(queryResult[0] || {}).map(col => (
+                                                                    <option key={col} value={col}>{col}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+
+                                                        {activeFilterColumn && queryResult && queryResult.length > 0 && (
+                                                            <>
+                                                                {/* Sorting */}
+                                                                <div className="p-3 border-b border-white/5 flex gap-2">
+                                                                    <button
+                                                                        onClick={() => handleSort(activeFilterColumn, 'asc')}
+                                                                        className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs transition-colors ${
+                                                                            sortConfig?.key === activeFilterColumn && sortConfig.direction === 'asc'
+                                                                                ? 'bg-emerald-500/20 text-emerald-300'
+                                                                                : 'bg-white/5 text-slate-400 hover:bg-white/10'
+                                                                        }`}
+                                                                    >
+                                                                        <ArrowDownAZ size={14} /> A-Z
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleSort(activeFilterColumn, 'desc')}
+                                                                        className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs transition-colors ${
+                                                                            sortConfig?.key === activeFilterColumn && sortConfig.direction === 'desc'
+                                                                                ? 'bg-emerald-500/20 text-emerald-300'
+                                                                                : 'bg-white/5 text-slate-400 hover:bg-white/10'
+                                                                        }`}
+                                                                    >
+                                                                        <ArrowUpAZ size={14} /> Z-A
+                                                                    </button>
+                                                                </div>
+
+                                                                {/* Values */}
+                                                                <div className="max-h-48 overflow-y-auto custom-scrollbar p-2">
+                                                                    <div className="flex items-center justify-between mb-2 px-1">
+                                                                        <span className="text-xs font-bold text-slate-500">Valori</span>
+                                                                        <div className="flex gap-2">
+                                                                            <button onClick={() => selectAllFilters(activeFilterColumn)} className="text-[10px] text-emerald-400 hover:underline">Tutti</button>
+                                                                            <button onClick={() => clearAllFilters(activeFilterColumn)} className="text-[10px] text-red-400 hover:underline">Nessuno</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="space-y-1">
+                                                                        {getUniqueValues(activeFilterColumn!).map((val: string) => (
+                                                                            <button
+                                                                                key={val}
+                                                                                onClick={() => toggleFilterValue(activeFilterColumn!, val)}
+                                                                                className="w-full flex items-center gap-2 px-2 py-1 rounded hover:bg-white/5 text-left group"
+                                                                            >
+                                                                                <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors ${
+                                                                                    isValueSelected(activeFilterColumn!, val)
+                                                                                        ? 'bg-emerald-500 border-emerald-500'
+                                                                                        : 'border-slate-600 group-hover:border-slate-500'
+                                                                                }`}>
+                                                                                    {isValueSelected(activeFilterColumn!, val) && <CheckSquare size={10} className="text-black" />}
+                                                                                    {!isValueSelected(activeFilterColumn!, val) && <Square size={10} className="text-slate-600 group-hover:text-slate-500" />}
+                                                                                </div>
+                                                                                <span className="text-xs text-slate-300 truncate">{val}</span>
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
+                                    
+                                    {/* Results Table */}
+                                    <div className="flex-1 overflow-auto custom-scrollbar">
+                                        <ResultsTable data={filteredResult || queryResult} />
+                                    </div>
                                 </div>
-                                
-                                {/* Results Table */}
-                                <div className="flex-1 overflow-auto custom-scrollbar">
-                                    <ResultsTable data={filteredResult || queryResult} />
+                            )}
+
+                            {queryResult && queryResult.length === 0 && (
+                                <div className="bg-amber-900/20 border border-amber-900/50 rounded-xl p-4 text-center animate-in fade-in">
+                                    <p className="text-amber-400 text-sm font-medium">La query è stata eseguita correttamente ma non ha restituito risultati.</p>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {queryResult && queryResult.length === 0 && (
-                            <div className="bg-amber-900/20 border border-amber-900/50 rounded-xl p-4 text-center animate-in fade-in">
-                                <p className="text-amber-400 text-sm font-medium">La query è stata eseguita correttamente ma non ha restituito risultati.</p>
-                            </div>
-                        )}
-
-                        {/* Empty state quando non ci sono risultati */}
-                        {!queryResult && !error && (
-                            <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 flex items-center justify-center">
-                                <div className="text-center text-slate-600">
-                                    <TrendingUp size={48} className="mx-auto mb-4 opacity-30" />
-                                    <p className="text-sm font-bold uppercase tracking-wider">Nessun risultato</p>
-                                    <p className="text-xs mt-1">Esegui una query sui dati caricati</p>
+                            {/* Empty state quando non ci sono risultati */}
+                            {!queryResult && !error && (
+                                <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 flex items-center justify-center">
+                                    <div className="text-center text-slate-600">
+                                        <TrendingUp size={48} className="mx-auto mb-4 opacity-30" />
+                                        <p className="text-sm font-bold uppercase tracking-wider">Nessun risultato</p>
+                                        <p className="text-xs mt-1">Esegui una query sui dati caricati</p>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -1551,9 +1329,12 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         setSaveError(null);
                                     }}
                                     placeholder="es. clean_sales_data"
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500/50"
                                     autoFocus
                                 />
+                                <p className="text-[10px] text-slate-500 mt-1">
+                                    Usa solo lettere minuscole, numeri e underscore.
+                                </p>
                                 {saveError && (
                                     <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
                                         <AlertCircle size={10} />
@@ -1562,27 +1343,46 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 )}
                             </div>
 
-                            <div className="flex gap-2 pt-2">
+                            <div className="flex justify-end gap-2 pt-2">
                                 <button
                                     onClick={() => {
                                         setShowSaveModal(false);
                                         setNewTableName('');
                                         setSaveError(null);
                                     }}
-                                    className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-300 text-sm font-medium rounded-lg transition-colors"
+                                    className="px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white hover:bg-white/5 transition-all"
                                 >
                                     Annulla
                                 </button>
                                 <button
-                                    onClick={handleSaveTable}
-                                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition-colors shadow-lg shadow-blue-500/20"
+                                    onClick={handleSaveAsTable}
+                                    disabled={!newTableName.trim() || isSaving}
+                                    className="px-4 py-2 rounded-lg text-xs font-bold bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
-                                    Salva Tabella
+                                    {isSaving ? (
+                                        <>
+                                            <div className="w-3 h-3 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
+                                            Salvataggio...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Check size={12} />
+                                            Salva Tabella
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Quick Chart Modal */}
+            {showChartModal && (filteredResult || queryResult) && (
+                <QuickChart
+                    data={filteredResult || queryResult}
+                    onClose={() => setShowChartModal(false)}
+                />
             )}
 
             {/* Health Report Modal */}

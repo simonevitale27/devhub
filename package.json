@@ -12,6 +12,7 @@
     "@types/papaparse": "^5.5.0",
     "@xyflow/react": "^12.10.0",
     "alasql": "^4.9.0",
+    "html2canvas": "^1.4.1",
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.554.0",
@@ -20,8 +21,9 @@
     "react-dom": "^19.2.0",
     "react-virtualized-auto-sizer": "^1.0.26",
     "react-window": "^2.2.3",
-    "recharts": "^3.5.1",
-    "sql-formatter": "^15.6.10"
+    "recharts": "^3.6.0",
+    "sql-formatter": "^15.6.10",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

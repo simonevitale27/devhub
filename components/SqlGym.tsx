@@ -28,11 +28,21 @@ import {
   Code,
   XCircle,
   AlertTriangle,
+  FileDown,
+  FileSpreadsheet,
+  ChevronDown,
+  BarChart3,
   Bot,
   History,
   Bug,
 } from "lucide-react";
+
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { downloadCSV, compareResults } from "../utils/sqlHelpers";
+import { generateUnifiedPDF } from "../utils/pdfExport";
+import QuickChart from "./QuickChart";
 import { formatSQL } from "../utils/formatSQL";
 import { TableInfo } from "../utils/ghostTextSuggestions";
 import {
@@ -94,9 +104,22 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
   const [showDbPanel, setShowDbPanel] = useState(false);
   const [showERDiagram, setShowERDiagram] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [queryHistory, setQueryHistory] = useState<string[]>([]);
+  const [queryHistory, setQueryHistory] = useState<string[]>(() => {
+    // Load from localStorage on init
+    try {
+      const saved = localStorage.getItem('sqlGym_queryHistory');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [inspectorTable, setInspectorTable] = useState<typeof DB_SCHEMAS[0] | null>(null);
   const [cursorPosition, setCursorPosition] = useState<number>(0);
+  const [selectionStart, setSelectionStart] = useState<number>(0);
+  const [selectionEnd, setSelectionEnd] = useState<number>(0);
+  const [executionTime, setExecutionTime] = useState<number | null>(null);
+  const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
+  const [showChartModal, setShowChartModal] = useState(false);
   const editorRef = useRef<HTMLTextAreaElement | null>(null);
   
   // Refs for sliding effect
@@ -151,6 +174,71 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
   useEffect(() => {
     initDatabase(difficulty);
   }, []); // Run once on mount
+
+  // Persist query history to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('sqlGym_queryHistory', JSON.stringify(queryHistory));
+    } catch {
+      // localStorage might be full or disabled
+    }
+  }, [queryHistory]);
+
+  // Generate CSV Export
+  const generateCSV = () => {
+    const dataToExport = Array.isArray(userResult) ? userResult : (userResult?.data || userResult);
+    if (!dataToExport || !Array.isArray(dataToExport) || dataToExport.length === 0) return;
+
+    const headers = Object.keys(dataToExport[0]);
+    const csvContent = [
+      headers.join(','),
+      ...dataToExport.map((row: any) => headers.map(header => JSON.stringify(row[header])).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `query_result_${new Date().getTime()}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    setIsDownloadMenuOpen(false);
+  };
+
+  // Generate Excel Export
+  const generateExcel = () => {
+    const dataToExport = Array.isArray(userResult) ? userResult : (userResult?.data || userResult);
+    if (!dataToExport || !Array.isArray(dataToExport) || dataToExport.length === 0) return;
+
+    try {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(dataToExport);
+      
+      const colWidths = Object.keys(dataToExport[0]).map(key => ({
+        wch: Math.max(key.length, ...dataToExport.slice(0, 100).map((row: any) => String(row[key] ?? '').length)) + 2
+      }));
+      ws['!cols'] = colWidths;
+      
+      XLSX.utils.book_append_sheet(wb, ws, 'Query Results');
+      XLSX.writeFile(wb, `query_result_${new Date().getTime()}.xlsx`);
+      setIsDownloadMenuOpen(false);
+    } catch (err) {
+      console.error('Error creating Excel:', err);
+    }
+  };
+
+  // Generate PDF Export
+  const generatePDF = () => {
+    const dataToExport = Array.isArray(userResult) ? userResult : (userResult?.data || userResult);
+    if (!dataToExport || !Array.isArray(dataToExport) || dataToExport.length === 0) return;
+
+    generateUnifiedPDF(dataToExport, `query_gym_result_${new Date().getTime()}.pdf`, 'SQL Gym Export');
+    setIsDownloadMenuOpen(false);
+  };
 
   const loadContent = useCallback(() => {
     setIsLoading(true);
@@ -257,9 +345,13 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     setExpectedResult([]);
     setShowErrorExplanation(false);
     setShowStatsModal(false); // Close stats modal on new run
+    setExecutionTime(null);
 
-    // Execute the query for both Gym and Debug modes
+    // Execute the query for both Gym and Debug modes with timing
+    const startTime = performance.now();
     const res = runQuery(sqlCode);
+    const endTime = performance.now();
+    setExecutionTime(Math.round(endTime - startTime));
     setUserResult(res);
 
     // Add to history if successful
@@ -321,7 +413,18 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
               warningMessage = `Hai selezionato più colonne del necessario (${diff.extraColumns?.join(', ')}). La traccia richiedeva solo colonne specifiche. Prova a evitare SELECT * e seleziona solo le colonne richieste.`;
             } else {
               // Perfect match!
-              message = "Risultato perfetto!";
+              // Perfect match! Check if the query is different from the solution
+              const normalizeQuery = (q: string) => q.trim().replace(/\s+/g, ' ').toLowerCase();
+              const userNorm = normalizeQuery(sqlCode);
+              const solutionNorm = normalizeQuery(exercise.solutionQuery || '');
+              
+              if (userNorm !== solutionNorm) {
+                 message = "Risultato corretto! (Soluzione alternativa valida)";
+                 // Add a subtle hint that it's different but correct
+                 warningLevel = 'none'; 
+              } else {
+                 message = "Risultato perfetto!";
+              }
             }
           } else {
             // Results don't match
@@ -388,18 +491,45 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     }));
   }, []);
 
+  // Handle column/table click from SchemaViewer - replaces selection or inserts at cursor
+  const handleTextInsertion = useCallback((textToInsert: string) => {
+    // Check if there's selected text to replace
+    if (selectionStart !== selectionEnd) {
+      // Replace selected text
+      const before = sqlCode.substring(0, selectionStart);
+      const after = sqlCode.substring(selectionEnd);
+      const newCode = before + textToInsert + after;
+      setSqlCode(newCode);
+      
+      // Update cursor position to after the inserted text
+      const newCursorPos = selectionStart + textToInsert.length;
+      setCursorPosition(newCursorPos);
+      setSelectionStart(newCursorPos);
+      setSelectionEnd(newCursorPos);
+    } else {
+      // Insert at cursor position
+      const before = sqlCode.substring(0, cursorPosition);
+      const after = sqlCode.substring(cursorPosition);
+      const newCode = before + textToInsert + after;
+      setSqlCode(newCode);
+      
+      // Update cursor position to after the inserted text
+      const newCursorPos = cursorPosition + textToInsert.length;
+      setCursorPosition(newCursorPos);
+      setSelectionStart(newCursorPos);
+      setSelectionEnd(newCursorPos);
+    }
+  }, [sqlCode, cursorPosition, selectionStart, selectionEnd]);
+
   // Handle column click from SchemaViewer
   const handleColumnClick = useCallback((columnName: string) => {
-    // Insert column name at current cursor position
-    const before = sqlCode.substring(0, cursorPosition);
-    const after = sqlCode.substring(cursorPosition);
-    const newCode = before + columnName + after;
-    setSqlCode(newCode);
-    
-    // Update cursor position to after the inserted column name
-    const newCursorPos = cursorPosition + columnName.length;
-    setCursorPosition(newCursorPos);
-  }, [sqlCode, cursorPosition]);
+    handleTextInsertion(columnName);
+  }, [handleTextInsertion]);
+
+  // Handle table click from SchemaViewer
+  const handleTableClick = useCallback((tableName: string) => {
+    handleTextInsertion(tableName);
+  }, [handleTextInsertion]);
 
   if (isLoading && !exercise) {
     return (
@@ -562,7 +692,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
             <Layers size={16} className={textActive} /> Schema Database
           </div>
           <div className="flex-1 overflow-auto p-4">
-            <SchemaViewer schemas={DB_SCHEMAS} onInspect={setInspectorTable} onColumnClick={handleColumnClick} />
+            <SchemaViewer schemas={DB_SCHEMAS} onInspect={setInspectorTable} onColumnClick={handleColumnClick} onTableClick={handleTableClick} />
           </div>
         </div>
       )}
@@ -896,6 +1026,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                       onRun={handleRun}
                       tables={tableInfos}
                       onCursorPositionChange={setCursorPosition}
+                      onSelectionChange={(start, end) => { setSelectionStart(start); setSelectionEnd(end); }}
                     />
                   </div>
                 </div>
@@ -950,9 +1081,21 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                   <div className="flex-1 overflow-hidden relative bg-[#121212]/70 backdrop-blur-xl rounded-2xl flex flex-col shadow-lg">
                     {userResult?.success ? (
                       <div className="flex-1 overflow-hidden flex flex-col">
-                        <div className="p-2 bg-[#0a0a0a]/60 text-xs font-bold text-slate-300 flex items-center gap-2 shrink-0 rounded-t-2xl border-b border-white/15">
-                          <TableIcon size={14} />
-                          RISULTATO QUERY
+                        <div className="p-2 bg-[#0a0a0a]/60 text-xs font-bold text-slate-300 flex items-center justify-between shrink-0 rounded-t-2xl border-b border-white/15">
+                          <div className="flex items-center gap-2">
+                            <TableIcon size={14} />
+                            RISULTATO QUERY
+                          </div>
+                          <div className="flex items-center gap-3 text-slate-400 font-normal">
+                            <span className="flex items-center gap-1">
+                              <span className="text-blue-400 font-bold">{Array.isArray(userResult.data) ? userResult.data.length : 1}</span> righe
+                            </span>
+                            {executionTime !== null && (
+                              <span className="flex items-center gap-1">
+                                <span className="text-emerald-400 font-bold">{executionTime}</span>ms
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div className="flex-1 overflow-hidden">
                           <ResultsTable
@@ -1070,6 +1213,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                         onRun={handleRun}
                         tables={tableInfos}
                         onCursorPositionChange={setCursorPosition}
+                        onSelectionChange={(start, end) => { setSelectionStart(start); setSelectionEnd(end); }}
                       />
                     </div>
 
@@ -1169,8 +1313,21 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                     {userResult?.success ? (
                       // Show results table whenever query executed successfully (even if results don't match expected)
                         <div className="flex-1 overflow-hidden flex flex-col">
-                          {/* Toolbar with CSV Download and Stats Button */}
-                          <div className="p-2 border-b border-slate-800 bg-slate-900/50 flex justify-end gap-2 shrink-0">
+                          {/* Toolbar with Stats, CSV Download and Stats Button */}
+                          <div className="p-2 border-b border-slate-800 bg-slate-900/50 flex justify-between items-center shrink-0">
+                            {/* Left side - Stats */}
+                            <div className="flex items-center gap-3 text-xs text-slate-400">
+                              <span className="flex items-center gap-1">
+                                <span className="text-blue-400 font-bold">{Array.isArray(userResult.data) ? userResult.data.length : 1}</span> righe
+                              </span>
+                              {executionTime !== null && (
+                                <span className="flex items-center gap-1">
+                                  <span className="text-emerald-400 font-bold">{executionTime}</span>ms
+                                </span>
+                              )}
+                            </div>
+                            {/* Right side - Buttons */}
+                            <div className="flex gap-2">
                             {/* Stats Button */}
                             <button
                               onClick={() => setShowStatsModal(true)}
@@ -1181,22 +1338,54 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                               Statistiche
                             </button>
                             
-                            {/* CSV Download Button */}
+                            
+                            {/* Chart Button */}
                             <button
-                              onClick={() =>
-                                downloadCSV(
-                                  Array.isArray(userResult.data)
-                                    ? userResult.data
-                                    : [],
-                                  `sql_result_${Date.now()}.csv`
-                                )
-                              }
-                              className="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-2 active:scale-95 bg-gradient-to-b from-emerald-500/30 to-emerald-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(16,185,129,0.2)_inset] shadow-emerald-500/10 text-emerald-300 hover:from-emerald-500/40 hover:to-emerald-600/10 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)_inset]"
-                              title="Scarica risultati in CSV"
+                                onClick={() => setShowChartModal(true)}
+                                className="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-2 active:scale-95 bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/10 text-purple-300 hover:from-purple-500/40 hover:to-purple-600/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)_inset]"
                             >
-                              <Download size={14} />
-                              Scarica CSV
+                                <BarChart3 size={14} />
+                                Grafico
                             </button>
+
+                            {/* Download Menu */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
+                                    className="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-2 active:scale-95 bg-gradient-to-b from-emerald-500/30 to-emerald-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(16,185,129,0.2)_inset] shadow-emerald-500/10 text-emerald-300 hover:from-emerald-500/40 hover:to-emerald-600/10 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)_inset]"
+                                >
+                                    <FileDown size={14} />
+                                    Esporta
+                                    <ChevronDown size={12} className={`transition-transform duration-200 ${isDownloadMenuOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                
+                                {isDownloadMenuOpen && (
+                                    <div className="absolute right-0 top-full mt-2 w-40 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl shadow-black/50 overflow-hidden z-[100] animate-in fade-in zoom-in duration-100 origin-top-right">
+                                        <button
+                                            onClick={generatePDF}
+                                            className="w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                        >
+                                            <FileDown size={12} className="text-red-400" />
+                                            Scarica PDF
+                                        </button>
+                                        <button
+                                            onClick={generateCSV}
+                                            className="w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                        >
+                                            <FileSpreadsheet size={12} className="text-emerald-400" />
+                                            Scarica CSV
+                                        </button>
+                                        <button
+                                            onClick={generateExcel}
+                                            className="w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                        >
+                                            <FileSpreadsheet size={12} className="text-blue-400" />
+                                            Scarica Excel
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                            </div>
                           </div>
 
                           <div className="flex-1 overflow-hidden">
@@ -1276,6 +1465,14 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
           </div>
         </div>
       )}
+
+      {showChartModal && userResult && (
+        <QuickChart
+          data={Array.isArray(userResult) ? userResult : (userResult.data || [])}
+          onClose={() => setShowChartModal(false)}
+        />
+      )}
+
       {/* ER Diagram Modal */}
       {showERDiagram && (
         <SchemaERDiagram

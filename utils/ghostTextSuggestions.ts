@@ -10,11 +10,6 @@ export interface TableInfo {
 
 import { SQL_KEYWORDS, SQL_FUNCTIONS } from './sqlConstants';
 
-export interface TableInfo {
-  tableName: string;
-  columns: string[];
-}
-
 export interface GhostSuggestion {
   text: string; // The completion text to display
   type: 'keyword' | 'table' | 'column' | 'function';
@@ -91,7 +86,7 @@ export function getGhostSuggestion(
   }
   
   // 4. Try to match column names (look for context to determine which table)
-  const contextTable = getTableContext(textBeforeCursor, tables);
+  const contextTable = getTableContext(textBeforeCursor, tables, query);
   
   if (contextTable) {
     const columnMatch = contextTable.columns.find(col =>
@@ -113,14 +108,17 @@ export function getGhostSuggestion(
 
 /**
  * Determine which table is being referenced based on query context
+ * Now looks at the FULL query to find table context (important for SELECT clause editing)
  */
-function getTableContext(textBeforeCursor: string, tables: TableInfo[]): TableInfo | null {
-  const upperText = textBeforeCursor.toUpperCase();
+function getTableContext(textBeforeCursor: string, tables: TableInfo[], fullQuery?: string): TableInfo | null {
+  // Use full query if provided, otherwise fall back to textBeforeCursor
+  const queryToSearch = fullQuery || textBeforeCursor;
+  const upperText = queryToSearch.toUpperCase();
   
-  // Look for "FROM tableName" pattern
-  const fromMatch = upperText.match(/FROM\s+(\w+)\s*(?:WHERE|ORDER|GROUP|LIMIT|$)/i);
+  // Look for "FROM tableName" pattern in the full query
+  const fromMatch = upperText.match(/FROM\s+(\w+)/i);
   if (fromMatch) {
-    const tableName = textBeforeCursor.match(/FROM\s+(\w+)/i)?.[1];
+    const tableName = queryToSearch.match(/FROM\s+(\w+)/i)?.[1];
     if (tableName) {
       return tables.find(t => t.tableName.toLowerCase() === tableName.toLowerCase()) || null;
     }
@@ -129,16 +127,10 @@ function getTableContext(textBeforeCursor: string, tables: TableInfo[]): TableIn
   // Look for "JOIN tableName" pattern
   const joinMatch = upperText.match(/JOIN\s+(\w+)\s*(?:ON|WHERE|$)/i);
   if (joinMatch) {
-    const tableName = textBeforeCursor.match(/JOIN\s+(\w+)/i)?.[1];
+    const tableName = queryToSearch.match(/JOIN\s+(\w+)/i)?.[1];
     if (tableName) {
       return tables.find(t => t.tableName.toLowerCase() === tableName.toLowerCase()) || null;
     }
-  }
-  
-  // Default: use the first table mentioned in FROM clause
-  const firstTableMatch = textBeforeCursor.match(/FROM\s+(\w+)/i);
-  if (firstTableMatch) {
-    return tables.find(t => t.tableName.toLowerCase() === firstTableMatch[1].toLowerCase()) || null;
   }
   
   return null;
