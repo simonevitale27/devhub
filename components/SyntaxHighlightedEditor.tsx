@@ -531,16 +531,29 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
     const textBefore = value.substring(0, cursorPosition);
     
     // Find the start of the current word
-    const words = textBefore.split(/[\s,]+/);
+    // We include dot in the split delimiters usually, but here we want to handle "alias.column"
+    // So let's split by only whitespace and commas, treating "alias.column" as one "word" initially
+    const words = textBefore.split(/[\s,()]+/); 
     const currentWord = words[words.length - 1] || '';
-    const wordStart = cursorPosition - currentWord.length;
     
-    // Replace current word with selected item
-    const newValue = value.substring(0, wordStart) + item.label + value.substring(cursorPosition);
+    let replacementStart = cursorPosition - currentWord.length;
+    
+    // Check if we are completing a column for an alias (e.g. "u." or "u.nam")
+    // And ensure we are NOT doing a join condition (which is a full expression)
+    if (item.type !== 'join_condition') {
+        const dotIndex = currentWord.lastIndexOf('.');
+        if (dotIndex !== -1) {
+            // "u." or "u.nam" -> we want to keep "u." and replace "nam" or "" with item.label
+            // So start replacement AFTER the dot
+            replacementStart += dotIndex + 1;
+        }
+    }
+    
+    const newValue = value.substring(0, replacementStart) + item.label + value.substring(cursorPosition);
     onChange(newValue);
     
     // Position cursor after inserted text
-    const newCursorPos = wordStart + item.label.length;
+    const newCursorPos = replacementStart + item.label.length;
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.selectionStart = textareaRef.current.selectionEnd = newCursorPos;
@@ -600,7 +613,8 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
     }
 
     // Toggle comment (Cmd+/ or Ctrl+/)
-    if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+    // Check both key and code to support different layouts (e.g. Italian)
+    if ((e.metaKey || e.ctrlKey) && (e.key === '/' || e.code === 'Slash' || e.key === '7' /* Shift+7 is / on IT layout sometimes */)) {
       e.preventDefault();
       const textarea = e.currentTarget as HTMLTextAreaElement;
       const start = textarea.selectionStart;
