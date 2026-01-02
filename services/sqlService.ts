@@ -1,6 +1,149 @@
 
 import alasql from 'alasql';
+import alasql from 'alasql';
 import { Difficulty, QueryResult } from '../types';
+
+// ==========================================
+// ALASQL POLYFILLS
+// ==========================================
+
+// ==========================================
+// ALASQL POLYFILLS
+// ==========================================
+
+alasql.fn.MONTHNAME = (date: string | Date | undefined) => {
+    if (!date) return null;
+    return new Date(date).toLocaleString('en-US', { month: 'long' });
+};
+
+alasql.fn.DAYNAME = (date: string | Date | undefined) => {
+    if (!date) return null;
+    return new Date(date).toLocaleString('en-US', { weekday: 'long' });
+};
+
+alasql.fn.STR_TO_DATE = (str: string, format: string) => {
+    // Basic parser for common formats
+    if (!str) return null;
+    if (format === '%d/%m/%Y') {
+        const [d, m, y] = str.split(/[-/]/).map(Number);
+        return new Date(y, m - 1, d);
+    }
+    if (format === '%d/%m/%Y %H:%i') {
+         const [datePart, timePart] = str.split(' ');
+         const [d, m, y] = datePart.split(/[-/]/).map(Number);
+         const [h, min] = timePart.split(':').map(Number);
+         return new Date(y, m - 1, d, h, min);
+    }
+    return new Date(str); // Fallback
+};
+
+alasql.fn.DATE_FORMAT = (date: string | Date, format: string) => {
+    if (!date) return null;
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    
+    // Simple replacements
+    let ret = format
+        .replace('%Y', d.getFullYear().toString())
+        .replace('%m', (d.getMonth() + 1).toString().padStart(2, '0'))
+        .replace('%d', d.getDate().toString().padStart(2, '0'))
+        .replace('%H', d.getHours().toString().padStart(2, '0'))
+        .replace('%i', d.getMinutes().toString().padStart(2, '0'))
+        .replace('%s', d.getSeconds().toString().padStart(2, '0'))
+        .replace('%W', d.toLocaleString('en-US', { weekday: 'long' }))
+        .replace('%M', d.toLocaleString('en-US', { month: 'long' }))
+        .replace('%T', d.toTimeString().split(' ')[0]);
+        
+    return ret;
+};
+
+// Override NOW if necessary or ensure local time
+alasql.fn.NOW = () => new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+alasql.fn.TIMESTAMPDIFF = (unit: string, start: string | Date, end: string | Date) => {
+    const d1 = new Date(start);
+    const d2 = new Date(end);
+    const msDiff = d2.getTime() - d1.getTime();
+    
+    switch(unit.toUpperCase()) {
+        case 'SECOND': return Math.floor(msDiff / 1000);
+        case 'MINUTE': return Math.floor(msDiff / (1000 * 60));
+        case 'HOUR': return Math.floor(msDiff / (1000 * 60 * 60));
+        case 'DAY': return Math.floor(msDiff / (1000 * 60 * 60 * 24));
+        case 'MONTH': return (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+        case 'YEAR': return d2.getFullYear() - d1.getFullYear();
+        default: return null;
+    }
+};
+
+alasql.fn.DATEDIFF = (d1: string | Date, d2: string | Date) => {
+    // MySQL DATEDIFF(expr1, expr2) returns (expr1 - expr2) in days
+    // However, if AlaSQL parser blocks this, this function might not be called via SQL "DATEDIFF"
+    const date1 = new Date(d1);
+    const date2 = new Date(d2);
+    const diffTime = date1.getTime() - date2.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+};
+
+alasql.fn.LAST_DAY = (date: string | Date) => {
+    const d = new Date(date);
+    // Go to next month 0-th day = last day of current month
+    return new Date(d.getFullYear(), d.getMonth() + 1, 0); 
+};
+
+alasql.fn.TIME = (date: string | Date) => {
+    if (!date) return null;
+    try {
+       const d = new Date(date);
+       return d.toISOString().split('T')[1].split('.')[0];
+    } catch(e) { return null; }
+};
+
+alasql.fn.TIME_TO_SEC = (timeStr: string) => {
+    if (!timeStr) return 0;
+    const [h, m, s] = timeStr.split(':').map(Number);
+    return (h || 0) * 3600 + (m || 0) * 60 + (s || 0);
+};
+
+alasql.fn.TIMEDIFF = (t1: string, t2: string) => {
+    // Very basic 'HH:MM:SS' diff
+    const s1 = alasql.fn.TIME_TO_SEC(t1);
+    const s2 = alasql.fn.TIME_TO_SEC(t2);
+    const diff = s1 - s2;
+    const absDiff = Math.abs(diff);
+    // Convert back to HH:MM:SS
+    const h = Math.floor(absDiff / 3600).toString().padStart(2, '0');
+    const m = Math.floor((absDiff % 3600) / 60).toString().padStart(2, '0');
+    const s = (absDiff % 60).toString().padStart(2, '0');
+    return (diff < 0 ? '-' : '') + `${h}:${m}:${s}`;
+};
+
+alasql.fn.MAKEDATE = (year: number, dayOfYear: number) => {
+    const d = new Date(year, 0, dayOfYear);
+    return d; 
+};
+
+alasql.fn.PERIOD_DIFF = (p1: number, p2: number) => {
+    // YYYYMM format
+    const y1 = Math.floor(p1 / 100);
+    const m1 = p1 % 100;
+    const y2 = Math.floor(p2 / 100);
+    const m2 = p2 % 100;
+    return (y1 * 12 + m1) - (y2 * 12 + m2);
+};
+
+alasql.fn.UNIX_TIMESTAMP = (date: string | Date) => {
+    const d = date ? new Date(date) : new Date();
+    return Math.floor(d.getTime() / 1000);
+};
+
+alasql.fn.FROM_UNIXTIME = (ts: number) => {
+    return new Date(ts * 1000).toISOString().replace('T', ' ').split('.')[0];
+};
+
+alasql.options.mysql = true; // Enable some MySQL compatibility if possible
+
+
 
 // ==========================================
 // MOCK DATA GENERATORS

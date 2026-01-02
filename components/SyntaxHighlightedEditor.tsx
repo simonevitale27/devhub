@@ -6,7 +6,7 @@ import { getGhostSuggestion, applyGhostSuggestion, GhostSuggestion, TableInfo } 
 interface SyntaxHighlightedEditorProps {
   value: string;
   onChange: (val: string) => void;
-  onRun: () => void;
+  onRun: (selection?: string) => void;
   tables?: TableInfo[];
   onCursorPositionChange?: (position: number) => void;
   onSelectionChange?: (start: number, end: number) => void;
@@ -21,27 +21,61 @@ import { detectMisspelledWords, MisspelledWord } from '../utils/sqlSpellCheck';
 function highlightSQL(sql: string): string {
   if (!sql) return '';
   
-  let highlighted = sql;
-  
   // Escape HTML to prevent injection
-  highlighted = highlighted
+  let safeSql = sql
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
-  
-  // Highlight keywords (green)
+
+  // We need to tokenize or use careful regex phases to avoid coloring keywords inside comments/strings
+  // A simple robust approach given basic regex:
+  // 1. Strings: '...' or "..." -> placeholder
+  // 2. Comments: --... or /*...*/ -> placeholder
+  // 3. Keywords/Functions -> color
+  // 4. Restore placeholders styled
+
+  const placeholders: string[] = [];
+  const placeholderPrefix = '___PLACEHOLDER___';
+
+  const pushPlaceholder = (content: string, style: string) => {
+    placeholders.push(`<span style="${style}">${content}</span>`);
+    return `${placeholderPrefix}${placeholders.length - 1}___`;
+  };
+
+  // 1. Extract Strings (single and double quoted)
+  // Note: specific regex for SQL strings (escaping quotes with same quote)
+  safeSql = safeSql.replace(/('([^']|'')*')|("([^"]|"")*")/g, (match) => {
+    return pushPlaceholder(match, 'color: #fca5a5;'); // light red for strings
+  });
+
+  // 2. Extract Comments
+  // Multi-line /* ... */
+  safeSql = safeSql.replace(/(\/\*[\s\S]*?\*\/)/g, (match) => {
+    return pushPlaceholder(match, 'color: #94a3b8; font-style: italic;'); // slate-400 italic for comments
+  });
+  // Single-line -- ...
+  safeSql = safeSql.replace(/(--.*$)/gm, (match) => {
+    return pushPlaceholder(match, 'color: #94a3b8; font-style: italic;');
+  });
+
+  // 3. Highlight Keywords (green)
   SQL_KEYWORDS.forEach(keyword => {
     const regex = new RegExp(`\\b(${keyword})\\b`, 'gi');
-    highlighted = highlighted.replace(regex, '<span style="color: #4ade80;">$1</span>');
+    safeSql = safeSql.replace(regex, '<span style="color: #4ade80;">$1</span>');
   });
   
-  // Highlight functions (yellow)
+  // 4. Highlight Functions (yellow)
   SQL_FUNCTIONS.forEach(func => {
     const regex = new RegExp(`\\b(${func})\\b`, 'gi');
-    highlighted = highlighted.replace(regex, '<span style="color: #fbbf24;">$1</span>');
+    safeSql = safeSql.replace(regex, '<span style="color: #fbbf24;">$1</span>');
+  });
+
+  // 5. Restore placeholders (comments and strings)
+  safeSql = safeSql.replace(new RegExp(`${placeholderPrefix}(\\d+)___`, 'g'), (_, index) => {
+    return placeholders[parseInt(index, 10)];
   });
   
-  return highlighted;
+  return safeSql;
 }
 
 const LineNumberItem = React.memo(({ num, isActive }: { num: number, isActive: boolean }) => (
@@ -277,6 +311,16 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
     };
   }, [value]);
 
+  // Get tables used in the query so far
+  const getUsedTables = useCallback((query: string) => {
+    const matches = [...query.matchAll(/(?:FROM|JOIN)\s+(\w+)(?:\s+(?:AS\s+)?(\w+))?/gi)];
+    return matches.map(m => ({
+      tableName: m[1],
+      alias: m[2] || m[1],
+      tableInfo: tables.find(t => t.tableName.toLowerCase() === m[1].toLowerCase())
+    })).filter(t => t.tableInfo);
+  }, [tables]);
+
   // Update autocomplete based on cursor position and query
   const updateAutocomplete = useCallback((query: string, cursorPosition: number) => {
     const textBeforeCursor = query.slice(0, cursorPosition);
@@ -286,8 +330,8 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
     const currentWord = words[words.length - 1]?.toLowerCase() || '';
     
     // Check if we're after FROM or JOIN - show table autocomplete
-    const afterFromOrJoin = /(?:FROM|JOIN)\s+$/i.test(textBeforeCursor) ||
-      /(?:FROM|JOIN)\s+\w*$/i.test(textBeforeCursor);
+    const afterFromOrJoin = /(?:FROM|JOIN)\s+(?:\w+\s+(?:AS\s+)?\w+\s+)?$/i.test(textBeforeCursor) || 
+                          /(?:FROM|JOIN)\s+\w*$/i.test(textBeforeCursor);
     
     if (afterFromOrJoin) {
       // Show tables dropdown
@@ -305,6 +349,135 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
         setSelectedAutocompleteIndex(0);
         return;
       }
+    }
+
+    // Check if we are after "ON" keyword for JOIN conditions
+    // Matches: JOIN Table T ON ... or JOIN Table ON ...
+    const onMatch = textBeforeCursor.match(/JOIN\s+(\w+)(?:\s+(?:AS\s+)?(\w+))?\s+ON\s+(\w*)$/i);
+    
+    if (onMatch) {
+      const joiningTableName = onMatch[1];
+      const joiningAlias = onMatch[2] || joiningTableName;
+      const joiningTableInfo = tables.find(t => t.tableName.toLowerCase() === joiningTableName.toLowerCase());
+
+      if (joiningTableInfo) {
+        const usedTables = getUsedTables(textBeforeCursor);
+        // Exclude the table we are currently joining (it's the last one in the list usually, or the one in the match)
+        const otherTables = usedTables.filter(t => t.alias !== joiningAlias && t.tableName !== joiningTableName);
+        
+        const suggestions: AutocompleteItem[] = [];
+
+        otherTables.forEach(sourceTable => {
+          if (!sourceTable.tableInfo) return;
+
+          // Check relationship: Source -> Joining (Source has Joining_id)
+          // e.g. Orders (source) has user_id, Users (joining) has id
+          const jk1 = `${joiningTableName.toLowerCase().replace(/s$/, '')}_id`; // singularize: users -> user_id
+          const fkColumn1 = sourceTable.tableInfo.columns.find(c => c.toLowerCase() === jk1);
+          const pkColumn1 = joiningTableInfo.columns.find(c => c.toLowerCase() === 'id');
+
+          if (fkColumn1 && pkColumn1) {
+             suggestions.push({
+               label: `${sourceTable.alias}.${fkColumn1} = ${joiningAlias}.${pkColumn1}`,
+               type: 'join_condition',
+               tableName: `${sourceTable.tableName} -> ${joiningTableName}`
+             });
+          }
+
+          // Check relationship: Joining -> Source (Joining has Source_id)
+          // e.g. Orders (joining) has user_id, Users (source) has id
+          const jk2 = `${sourceTable.tableName.toLowerCase().replace(/s$/, '')}_id`;
+          const fkColumn2 = joiningTableInfo.columns.find(c => c.toLowerCase() === jk2);
+          const pkColumn2 = sourceTable.tableInfo.columns.find(c => c.toLowerCase() === 'id');
+
+          if (fkColumn2 && pkColumn2) {
+             suggestions.push({
+               label: `${joiningAlias}.${fkColumn2} = ${sourceTable.alias}.${pkColumn2}`,
+               type: 'join_condition',
+               tableName: `${joiningTableName} -> ${sourceTable.tableName}`
+             });
+          }
+          
+          // Check for common column names (e.g. both have product_id) - often useful for many-to-many link tables
+          // Excluding 'id' to avoid t1.id = t2.id unless intended
+          const commonColumns = joiningTableInfo.columns.filter(c => 
+            c.toLowerCase() !== 'id' && 
+            sourceTable.tableInfo!.columns.some(sc => sc.toLowerCase() === c.toLowerCase())
+          );
+          
+          commonColumns.forEach(cc => {
+             suggestions.push({
+               label: `${joiningAlias}.${cc} = ${sourceTable.alias}.${cc}`,
+               type: 'join_condition',
+               tableName: 'Common Column'
+             });
+          });
+
+        });
+
+        if (suggestions.length > 0) {
+          const filtered = suggestions.filter(s => currentWord === '' || s.label.toLowerCase().includes(currentWord));
+          if (filtered.length > 0) {
+            setAutocompleteItems(filtered);
+            setAutocompletePosition(calculateDropdownPosition());
+            setShowAutocomplete(true);
+            setSelectedAutocompleteIndex(0);
+            return;
+          }
+        }
+      }
+    }
+
+    // Check for "alias." pattern to suggest columns for a specific table
+    // Matches word + dot at the end: "u." or "users."
+    const aliasMatch = textBeforeCursor.match(/(\w+)\.$/);
+    if (aliasMatch) {
+      const aliasName = aliasMatch[1];
+      const usedTables = getUsedTables(query); // Check full query for aliases
+      const targetTable = usedTables.find(t => t.alias.toLowerCase() === aliasName.toLowerCase() || t.tableName.toLowerCase() === aliasName.toLowerCase());
+
+      if (targetTable && targetTable.tableInfo) {
+        const items: AutocompleteItem[] = targetTable.tableInfo.columns.map(col => ({
+          label: col,
+          type: 'column' as const,
+          tableName: targetTable.tableInfo!.tableName // specific table
+        }));
+
+        if (items.length > 0) {
+          setAutocompleteItems(items);
+          setAutocompletePosition(calculateDropdownPosition());
+          setShowAutocomplete(true);
+          setSelectedAutocompleteIndex(0);
+          return;
+        }
+      }
+    } else if (textBeforeCursor.match(/(\w+)\.(\w+)$/)) {
+         // Handling typing after the dot: "u.nam"
+         const match = textBeforeCursor.match(/(\w+)\.(\w+)$/);
+         if (match) {
+             const aliasName = match[1];
+             const partialCol = match[2].toLowerCase();
+             const usedTables = getUsedTables(query);
+             const targetTable = usedTables.find(t => t.alias.toLowerCase() === aliasName.toLowerCase() || t.tableName.toLowerCase() === aliasName.toLowerCase());
+
+             if (targetTable && targetTable.tableInfo) {
+                const items: AutocompleteItem[] = targetTable.tableInfo.columns
+                    .filter(c => c.toLowerCase().startsWith(partialCol))
+                    .map(col => ({
+                        label: col,
+                        type: 'column' as const,
+                        tableName: targetTable.tableInfo!.tableName
+                    }));
+                 
+                if (items.length > 0) {
+                    setAutocompleteItems(items);
+                    setAutocompletePosition(calculateDropdownPosition());
+                    setShowAutocomplete(true);
+                    setSelectedAutocompleteIndex(0);
+                    return;
+                }
+             }
+         }
     }
     
     // Check if we're in a SELECT clause (between SELECT and FROM or after SELECT at end)
@@ -347,7 +520,7 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
     
     setShowAutocomplete(false);
     setAutocompleteItems([]);
-  }, [tables, getTableFromQuery, calculateDropdownPosition]);
+  }, [tables, getTableFromQuery, calculateDropdownPosition, getUsedTables]);
 
   // Handle autocomplete selection
   const handleAutocompleteSelect = useCallback((item: AutocompleteItem) => {
@@ -383,7 +556,18 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
     // Execute query on Cmd+Enter or Ctrl+Enter (Priority over autocomplete)
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
-      onRun();
+      
+      // Check if there is selected text
+      const textarea = e.currentTarget as HTMLTextAreaElement;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      
+      if (start !== end) {
+        const selectedText = value.substring(start, end);
+        onRun(selectedText);
+      } else {
+        onRun();
+      }
       return;
     }
 

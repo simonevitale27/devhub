@@ -324,19 +324,23 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
 
     // Execute SQL query
-    const handleExecuteQuery = async () => {
+    const handleExecuteQuery = async (codeOrEvent?: string | React.MouseEvent) => {
+        const queryToRun = typeof codeOrEvent === 'string' && codeOrEvent 
+            ? codeOrEvent 
+            : sqlQuery;
+
         // Add to history before execution
-        if (sqlQuery && sqlQuery.trim()) {
+        if (queryToRun && queryToRun.trim()) {
             setQueryHistory((prev) => {
                 // Remove duplicates, add to front, keep max 5
                 const newHistory = [
-                    sqlQuery,
-                    ...prev.filter((q) => q !== sqlQuery),
+                    queryToRun,
+                    ...prev.filter((q) => q !== queryToRun),
                 ].slice(0, 5);
                 return newHistory;
             });
         }
-        if (!sqlQuery.trim()) {
+        if (!queryToRun.trim()) {
             setError('Inserisci una query SQL valida.');
             return;
         }
@@ -346,7 +350,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         setQueryResult(null);
 
         try {
-            const result = executeQuery(sqlQuery);
+            const result = executeQuery(queryToRun);
             setQueryResult(result);
             setFilteredResult(null); // Reset filters when new query is executed
             setFilters({});

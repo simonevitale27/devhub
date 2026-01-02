@@ -322,19 +322,25 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
     }
   };
 
-  const handleRun = useCallback(() => {
+  const handleRun = useCallback((codeOrEvent?: string | React.MouseEvent) => {
     if (!isDbReady) {
       console.error("Database not ready");
       return;
     }
 
+    // Use selected code if passed as string, otherwise use full sqlCode state
+    // Note: If called from button click, it receives a MouseEvent, so we ignore that and use sqlCode
+    const queryToRun = typeof codeOrEvent === 'string' && codeOrEvent 
+      ? codeOrEvent 
+      : sqlCode;
+
     // Prevent execution of empty query
-    if (!sqlCode || sqlCode.trim() === "") {
+    if (!queryToRun || queryToRun.trim() === "") {
       setUserResult({
         success: false,
         error: "Query vuota",
         data: [],
-        message: "Scrivi una query SQL prima di eseguire",
+        message: "Scrivi o seleziona una query SQL prima di eseguire",
       });
       return;
     }
@@ -349,7 +355,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
 
     // Execute the query for both Gym and Debug modes with timing
     const startTime = performance.now();
-    const res = runQuery(sqlCode);
+    const res = runQuery(queryToRun);
     const endTime = performance.now();
     setExecutionTime(Math.round(endTime - startTime));
     setUserResult(res);
@@ -359,15 +365,18 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
       setQueryHistory((prev) => {
         // Remove duplicates of current query, add to front, keep max 5
         const newHistory = [
-          sqlCode,
-          ...prev.filter((q) => q !== sqlCode),
+          queryToRun,
+          ...prev.filter((q) => q !== queryToRun),
         ].slice(0, 5);
         return newHistory;
       });
     }
 
     // Validate if in Gym or Debug mode
-    if (exercise) {
+    // Only validate if we ran the full code (meaning queryToRun == sqlCode)
+    const ranFullCode = queryToRun === sqlCode;
+    
+    if (exercise && ranFullCode) {
       if (exercise.solutionQuery) {
         const solutionRes = runQuery(exercise.solutionQuery);
         // Normalize solution data to always be an array

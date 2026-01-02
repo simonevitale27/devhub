@@ -3,7 +3,7 @@ import { TableInfo } from '../utils/ghostTextSuggestions';
 
 export interface AutocompleteItem {
   label: string;
-  type: 'column' | 'table' | 'keyword' | 'function';
+  type: 'column' | 'table' | 'keyword' | 'function' | 'join_condition';
   tableName?: string;
 }
 
@@ -70,6 +70,8 @@ const AutocompleteDropdown: React.FC<AutocompleteDropdownProps> = ({
         return <span className="text-green-400 text-[10px] font-bold">KEY</span>;
       case 'function':
         return <span className="text-amber-400 text-[10px] font-bold">FN</span>;
+      case 'join_condition':
+        return <span className="text-purple-400 text-[10px] font-bold">REL</span>;
       default:
         return null;
     }
