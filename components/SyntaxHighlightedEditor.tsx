@@ -620,36 +620,73 @@ const SyntaxHighlightedEditor: React.FC<SyntaxHighlightedEditorProps> = ({
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       
-      const lines = value.split('\n');
-      let lineStart = 0;
-      let startLineIdx = 0;
-      let endLineIdx = 0;
-      
-      // Find which lines are selected
-      for (let i = 0; i < lines.length; i++) {
-        const lineEnd = lineStart + lines[i].length;
-        if (lineStart <= start && start <= lineEnd + 1) startLineIdx = i;
-        if (lineStart <= end && end <= lineEnd + 1) endLineIdx = i;
-        lineStart = lineEnd + 1;
-      }
-      
-      // Check if all selected lines are commented
-      const selectedLines = lines.slice(startLineIdx, endLineIdx + 1);
-      const allCommented = selectedLines.every(line => line.trimStart().startsWith('--'));
-      
-      // Toggle comments
-      const newLines = [...lines];
-      for (let i = startLineIdx; i <= endLineIdx; i++) {
-        if (allCommented) {
+      if (start !== end) {
+        // Handle selection: use block comments /* ... */
+        const selectedText = value.substring(start, end);
+        
+        // Check if the selection is already a block comment
+        // match: Group 1 (whitespace), Group 2 (content), Group 3 (whitespace)
+        const commentMatch = selectedText.match(/^(\s*)\/\*([\s\S]*)\*\/(\s*)$/);
+        
+        let newText;
+        if (commentMatch) {
+          // Unwrap: preserve surrounding whitespace
+          newText = commentMatch[1] + commentMatch[2] + commentMatch[3];
+        } else {
+          // Wrap in block comment
+          newText = "/* " + selectedText + " */";
+        }
+        
+        const newValue = value.substring(0, start) + newText + value.substring(end);
+        onChange(newValue);
+        
+        // Restore selection (adjust for added/removed chars)
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart = start;
+            textareaRef.current.selectionEnd = start + newText.length;
+          }
+        }, 0);
+      } else {
+        // No selection: toggle line comment -- on current line
+        const lines = value.split('\n');
+        let currentLineIdx = 0;
+        let lineStart = 0;
+        
+        // Find current line
+        for (let i = 0; i < lines.length; i++) {
+          const lineEnd = lineStart + lines[i].length;
+          if (lineStart <= start && start <= lineEnd + 1) {
+            currentLineIdx = i;
+            break;
+          }
+          lineStart = lineEnd + 1;
+        }
+        
+        const line = lines[currentLineIdx];
+        let newLine;
+        if (line.trimStart().startsWith('--')) {
           // Remove comment
-          newLines[i] = newLines[i].replace(/^(\s*)--\s?/, '$1');
+          newLine = line.replace(/^(\s*)--\s?/, '$1');
         } else {
           // Add comment
-          newLines[i] = '-- ' + newLines[i];
+          newLine = '-- ' + line;
         }
+        
+        const newLines = [...lines];
+        newLines[currentLineIdx] = newLine;
+        
+        onChange(newLines.join('\n'));
+        
+        // Maintain cursor position relative to content
+        // Simple approach: calculate new offset
+        const diff = newLine.length - line.length;
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart = textareaRef.current.selectionEnd = start + diff;
+          }
+        }, 0);
       }
-      
-      onChange(newLines.join('\n'));
       return;
     }
 
