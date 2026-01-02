@@ -78,28 +78,47 @@ Ambiente sandbox per analisi dati su file propri.
 
 - **Import CSV**: drag-and-drop o selezione multipla di file
 - **Query SQL**: interroga i dati caricati con sintassi SQL standard
+- **Editor Ridimensionabile**: split-pane regolabile tra editor e risultati per massimizzare lo spazio di lavoro
 - **Gestione Tabelle**:
   - Rinomina tabelle e colonne
   - Elimina tabelle o colonne
   - Salva risultati delle query come nuove tabelle
 - **Table Inspector**: esplorazione interattiva con filtri per colonna
-- **Data Health Check**: analisi automatica della qualita dei dati
-  - Conteggio valori nulli
-  - Statistiche per colonna (min, max, media, deviazione standard)
-  - Rilevamento valori anomali
+- **Data Quality Dashboard**:
+  - Pulsante dedicato per l'analisi immediata della salute dei dati
+  - Conteggio valori nulli, tipi di dato, unicità
+  - Rilevamento valori anomali e statistiche descriptive
+- **Data Profiling Avanzato**:
+  - Tabella di profilazione integrata sopra i risultati
+  - Mostra distribuzione, min/max, media e un campione scrollabile dei dati per ogni colonna
 
-#### Esportazione
+#### QuickChart & Visualizzazione
 
-- **PDF Report**: documento professionale con:
-  - Header con logo e metadati
-  - Tabella dati formattata
-  - Grafici automatici (Bar Chart, Pie Chart, KPI)
-  - Statistiche calcolate
-- **CSV**: esportazione raw dei risultati
+Strumento potente per la visualizzazione immediata dei dati:
 
-#### Conversione SQL to Python
+- **Multi-Chart Support**:
+  - **Bar Chart**: ideale per confronti categoriali
+  - **Line Chart**: perfetto per analizzare trend temporali
+  - **Area Chart**: per visualizzare volumi cumulativi
+  - **Pie Chart**: per mostrare le proporzioni (es. market share)
+- **Analytics Avanzati**:
+  - **Trendlines**: aggiungi con un click linee di tendenza (regressione lineare)
+  - **Mean Line**: visualizza istantaneamente la media dei valori
+- **Interattività & Annotazioni**:
+  - **Click-to-Annotate**: clicca su qualsiasi punto del grafico per aggiungere note testuali personalizzate
+  - **Tooltip Intelligenti**: ispezione valori al passaggio del mouse
+- **Export Suite Completa**:
+  - **Formati Immagine**: Scarica in PNG o SVG (vettoriale) ad alta risoluzione
+  - **Formati Dati**: Esporta i dati del grafico in CSV o JSON
+  - **Copia negli Appunti**: Copia al volo l'immagine per incollarla in presentazioni o chat
+- **Controlli Dati**:
+  - **Filtri Top N**: Isola rapidamente i primi 5/10/20 risultati
+  - **Ordinamento Automatico**: Ordina i dati per valore o etichetta
 
-Generazione automatica di codice Pandas equivalente alle query SQL, utile per chi sta imparando Python per Data Analysis.
+#### Esportazione & Integrazione
+
+- **PDF Report**: documento professionale con grafici e kpi
+- **Conversione SQL to Python**: Generazione automatica codice Pandas
 
 ---
 
@@ -301,6 +320,13 @@ L'applicazione non richiede variabili d'ambiente o API key. Tutto funziona out-o
 - [ ] Modalita competitiva con timer
 - [ ] Salvataggio progressi in localStorage
 - [ ] Esportazione esercizi completati
+
+### Completati di Recente (v1.1)
+
+- [x] **Data Profiling Interattivo**: Analisi statistica automatica delle colonne
+- [x] **QuickChart Avanzato**: Trendlines, Annotazioni e Export multi-formato
+- [x] **UI Dinamica**: Pannelli ridimensionabili e layout ottimizzato
+- [x] **Data Quality**: Dashboard per il controllo salute dei dati
 
 ---
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown, Copy, Check, History as HistoryIcon, XCircle as XCircleIcon } from 'lucide-react';
+import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown, Copy, Check, History as HistoryIcon, XCircle as XCircleIcon, Activity } from 'lucide-react';
 import { generateUnifiedPDF } from '../utils/pdfExport';
 import alasql from 'alasql';
 import * as XLSX from 'xlsx';
@@ -14,6 +14,7 @@ import SyntaxHighlightedEditor from './SyntaxHighlightedEditor';
 import DataVisualization from './DataVisualization';
 import { useDebounce } from '../utils/useDebounce';
 import HealthReportModal from './HealthReportModal';
+import DataProfiling from './DataProfiling';
 import { analyzeTableHealth, DataHealthReport } from '../utils/dataHealthCheck';
 
 import PythonPanel from './PythonPanel';
@@ -52,12 +53,17 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     const [showHealthModal, setShowHealthModal] = useState(false);
     const [healthReport, setHealthReport] = useState<DataHealthReport | null>(null);
     const [healthTableName, setHealthTableName] = useState<string | null>(null);
+    const [showDataProfiling, setShowDataProfiling] = useState(false);
 
     // Filter & Sort State
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [activeFilterColumn, setActiveFilterColumn] = useState<string | null>(null);
     const [filters, setFilters] = useState<Record<string, Set<string>>>({});
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+
+    // Resize State
+    const [editorHeight, setEditorHeight] = useState(300);
+    const [isResizing, setIsResizing] = useState(false);
 
     // Debounce search query to avoid excessive re-renders during typing
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -85,6 +91,41 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
             // localStorage might be full or disabled
         }
     }, [queryHistory]);
+
+    // Resize Handlers
+    const startResizing = useCallback((e: React.MouseEvent) => {
+        setIsResizing(true);
+        e.preventDefault();
+    }, []);
+
+    const stopResizing = useCallback(() => {
+        setIsResizing(false);
+    }, []);
+
+    const resize = useCallback((e: MouseEvent) => {
+        if (isResizing) {
+            // Calculate new height relative to the viewport/container
+            // Header is approx 80-90px.
+            const newHeight = e.clientY - 90; 
+            if (newHeight > 200 && newHeight < window.innerHeight - 200) {
+                setEditorHeight(newHeight);
+            }
+        }
+    }, [isResizing]);
+
+    useEffect(() => {
+        if (isResizing) {
+            window.addEventListener('mousemove', resize);
+            window.addEventListener('mouseup', stopResizing);
+        } else {
+            window.removeEventListener('mousemove', resize);
+            window.removeEventListener('mouseup', stopResizing);
+        }
+        return () => {
+            window.removeEventListener('mousemove', resize);
+            window.removeEventListener('mouseup', stopResizing);
+        };
+    }, [isResizing, resize, stopResizing]);
 
     // Get unique values for a column - memoized and LIMITED for performance
     const getUniqueValues = useCallback((column: string): string[] => {
@@ -812,10 +853,13 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                     </div>
 
                     {/* RIGHT COLUMN - Main Content (80%) */}
-                    <div className="flex-1 flex flex-col gap-4 pb-6 h-full min-w-0">
+                    <div className="flex-1 flex flex-col pb-6 h-full min-w-0">
 
-                        {/* TOP: SQL EDITOR / PYTHON PANEL (60%) */}
-                        <div className="h-[60%] bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex flex-col min-h-0">
+                        {/* TOP: SQL EDITOR / PYTHON PANEL (Resizable) */}
+                        <div 
+                            className="bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex flex-col min-h-[200px]"
+                            style={{ height: editorHeight }}
+                        >
                             <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
                             
                             {/* Persistent Header */}
@@ -909,7 +953,9 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 />
                             ) : (
                                 <>
-                                    <div className="flex-1 bg-black/40 rounded-xl border border-white/10 shadow-inner overflow-hidden mb-3 relative group focus-within:border-white/20 transition-colors min-h-0">
+                                    <div 
+                                        className="bg-black/40 rounded-xl border border-white/10 shadow-inner overflow-hidden relative group focus-within:border-white/20 transition-colors min-h-0 flex-1"
+                                    >
                                         <SyntaxHighlightedEditor
                                             value={sqlQuery}
                                             onChange={setSqlQuery}
@@ -921,6 +967,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                             onCursorPositionChange={setCursorPosition}
                                         />
                                     </div>
+                                    
 
                                     <div className="flex items-center gap-2 mt-2">
                                         {/* History Bar (Compact) */}
@@ -978,8 +1025,16 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             )}
                         </div>
 
-                        {/* BOTTOM: RESULTS (40%) */}
-                        <div className="h-[40%] flex flex-col min-h-0 relative">
+                        {/* RESIZE HANDLE */}
+                        <div 
+                            className="h-4 w-full cursor-row-resize flex items-center justify-center hover:bg-white/5 group transition-colors shrink-0 z-10"
+                            onMouseDown={startResizing}
+                        >
+                             <div className="w-16 h-1 rounded-full bg-white/10 group-hover:bg-blue-500/50 transition-colors" />
+                        </div>
+
+                        {/* BOTTOM: RESULTS (Flex-1) */}
+                        <div className="flex-1 flex flex-col min-h-0 relative overflow-hidden">
                             {/* ERROR MESSAGE */}
                             {error && (
                                 <div className="absolute top-0 inset-x-0 z-50 bg-red-900/90 backdrop-blur border border-red-900/50 rounded-xl p-4 flex items-start gap-3 shadow-lg animate-in slide-in-from-top-2 mx-4 mt-2">
@@ -1025,6 +1080,21 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 >
                                                     <X size={12} />
                                                     Reset
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        if (queryResult && queryResult.length > 0) {
+                                                            const report = analyzeTableHealth(queryResult, Object.keys(queryResult[0]));
+                                                            setHealthReport(report);
+                                                            setHealthTableName("Risultati Query");
+                                                            setShowHealthModal(true);
+                                                        }
+                                                    }}
+                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    title="Analisi Qualità Dati"
+                                                >
+                                                    <Activity size={12} />
+                                                    Data Quality
                                                 </button>
                                                 <button
                                                     onClick={() => setShowSaveModal(true)}
@@ -1089,6 +1159,14 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 >
                                                     <TrendingUp size={12} />
                                                     Grafico
+                                                </button>
+                                                <button
+                                                    onClick={() => setShowDataProfiling(!showDataProfiling)}
+                                                    className={`px-3 py-1.5 backdrop-blur-xl text-xs rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg shadow-black/20 active:scale-95 ${showDataProfiling ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-[#121212]/70 hover:bg-white/10 text-slate-300 hover:text-blue-300'}`}
+                                                    title="Analisi profilo dati"
+                                                >
+                                                    <BarChart3 size={12} />
+                                                    Profiling
                                                 </button>
                                             </div>
                                         </div>
@@ -1222,6 +1300,16 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         </div>
                                     </div>
                                     
+                                    {/* Data Profiling Panel */}
+                                    {showDataProfiling && queryResult && queryResult.length > 0 && (
+                                        <div className="mb-4">
+                                            <DataProfiling 
+                                                data={queryResult as Record<string, unknown>[]} 
+                                                columns={Object.keys(queryResult[0] || {})} 
+                                            />
+                                        </div>
+                                    )}
+
                                     {/* Results Table */}
                                     <div className="flex-1 overflow-auto custom-scrollbar">
                                         <ResultsTable data={filteredResult || queryResult} />
