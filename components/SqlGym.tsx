@@ -45,6 +45,7 @@ import { generateUnifiedPDF } from "../utils/pdfExport";
 import QuickChart from "./QuickChart";
 import { formatSQL } from "../utils/formatSQL";
 import { TableInfo } from "../utils/ghostTextSuggestions";
+import { recordCompletion } from "../services/progressService";
 import {
   Difficulty,
   TopicId,
@@ -52,6 +53,7 @@ import {
   ValidationResult,
   Exercise,
   PracticeMode,
+  Page,
 } from "../types";
 import { DB_SCHEMAS, TOPICS, generateCopyCodeSnippets } from "../constants";
 import {
@@ -69,12 +71,14 @@ import SchemaERDiagram from "./SchemaERDiagram";
 import ResultDiff from "./ResultDiff";
 import ErrorBoundary from "./ErrorBoundary";
 import TableInspectorModal from "./TableInspectorModal";
+import UserBadge from "./UserBadge";
 
 interface SqlGymProps {
   onBack: () => void;
+  onNavigate?: (page: Page) => void;
 }
 
-const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
+const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
   const [currentTopicId, setCurrentTopicId] = useState<TopicId>(TopicId.Basics);
   const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.Easy);
   const [practiceMode, setPracticeMode] = useState<PracticeMode>(
@@ -414,6 +418,15 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
           let warningMessage = "";
 
           if (isCorrect) {
+            // Track completion
+            recordCompletion(
+              'sql',
+              currentTopicId,
+              difficulty.toLowerCase() as 'easy' | 'medium' | 'hard',
+              currentExerciseIndex,
+              1
+            );
+
             // Results are correct!
             if (diff.hasExtraColumns) {
               // Yellow warning: correct data but extra columns (e.g., SELECT *)
@@ -832,7 +845,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
             </div>
 
             {/* SHUFFLE BUTTON */}
-            <div className="ml-auto flex items-center bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
+            <div className="ml-auto flex items-center gap-2 bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
               <button
                 onClick={handleShuffle}
                 title="Cambia esercizio"
@@ -844,6 +857,23 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack }) => {
                 />
                 <span className="text-xs font-bold">Shuffle</span>
               </button>
+            </div>
+
+            {/* Analytics + User Badge Group */}
+            <div className="flex items-center gap-2">
+              {/* ANALYTICS BUTTON */}
+              {onNavigate && (
+                <button
+                  onClick={() => onNavigate(Page.Analytics)}
+                  className="flex items-center gap-2 px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 backdrop-blur-xl rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all"
+                >
+                  <TrendingUp size={16} className="text-purple-400" />
+                  <span className="text-xs font-bold text-purple-300">Analytics</span>
+                </button>
+              )}
+
+              {/* User Badge */}
+              <UserBadge onNavigate={onNavigate} />
             </div>
           </div>
         </header>

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { BarChart3, PieChart as PieChartIcon } from 'lucide-react';
 import { getChartConfig } from '../utils/sqlHelpers';
+import { ChartConfig } from '../types';
 
 interface DataVisualizationProps {
   data: any[];
@@ -18,12 +19,12 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ data, solutionQue
     );
   }
 
-  const chartConfig = useMemo(() => {
+  const chartConfig: ChartConfig = useMemo(() => {
     try {
       return getChartConfig(solutionQuery, data);
     } catch (error) {
       console.error('Chart config error:', error);
-      return { type: 'none' as const, xKey: '', yKey: '' };
+      return { type: 'none', xKey: '', yKey: '' };
     }
   }, [solutionQuery, data]);
 
@@ -39,7 +40,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ data, solutionQue
   // Color palette for charts
   const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#f97316', '#84cc16'];
 
-  if (chartConfig.type === 'none' || !data || data.length === 0) {
+  if ((chartConfig.type as string) === 'none' || !data || data.length === 0) {
     return null;
   }
 

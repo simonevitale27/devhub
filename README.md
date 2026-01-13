@@ -4,18 +4,22 @@
 
 **Una piattaforma professionale per praticare SQL e analisi dati, interamente client-side. Nessun backend richiesto, esecuzione query istantanea, 800+ esercizi pratici.**
 
-[Demo Live](https://devhub.vercel.app) | [Documentazione Tecnica](#architettura-del-progetto)
+[Demo Live](https://devhub-gray.vercel.app) | [Documentazione Tecnica](#architettura-del-progetto)
 
 ---
 
 ## Panoramica
 
-DevHub e una Progressive Web App (PWA) progettata per Data Analyst e sviluppatori che vogliono perfezionare le proprie competenze SQL attraverso esercizi pratici e scenari realistici. L'intera applicazione gira nel browser, utilizzando AlaSQL come database in-memory, eliminando completamente la latenza di rete e la necessita di configurare un backend.
+DevHub è una Progressive Web App (PWA) progettata per Data Analyst e sviluppatori che vogliono perfezionare le proprie competenze SQL attraverso esercizi pratici e scenari realistici. L'intera applicazione gira nel browser, utilizzando AlaSQL come database in-memory, eliminando completamente la latenza di rete.
+
+Con la versione **2.0**, abbiamo introdotto il **Cloud Sync**: registrati gratuitamente per salvare i tuoi progressi su qualsiasi dispositivo!
 
 ### Caratteristiche Principali
 
-- **SQL Lab**: oltre 800 esercizi suddivisi per argomento e difficolta
+- **SQL Lab**: oltre 800 esercizi suddivisi per argomento e difficoltà
 - **DataLab**: ambiente sandbox per caricare e interrogare i propri file CSV
+- **Cloud Profiles**: Salva i tuoi progressi nel cloud (Supabase) con login Google o Email
+- **Account System**: Dashboard personale con statistiche e gestione profilo
 - **Debug Mode**: esercizi con query volutamente errate da correggere
 - **Zero Latency**: tutte le query vengono eseguite istantaneamente nel browser
 - **PWA Installabile**: utilizzabile come applicazione standalone su desktop e mobile
@@ -37,12 +41,12 @@ Il modulo principale per l'allenamento SQL, strutturato per un apprendimento pro
 | Ordinamento | Controllo dell'ordine dei risultati | ORDER BY, ASC, DESC, LIMIT |
 | Funzioni Scalari | Manipolazione stringhe e numeri | UPPER, ROUND, LEN, CONCAT |
 | Date e Time | Gestione dati temporali | YEAR, MONTH, DATEDIFF |
-| Join Tabelle | Unione di piu tabelle | INNER, LEFT, RIGHT JOIN |
+| Join Tabelle | Unione di più tabelle | INNER, LEFT, RIGHT JOIN |
 | Aggregazione | Raggruppamento e calcoli | GROUP BY, HAVING, SUM, AVG, COUNT |
 | Logica Condizionale | Espressioni condizionali | CASE WHEN... THEN... END |
 | Avanzate | Tecniche complesse | SUBQUERIES, WINDOW FUNCTIONS, CTE |
 
-#### Livelli di Difficolta
+#### Livelli di Difficoltà
 
 Ogni argomento include esercizi su tre livelli:
 
@@ -50,7 +54,7 @@ Ogni argomento include esercizi su tre livelli:
 - **Medium**: hint meno diretti, richiedono maggiore ragionamento
 - **Hard**: hint concettuali, nessuna keyword suggerita
 
-#### Funzionalita dell'Editor
+#### Funzionalità dell'Editor
 
 - Syntax highlighting in tempo reale
 - Auto-formatting delle query
@@ -60,13 +64,13 @@ Ogni argomento include esercizi su tre livelli:
 
 #### Debug Mode
 
-Modalita speciale dove le query contengono errori intenzionali. L'utente deve identificare e correggere:
+Modalità speciale dove le query contengono errori intenzionali. L'utente deve identificare e correggere:
 
 - Errori di sintassi (virgole mancanti, typo nelle keyword)
 - Errori logici (WHERE vs HAVING, operatori sbagliati)
 - Errori avanzati (OVER mancante, parentesi delle subquery)
 
-Tre livelli di difficolta negli errori, con hint calibrati per ogni livello.
+Tre livelli di difficoltà negli errori, con hint calibrati per ogni livello.
 
 ---
 
@@ -74,7 +78,7 @@ Tre livelli di difficolta negli errori, con hint calibrati per ogni livello.
 
 Ambiente sandbox per analisi dati su file propri.
 
-#### Funzionalita
+#### Funzionalità
 
 - **Import CSV**: drag-and-drop o selezione multipla di file
 - **Query SQL**: interroga i dati caricati con sintassi SQL standard
@@ -122,6 +126,31 @@ Strumento potente per la visualizzazione immediata dei dati:
 
 ---
 
+## Python Lab
+
+Un ambiente di coding completo per imparare Python, con focus sulla logica di programmazione e manipolazione dati.
+
+### Tecnologie
+
+- **Pyodide**: Motore Python completo in WebAssembly che gira interamente nel browser.
+- **Sandboxed**: Esecuzione sicura e isolata, zero rischi per il sistema host.
+
+### Caratteristiche
+
+- **Curriculum Strutturato**:
+  - **Fondamenti**: Variabili, Operatori, Input/Output
+  - **Control Flow**: If/Else, Loop For/While
+  - **Data Structures**: Liste, Tuple, Set, Dizionari
+- **Editor Intelligente**:
+  - **Autocomplete**: Suggerimenti in tempo reale per keyword e funzioni built-in
+  - **Syntax Highlighting**: Colorazione del codice stile IDE
+  - **Auto-indent**: Formattazione automatica intelligente
+- **Modalità di Esercizio**:
+  - **Solve Mode**: Scrivi la soluzione da zero partendo dalle specifiche
+  - **Debug Mode**: Trova e correggi i bug in codice Python volutamente errato
+
+---
+
 ## Database Schema
 
 L'applicazione utilizza uno schema e-commerce realistico per gli esercizi:
@@ -144,69 +173,50 @@ Lo schema include chiavi primarie, chiavi esterne e relazioni one-to-many per es
 
 ## Stack Tecnologico
 
-| Categoria | Tecnologia | Versione |
-| --------- | ---------- | -------- |
-| Frontend | React | 19.2 |
-| Linguaggio | TypeScript | 5.8 |
-| Database | AlaSQL | 4.9 (in-memory) |
-| Styling | Tailwind CSS | via CDN |
-| Build Tool | Vite | 6.2 |
-| Grafici | Recharts | 3.5 |
-| PDF | jsPDF + AutoTable | 3.0 |
-| CSV Parsing | PapaParse | 5.5 |
-| Icone | Lucide React | 0.554 |
-| Formatting | sql-formatter | 15.6 |
+| Categoria   | Tecnologia    | Versione        |
+| ----------- | ------------- | --------------- |
+| Frontend    | React         | 19.2            |
+| Linguaggio  | TypeScript    | 5.8             |
+| Database    | AlaSQL        | 4.9 (in-memory) |
+| Auth & DB   | **Supabase**  | **Client JS**   |
+| Styling     | Tailwind CSS  | via CDN         |
+| Build Tool  | Vite          | 6.2             |
+| Grafici     | Recharts      | 3.5             |
+| PDF         | jsPDF         | 3.0             |
+| CSV Parser  | PapaParse     | 5.5             |
+| Icons       | Lucide React  | 0.554           |
 
 ---
 
 ## Architettura del Progetto
 
-### Filosofia Serverless
+### Filosofia Serverless & Cloud Hybrid
 
-L'intera applicazione e progettata per funzionare senza backend:
+L'applicazione segue un approccio ibrido innovativo:
 
-- Il database vive in memoria nel browser (AlaSQL)
-- I dati vengono pre-caricati all'avvio
-- Le query vengono eseguite localmente con latenza zero
-- I file CSV vengono parsati client-side
-
-Questo approccio garantisce:
-
-- Instant feedback durante l'apprendimento
-- Privacy totale (i dati non lasciano mai il browser)
-- Funzionamento offline dopo il primo caricamento
+- **Core Logic**: Il database SQL di esercizio vive in memoria nel browser (AlaSQL) per garantire 0 latenza.
+- **Cloud Layer**: I progressi utente e l'autenticazione sono gestiti da Supabase, permettendo la sincronizzazione tra dispositivi senza rallentare l'esperienza di coding.
+- **Privacy**: I dati dell'utente (file importati in DataLab) rimangono rigorosamente locali. Solo i metadati dei progressi (esercizi completati) vengono sincronizzati.
 
 ### Struttura Directory
 
 ```text
 devhub/
 ├── components/           # Componenti React UI
-│   ├── SqlGym.tsx       # Modulo esercizi SQL (1300+ righe)
-│   ├── DataLab.tsx      # Sandbox CSV/SQL (1600+ righe)
-│   ├── Home.tsx         # Homepage con navigazione
-│   ├── SyntaxHighlightedEditor.tsx  # Editor con highlighting
-│   ├── ResultsTable.tsx # Visualizzazione risultati
-│   ├── ResultStats.tsx  # Calcolo statistiche
-│   ├── ResultDiff.tsx   # Confronto query
-│   ├── SchemaViewer.tsx # Pannello schema DB
-│   ├── TableInspectorModal.tsx  # Esplorazione dati
-│   ├── HealthReportModal.tsx    # Report qualita dati
+│   ├── SqlGym.tsx        # Modulo esercizi SQL
+│   ├── DataLab.tsx       # Sandbox CSV/SQL
+│   ├── AccountPage.tsx   # [NEW] Gestione Profilo Utente
 │   └── ...
 ├── services/
-│   ├── exerciseGenerator.ts  # Database 800+ esercizi
-│   ├── sqlService.ts         # Wrapper AlaSQL
-│   └── mockAiService.ts      # Coach AI simulato
+│   ├── authService.ts    # [NEW] Integrazione Supabase Auth
+│   ├── supabaseClient.ts # [NEW] Client Supabase Config
+│   ├── sqlService.ts     # Wrapper AlaSQL
+│   └── ...
 ├── utils/
-│   ├── csvParser.ts          # Parsing robusto CSV
-│   ├── formatSQL.ts          # SQL beautifier
-│   ├── sqlToPandas.ts        # Conversione SQL->Python
-│   ├── dataHealthCheck.ts    # Analisi qualita dati
 │   └── ...
 ├── types.ts              # Definizioni TypeScript
 ├── constants.ts          # Schema DB, Topic, Snippets
-├── ARCHITECTURE.md       # Documentazione architettura
-├── DB_SCHEMA.md         # Schema database dettagliato
-└── DESIGN_SYSTEM.md     # Linee guida UI/UX
+└── ...
 ```
 
 ---
@@ -220,20 +230,28 @@ devhub/
 
 ### Setup Locale
 
-```bash
-# Clone del repository
-git clone https://github.com/username/devhub.git
-cd devhub
+1. **Clone del repository e installazione**
 
-# Installazione dipendenze
-npm install
+    ```bash
+    git clone https://github.com/username/devhub.git
+    cd devhub
+    npm install
+    ```
 
-# Avvio server di sviluppo
-npm run dev
+2. **Configurazione Ambassador (Opzionale)**
+    Crea un file `.env.local` per la configurazione del backend Supabase (opzionale per sviluppo offline, richiesto per auth):
 
-# Apertura nel browser
-# http://localhost:3000
-```
+    ```env
+    VITE_SUPABASE_URL=tua_url
+    VITE_SUPABASE_ANON_KEY=tua_key
+    ```
+
+3. **Avvio sviluppo**
+
+    ```bash
+    npm run dev
+    # http://localhost:3000
+    ```
 
 ### Build di Produzione
 
@@ -241,92 +259,6 @@ npm run dev
 npm run build
 npm run preview
 ```
-
-L'applicazione non richiede variabili d'ambiente o API key. Tutto funziona out-of-the-box.
-
----
-
-## Casi d'Uso
-
-### Per Data Analyst
-
-- Praticare query SQL su dataset e-commerce realistici
-- Testare scenari JOIN complessi senza setup database
-- Validare query con feedback istantaneo
-- Importare export CSV e analizzarli localmente
-- Generare report PDF professionali
-
-### Per Chi Sta Imparando SQL
-
-- Percorso progressivo da Easy a Hard
-- Hint calibrati per ogni livello di difficolta
-- Visualizzazione schema interattiva con diagrammi ER
-- Confronto visivo tra risultato atteso e ottenuto
-- Debug Mode per imparare dagli errori comuni
-
-### Per lo Studio Autonomo
-
-- PWA installabile per studio offline
-- Nessuna registrazione richiesta
-- Dati completamente privati (tutto in locale)
-
----
-
-## Highlight Tecnici
-
-### Competenze Dimostrate
-
-#### Data Engineering
-
-- Progettazione schema relazionale
-- Generazione procedurale di 800+ esercizi
-- Parsing e validazione CSV robusto
-- Analisi qualita dati automatizzata
-
-#### Frontend Development
-
-- Gestione stato complesso con React hooks
-- Type safety rigorosa con TypeScript
-- UI responsive con Tailwind CSS
-- Editor custom con syntax highlighting
-
-#### Architettura Software
-
-- Approccio serverless completo
-- Separazione logica componenti/servizi/utility
-- PWA con Service Worker
-- Zero-backend philosophy
-
-#### User Experience
-
-- Feedback istantaneo
-- Progressive disclosure delle informazioni
-- Gestione errori user-friendly
-- Interfaccia dark mode ottimizzata
-
----
-
-## Documentazione Aggiuntiva
-
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Architettura completa, pattern di data flow
-- [DB_SCHEMA.md](DB_SCHEMA.md) - Schema database con diagrammi ER
-- [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) - Sistema di design, componenti, stili
-
----
-
-## Roadmap
-
-- [ ] Python Lab: esercizi Pandas e NumPy
-- [ ] Modalita competitiva con timer
-- [ ] Salvataggio progressi in localStorage
-- [ ] Esportazione esercizi completati
-
-### Completati di Recente (v1.1)
-
-- [x] **Data Profiling Interattivo**: Analisi statistica automatica delle colonne
-- [x] **QuickChart Avanzato**: Trendlines, Annotazioni e Export multi-formato
-- [x] **UI Dinamica**: Pannelli ridimensionabili e layout ottimizzato
-- [x] **Data Quality**: Dashboard per il controllo salute dei dati
 
 ---
 

@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Page } from '../types';
-import { Database, Code2, Hexagon, Terminal, Braces } from 'lucide-react';
+import { Database, Code2, Hexagon, Terminal, TrendingUp } from 'lucide-react';
+import UserBadge from './UserBadge';
 
 interface HomeProps {
     onNavigate: (page: Page) => void;
@@ -53,8 +53,11 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     className="text-2xl text-white" 
                     text={<span>D<span className="text-blue-500">H</span></span>}
                 />
-                <div className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md px-3 py-1 rounded-full ring-1 ring-white/20 shadow-lg">
-                    Beta v1.0
+                <div className="flex items-center gap-4">
+                    <div className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md px-3 py-1 rounded-full ring-1 ring-white/20 shadow-lg">
+                        Beta v1.0
+                    </div>
+                    <UserBadge onNavigate={onNavigate} />
                 </div>
             </nav>
 
@@ -68,7 +71,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
 
                     {/* SQL GYM CARD */}
                     <button
@@ -82,6 +85,21 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                         <h2 className="text-3xl font-bold text-white mb-3 tracking-tight font-outfit group-hover:text-blue-300 transition-colors">SQL Lab</h2>
                         <p className="text-slate-300 text-base font-medium max-w-[220px] leading-relaxed group-hover:text-slate-100 transition-colors">
                             Esercizi pratici, scenari reali e database volatili.
+                        </p>
+                    </button>
+
+                    {/* PYTHON LAB CARD */}
+                    <button
+                        onClick={() => onNavigate(Page.PythonGym)}
+                        className="group relative h-72 bg-gradient-to-br from-amber-950/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-amber-900/30 hover:shadow-amber-500/30 ring-1 ring-amber-500/20 hover:ring-amber-400/40"
+                    >
+                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="w-20 h-20 bg-amber-500/20 rounded-2xl flex items-center justify-center text-amber-400 mb-5 group-hover:scale-110 transition-transform duration-500 ring-1 ring-amber-500/30">
+                            <Terminal size={36} strokeWidth={1.5} />
+                        </div>
+                        <h2 className="text-3xl font-bold text-white mb-3 tracking-tight font-outfit group-hover:text-amber-300 transition-colors">Python Lab</h2>
+                        <p className="text-slate-300 text-base font-medium max-w-[220px] leading-relaxed group-hover:text-slate-100 transition-colors">
+                            Esercizi Python interattivi, dalle basi alle strutture dati.
                         </p>
                     </button>
 
@@ -100,22 +118,16 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                         </p>
                     </button>
 
-                    {/* PYTHON GYM CARD (Placeholder) */}
-                    <button
-                        disabled
-                        className="group relative h-72 bg-slate-900/30 backdrop-blur-sm rounded-3xl p-8 flex flex-col items-center justify-center text-center opacity-50 cursor-not-allowed grayscale hover:grayscale-0 transition-all duration-500 ring-1 ring-slate-700/30 col-span-1 md:col-span-2 max-w-sm mx-auto w-full"
-                    >
-                        <div className="absolute top-4 right-4 px-2.5 py-1 bg-slate-800/80 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-full">Coming Soon</div>
-                        <div className="w-16 h-16 bg-slate-800/50 rounded-2xl flex items-center justify-center text-slate-500 mb-4">
-                            <Terminal size={28} strokeWidth={1.5} />
-                        </div>
-                        <h2 className="text-2xl font-bold text-slate-400 mb-2 tracking-tight font-outfit">Python Lab</h2>
-                        <p className="text-slate-500 text-sm font-medium max-w-[200px] leading-relaxed">
-                            Data Science, Pandas & NumPy training.
-                        </p>
-                    </button>
-
                 </div>
+
+                {/* ANALYTICS BUTTON - Secondary, smaller */}
+                <button
+                    onClick={() => onNavigate(Page.Analytics)}
+                    className="mt-10 group flex items-center gap-3 px-6 py-3 bg-slate-800/50 hover:bg-slate-700/50 backdrop-blur-sm rounded-full transition-all duration-300 ring-1 ring-slate-600/30 hover:ring-purple-500/30"
+                >
+                    <TrendingUp size={18} className="text-purple-400" />
+                    <span className="text-slate-300 group-hover:text-white font-medium">Dashboard Analytics</span>
+                </button>
 
             </main>
         </div>

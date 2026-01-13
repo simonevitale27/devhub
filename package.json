@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
     "@types/papaparse": "^5.5.0",
     "@xyflow/react": "^12.10.0",
     "alasql": "^4.9.0",

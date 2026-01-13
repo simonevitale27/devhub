@@ -1,6 +1,5 @@
 
 import alasql from 'alasql';
-import alasql from 'alasql';
 import { Difficulty, QueryResult } from '../types';
 
 // ==========================================
