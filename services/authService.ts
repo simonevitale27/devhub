@@ -70,3 +70,11 @@ export async function isAuthenticated(): Promise<boolean> {
   const user = await getCurrentUser();
   return user !== null;
 }
+
+// Send password reset email
+export async function resetPassword(email: string): Promise<{ error: AuthError | null }> {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  });
+  return { error };
+}

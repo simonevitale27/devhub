@@ -25,7 +25,8 @@ export enum Page {
   PythonGym = 'python_gym',
   AngularGym = 'angular_gym',
   Analytics = 'analytics',
-  Account = 'account'
+  Account = 'account',
+  ResetPassword = 'reset_password'
 }
 
 export enum PracticeMode {

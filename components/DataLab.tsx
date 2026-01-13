@@ -775,7 +775,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     };
 
     return (
-        <div className="flex h-screen bg-transparent text-slate-200 font-sans overflow-hidden selection:bg-emerald-500 selection:text-white">
+        <div className="flex h-screen bg-black text-slate-200 font-sans overflow-hidden">
             
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-w-0 px-6 h-full">

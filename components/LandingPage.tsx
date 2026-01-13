@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Page } from '../types';
 import { Hexagon, ArrowRight, Mail, Lock, User, Chrome, LogIn } from 'lucide-react';
-import { signIn, signUp, signInWithGoogle } from '../services/authService';
+import { signIn, signUp, signInWithGoogle, resetPassword } from '../services/authService';
 import { setCurrentUser, syncSupabaseToLocal } from '../services/progressService';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -9,7 +9,7 @@ interface LandingPageProps {
     onNavigate: (page: Page) => void;
 }
 
-type AuthMode = 'landing' | 'login' | 'register';
+type AuthMode = 'landing' | 'login' | 'register' | 'forgot';
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     const { setGuestMode } = useAuth();
@@ -18,6 +18,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleGuestAccess = () => {
@@ -86,6 +87,32 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             setError(authError.message);
         }
         // Google OAuth will redirect, so no need to navigate here
+    };
+
+    const handleForgotPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setSuccessMessage('');
+        setIsLoading(true);
+
+        if (!email.trim()) {
+            setError('Inserisci la tua email');
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const { error: resetError } = await resetPassword(email);
+            if (resetError) {
+                setError(resetError.message);
+            } else {
+                setSuccessMessage('Ti abbiamo inviato un\'email con le istruzioni per reimpostare la password.');
+            }
+        } catch (err: any) {
+            setError(err.message || 'Errore durante l\'invio dell\'email');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Landing View
@@ -193,11 +220,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                         <Hexagon size={50} className="text-blue-600 fill-blue-600/10" strokeWidth={1.5} />
                     </div>
                     <h2 className="text-3xl font-bold mb-2">
-                        {authMode === 'login' ? 'Bentornato' : 'Crea Account'}
+                        {authMode === 'login' ? 'Bentornato' : authMode === 'forgot' ? 'Password dimenticata' : 'Crea Account'}
                     </h2>
                     <p className="text-slate-400 text-sm">
                         {authMode === 'login' 
                             ? 'Accedi per sincronizzare i tuoi progressi'
+                            : authMode === 'forgot'
+                            ? 'Inserisci la tua email per ricevere le istruzioni'
                             : 'Registrati per salvare i tuoi progressi nel cloud'
                         }
                     </p>
@@ -205,7 +234,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
                 {/* Form */}
                 <form 
-                    onSubmit={authMode === 'login' ? handleLogin : handleRegister}
+                    onSubmit={authMode === 'login' ? handleLogin : authMode === 'forgot' ? handleForgotPassword : handleRegister}
                     className="space-y-4"
                 >
                     {/* Username (only for register) */}
@@ -236,7 +265,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                         />
                     </div>
 
-                    {/* Password */}
+                    {/* Hide password field in forgot mode */}
+                    {authMode === 'forgot' ? null : (
+                    /* Password */
                     <div className="relative">
                         <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                         <input
@@ -249,11 +280,32 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                             minLength={6}
                         />
                     </div>
+                    )}
+
+                    {/* Forgot Password Link (login mode only) */}
+                    {authMode === 'login' && (
+                        <div className="text-right -mt-2">
+                            <button
+                                type="button"
+                                onClick={() => { setAuthMode('forgot'); setError(''); setSuccessMessage(''); }}
+                                className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                            >
+                                Password dimenticata?
+                            </button>
+                        </div>
+                    )}
 
                     {/* Error Message */}
                     {error && (
                         <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
                             {error}
+                        </div>
+                    )}
+
+                    {/* Success Message */}
+                    {successMessage && (
+                        <div className="p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-300 text-sm">
+                            {successMessage}
                         </div>
                     )}
 
@@ -267,7 +319,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
                             <>
-                                {authMode === 'login' ? 'Accedi' : 'Registrati'}
+                                {authMode === 'login' ? 'Accedi' : authMode === 'forgot' ? 'Invia Email' : 'Registrati'}
                                 <ArrowRight size={18} />
                             </>
                         )}
@@ -292,15 +344,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
                 {/* Footer Links */}
                 <div className="flex flex-col items-center gap-3 mt-8 text-sm">
-                    <button
-                        onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
-                        className="text-slate-400 hover:text-white transition-colors"
-                    >
-                        {authMode === 'login' 
-                            ? 'Non hai un account? Registrati'
-                            : 'Hai già un account? Accedi'
-                        }
-                    </button>
+                    {authMode === 'forgot' ? (
+                        <button
+                            onClick={() => { setAuthMode('login'); setError(''); setSuccessMessage(''); }}
+                            className="text-slate-400 hover:text-white transition-colors"
+                        >
+                            ← Torna al login
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+                            className="text-slate-400 hover:text-white transition-colors"
+                        >
+                            {authMode === 'login' 
+                                ? 'Non hai un account? Registrati'
+                                : 'Hai già un account? Accedi'
+                            }
+                        </button>
+                    )}
                     <button
                         onClick={() => setAuthMode('landing')}
                         className="text-slate-500 hover:text-slate-300 transition-colors"

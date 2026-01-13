@@ -692,19 +692,19 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   }, [selectedTopic, filteredTopics]);
 
   return (
-    <div className={`flex h-screen bg-transparent text-slate-200 font-sans overflow-hidden selection:bg-${themeColor}-500 selection:text-white`}>
+    <div className="flex h-screen bg-black text-slate-200 font-sans overflow-hidden">
 
       <div className="flex flex-1 gap-5">
 
         {/* LEFT SIDEBAR - GLASS STYLE */}
-        <aside className="w-64 bg-[#121212]/70 backdrop-blur-xl rounded-3xl flex flex-col shrink-0 z-20 h-[calc(100vh-3.25rem)] mt-7 ml-6">
-          <div className="h-16 flex items-center px-4 gap-2">
+        <aside className="w-64 bg-zinc-900/50 backdrop-blur-xl rounded-2xl flex flex-col shrink-0 z-20 h-[calc(100vh-3.25rem)] mt-7 ml-6 border border-zinc-800/50">
+          <div className="h-16 flex items-center px-4 gap-2 border-b border-white/5">
             <button
               onClick={onBack}
-              className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+              className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
               aria-label="Torna alla home"
             >
-              <HomeIcon size={18} />
+              <ArrowLeft size={18} />
             </button>
             <div className="font-black tracking-tighter text-lg flex items-center gap-2 select-none">
               <span className="text-white">PYTHON</span>
@@ -727,7 +727,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                 placeholder="Cerca argomento..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`w-full bg-black/20 ring-1 ring-black/20 inset rounded-xl text-sm py-2 pl-9 pr-3 text-slate-200 focus:outline-none focus:bg-black/40 transition-all placeholder-slate-500`}
+                className={`w-full bg-black/20 ring-1 ring-white/10 inset rounded-xl text-sm py-2 pl-9 pr-3 text-slate-200 focus:outline-none focus:ring-white/20 transition-all placeholder-slate-500`}
               />
             </div>
           </div>
@@ -737,8 +737,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             <div
               className={`absolute left-2 right-2 rounded-xl transition-all duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] pointer-events-none z-0 ${
                 isGymMode
-                  ? "bg-gradient-to-b from-blue-500/30 to-blue-600/5 border border-white/15 shadow-[0_0_15px_rgba(59,130,246,0.3)_inset] shadow-blue-500/20"
-                  : "bg-gradient-to-b from-purple-500/30 to-purple-600/5 border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.3)_inset] shadow-purple-500/20"
+                  ? "bg-blue-500/10 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)_inset]"
+                  : "bg-purple-500/10 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)_inset]"
               } backdrop-blur-xl`}
               style={{
                 top: activeTopicStyle.top,
@@ -792,9 +792,9 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
 
 
         {/* MAIN AREA - HEADER WITH SLIDING PILLS */}
-        <main className={`flex-1 flex flex-col min-w-0 h-full pr-6 pl-1`}>
-          <header className="h-16 flex items-center justify-between mt-4 mb-1 z-10 shrink-0">
-             <div className="flex items-center gap-2 w-full">
+        <main className="flex-1 flex flex-col min-w-0 h-[calc(100vh-3.25rem)] mt-7 pr-6 pl-1">
+          <header className="h-14 flex items-center justify-between gap-2 mb-2 z-10 shrink-0">
+             <div className="flex items-center gap-2">
                {/* SLIDING PILL FOR MODE */}
                <div className="relative flex bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
               <div
@@ -836,8 +836,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                   selectedDifficulty === Difficulty.Easy
                     ? "left-1.5 w-[calc(33.333%-0.5rem)] bg-gradient-to-b from-green-500/30 to-green-600/5 border border-white/15 shadow-[0_0_15px_rgba(34,197,94,0.2)_inset] shadow-green-600/20"
                     : selectedDifficulty === Difficulty.Medium
-                    ? "left-[calc(33.333%+0.25rem)] w-[calc(33.333%-0.5rem)] bg-gradient-to-b from-orange-500/30 to-orange-600/5 border border-white/15 shadow-[0_0_15px_rgba(249,115,22,0.2)_inset] shadow-orange-600/20"
-                    : "left-[66.666%] w-[calc(33.333%-0.375rem)] bg-gradient-to-b from-red-500/30 to-red-600/5 border border-white/15 shadow-[0_0_15px_rgba(239,68,68,0.2)_inset] shadow-red-600/20"
+                    ? "left-[calc(33.333%+0.16rem)] w-[calc(33.333%-0.5rem)] bg-gradient-to-b from-orange-500/30 to-orange-600/5 border border-white/15 shadow-[0_0_15px_rgba(249,115,22,0.2)_inset] shadow-orange-600/20"
+                    : "left-[66.666%] w-[calc(33.333%-0.4rem)] bg-gradient-to-b from-red-500/30 to-red-600/5 border border-white/15 shadow-[0_0_15px_rgba(239,68,68,0.2)_inset] shadow-red-600/20"
                 }`}
               ></div>
               {Object.values(Difficulty).map((d) => (
@@ -854,50 +854,28 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                 </button>
               ))}
             </div>
-             </div>
+            </div>
              
-             {/* Pyodide Status */}
-             <div className="flex items-center gap-2 text-sm bg-[#121212]/70 backdrop-blur-xl px-3 py-1.5 rounded-xl border border-white/5 shadow-lg shadow-black/20 ml-2">
-                {pyodideLoading ? (
-                  <div className="flex items-center gap-2 text-amber-400">
-                    <Loader2 className="animate-spin" size={14} />
-                    <span className="text-xs font-medium">Caricamento...</span>
-                  </div>
-                ) : pyodideError ? (
-                  <div className="flex items-center gap-2 text-red-400">
-                    <XCircle size={14} />
-                    <span className="text-xs font-medium">Errore</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 text-emerald-400">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-xs font-medium">Pronto</span>
-                  </div>
-                )}
-             </div>
-
-             {/* Analytics Button */}
-             {onNavigate && (
-               <button
-                 onClick={() => onNavigate(Page.Analytics)}
-                 className="flex items-center gap-2 text-sm bg-purple-500/10 hover:bg-purple-500/20 backdrop-blur-xl px-3 py-1.5 rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all ml-2"
-               >
-                 <TrendingUp size={14} className="text-purple-400" />
-                 <span className="text-xs font-medium text-purple-300">Analytics</span>
-               </button>
-             )}
-
-             {/* User Badge */}
-             <div className="ml-auto">
+             {/* Analytics Button & User Badge */}
+             <div className="flex items-center gap-2 shrink-0">
+               {onNavigate && (
+                 <button
+                   onClick={() => onNavigate(Page.Analytics)}
+                   className="h-9 flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
+                 >
+                   <TrendingUp size={16} />
+                   <span className="text-xs font-bold">Analytics</span>
+                 </button>
+               )}
                <UserBadge onNavigate={onNavigate} />
              </div>
           </header>
 
-          <div className="flex-1 flex flex-col overflow-hidden relative">
+          <div className="flex-1 flex flex-col overflow-hidden relative bg-zinc-900/50 rounded-2xl border border-zinc-800/50">
           {currentExercise ? (
             <>
               {/* Exercise Header */}
-              <div className="p-4 border-b border-white/10 bg-black/10">
+              <div className="p-4 border-b border-white/10 bg-white/5">
                 <div className="flex items-center justify-between mb-2">
                   <h2 className="text-lg font-bold text-white flex items-center gap-2">
                     {practiceMode === "debug" && (
@@ -1120,7 +1098,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                 {!panelCollapsed && (
                   <div 
                     style={{ height: panelHeight }}
-                    className="border-t border-white/10 flex flex-col bg-[#1a1a1a]/80 backdrop-blur-md"
+                    className="border-t border-white/10 flex flex-col bg-zinc-900/90 backdrop-blur-md rounded-b-2xl"
                   >
                     {/* Resize Handle */}
                     <div 

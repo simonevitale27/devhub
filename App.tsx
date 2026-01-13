@@ -7,6 +7,7 @@ import DataLab from './components/DataLab';
 import PythonGym from './components/PythonGym';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 import AccountPage from './components/AccountPage';
+import ResetPasswordPage from './components/ResetPasswordPage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 function AppContent() {
@@ -17,10 +18,16 @@ function AppContent() {
   useEffect(() => {
     if (isLoading) return;
     
+    // Check URL for reset-password path
+    if (window.location.pathname === '/reset-password' || window.location.hash.includes('type=recovery')) {
+      setCurrentPage(Page.ResetPassword);
+      return;
+    }
+    
     if ((user || isGuest) && currentPage === Page.Landing) {
       // User just logged in or selected guest mode
       setCurrentPage(Page.Home);
-    } else if (!user && !isGuest && currentPage !== Page.Landing) {
+    } else if (!user && !isGuest && currentPage !== Page.Landing && currentPage !== Page.ResetPassword) {
       // User logged out - return to landing
       setCurrentPage(Page.Landing);
     }
@@ -51,6 +58,8 @@ function AppContent() {
         return <AnalyticsDashboard onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />;
       case Page.Account:
         return <AccountPage onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />;
+      case Page.ResetPassword:
+        return <ResetPasswordPage onNavigate={setCurrentPage} />;
       default:
         return <LandingPage onNavigate={setCurrentPage} />;
     }

@@ -567,7 +567,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
 
   return (
     <div
-      className={`flex h-screen bg-transparent text-slate-200 font-sans overflow-hidden ${selectionClass} selection:text-white`}
+      className={`flex h-screen bg-black text-slate-200 font-sans overflow-hidden ${selectionClass} selection:text-white`}
     >
       <div className="flex flex-1 gap-5">
       {/* LEFT SIDEBAR */}
@@ -845,11 +845,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
             </div>
 
             {/* SHUFFLE BUTTON */}
-            <div className="ml-auto flex items-center gap-2 bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
+            <div className="ml-auto flex items-center gap-2">
               <button
                 onClick={handleShuffle}
                 title="Cambia esercizio"
-                className="py-2 px-3 text-slate-300 hover:text-white rounded-lg hover:bg-white/5 transition-all flex items-center gap-2 group"
+                className="h-9 py-2 px-3 text-slate-300 hover:text-white rounded-lg bg-[#121212]/70 hover:bg-white/10 backdrop-blur-xl shadow-lg shadow-black/20 transition-all flex items-center gap-2 group"
               >
                 <Shuffle
                   size={16}
@@ -863,12 +863,12 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
             <div className="flex items-center gap-2">
               {/* ANALYTICS BUTTON */}
               {onNavigate && (
-                <button
+              <button
                   onClick={() => onNavigate(Page.Analytics)}
-                  className="flex items-center gap-2 px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 backdrop-blur-xl rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all"
+                  className="h-9 flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
                 >
-                  <TrendingUp size={16} className="text-purple-400" />
-                  <span className="text-xs font-bold text-purple-300">Analytics</span>
+                  <TrendingUp size={16} />
+                  <span className="text-xs font-bold">Analytics</span>
                 </button>
               )}
 

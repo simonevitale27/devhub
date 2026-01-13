@@ -372,9 +372,15 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
   }, [stats.bestTopic]);
 
   return (
-    <div className="h-screen overflow-y-auto bg-zinc-950 text-white">
+    <div className="h-screen overflow-y-auto bg-black text-white relative">
+      {/* Background Gradients */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }}></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '7s' }}></div>
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800">
+      <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
@@ -399,9 +405,9 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
             {/* Reset Button */}
             <button
               onClick={() => setShowResetConfirm(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 transition-colors"
+              className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 backdrop-blur-md px-3 py-1.5 h-9 rounded-full ring-1 ring-red-500/20 hover:ring-red-500/40 transition-all text-red-300 text-sm font-medium"
             >
-              <RotateCcw size={16} />
+              <RotateCcw size={14} />
               Reset
             </button>
 

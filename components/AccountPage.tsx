@@ -11,9 +11,11 @@ interface AccountPageProps {
 }
 
 export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
-  const { user, isGuest, displayName, logout } = useAuth();
+  const { user, isGuest, displayName, logout, updateProfile } = useAuth();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showNameForm, setShowNameForm] = useState(false);
+  const [newName, setNewName] = useState(displayName || '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -152,8 +154,15 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white p-6">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-black text-white p-6 pb-32 relative overflow-y-auto font-sans">
+        
+      {/* Background Gradients */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }}></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '7s' }}></div>
+      </div>
+
+      <div className="max-w-2xl mx-auto relative z-10">
         {/* Back Button */}
         <button
           onClick={onBack}
@@ -191,6 +200,61 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
                 <span className="text-sm">Membro dal</span>
               </div>
               <p className="text-white font-medium">{formatDate(user?.created_at)}</p>
+            </div>
+
+            {/* Username Edit Card */}
+            <div className={`bg-zinc-800/50 rounded-xl p-4 transition-all ${showNameForm ? 'ring-2 ring-blue-500/50' : ''}`}>
+              <div className="flex items-center justify-between mb-2">
+                 <div className="flex items-center gap-3 text-slate-400">
+                    <User size={18} />
+                    <span className="text-sm">Username</span>
+                 </div>
+                 {!showNameForm && (
+                   <button 
+                     onClick={() => setShowNameForm(true)}
+                     className="text-blue-400 hover:text-blue-300 text-xs font-medium"
+                   >
+                     Modifica
+                   </button>
+                 )}
+              </div>
+              
+              {showNameForm ? (
+                <form 
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!newName.trim()) return;
+                    setIsLoading(true);
+                    try {
+                        // Assuming updateProfile handles metadata update
+                        await updateProfile(newName); 
+                        setShowNameForm(false);
+                        setMessage({ type: 'success', text: 'Username aggiornato!' });
+                    } catch (err) {
+                        setMessage({ type: 'error', text: 'Errore durante l\'aggiornamento' });
+                    } finally {
+                        setIsLoading(false);
+                    }
+                  }} 
+                  className="flex gap-2"
+                >
+                    <input 
+                        type="text" 
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-sm focus:outline-none focus:border-blue-500"
+                        placeholder="Nome utente"
+                    />
+                    <button type="submit" disabled={isLoading} className="bg-blue-600 p-1.5 rounded-lg hover:bg-blue-500 disabled:opacity-50">
+                        <Check size={14} />
+                    </button>
+                     <button type="button" onClick={() => setShowNameForm(false)} className="bg-zinc-700 p-1.5 rounded-lg hover:bg-zinc-600">
+                        <X size={14} />
+                    </button>
+                </form>
+              ) : (
+                <p className="text-white font-medium truncate">{displayName || 'Imposta username'}</p>
+              )}
             </div>
 
             <div className="bg-zinc-800/50 rounded-xl p-4">
@@ -300,7 +364,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
         )}
 
         {/* Danger Zone */}
-        <div className="bg-zinc-900/50 rounded-2xl p-6 border border-red-500/20">
+        <div className="bg-zinc-900/50 rounded-2xl p-6 border border-red-500/20 mb-12">
           <div className="flex items-center gap-3 mb-4">
             <Trash2 size={20} className="text-red-400" />
             <h2 className="text-lg font-semibold text-red-400">Zona Pericolosa</h2>

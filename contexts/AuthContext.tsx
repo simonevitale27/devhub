@@ -11,6 +11,7 @@ interface AuthContextType {
   avatarUrl: string | null;
   setGuestMode: () => void;
   logout: () => Promise<void>;
+  updateProfile: (name: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -112,6 +113,16 @@ export function AuthProvider({ children, onAuthChange }: AuthProviderProps) {
     setCurrentUser(null);
   };
 
+  const updateProfile = async (name: string) => {
+    if (!user) return;
+    const { data, error } = await supabase.auth.updateUser({
+      data: { full_name: name, name: name }
+    });
+    
+    if (error) throw error;
+    if (data.user) setUser(data.user);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -122,6 +133,7 @@ export function AuthProvider({ children, onAuthChange }: AuthProviderProps) {
         avatarUrl: getAvatarUrl(user),
         setGuestMode,
         logout,
+        updateProfile,
       }}
     >
       {children}
