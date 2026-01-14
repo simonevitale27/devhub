@@ -1,6 +1,6 @@
 # DevHub - Piattaforma di Training SQL Serverless
 
-![DevHub Homepage](./public/homepage_preview.png)
+<img width="1916" height="925" alt="Screenshot 2026-01-14 alle 16 17 20" src="https://github.com/user-attachments/assets/43247c98-4a08-430d-bef7-9735ee426069" />
 
 **Una piattaforma professionale per praticare SQL e analisi dati, interamente client-side. Nessun backend richiesto, esecuzione query istantanea, 800+ esercizi pratici.**
 
