@@ -1,28 +1,21 @@
-# DevHub - Piattaforma di Training SQL Serverless
+# DevHub - Piattaforma di Training SQL e Python
 
 <img width="1916" height="925" alt="Screenshot 2026-01-14 alle 16 17 20" src="https://github.com/user-attachments/assets/43247c98-4a08-430d-bef7-9735ee426069" />
 
-**Una piattaforma professionale per praticare SQL e analisi dati, interamente client-side. Nessun backend richiesto, esecuzione query istantanea, 800+ esercizi pratici.**
+**Una piattaforma per imparare SQL e Python attraverso esercizi pratici. Tutto gira nel browser, nessun server richiesto.**
 
-[Demo Live](https://devhub-gray.vercel.app) | [Documentazione Tecnica](#architettura-del-progetto)
+[Demo Live](https://devhub-gray.vercel.app) | [Documentazione Tecnica](#architettura)
 
 ---
 
-## Panoramica
+## Cosa Puoi Fare
 
-DevHub è una Progressive Web App (PWA) progettata per Data Analyst e sviluppatori che vogliono perfezionare le proprie competenze SQL attraverso esercizi pratici e scenari realistici. L'intera applicazione gira nel browser, utilizzando AlaSQL come database in-memory, eliminando completamente la latenza di rete.
-
-Con la versione **2.0**, abbiamo introdotto il **Cloud Sync**: registrati gratuitamente per salvare i tuoi progressi su qualsiasi dispositivo!
-
-### Caratteristiche Principali
-
-- **SQL Lab**: oltre 800 esercizi suddivisi per argomento e difficoltà
-- **DataLab**: ambiente sandbox per caricare e interrogare i propri file CSV
-- **Cloud Profiles**: Salva i tuoi progressi nel cloud (Supabase) con login Google o Email
-- **Account System**: Dashboard personale con statistiche e gestione profilo
-- **Debug Mode**: esercizi con query volutamente errate da correggere
-- **Zero Latency**: tutte le query vengono eseguite istantaneamente nel browser
-- **PWA Installabile**: utilizzabile come applicazione standalone su desktop e mobile
+- **Oltre 800 esercizi SQL** organizzati per argomento e difficoltà
+- **Ambiente Python completo** con 9 argomenti di programmazione
+- **DataLab**: carica i tuoi file CSV e analizzali con query SQL
+- **Grafici istantanei**: crea visualizzazioni professionali con un click
+- **Salva i progressi**: registrati per sincronizzare su più dispositivi
+- **Installabile su smartphone**: funziona come un'app nativa
 
 ---
 
@@ -30,130 +23,100 @@ Con la versione **2.0**, abbiamo introdotto il **Cloud Sync**: registrati gratui
 
 ### SQL Lab
 
-Il modulo principale per l'allenamento SQL, strutturato per un apprendimento progressivo.
+Il modulo principale per imparare SQL, con esercizi che vanno dalle basi fino alle query avanzate.
 
 #### Argomenti Coperti
 
-| Argomento | Descrizione | Keyword SQL |
-| --------- | ----------- | ----------- |
-| Select Base | Fondamenti delle query | SELECT, FROM, DISTINCT, ALIAS |
-| Filtri | Operatori logici e condizionali | WHERE, AND/OR, IN, LIKE, NULL |
-| Ordinamento | Controllo dell'ordine dei risultati | ORDER BY, ASC, DESC, LIMIT |
-| Funzioni Scalari | Manipolazione stringhe e numeri | UPPER, ROUND, LEN, CONCAT |
-| Date e Time | Gestione dati temporali | YEAR, MONTH, DATEDIFF |
-| Join Tabelle | Unione di più tabelle | INNER, LEFT, RIGHT JOIN |
-| Aggregazione | Raggruppamento e calcoli | GROUP BY, HAVING, SUM, AVG, COUNT |
-| Logica Condizionale | Espressioni condizionali | CASE WHEN... THEN... END |
-| Avanzate | Tecniche complesse | SUBQUERIES, WINDOW FUNCTIONS, CTE |
+| Argomento | Cosa Impari |
+| --------- | ----------- |
+| Select Base | Selezionare dati, alias, DISTINCT |
+| Filtri | WHERE, AND/OR, IN, LIKE, NULL |
+| Ordinamento | ORDER BY, LIMIT |
+| Funzioni | UPPER, ROUND, LEN, CONCAT |
+| Date | Lavorare con date e intervalli |
+| Join | Unire più tabelle tra loro |
+| Aggregazione | GROUP BY, SUM, AVG, COUNT |
+| Logica Condizionale | CASE WHEN |
+| Avanzate | Subquery, Window Functions, CTE |
 
-#### Livelli di Difficoltà
+#### Tre Livelli di Difficoltà
 
-Ogni argomento include esercizi su tre livelli:
-
-- **Easy**: hint espliciti con keyword dirette
-- **Medium**: hint meno diretti, richiedono maggiore ragionamento
-- **Hard**: hint concettuali, nessuna keyword suggerita
-
-#### Funzionalità dell'Editor
-
-- Syntax highlighting in tempo reale
-- Auto-formatting delle query
-- Inserimento smart delle colonne dal pannello schema
-- Ghost text suggestions durante la digitazione
-- Validazione istantanea con confronto risultati
+- **Facile**: suggerimenti espliciti, perfetto per iniziare
+- **Medio**: meno aiuti, richiede più ragionamento
+- **Difficile**: solo concetti, devi trovare tu la soluzione
 
 #### Debug Mode
 
-Modalità speciale dove le query contengono errori intenzionali. L'utente deve identificare e correggere:
+Modalità speciale dove le query contengono errori intenzionali. Devi trovare e correggere:
 
-- Errori di sintassi (virgole mancanti, typo nelle keyword)
-- Errori logici (WHERE vs HAVING, operatori sbagliati)
-- Errori avanzati (OVER mancante, parentesi delle subquery)
-
-Tre livelli di difficoltà negli errori, con hint calibrati per ogni livello.
+- Errori di sintassi (virgole mancanti, typo)
+- Errori logici (WHERE invece di HAVING)
+- Errori avanzati (parentesi mancanti)
 
 ---
 
 ### DataLab
 
-Ambiente sandbox per analisi dati su file propri.
+Un ambiente libero per analizzare i tuoi dati.
 
 #### Funzionalità
 
-- **Import CSV**: drag-and-drop o selezione multipla di file
-- **Query SQL**: interroga i dati caricati con sintassi SQL standard
-- **Editor Ridimensionabile**: split-pane regolabile tra editor e risultati per massimizzare lo spazio di lavoro
-- **Gestione Tabelle**:
-  - Rinomina tabelle e colonne
-  - Elimina tabelle o colonne
-  - Salva risultati delle query come nuove tabelle
-- **Table Inspector**: esplorazione interattiva con filtri per colonna
-- **Data Quality Dashboard**:
-  - Pulsante dedicato per l'analisi immediata della salute dei dati
-  - Conteggio valori nulli, tipi di dato, unicità
-  - Rilevamento valori anomali e statistiche descriptive
-- **Data Profiling Avanzato**:
-  - Tabella di profilazione integrata sopra i risultati
-  - Mostra distribuzione, min/max, media e un campione scrollabile dei dati per ogni colonna
+- **Carica file CSV**: trascina i file o selezionali dal computer
+- **Scrivi query SQL**: interroga i dati con sintassi standard
+- **Gestisci tabelle**: rinomina, elimina, modifica colonne
+- **Analisi qualità dati**: controlla valori nulli, tipi, statistiche
+- **Esporta**: scarica in PDF, CSV o Excel
 
-#### QuickChart & Visualizzazione
+#### QuickChart - Visualizzazione Dati
 
-Strumento potente per la visualizzazione immediata dei dati:
+Crea grafici professionali in pochi click:
 
-- **Multi-Chart Support**:
-  - **Bar Chart**: ideale per confronti categoriali
-  - **Line Chart**: perfetto per analizzare trend temporali
-  - **Area Chart**: per visualizzare volumi cumulativi
-  - **Pie Chart**: per mostrare le proporzioni (es. market share)
-- **Analytics Avanzati**:
-  - **Trendlines**: aggiungi con un click linee di tendenza (regressione lineare)
-  - **Mean Line**: visualizza istantaneamente la media dei valori
-- **Interattività & Annotazioni**:
-  - **Click-to-Annotate**: clicca su qualsiasi punto del grafico per aggiungere note testuali personalizzate
-  - **Tooltip Intelligenti**: ispezione valori al passaggio del mouse
-- **Export Suite Completa**:
-  - **Formati Immagine**: Scarica in PNG o SVG (vettoriale) ad alta risoluzione
-  - **Formati Dati**: Esporta i dati del grafico in CSV o JSON
-  - **Copia negli Appunti**: Copia al volo l'immagine per incollarla in presentazioni o chat
-- **Controlli Dati**:
-  - **Filtri Top N**: Isola rapidamente i primi 5/10/20 risultati
-  - **Ordinamento Automatico**: Ordina i dati per valore o etichetta
-
-#### Esportazione & Integrazione
-
-- **PDF Report**: documento professionale con grafici e kpi
-- **Conversione SQL to Python**: Generazione automatica codice Pandas
+- **4 tipi di grafico**: Barre, Linee, Area, Torta
+- **Linee di tendenza**: aggiungi regressioni lineari
+- **Annotazioni**: clicca sui punti per aggiungere note
+- **Export completo**: PNG, SVG, CSV, JSON o copia negli appunti
 
 ---
 
-## Python Lab
+### Python Lab
 
-Un ambiente di coding completo per imparare Python, con focus sulla logica di programmazione e manipolazione dati.
+Impara Python direttamente nel browser, senza installare nulla.
 
-### Tecnologie
+#### Argomenti
 
-- **Pyodide**: Motore Python completo in WebAssembly che gira interamente nel browser.
-- **Sandboxed**: Esecuzione sicura e isolata, zero rischi per il sistema host.
+| Argomento | Cosa Impari |
+| --------- | ----------- |
+| Operatori | +, -, *, /, operazioni matematiche |
+| Input/Output | Leggere input e stampare output |
+| Condizioni | if, elif, else |
+| Cicli | for, while, range() |
+| Collezioni | Concetti base delle strutture dati |
+| Liste | Creare e modificare liste |
+| Tuple | Dati immutabili |
+| Set | Insiemi e operazioni |
+| Dizionari | Coppie chiave-valore |
 
-### Caratteristiche
+#### Due Modalità
 
-- **Curriculum Strutturato**:
-  - **Fondamenti**: Variabili, Operatori, Input/Output
-  - **Control Flow**: If/Else, Loop For/While
-  - **Data Structures**: Liste, Tuple, Set, Dizionari
-- **Editor Intelligente**:
-  - **Autocomplete**: Suggerimenti in tempo reale per keyword e funzioni built-in
-  - **Syntax Highlighting**: Colorazione del codice stile IDE
-  - **Auto-indent**: Formattazione automatica intelligente
-- **Modalità di Esercizio**:
-  - **Solve Mode**: Scrivi la soluzione da zero partendo dalle specifiche
-  - **Debug Mode**: Trova e correggi i bug in codice Python volutamente errato
+- **Solve**: scrivi la soluzione da zero
+- **Debug**: trova e correggi i bug nel codice
 
 ---
 
-## Database Schema
+### Analytics Dashboard
 
-L'applicazione utilizza uno schema e-commerce realistico per gli esercizi:
+Monitora i tuoi progressi con visualizzazioni interattive:
+
+- **Heatmap Contributi**: stile GitHub, mostra l'attività giornaliera
+- **Radar Competenze**: grafico a ragnatela per SQL e Python
+- **Statistiche Streak**: giorni consecutivi di pratica
+- **Riepilogo totale**: esercizi completati, media tentativi, topic migliore
+
+---
+
+## Database degli Esercizi
+
+Gli esercizi usano un database e-commerce realistico:
 
 ```text
 Users (id, name, email, country, is_premium, created_at)
@@ -167,97 +130,67 @@ Products (id, name, category, price, stock) >--+
 Employees (id, name, department, hire_date, manager_id)
 ```
 
-Lo schema include chiavi primarie, chiavi esterne e relazioni one-to-many per esercitarsi con JOIN complesse.
+---
+
+## Tecnologie Utilizzate
+
+| Categoria | Tecnologia |
+| --------- | ---------- |
+| Frontend | React + TypeScript |
+| Database locale | AlaSQL (tutto nel browser) |
+| Backend cloud | Supabase (solo per login e progressi) |
+| Python | Pyodide (Python in WebAssembly) |
+| Grafici | Recharts |
+| PDF | jsPDF |
+| Stile | Tailwind CSS |
 
 ---
 
-## Stack Tecnologico
+## Architettura
 
-| Categoria   | Tecnologia    | Versione        |
-| ----------- | ------------- | --------------- |
-| Frontend    | React         | 19.2            |
-| Linguaggio  | TypeScript    | 5.8             |
-| Database    | AlaSQL        | 4.9 (in-memory) |
-| Auth & DB   | **Supabase**  | **Client JS**   |
-| Styling     | Tailwind CSS  | via CDN         |
-| Build Tool  | Vite          | 6.2             |
-| Grafici     | Recharts      | 3.5             |
-| PDF         | jsPDF         | 3.0             |
-| CSV Parser  | PapaParse     | 5.5             |
-| Icons       | Lucide React  | 0.554           |
+L'app usa un approccio ibrido:
+
+- **Velocità**: il database SQL degli esercizi vive nel browser, quindi le query sono istantanee
+- **Persistenza**: i progressi vengono salvati nel cloud con Supabase
+- **Privacy**: i tuoi file CSV rimangono locali, non vengono mai inviati a server esterni
 
 ---
 
-## Architettura del Progetto
+## Competenze Sviluppate
 
-### Filosofia Serverless & Cloud Hybrid
+Questo progetto dimostra competenze in:
 
-L'applicazione segue un approccio ibrido innovativo:
-
-- **Core Logic**: Il database SQL di esercizio vive in memoria nel browser (AlaSQL) per garantire 0 latenza.
-- **Cloud Layer**: I progressi utente e l'autenticazione sono gestiti da Supabase, permettendo la sincronizzazione tra dispositivi senza rallentare l'esperienza di coding.
-- **Privacy**: I dati dell'utente (file importati in DataLab) rimangono rigorosamente locali. Solo i metadati dei progressi (esercizi completati) vengono sincronizzati.
-
-### Struttura Directory
-
-```text
-devhub/
-├── components/           # Componenti React UI
-│   ├── SqlGym.tsx        # Modulo esercizi SQL
-│   ├── DataLab.tsx       # Sandbox CSV/SQL
-│   ├── AccountPage.tsx   # [NEW] Gestione Profilo Utente
-│   └── ...
-├── services/
-│   ├── authService.ts    # [NEW] Integrazione Supabase Auth
-│   ├── supabaseClient.ts # [NEW] Client Supabase Config
-│   ├── sqlService.ts     # Wrapper AlaSQL
-│   └── ...
-├── utils/
-│   └── ...
-├── types.ts              # Definizioni TypeScript
-├── constants.ts          # Schema DB, Topic, Snippets
-└── ...
-```
+- **React avanzato**: gestione stato complessa, hooks personalizzati
+- **TypeScript**: tipizzazione rigorosa su un codebase di 10.000+ righe
+- **Database**: integrazione AlaSQL + Supabase
+- **UX/UI**: interfaccia professionale con dark mode
+- **Performance**: ottimizzazione per dispositivi mobile
+- **PWA**: app installabile con service worker
 
 ---
 
-## Installazione
+## Installazione Locale
 
 ### Prerequisiti
 
-- Node.js v18 o superiore
-- npm o yarn
+- Node.js 18 o superiore
 
-### Setup Locale
-
-1. **Clone del repository e installazione**
-
-    ```bash
-    git clone https://github.com/username/devhub.git
-    cd devhub
-    npm install
-    ```
-
-2. **Configurazione Ambassador (Opzionale)**
-    Crea un file `.env.local` per la configurazione del backend Supabase (opzionale per sviluppo offline, richiesto per auth):
-
-    ```env
-    VITE_SUPABASE_URL=tua_url
-    VITE_SUPABASE_ANON_KEY=tua_key
-    ```
-
-3. **Avvio sviluppo**
-
-    ```bash
-    npm run dev
-    # http://localhost:3000
-    ```
-
-### Build di Produzione
+### Setup
 
 ```bash
-npm run build
-npm run preview
+git clone https://github.com/username/devhub.git
+cd devhub
+npm install
+npm run dev
+```
+
+### Configurazione Cloud (opzionale)
+
+Per abilitare login e sync, crea `.env.local`:
+
+```env
+VITE_SUPABASE_URL=tua_url
+VITE_SUPABASE_ANON_KEY=tua_key
 ```
 
 ---
@@ -268,4 +201,4 @@ MIT
 
 ---
 
-**Sviluppato da un Data Analyst appassionato di clean code e workflow efficienti.**
+**Sviluppato con passione per il clean code e l'apprendimento pratico.**
