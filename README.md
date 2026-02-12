@@ -1,7 +1,5 @@
 # DevHub - Interactive Dev Playground
 
-![DevHub Screenshot](https://github.com/user-attachments/assets/43247c98-4a08-430d-bef7-9735ee426069)
-
 **Piattaforma interattiva per SQL, Python e Data Analysis. Esercizi pratici, editor live, grafici professionali e strumenti di analisi dati. Tutto gira nel browser, nessun server richiesto.**
 
 [Demo Live](https://devhub-gray.vercel.app) | [Documentazione Tecnica](#architettura)
