@@ -30,6 +30,9 @@ import {
   Dumbbell,
   SearchCode,
   TrendingUp,
+  Table as TableIcon,
+  BarChart3,
+  Package,
 } from "lucide-react";
 
 import { Difficulty, Page } from "../types";
@@ -45,6 +48,7 @@ import {
   initPyodide,
   isPyodideReady,
   validateOutput,
+  loadPyodidePackages,
 } from "../services/pythonService";
 import { recordCompletion } from "../services/progressService";
 import AutocompleteDropdown, { AutocompleteItem } from "./AutocompleteDropdown";
@@ -70,6 +74,9 @@ const TOPIC_ICONS: Record<PythonTopicId, React.ReactNode> = {
   [PythonTopicId.Tuples]: <Database size={18} />,
   [PythonTopicId.Sets]: <Layers size={18} />,
   [PythonTopicId.Dictionaries]: <Book size={18} />,
+  [PythonTopicId.Pandas]: <TableIcon size={18} />,
+  [PythonTopicId.Seaborn]: <BarChart3 size={18} />,
+  [PythonTopicId.Libraries]: <Package size={18} />,
 };
 
 interface PythonGymProps {
@@ -95,6 +102,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [pyodideLoading, setPyodideLoading] = useState(true);
   const [pyodideError, setPyodideError] = useState<string | null>(null);
+  const [packagesLoading, setPackagesLoading] = useState(false);
   
   // Autocomplete state
   const [showAutocomplete, setShowAutocomplete] = useState(false);
@@ -179,14 +187,36 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   }, []);
 
   // Load exercises when topic/difficulty changes
+  // For library-dependent topics, load packages first
+  const LIBRARY_PACKAGES: Record<string, string[]> = {
+    [PythonTopicId.Pandas]: ['numpy', 'pandas'],
+    [PythonTopicId.Seaborn]: ['numpy', 'pandas', 'matplotlib'],
+  };
+
   useEffect(() => {
-    const newExercises = generatePythonExercises(
-      selectedTopic,
-      selectedDifficulty,
-      20
-    );
-    setExercises(newExercises);
-    setCurrentExerciseIndex(0);
+    const loadExercises = async () => {
+      // Load packages if needed
+      const packages = LIBRARY_PACKAGES[selectedTopic];
+      if (packages) {
+        setPackagesLoading(true);
+        try {
+          await loadPyodidePackages(packages);
+        } catch (e) {
+          console.warn('Package loading failed, exercises may still work conceptually:', e);
+        } finally {
+          setPackagesLoading(false);
+        }
+      }
+
+      const newExercises = generatePythonExercises(
+        selectedTopic,
+        selectedDifficulty,
+        20
+      );
+      setExercises(newExercises);
+      setCurrentExerciseIndex(0);
+    };
+    loadExercises();
   }, [selectedTopic, selectedDifficulty]);
 
   // Update user code when exercise changes
@@ -697,8 +727,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
       <div className="flex flex-1 gap-5">
 
         {/* LEFT SIDEBAR - GLASS STYLE */}
-        <aside className="w-64 bg-zinc-900/50 backdrop-blur-xl rounded-2xl flex flex-col shrink-0 z-20 h-[calc(100vh-3.25rem)] mt-7 ml-6 border border-zinc-800/50">
-          <div className="h-16 flex items-center px-4 gap-2 border-b border-white/5">
+        <aside className="w-64 bg-[#121212]/70 backdrop-blur-xl rounded-3xl flex flex-col shrink-0 z-20 h-[calc(100vh-3.25rem)] mt-7 ml-6">
+          <div className="h-16 flex items-center px-4 gap-2">
             <button
               onClick={onBack}
               className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
@@ -727,7 +757,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                 placeholder="Cerca argomento..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`w-full bg-black/20 ring-1 ring-white/10 inset rounded-xl text-sm py-2 pl-9 pr-3 text-slate-200 focus:outline-none focus:ring-white/20 transition-all placeholder-slate-500`}
+                className={`w-full bg-black/20 ring-1 ring-black/20 inset rounded-xl text-sm py-2 pl-9 pr-3 text-slate-200 focus:outline-none focus:bg-black/40 transition-all placeholder-slate-500`}
               />
             </div>
           </div>
@@ -737,8 +767,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             <div
               className={`absolute left-2 right-2 rounded-xl transition-all duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] pointer-events-none z-0 ${
                 isGymMode
-                  ? "bg-blue-500/10 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)_inset]"
-                  : "bg-purple-500/10 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)_inset]"
+                  ? "bg-gradient-to-b from-blue-500/30 to-blue-600/5 border border-white/15 shadow-[0_0_15px_rgba(59,130,246,0.3)_inset] shadow-blue-500/20"
+                  : "bg-gradient-to-b from-purple-500/30 to-purple-600/5 border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.3)_inset] shadow-purple-500/20"
               } backdrop-blur-xl`}
               style={{
                 top: activeTopicStyle.top,
@@ -749,7 +779,10 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             
             {filteredTopics.map((topic) => {
               const isActive = selectedTopic === topic.id;
-              
+              const badges = topic.subtitle
+                ? topic.subtitle.split(",").map((s) => s.trim())
+                : [];
+
               return (
                 <button
                   key={topic.id}
@@ -778,9 +811,20 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                       >
                        {topic.label}
                       </span>
-                      <span className="text-xs text-slate-400 mt-0.5 line-clamp-1 block group-hover:text-slate-300 transition-colors">
-                        {topic.description}
-                      </span>
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {badges.slice(0, 3).map((tag, i) => (
+                          <span
+                            key={i}
+                            className={`text-[9px] font-mono uppercase px-1.5 py-0.5 rounded ${
+                              isActive
+                                ? "bg-black/40 text-slate-300"
+                                : "bg-slate-800 text-slate-500"
+                            }`}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </button>
@@ -955,7 +999,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                       <div className="w-px h-4 bg-white/10 mx-1" />
                       <button
                         onClick={handleRunCode}
-                        disabled={isRunning || pyodideLoading}
+                        disabled={isRunning || pyodideLoading || packagesLoading}
                         className={`p-2 rounded-lg transition-all ${
                           isRunning 
                             ? "bg-amber-500/20 text-amber-400"

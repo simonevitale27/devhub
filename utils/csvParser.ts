@@ -1,5 +1,6 @@
 import Papa from 'papaparse';
 import alasql from 'alasql';
+import * as XLSX from 'xlsx';
 import { CsvData } from '../types';
 
 /**
@@ -18,7 +19,7 @@ export async function parseCsvFile(file: File): Promise<CsvData> {
 
         // Validate file type
         if (!file.name.toLowerCase().endsWith('.csv')) {
-            reject(new Error('Formato file non valido. Usa un file CSV.'));
+            reject(new Error('Formato file non valido. Usa un file CSV. Per altri formati usa parseFile().'));
             return;
         }
 
@@ -98,14 +99,157 @@ export async function parseCsvFile(file: File): Promise<CsvData> {
 }
 
 /**
+ * Parse a JSON file (array of objects) and return structured data
+ */
+export async function parseJsonFile(file: File): Promise<CsvData> {
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+        throw new Error('Il file è troppo grande. Dimensione massima: 10MB');
+    }
+
+    const text = await file.text();
+    let parsed: any;
+    try {
+        parsed = JSON.parse(text);
+    } catch {
+        throw new Error('JSON non valido. Verifica la sintassi del file.');
+    }
+
+    // Handle array of objects
+    let dataArray: any[];
+    if (Array.isArray(parsed)) {
+        dataArray = parsed;
+    } else if (typeof parsed === 'object' && parsed !== null) {
+        // Try to find an array property (common pattern: {data: [...], results: [...]})
+        const arrayProp = Object.values(parsed).find(v => Array.isArray(v)) as any[] | undefined;
+        if (arrayProp && arrayProp.length > 0) {
+            dataArray = arrayProp;
+        } else {
+            // Single object — wrap in array
+            dataArray = [parsed];
+        }
+    } else {
+        throw new Error('Il JSON deve contenere un array di oggetti.');
+    }
+
+    if (dataArray.length === 0) {
+        throw new Error('Il file JSON non contiene dati.');
+    }
+
+    // Extract headers from all objects (union of all keys)
+    const headerSet = new Set<string>();
+    dataArray.forEach(obj => {
+        if (typeof obj === 'object' && obj !== null) {
+            Object.keys(obj).forEach(k => headerSet.add(k));
+        }
+    });
+    const headers = Array.from(headerSet);
+
+    if (headers.length === 0) {
+        throw new Error('Impossibile estrarre colonne dal JSON.');
+    }
+
+    const rows = dataArray
+        .filter(obj => typeof obj === 'object' && obj !== null)
+        .map(obj => headers.map(h => {
+            const val = obj[h];
+            if (val === undefined || val === null) return null;
+            if (typeof val === 'object') return JSON.stringify(val);
+            return val;
+        }));
+
+    return {
+        tableName: 'json_data',
+        fileName: file.name,
+        headers,
+        rows,
+        rowCount: rows.length
+    };
+}
+
+/**
+ * Parse an Excel file (.xlsx/.xls) and return structured data
+ */
+export async function parseExcelFile(file: File): Promise<CsvData> {
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+        throw new Error('Il file è troppo grande. Dimensione massima: 10MB');
+    }
+
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type: 'array' });
+    
+    // Use first sheet
+    const sheetName = workbook.SheetNames[0];
+    if (!sheetName) {
+        throw new Error('Il file Excel non contiene fogli di lavoro.');
+    }
+
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+    if (jsonData.length < 2) {
+        throw new Error('Il file Excel non contiene dati sufficienti (servono almeno header + 1 riga).');
+    }
+
+    // First row = headers
+    const rawHeaders = jsonData[0] as any[];
+    const headers = rawHeaders.map((h, i) => {
+        const trimmed = String(h ?? '').trim();
+        return trimmed || `col_${i + 1}`;
+    });
+
+    // Remaining rows = data
+    const rows = jsonData.slice(1)
+        .map(row => headers.map((_, i) => {
+            const val = (row as any[])[i];
+            if (val === undefined || val === null || val === '') return null;
+            return val;
+        }))
+        .filter(row => row.some(v => v !== null));
+
+    if (rows.length === 0) {
+        throw new Error('Il file Excel non contiene righe di dati valide.');
+    }
+
+    return {
+        tableName: 'excel_data',
+        fileName: file.name,
+        headers,
+        rows,
+        rowCount: rows.length
+    };
+}
+
+/**
+ * Universal file parser — auto-detects format by extension
+ * Supports: .csv, .json, .xlsx, .xls
+ */
+export async function parseFile(file: File): Promise<CsvData> {
+    const ext = file.name.toLowerCase().split('.').pop() || '';
+    
+    switch (ext) {
+        case 'csv':
+            return parseCsvFile(file);
+        case 'json':
+            return parseJsonFile(file);
+        case 'xlsx':
+        case 'xls':
+            return parseExcelFile(file);
+        default:
+            throw new Error(`Formato file non supportato: .${ext}. Formati supportati: CSV, JSON, Excel (.xlsx/.xls)`);
+    }
+}
+
+/**
  * Generate a valid SQL table name from a filename
  * @param fileName - The original file name
  * @param existingTables - Array of existing table names to avoid conflicts
  * @returns Generated table name
  */
 export function generateTableName(fileName: string, existingTables: string[]): string {
-    // Remove .csv extension
-    let baseName = fileName.toLowerCase().replace(/\.csv$/i, '');
+    // Remove known file extensions
+    let baseName = fileName.toLowerCase().replace(/\.(csv|json|xlsx|xls)$/i, '');
     
     // Replace spaces and special characters with underscores
     baseName = baseName.replace(/[^a-z0-9_]/g, '_');

@@ -76,14 +76,14 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* SQL GYM CARD */}
                     <button
                         onClick={() => onNavigate(Page.SqlGym)}
-                        className="group relative h-72 bg-gradient-to-br from-blue-950/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-blue-900/30 hover:shadow-blue-500/30 ring-1 ring-blue-500/20 hover:ring-blue-400/40"
+                        className="group relative h-72 bg-gradient-to-br from-blue-950/50 to-slate-900/50 backdrop-blur-xl rounded-3xl transition-all duration-500 text-center hover:scale-105 shadow-2xl shadow-blue-900/30 hover:shadow-blue-500/30 ring-1 ring-blue-500/20 hover:ring-blue-400/40 overflow-hidden"
                     >
                         <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400 mb-5 group-hover:scale-110 transition-transform duration-500 ring-1 ring-blue-500/30">
-                            <Database size={36} strokeWidth={1.5} />
+                        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform duration-500 ring-1 ring-blue-500/30">
+                            <Database size={30} strokeWidth={1.5} />
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-3 tracking-tight font-outfit group-hover:text-blue-300 transition-colors">SQL Lab</h2>
-                        <p className="text-slate-300 text-base font-medium max-w-[220px] leading-relaxed group-hover:text-slate-100 transition-colors">
+                        <h2 className="absolute top-[8.5rem] left-0 right-0 text-3xl font-bold text-white tracking-tight font-outfit group-hover:text-blue-300 transition-colors">SQL Lab</h2>
+                        <p className="absolute top-[11rem] left-0 right-0 px-8 text-slate-300 text-base font-medium leading-relaxed group-hover:text-slate-100 transition-colors">
                             Esercizi pratici, scenari reali e database volatili.
                         </p>
                     </button>
@@ -91,30 +91,30 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     {/* PYTHON LAB CARD */}
                     <button
                         onClick={() => onNavigate(Page.PythonGym)}
-                        className="group relative h-72 bg-gradient-to-br from-amber-950/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-amber-900/30 hover:shadow-amber-500/30 ring-1 ring-amber-500/20 hover:ring-amber-400/40"
+                        className="group relative h-72 bg-gradient-to-br from-amber-950/50 to-slate-900/50 backdrop-blur-xl rounded-3xl transition-all duration-500 text-center hover:scale-105 shadow-2xl shadow-amber-900/30 hover:shadow-amber-500/30 ring-1 ring-amber-500/20 hover:ring-amber-400/40 overflow-hidden"
                     >
                         <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="w-20 h-20 bg-amber-500/20 rounded-2xl flex items-center justify-center text-amber-400 mb-5 group-hover:scale-110 transition-transform duration-500 ring-1 ring-amber-500/30">
-                            <Terminal size={36} strokeWidth={1.5} />
+                        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-16 h-16 bg-amber-500/20 rounded-2xl flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform duration-500 ring-1 ring-amber-500/30">
+                            <Terminal size={30} strokeWidth={1.5} />
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-3 tracking-tight font-outfit group-hover:text-amber-300 transition-colors">Python Lab</h2>
-                        <p className="text-slate-300 text-base font-medium max-w-[220px] leading-relaxed group-hover:text-slate-100 transition-colors">
-                            Esercizi Python interattivi, dalle basi alle strutture dati.
+                        <h2 className="absolute top-[8.5rem] left-0 right-0 text-3xl font-bold text-white tracking-tight font-outfit group-hover:text-amber-300 transition-colors">Python Lab</h2>
+                        <p className="absolute top-[11rem] left-0 right-0 px-8 text-slate-300 text-base font-medium leading-relaxed group-hover:text-slate-100 transition-colors">
+                            Esercizi interattivi, dalle basi alle strutture dati.
                         </p>
                     </button>
 
                     {/* DATALAB CARD */}
                     <button
                         onClick={() => onNavigate(Page.DataLab)}
-                        className="group relative h-72 bg-gradient-to-br from-emerald-950/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-8 transition-all duration-500 flex flex-col items-center justify-center text-center hover:scale-105 shadow-2xl shadow-emerald-900/30 hover:shadow-emerald-500/30 ring-1 ring-emerald-500/20 hover:ring-emerald-400/40"
+                        className="group relative h-72 bg-gradient-to-br from-emerald-950/50 to-slate-900/50 backdrop-blur-xl rounded-3xl transition-all duration-500 text-center hover:scale-105 shadow-2xl shadow-emerald-900/30 hover:shadow-emerald-500/30 ring-1 ring-emerald-500/20 hover:ring-emerald-400/40 overflow-hidden"
                     >
                         <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="w-20 h-20 bg-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 mb-5 group-hover:scale-110 transition-transform duration-500 ring-1 ring-emerald-500/30">
-                            <Code2 size={36} strokeWidth={1.5} />
+                        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform duration-500 ring-1 ring-emerald-500/30">
+                            <Code2 size={30} strokeWidth={1.5} />
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-3 tracking-tight font-outfit group-hover:text-emerald-300 transition-colors">DataLab</h2>
-                        <p className="text-slate-300 text-base font-medium max-w-[220px] leading-relaxed group-hover:text-slate-100 transition-colors">
-                            Carica CSV, interroga con SQL
+                        <h2 className="absolute top-[8.5rem] left-0 right-0 text-3xl font-bold text-white tracking-tight font-outfit group-hover:text-emerald-300 transition-colors">DataLab</h2>
+                        <p className="absolute top-[11rem] left-0 right-0 px-8 text-slate-300 text-base font-medium leading-relaxed group-hover:text-slate-100 transition-colors">
+                            Analizza dati con SQL e Python, crea grafici ed esporta.
                         </p>
                     </button>
 

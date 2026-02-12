@@ -1,10 +1,10 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown, Copy, Check, History as HistoryIcon, XCircle as XCircleIcon, Activity } from 'lucide-react';
+import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown, Copy, Check, History as HistoryIcon, XCircle as XCircleIcon, Activity, Terminal, Maximize2, Minimize2 } from 'lucide-react';
 import { generateUnifiedPDF } from '../utils/pdfExport';
 import alasql from 'alasql';
 import * as XLSX from 'xlsx';
 import { CsvData } from '../types';
-import { parseCsvFile, loadCsvToAlaSQL, executeQuery, generateTableName, clearAlaSQLTable, renameTableInAlaSQL, renameColumnInAlaSQL, dropColumnInAlaSQL } from '../utils/csvParser';
+import { parseFile, loadCsvToAlaSQL, executeQuery, generateTableName, clearAlaSQLTable, renameTableInAlaSQL, renameColumnInAlaSQL, dropColumnInAlaSQL } from '../utils/csvParser';
 import ResultsTable from './ResultsTable';
 import TableInspectorModal from './TableInspectorModal';
 import ResultStats from './ResultStats';
@@ -17,12 +17,12 @@ import HealthReportModal from './HealthReportModal';
 import DataProfiling from './DataProfiling';
 import { analyzeTableHealth, DataHealthReport } from '../utils/dataHealthCheck';
 
-import PythonPanel from './PythonPanel';
+import PythonEditor from './PythonEditor';
 import EditorToggle from './EditorToggle';
 
-import { sqlToPandas } from '../utils/sqlToPandas';
 import { formatSQL } from '../utils/formatSQL';
 import { formatPythonCode, copyToClipboard } from '../utils/formatPython';
+import { initPyodide, isPyodideReady, injectDataFrame, runPythonForDataLab, writeFileToVFS } from '../services/pythonService';
 
 interface DataLabProps {
     onBack: () => void;
@@ -68,11 +68,35 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     // Debounce search query to avoid excessive re-renders during typing
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-    // Ghost Text & Python Panel State
-    // Python Panel State
+    // Python Mode State
     const [showPythonPanel, setShowPythonPanel] = useState(false);
     const [pythonCode, setPythonCode] = useState('');
     const [copiedCode, setCopiedCode] = useState(false);
+    const [pythonOutput, setPythonOutput] = useState('');
+    const [pythonError, setPythonError] = useState<string | null>(null);
+    const [pythonTableResult, setPythonTableResult] = useState<any[] | null>(null);
+    const [pythonImage, setPythonImage] = useState<string | null>(null);
+    const [showPlotFullscreen, setShowPlotFullscreen] = useState(false);
+    const [isPythonExecuting, setIsPythonExecuting] = useState(false);
+    const [pyodideReady, setPyodideReady] = useState(false);
+    const [pyodideLoading, setPyodideLoading] = useState(false);
+    const [availableDataFrames, setAvailableDataFrames] = useState<string[]>([]);
+    const [vfsFilePaths, setVfsFilePaths] = useState<Record<string, string>>({});
+    const [pythonHistory, setPythonHistory] = useState<string[]>(() => {
+        try {
+            const saved = localStorage.getItem('dataLab_pythonHistory');
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    });
+
+    // Persist Python history
+    useEffect(() => {
+        try {
+            localStorage.setItem('dataLab_pythonHistory', JSON.stringify(pythonHistory));
+        } catch {}
+    }, [pythonHistory]);
     const [queryHistory, setQueryHistory] = useState<string[]>(() => {
         // Load from localStorage on init
         try {
@@ -112,6 +136,15 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
             }
         }
     }, [isResizing]);
+
+    // Compute DataFrame columns for autocomplete
+    const dataFrameColumns = useMemo(() => {
+        const cols: Record<string, string[]> = {};
+        for (const [name, data] of tables) {
+            cols[`df_${name}`] = data.headers;
+        }
+        return cols;
+    }, [tables]);
 
     useEffect(() => {
         if (isResizing) {
@@ -242,8 +275,8 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         
         for (const file of files) {
             try {
-                // Parse CSV
-                const data = await parseCsvFile(file);
+                // Parse file (CSV, JSON, Excel)
+                const data = await parseFile(file);
                 
                 // Infer Column Types
                 const columnTypes: Record<string, 'number' | 'string' | 'date' | 'boolean'> = {};
@@ -296,6 +329,24 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 
                 // Add to tables map
                 setTables(prev => new Map(prev).set(tableName, tableData));
+
+                // Inject data into Pyodide as DataFrame (async, non-blocking)
+                if (isPyodideReady()) {
+                    injectDataFrame(tableName, data.headers, data.rows)
+                        .then(() => {
+                            setAvailableDataFrames(prev => [...new Set([...prev, `df_${tableName}`])]);
+                        })
+                        .catch(err => console.warn('DataFrame injection failed:', err));
+                    
+                    // Write raw file to VFS for pd.read_csv() etc.
+                    file.text().then(rawContent => {
+                        writeFileToVFS(file.name, rawContent)
+                            .then(path => {
+                                setVfsFilePaths(prev => ({ ...prev, [tableName]: path }));
+                            })
+                            .catch(err => console.warn('VFS write failed:', err));
+                    });
+                }
                 
             } catch (err: any) {
                 setError(`Errore nel caricamento di ${file.name}: ${err.message}`);
@@ -363,6 +414,99 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
             setFilteredResult(null);
         } finally {
             setIsExecuting(false);
+        }
+    };
+
+    // Execute Python code
+    const handleExecutePython = async () => {
+        if (!pythonCode.trim()) {
+            setPythonError('Scrivi del codice Python da eseguire.');
+            return;
+        }
+
+        // Add to history
+        if (pythonCode.trim()) {
+            setPythonHistory(prev => [
+                pythonCode,
+                ...prev.filter(q => q !== pythonCode)
+            ].slice(0, 5));
+        }
+
+        setIsPythonExecuting(true);
+        setPythonError(null);
+        setPythonOutput('');
+        setPythonTableResult(null);
+        setPythonImage(null);
+
+        try {
+            // Lazy init Pyodide on first execution
+            if (!isPyodideReady()) {
+                setPyodideLoading(true);
+                await initPyodide();
+                setPyodideReady(true);
+                setPyodideLoading(false);
+
+                // Inject all current tables as DataFrames
+                for (const [name, tableData] of tables) {
+                    try {
+                        await injectDataFrame(name, tableData.headers, tableData.rows);
+                        setAvailableDataFrames(prev => [...new Set([...prev, `df_${name}`])]);
+                    } catch (err) {
+                        console.warn(`Failed to inject ${name}:`, err);
+                    }
+                }
+
+                // Also write files to VFS (for pd.read_csv paths)
+                // Re-read from the stored tableData to reconstruct CSV content
+                for (const [name, tableData] of tables) {
+                    try {
+                        // Reconstruct CSV-like content from table data
+                        const csvLines = [
+                            tableData.headers.join(','),
+                            ...tableData.rows.map(row => row.map((v: any) => {
+                                const s = String(v ?? '');
+                                return s.includes(',') || s.includes('"') || s.includes('\n') 
+                                    ? `"${s.replace(/"/g, '""')}"` : s;
+                            }).join(','))
+                        ];
+                        const csvContent = csvLines.join('\n');
+                        const path = await writeFileToVFS(tableData.fileName, csvContent);
+                        setVfsFilePaths(prev => ({ ...prev, [name]: path }));
+                    } catch (err) {
+                        console.warn(`VFS write failed for ${name}:`, err);
+                    }
+                }
+            }
+
+            const result = await runPythonForDataLab(pythonCode);
+
+            if (result.error && !result.output && !result.tableData) {
+                setPythonError(result.error);
+            } else {
+                setPythonOutput(result.output || '');
+                if (result.error) setPythonError(result.error);
+                
+                // If we got table data, convert to queryResult-style format for ResultsTable
+                if (result.tableData) {
+                    const rows = result.tableData.rows.map(row => {
+                        const obj: Record<string, any> = {};
+                        result.tableData!.headers.forEach((h, i) => {
+                            obj[h] = row[i];
+                        });
+                        return obj;
+                    });
+                    setPythonTableResult(rows);
+                }
+
+                // Handle Image
+                if (result.image) {
+                    setPythonImage(result.image);
+                }
+            }
+        } catch (err: any) {
+            setPythonError(err.message || 'Errore durante l\'esecuzione Python');
+        } finally {
+            setIsPythonExecuting(false);
         }
     };
 
@@ -817,8 +961,8 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 {/* Content */}
                                 <div className="relative z-10 flex flex-col items-center justify-center gap-4 w-full h-full">
                                     <div className="text-center">
-                                        <p className="text-base text-slate-200 font-semibold">Trascina CSV qui</p>
-                                        <p className="text-xs text-slate-400 mt-0.5">Multi-file • Max 10MB</p>
+                                        <p className="text-base text-slate-200 font-semibold">Trascina file qui</p>
+                                        <p className="text-xs text-slate-400 mt-0.5">CSV, JSON, Excel • Max 10MB</p>
                                     </div>
                                     
                                     <button
@@ -832,7 +976,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     <input
                                         ref={fileInputRef}
                                         type="file"
-                                        accept=".csv"
+                                        accept=".csv,.json,.xlsx,.xls"
                                         multiple
                                         onChange={handleFileSelect}
                                         className="hidden"
@@ -871,33 +1015,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 <EditorToggle
                                     activeEditor={showPythonPanel ? 'python' : 'sql'}
                                     onToggle={(editor) => {
-                                        if (editor === 'python') {
-                                            // ON-DEMAND TRANSLATION
-                                            if (!sqlQuery || !sqlQuery.trim()) {
-                                                setPythonCode('# Scrivi una query SQL e premi il toggle per convertirla in Python');
-                                                setShowPythonPanel(true);
-                                                return;
-                                            }
-                                            
-                                            const translation = sqlToPandas(sqlQuery);
-                                            console.log('SQL to Python translation:', {
-                                                sql: sqlQuery,
-                                                error: translation.error,
-                                                imports: translation.imports,
-                                                code: translation.code
-                                            });
-                                            
-                                            if (translation.error) {
-                                                console.warn('Python translation error:', translation.error);
-                                                setPythonCode(`# Errore di traduzione: ${translation.error}\n\n${translation.code}`);
-                                            } else {
-                                                const fullCode = translation.imports.join('\n') + '\n\n' + translation.code;
-                                                setPythonCode(fullCode);
-                                            }
-                                            setShowPythonPanel(true);
-                                        } else {
-                                            setShowPythonPanel(false);
-                                        }
+                                        setShowPythonPanel(editor === 'python');
                                     }}
                                 />
                                 <div className="flex items-center gap-2">
@@ -952,9 +1070,78 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                             {/* Content Area */}
                             {showPythonPanel ? (
-                                <PythonPanel 
-                                    code={pythonCode}
-                                />
+                                <>
+                                    <PythonEditor
+                                        value={pythonCode}
+                                        onChange={setPythonCode}
+                                        onRun={handleExecutePython}
+                                        availableDataFrames={availableDataFrames}
+                                        filePaths={vfsFilePaths}
+                                        dataFrameColumns={dataFrameColumns}
+                                        placeholder=""
+                                    />
+
+                                    <div className="flex items-center gap-2 mt-2">
+                                        {/* Python History Bar */}
+                                        {pythonHistory.length > 0 ? (
+                                            <div className="flex-1 min-w-0 bg-[#121212]/70 backdrop-blur-md rounded-lg p-1.5 flex items-center gap-2 overflow-hidden border border-white/5 shadow-inner">
+                                                <div className="flex items-center gap-2 pl-2 pr-3 border-r border-white/10 shrink-0">
+                                                    <HistoryIcon size={12} className="text-slate-400" />
+                                                    <button 
+                                                        onClick={() => setPythonHistory([])} 
+                                                        className="text-slate-500 hover:text-red-400 transition-colors" 
+                                                        title="Cancella tutto"
+                                                    >
+                                                        <XCircleIcon size={12} />
+                                                    </button>
+                                                </div>
+                                                <div className="flex gap-2 overflow-x-auto custom-scrollbar items-center pb-0.5 mask-linear-fade">
+                                                    {pythonHistory.map((code, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => setPythonCode(code)}
+                                                            className="shrink-0 max-w-[150px] text-[10px] text-left bg-black/40 hover:bg-white/10 text-slate-300 hover:text-white rounded px-2 py-1 transition-all truncate font-mono border border-white/5"
+                                                            title={code}
+                                                        >
+                                                            {code.split('\n')[0]}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ) : <div className="flex-1" />}
+
+                                        {/* Pyodide Status */}
+                                        {pyodideLoading && (
+                                            <div className="flex items-center gap-2 text-xs text-purple-400 shrink-0">
+                                                <div className="w-3 h-3 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin"></div>
+                                                Caricamento Pyodide...
+                                            </div>
+                                        )}
+
+                                        {/* Execute Python Button */}
+                                        <button
+                                            onClick={handleExecutePython}
+                                            disabled={isPythonExecuting || pyodideLoading}
+                                            className={`h-[34px] px-4 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shrink-0 ${
+                                                isPythonExecuting
+                                                    ? 'bg-[#0a0a0a]/80 text-slate-400 shadow-black/20'
+                                                    : 'bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 active:bg-purple-500/20 active:text-purple-300 active:shadow-[0_0_15px_rgba(168,85,247,0.3)_inset] active:shadow-purple-500/20 active:scale-95'
+                                            }`}
+                                        >
+                                            {isPythonExecuting ? (
+                                                <>
+                                                    <div className="w-3.5 h-3.5 border-2 border-slate-400/30 border-t-slate-400 rounded-full animate-spin"></div>
+                                                    Esecuzione...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Play size={12} fill="currentColor" />
+                                                    Esegui Python
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </>
                             ) : (
                                 <>
                                     <div 
@@ -1056,6 +1243,218 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 </div>
                             )}
 
+                            {/* PYTHON ERROR */}
+                            {pythonError && showPythonPanel && (
+                                <div className="absolute top-0 inset-x-0 z-50 bg-red-900/90 backdrop-blur border border-red-900/50 rounded-xl p-4 flex items-start gap-3 shadow-lg animate-in slide-in-from-top-2 mx-4 mt-2">
+                                    <AlertCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
+                                    <div className="flex-1">
+                                        <div className="text-sm font-bold text-red-400 mb-1">Errore Python</div>
+                                        <pre className="text-sm text-slate-200 whitespace-pre-wrap font-mono">{pythonError}</pre>
+                                    </div>
+                                    <button
+                                        onClick={() => setPythonError(null)}
+                                        className="p-1 text-slate-400 hover:text-white rounded transition-colors"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* PYTHON UNIFIED RESULT (Text + Image) */}
+                            {showPythonPanel && (pythonOutput || pythonImage) && !pythonTableResult && (
+                                <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+                                    
+                                    <div className="px-6 py-3 border-b border-white/5 flex-shrink-0 flex justify-between items-center">
+                                        <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                            <Terminal size={14} className="text-purple-400" />
+                                            Output
+                                        </h3>
+                                        <div className="flex items-center gap-1">
+                                            {pythonImage && (
+                                                <>
+                                                    {/* Download dropdown */}
+                                                    <div className="relative group">
+                                                        <button
+                                                            className="p-1.5 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                                                            title="Scarica grafico"
+                                                        >
+                                                            <FileDown size={15} />
+                                                        </button>
+                                                        <div className="absolute right-0 top-full mt-1 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 min-w-[120px]">
+                                                            <button
+                                                                onClick={() => {
+                                                                    const link = document.createElement('a');
+                                                                    link.download = 'plot.png';
+                                                                    link.href = `data:image/png;base64,${pythonImage}`;
+                                                                    link.click();
+                                                                }}
+                                                                className="w-full px-3 py-2 text-left text-xs text-slate-300 hover:bg-white/10 rounded-t-lg transition-colors"
+                                                            >
+                                                                PNG
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const img = new window.Image();
+                                                                    img.onload = () => {
+                                                                        const canvas = document.createElement('canvas');
+                                                                        canvas.width = img.width;
+                                                                        canvas.height = img.height;
+                                                                        const ctx = canvas.getContext('2d')!;
+                                                                        ctx.fillStyle = '#0f0f1a';
+                                                                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                                                        ctx.drawImage(img, 0, 0);
+                                                                        const link = document.createElement('a');
+                                                                        link.download = 'plot.jpg';
+                                                                        link.href = canvas.toDataURL('image/jpeg', 0.95);
+                                                                        link.click();
+                                                                    };
+                                                                    img.src = `data:image/png;base64,${pythonImage}`;
+                                                                }}
+                                                                className="w-full px-3 py-2 text-left text-xs text-slate-300 hover:bg-white/10 transition-colors"
+                                                            >
+                                                                JPG
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><image xlink:href="data:image/png;base64,${pythonImage}" /></svg>`;
+                                                                    const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+                                                                    const link = document.createElement('a');
+                                                                    link.download = 'plot.svg';
+                                                                    link.href = URL.createObjectURL(blob);
+                                                                    link.click();
+                                                                    URL.revokeObjectURL(link.href);
+                                                                }}
+                                                                className="w-full px-3 py-2 text-left text-xs text-slate-300 hover:bg-white/10 transition-colors"
+                                                            >
+                                                                SVG
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const printWin = window.open('', '_blank');
+                                                                    if (printWin) {
+                                                                        printWin.document.write(`<html><head><title>Plot</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#0f0f1a;}img{max-width:100%;height:auto;}@media print{body{background:white;}}</style></head><body><img src="data:image/png;base64,${pythonImage}" onload="window.print();window.close()" /></body></html>`);
+                                                                        printWin.document.close();
+                                                                    }
+                                                                }}
+                                                                className="w-full px-3 py-2 text-left text-xs text-slate-300 hover:bg-white/10 rounded-b-lg transition-colors"
+                                                            >
+                                                                PDF
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    {/* Fullscreen */}
+                                                    <button
+                                                        onClick={() => setShowPlotFullscreen(true)}
+                                                        className="p-1.5 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                                                        title="Schermo intero"
+                                                    >
+                                                        <Maximize2 size={15} />
+                                                    </button>
+                                                </>
+                                            )}
+                                            <button
+                                                onClick={() => { setPythonImage(null); setPythonOutput(''); }}
+                                                className="p-1.5 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                                                title="Chiudi"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 overflow-auto custom-scrollbar p-4 flex flex-col gap-4">
+                                        {/* Text Output */}
+                                        {pythonOutput && (
+                                            <pre className="text-sm text-slate-300 font-mono whitespace-pre-wrap">{pythonOutput}</pre>
+                                        )}
+
+                                        {/* Image Output */}
+                                        {pythonImage && (
+                                            <div className="w-full flex justify-center cursor-pointer" onClick={() => setShowPlotFullscreen(true)}>
+                                                <img 
+                                                    src={`data:image/png;base64,${pythonImage}`} 
+                                                    alt="Python Plot" 
+                                                    className="max-w-full max-h-[600px] object-contain rounded-lg hover:opacity-90 transition-opacity"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PYTHON TABLE RESULT */}
+                            {showPythonPanel && pythonTableResult && pythonTableResult.length > 0 && (
+                                <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+                                    <div className="px-6 py-3 border-b border-white/5 flex-shrink-0">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                                <TrendingUp size={14} className="text-purple-400" />
+                                                DataFrame ({pythonTableResult.length} righe)
+                                            </h3>
+                                            <div className="flex items-center gap-1">
+                                                {/* Export CSV */}
+                                                <button
+                                                    onClick={() => {
+                                                        if (!pythonTableResult || pythonTableResult.length === 0) return;
+                                                        const headers = Object.keys(pythonTableResult[0]);
+                                                        const csvRows = [headers.join(',')];
+                                                        pythonTableResult.forEach((row: any) => {
+                                                            csvRows.push(headers.map(h => {
+                                                                const val = String(row[h] ?? '');
+                                                                return val.includes(',') || val.includes('"') || val.includes('\n') ? `"${val.replace(/"/g, '""')}"` : val;
+                                                            }).join(','));
+                                                        });
+                                                        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                                                        const link = document.createElement('a');
+                                                        link.download = 'dataframe.csv';
+                                                        link.href = URL.createObjectURL(blob);
+                                                        link.click();
+                                                        URL.revokeObjectURL(link.href);
+                                                    }}
+                                                    className="px-2.5 py-1 text-[10px] bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-md transition-all flex items-center gap-1.5"
+                                                    title="Esporta CSV"
+                                                >
+                                                    <FileDown size={11} />
+                                                    CSV
+                                                </button>
+                                                {/* Export Excel */}
+                                                <button
+                                                    onClick={() => {
+                                                        if (!pythonTableResult || pythonTableResult.length === 0) return;
+                                                        const ws = XLSX.utils.json_to_sheet(pythonTableResult);
+                                                        const wb = XLSX.utils.book_new();
+                                                        XLSX.utils.book_append_sheet(wb, ws, 'DataFrame');
+                                                        XLSX.writeFile(wb, 'dataframe.xlsx');
+                                                    }}
+                                                    className="px-2.5 py-1 text-[10px] bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-md transition-all flex items-center gap-1.5"
+                                                    title="Esporta Excel"
+                                                >
+                                                    <FileDown size={11} />
+                                                    Excel
+                                                </button>
+                                                {/* Close */}
+                                                <button
+                                                    onClick={() => {
+                                                        setPythonTableResult(null);
+                                                        setPythonOutput('');
+                                                        setPythonError(null);
+                                                    }}
+                                                    className="p-1.5 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5 ml-1"
+                                                    title="Chiudi"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 overflow-auto custom-scrollbar">
+                                        <ResultsTable data={pythonTableResult} />
+                                    </div>
+                                </div>
+                            )}
+
                             {/* QUERY RESULTS */}
                             {queryResult && queryResult.length > 0 && (
                                 <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
@@ -1094,7 +1493,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                             setShowHealthModal(true);
                                                         }
                                                     }}
-                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95 whitespace-nowrap"
                                                     title="Analisi Qualità Dati"
                                                 >
                                                     <Activity size={12} />
@@ -1328,12 +1727,12 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             )}
 
                             {/* Empty state quando non ci sono risultati */}
-                            {!queryResult && !error && (
+                            {!queryResult && !error && !pythonOutput && !pythonError && !pythonTableResult && !pythonImage && (
                                 <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 flex items-center justify-center">
                                     <div className="text-center text-slate-600">
                                         <TrendingUp size={48} className="mx-auto mb-4 opacity-30" />
                                         <p className="text-sm font-bold uppercase tracking-wider">Nessun risultato</p>
-                                        <p className="text-xs mt-1">Esegui una query sui dati caricati</p>
+                                        <p className="text-xs mt-1">{showPythonPanel ? 'Esegui codice Python sui dati caricati' : 'Esegui una query sui dati caricati'}</p>
                                     </div>
                                 </div>
                             )}
@@ -1488,6 +1887,90 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 report={healthReport}
                 tableName={healthTableName || ''}
             />
+
+            {/* FULLSCREEN PLOT MODAL */}
+            {showPlotFullscreen && pythonImage && (
+                <div 
+                    className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-200"
+                    onClick={() => setShowPlotFullscreen(false)}
+                >
+                    {/* Top bar */}
+                    <div className="absolute top-0 left-0 right-0 h-14 flex items-center justify-between px-6 bg-gradient-to-b from-black/60 to-transparent z-10">
+                        <span className="text-sm text-slate-400 font-medium uppercase tracking-wider">Grafico — Schermo Intero</span>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const link = document.createElement('a');
+                                    link.download = 'plot.png';
+                                    link.href = `data:image/png;base64,${pythonImage}`;
+                                    link.click();
+                                }}
+                                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-lg transition-all flex items-center gap-2"
+                            >
+                                <FileDown size={14} />
+                                PNG
+                            </button>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const img = new window.Image();
+                                    img.onload = () => {
+                                        const canvas = document.createElement('canvas');
+                                        canvas.width = img.width;
+                                        canvas.height = img.height;
+                                        const ctx = canvas.getContext('2d')!;
+                                        ctx.fillStyle = '#0f0f1a';
+                                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                        ctx.drawImage(img, 0, 0);
+                                        const link = document.createElement('a');
+                                        link.download = 'plot.jpg';
+                                        link.href = canvas.toDataURL('image/jpeg', 0.95);
+                                        link.click();
+                                    };
+                                    img.src = `data:image/png;base64,${pythonImage}`;
+                                }}
+                                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-lg transition-all flex items-center gap-2"
+                            >
+                                <FileDown size={14} />
+                                JPG
+                            </button>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const printWin = window.open('', '_blank');
+                                    if (printWin) {
+                                        printWin.document.write(`<html><head><title>Plot</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#0f0f1a;}img{max-width:100%;height:auto;}@media print{body{background:white;}}</style></head><body><img src="data:image/png;base64,${pythonImage}" onload="window.print();window.close()" /></body></html>`);
+                                        printWin.document.close();
+                                    }
+                                }}
+                                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-lg transition-all flex items-center gap-2"
+                            >
+                                <FileDown size={14} />
+                                PDF
+                            </button>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowPlotFullscreen(false);
+                                }}
+                                className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all"
+                                title="Chiudi"
+                            >
+                                <Minimize2 size={16} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Full-res image */}
+                    <img 
+                        src={`data:image/png;base64,${pythonImage}`} 
+                        alt="Plot Fullscreen" 
+                        className="max-w-[95vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>
     );
 };

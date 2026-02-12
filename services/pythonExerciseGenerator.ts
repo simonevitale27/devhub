@@ -2,6 +2,7 @@
 
 import { Difficulty } from '../types';
 import { PythonExercise, PythonTopicId, PythonExerciseBlueprint } from '../pythonTypes';
+import { LIBRARY_EXERCISES } from './pythonLibraryExercises';
 
 // Utility functions
 const getRandomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
@@ -5319,6 +5320,9 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
     ]
   }
 };
+
+// Merge library exercises into the main database
+Object.assign(PYTHON_QUESTION_DATABASE, LIBRARY_EXERCISES);
 
 // Generate exercises function
 export const generatePythonExercises = (

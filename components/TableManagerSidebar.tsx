@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, Edit2, Trash2, ChevronRight, X, Hash, Type, Calendar, CheckSquare, Activity } from 'lucide-react';
+import { Table, Edit2, Trash2, ChevronRight, X, Hash, Type, Calendar, CheckSquare, Activity, FileJson, FileSpreadsheet, FileText, Copy, Check } from 'lucide-react';
 
 export interface TableData {
     tableName: string;
@@ -82,6 +82,7 @@ const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
 
     const [expandedTables, setExpandedTables] = useState<Set<string>>(new Set());
     const [copiedColumn, setCopiedColumn] = useState<string | null>(null);
+    const [copiedPath, setCopiedPath] = useState<string | null>(null);
 
     const toggleTableExpansion = (tableName: string) => {
         setExpandedTables(prev => {
@@ -121,23 +122,39 @@ const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
         }
     };
 
+    // Helper to get extension
+    const getFileExtension = (fileName: string) => {
+        const ext = fileName.split('.').pop()?.toLowerCase();
+        if (ext === 'csv') return { label: 'CSV', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
+        if (ext === 'json') return { label: 'JSON', color: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' };
+        if (ext === 'xlsx' || ext === 'xls') return { label: 'XLSX', color: 'text-green-400 bg-green-500/10 border-green-500/20' };
+        return { label: ext?.toUpperCase() || 'FILE', color: 'text-slate-400 bg-slate-500/10 border-slate-500/20' };
+    };
+
+    const handleCopyPath = (fileName: string) => {
+        const path = `/data/${fileName}`;
+        navigator.clipboard.writeText(path);
+        setCopiedPath(fileName);
+        setTimeout(() => setCopiedPath(null), 2000);
+    };
+
     return (
         <div className="h-full bg-[#121212]/60 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 flex flex-col overflow-hidden">
             {/* Header */}
             <div className="p-4 border-b border-white/5">
                 <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
                     <Table size={14} className="text-emerald-500" />
-                    Tabelle Attive
+                    File Caricati
                 </h3>
                 <p className="text-xs text-slate-500 mt-1 mb-3">
-                    {tables.size} {tables.size === 1 ? 'tabella' : 'tabelle'}
+                    {tables.size} {tables.size === 1 ? 'file' : 'file'}
                 </p>
                 
                 {/* Search Bar */}
                 <div className="relative">
                     <input
                         type="text"
-                        placeholder="Cerca tabella..."
+                        placeholder="Cerca file..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
@@ -164,7 +181,7 @@ const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
                         {tableEntries.map(([tableName, tableData]) => (
                             <div
                                 key={tableName}
-                                className="group bg-black/20 hover:bg-white/5 rounded-lg transition-all duration-200 border border-transparent hover:border-emerald-500/20 overflow-hidden"
+                                className="group relative bg-black/20 hover:bg-white/5 rounded-lg transition-all duration-200 border border-transparent hover:border-emerald-500/20 overflow-hidden"
                             >
                                 <div className="p-3">
                                     <div className="flex items-start gap-2">
@@ -246,34 +263,54 @@ const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
                                             )}
                                         </div>
 
-                                        {/* Actions (always visible) */}
-                                        {editingTable !== tableName && (
-                                            <div className="flex items-center gap-1 transition-opacity">
-                                                <button
-                                                    onClick={() => onHealthCheck(tableName)}
-                                                    className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-900/20 rounded transition-colors"
-                                                    title="Analizza salute dati"
-                                                >
-                                                    <Activity size={12} />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleStartEdit(tableName)}
-                                                    className="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-blue-900/20 rounded transition-colors"
-                                                    title="Rinomina tabella"
-                                                >
-                                                    <Edit2 size={12} />
-                                                </button>
-                                                <button
-                                                    onClick={() => onDeleteTable(tableName)}
-                                                    className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
-                                                    title="Elimina tabella"
-                                                >
-                                                    <Trash2 size={12} />
-                                                </button>
-                                            </div>
-                                        )}
                                     </div>
+                                    
+                                    {/* Extension Badge (Top Right) */}
+                                    {editingTable !== tableName && (
+                                        <div className={`absolute top-2 right-2 text-[9px] font-mono px-1 rounded border opacity-60 group-hover:opacity-100 transition-opacity pointer-events-none ${getFileExtension(tableData.fileName).color}`}>
+                                            {getFileExtension(tableData.fileName).label}
+                                        </div>
+                                    )}
                                 </div>
+
+                                {/* Actions (always visible) */}
+                                {editingTable !== tableName && (
+                                    <div className="flex items-center gap-1 px-3 pb-2 pt-0 transition-opacity justify-between border-t border-white/5 mt-1">
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => onHealthCheck(tableName)}
+                                                className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-900/20 rounded transition-colors group/btn relative"
+                                            >
+                                                <Activity size={12} />
+                                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover/btn:opacity-100 transition-opacity delay-500 pointer-events-none whitespace-nowrap z-10 border border-white/10 shadow-lg">Analizza Salute</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleStartEdit(tableName)}
+                                                className="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-blue-900/20 rounded transition-colors group/btn relative"
+                                            >
+                                                <Edit2 size={12} />
+                                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover/btn:opacity-100 transition-opacity delay-500 pointer-events-none whitespace-nowrap z-10 border border-white/10 shadow-lg">Rinomina</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleCopyPath(tableData.fileName)}
+                                                className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-900/20 rounded transition-colors group/btn relative"
+                                            >
+                                                {copiedPath === tableData.fileName ? <Check size={12} className="text-emerald-500"/> : <Copy size={12} />}
+                                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover/btn:opacity-100 transition-opacity delay-500 pointer-events-none whitespace-nowrap z-10 border border-white/10 shadow-lg">
+                                                    {copiedPath === tableData.fileName ? 'Copiato!' : 'Copia Percorso'}
+                                                </span>
+                                            </button>
+                                        </div>
+                                        
+                                        <button
+                                            onClick={() => onDeleteTable(tableName)}
+                                            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors group/btn relative"
+                                        >
+                                            <Trash2 size={12} />
+                                            <span className="absolute bottom-full right-0 mb-1 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover/btn:opacity-100 transition-opacity delay-500 pointer-events-none whitespace-nowrap z-10 border border-white/10 shadow-lg">Elimina</span>
+                                        </button>
+                                    </div>
+                                )}
 
                                 {/* Columns Panel (Accordion) */}
                                 {expandedTables.has(tableName) && (

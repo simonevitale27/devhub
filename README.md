@@ -1,19 +1,32 @@
-# DevHub - Piattaforma di Training SQL e Python
+# DevHub - Interactive Dev Playground
 
-<img width="1916" height="925" alt="Screenshot 2026-01-14 alle 16 17 20" src="https://github.com/user-attachments/assets/43247c98-4a08-430d-bef7-9735ee426069" />
+![DevHub Screenshot](https://github.com/user-attachments/assets/43247c98-4a08-430d-bef7-9735ee426069)
 
-**Una piattaforma per imparare SQL e Python attraverso esercizi pratici. Tutto gira nel browser, nessun server richiesto.**
+**Piattaforma interattiva per SQL, Python e Data Analysis. Esercizi pratici, editor live, grafici professionali e strumenti di analisi dati. Tutto gira nel browser, nessun server richiesto.**
 
 [Demo Live](https://devhub-gray.vercel.app) | [Documentazione Tecnica](#architettura)
+
+## Screenshots
+
+![Homepage](docs/screenshots/homepage.png)
+
+| SQL Lab | Python Lab | DataLab |
+| :---: | :---: | :---: |
+| ![SQL Lab](docs/screenshots/sql-lab.png) | ![Python Lab](docs/screenshots/python-lab.png) | ![DataLab](docs/screenshots/datalab.png) |
+
+| Analytics Dashboard | Analytics Dashboard |
+| :---: | :---: |
+| ![Analytics Top](docs/screenshots/analytics-top.png) | ![Analytics Bottom](docs/screenshots/analytics-bottom.png) |
 
 ---
 
 ## Cosa Puoi Fare
 
 - **Oltre 800 esercizi SQL** organizzati per argomento e difficoltà
-- **Ambiente Python completo** con 9 argomenti di programmazione
-- **DataLab**: carica i tuoi file CSV e analizzali con query SQL
-- **Grafici istantanei**: crea visualizzazioni professionali con un click
+- **Ambiente Python completo** con 12 argomenti, da basi a Pandas e Seaborn
+- **DataLab**: carica file (CSV, JSON, Excel, TSV), analizza con SQL e Python, crea grafici Matplotlib
+- **Grafici professionali**: visualizzazioni con QuickChart e Matplotlib, esportabili in PNG, JPG, SVG e PDF
+- **Export completo**: scarica tabelle e risultati in CSV, Excel e PDF
 - **Salva i progressi**: registrati per sincronizzare su più dispositivi
 - **Installabile su smartphone**: funziona come un'app nativa
 
@@ -57,19 +70,33 @@ Modalità speciale dove le query contengono errori intenzionali. Devi trovare e 
 
 ### DataLab
 
-Un ambiente libero per analizzare i tuoi dati.
+Un ambiente completo per caricare, analizzare e visualizzare i tuoi dati con SQL e Python.
 
-#### Funzionalità
+#### Editor Duale SQL + Python
 
-- **Carica file CSV**: trascina i file o selezionali dal computer
-- **Scrivi query SQL**: interroga i dati con sintassi standard
+- **Modalità SQL**: scrivi query SQL standard sui tuoi dati
+- **Modalità Python**: editor Python completo con Pyodide, Matplotlib, Pandas e NumPy
+- **Switch istantaneo**: passa da SQL a Python con un click
+
+#### Caricamento File Multi-Formato
+
+- **CSV, TSV, JSON, Excel**: trascina o seleziona i file
+- **Bridge dati automatico**: i dati caricati sono accessibili sia da SQL che da Python come DataFrame
 - **Gestisci tabelle**: rinomina, elimina, modifica colonne
 - **Analisi qualità dati**: controlla valori nulli, tipi, statistiche
-- **Esporta**: scarica in PDF, CSV o Excel
+
+#### Grafici Matplotlib
+
+Genera grafici professionali direttamente dall'editor Python:
+
+- **Stile professionale**: tema dark con palette colori vibrante e DPI elevati
+- **Vista fullscreen**: espandi i grafici a schermo intero con un click
+- **Download multi-formato**: esporta in PNG, JPG, SVG o PDF
+- **Tabelle esportabili**: esporta DataFrame in CSV e Excel
 
 #### QuickChart - Visualizzazione Dati
 
-Crea grafici professionali in pochi click:
+Crea grafici interattivi dai risultati SQL in pochi click:
 
 - **4 tipi di grafico**: Barre, Linee, Area, Torta
 - **Linee di tendenza**: aggiungi regressioni lineari
@@ -95,6 +122,9 @@ Impara Python direttamente nel browser, senza installare nulla.
 | Tuple | Dati immutabili |
 | Set | Insiemi e operazioni |
 | Dizionari | Coppie chiave-valore |
+| Pandas | DataFrame, Series, filtri, aggregazioni |
+| Seaborn | Grafici statistici e visualizzazioni |
+| Librerie | NumPy, Datetime, Collections, Random |
 
 #### Due Modalità
 
@@ -140,7 +170,8 @@ Employees (id, name, department, hire_date, manager_id)
 | Database locale | AlaSQL (tutto nel browser) |
 | Backend cloud | Supabase (solo per login e progressi) |
 | Python | Pyodide (Python in WebAssembly) |
-| Grafici | Recharts |
+| Grafici SQL | Recharts |
+| Grafici Python | Matplotlib (via Pyodide) |
 | PDF | jsPDF |
 | Stile | Tailwind CSS |
 

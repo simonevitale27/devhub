@@ -13,6 +13,9 @@ export enum PythonTopicId {
   Tuples = "tuples",
   Sets = "sets",
   Dictionaries = "dictionaries",
+  Pandas = "pandas",
+  Seaborn = "seaborn",
+  Libraries = "libraries",
 }
 
 // Python Topic metadata
@@ -133,5 +136,23 @@ export const PYTHON_TOPICS: PythonTopic[] = [
     label: "Dizionari",
     subtitle: "dict{}, keys, values",
     description: "Coppie chiave-valore e accesso dati",
+  },
+  {
+    id: PythonTopicId.Pandas,
+    label: "Pandas",
+    subtitle: "DataFrame, Series, groupby",
+    description: "Analisi dati con DataFrame e Series",
+  },
+  {
+    id: PythonTopicId.Seaborn,
+    label: "Seaborn",
+    subtitle: "barplot, scatter, heatmap",
+    description: "Visualizzazione dati e grafici statistici",
+  },
+  {
+    id: PythonTopicId.Libraries,
+    label: "Librerie",
+    subtitle: "dotenv, sqlalchemy, pymysql",
+    description: "Librerie per database e configurazione",
   },
 ];
