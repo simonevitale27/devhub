@@ -3,6 +3,7 @@ ALTER TABLE public.analytics_esercizi ENABLE ROW LEVEL SECURITY;
 
 -- create a policy that allows everyone to read (since it seems to be public analytics)
 -- OR if it's user specific, adjust accordingly. Assuming it's for admin/internal use or public stats:
+DROP POLICY IF EXISTS "Allow public read access" ON public.analytics_esercizi;
 CREATE POLICY "Allow public read access" ON public.analytics_esercizi FOR SELECT USING (true);
 
 
