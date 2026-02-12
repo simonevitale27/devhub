@@ -15,6 +15,7 @@ function AppContent() {
   const { user, isGuest, isLoading } = useAuth();
 
   // Redirect to Home when authenticated, back to Landing when logged out
+  // Force Vercel Redeploy: v1.1
   useEffect(() => {
     if (isLoading) return;
     
