@@ -33,6 +33,7 @@ import {
   Table as TableIcon,
   BarChart3,
   Package,
+  Menu,
 } from "lucide-react";
 
 import { Difficulty, Page } from "../types";
@@ -124,6 +125,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   
   // Panel state for Output/Errors
   const [activePanel, setActivePanel] = useState<'output' | 'errors'>('output');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [panelCollapsed, setPanelCollapsed] = useState(false);
   const [panelHeight, setPanelHeight] = useState(200);
   const [errorOutput, setErrorOutput] = useState<string>("");
@@ -726,8 +728,15 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
 
       <div className="flex flex-1 gap-5">
 
+        {/* MOBILE SIDEBAR OVERLAY */}
+        {mobileSidebarOpen && (
+          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setMobileSidebarOpen(false)} />
+        )}
+
         {/* LEFT SIDEBAR - GLASS STYLE */}
-        <aside className="w-64 bg-[#121212]/70 backdrop-blur-xl rounded-3xl flex flex-col shrink-0 z-20 h-[calc(100vh-3.25rem)] mt-7 ml-6">
+        <aside className={`${
+          mobileSidebarOpen ? 'fixed inset-y-0 left-0 z-50' : 'hidden'
+        } md:relative md:flex w-64 bg-[#121212]/70 backdrop-blur-xl md:rounded-3xl flex flex-col shrink-0 md:z-20 md:h-[calc(100vh-3.25rem)] md:mt-7 md:ml-6 h-full`}>
           <div className="h-16 flex items-center px-4 gap-2">
             <button
               onClick={onBack}
@@ -836,9 +845,19 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
 
 
         {/* MAIN AREA - HEADER WITH SLIDING PILLS */}
-        <main className="flex-1 flex flex-col min-w-0 h-[calc(100vh-3.25rem)] mt-7 pr-6 pl-1">
-          <header className="h-14 flex items-center justify-between gap-2 mb-2 z-10 shrink-0">
-             <div className="flex items-center gap-2">
+        <main className="flex-1 flex flex-col min-w-0 h-full md:h-[calc(100vh-3.25rem)] md:mt-7 px-3 md:pr-6 md:pl-1">
+          <header className="flex flex-col gap-2 mb-2 z-10 shrink-0">
+             {/* ROW 1: Mode + Difficulty pills */}
+             <div className="flex items-center gap-1.5 md:gap-2">
+
+               {/* Mobile Sidebar Toggle */}
+               <button
+                 onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                 className="md:hidden h-[38px] w-[38px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+                 aria-label="Menu argomenti"
+               >
+                 <Menu size={18} />
+               </button>
                {/* SLIDING PILL FOR MODE */}
                <div className="relative flex bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
               <div
@@ -871,7 +890,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             </div>
 
             {/* SEPARATOR */}
-            <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-1"></div>
+            <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-1 hidden md:block"></div>
 
             {/* SLIDING PILL FOR DIFFICULTY */}
             <div className="relative flex bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
@@ -900,22 +919,22 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             </div>
             </div>
              
-             {/* Analytics Button & User Badge */}
-             <div className="flex items-center gap-2 shrink-0">
+             {/* ROW 2: Analytics + UserBadge */}
+             <div className="flex items-center gap-1.5 md:gap-2">
                {onNavigate && (
                  <button
                    onClick={() => onNavigate(Page.Analytics)}
                    className="h-9 flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
                  >
                    <TrendingUp size={16} />
-                   <span className="text-xs font-bold">Analytics</span>
+                   <span className="text-xs font-bold hidden sm:inline">Analytics</span>
                  </button>
                )}
                <UserBadge onNavigate={onNavigate} />
              </div>
-          </header>
+           </header>
 
-          <div className="flex-1 flex flex-col overflow-hidden relative bg-zinc-900/50 rounded-2xl border border-zinc-800/50">
+          <div className="flex-1 flex flex-col overflow-y-auto relative bg-zinc-900/50 rounded-2xl border border-zinc-800/50">
           {currentExercise ? (
             <>
               {/* Exercise Header */}

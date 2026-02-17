@@ -20,7 +20,7 @@ export default function UserBadge({ onNavigate, showLogout = true }: UserBadgePr
   if (!user && !isGuest) return null;
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2 md:gap-3">
       {/* User Info - Clickable to go to Account */}
       <button
         onClick={() => onNavigate?.(Page.Account)}
@@ -38,11 +38,11 @@ export default function UserBadge({ onNavigate, showLogout = true }: UserBadgePr
             <User size={14} className="text-blue-400" />
           </div>
         )}
-        <span className="text-sm font-medium text-slate-300 max-w-[120px] truncate">
+        <span className="hidden md:inline text-sm font-medium text-slate-300 max-w-[120px] truncate">
           {isGuest ? 'Ospite' : displayName || 'Utente'}
         </span>
         {isGuest && (
-          <span className="text-[10px] text-amber-400 bg-amber-500/20 px-1.5 py-0.5 rounded-full">
+          <span className="hidden sm:inline text-[10px] text-amber-400 bg-amber-500/20 px-1.5 py-0.5 rounded-full">
             Dati locali
           </span>
         )}

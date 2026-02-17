@@ -154,7 +154,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 pb-32 relative overflow-y-auto font-sans">
+    <div className="min-h-screen bg-black text-white p-4 md:p-6 pb-32 relative overflow-y-auto font-sans">
         
       {/* Background Gradients */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
@@ -173,13 +173,13 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
         </button>
 
         {/* Profile Header */}
-        <div className="bg-zinc-900/50 rounded-2xl p-8 border border-zinc-800 mb-6">
+        <div className="bg-zinc-900/50 rounded-2xl p-4 md:p-8 border border-zinc-800 mb-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center">
               <User size={32} className="text-blue-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{displayName || 'Utente'}</h1>
+              <h1 className="text-xl md:text-2xl font-bold">{displayName || 'Utente'}</h1>
               <p className="text-slate-400">{user?.email}</p>
             </div>
           </div>

@@ -381,7 +381,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
 
       {/* Header */}
       <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-2">
           <div className="flex items-center gap-4">
             <button
               onClick={onBack}
@@ -390,25 +390,27 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
               <ArrowLeft size={20} />
             </button>
             <div>
-              <h1 className="text-xl font-bold flex items-center gap-2">
-                <TrendingUp size={24} className="text-emerald-400" />
-                Analytics Dashboard
+              <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
+                <TrendingUp size={20} className="text-emerald-400 md:hidden" />
+                <TrendingUp size={24} className="text-emerald-400 hidden md:block" />
+                <span className="hidden sm:inline">Analytics Dashboard</span>
+                <span className="sm:hidden">Analytics</span>
               </h1>
-              <p className="text-zinc-500 text-sm">
+              <p className="text-zinc-500 text-sm hidden md:block">
                 Traccia i tuoi progressi e migliora le tue competenze
               </p>
             </div>
           </div>
 
           {/* Actions Group */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             {/* Reset Button */}
             <button
               onClick={() => setShowResetConfirm(true)}
               className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 backdrop-blur-md px-3 py-1.5 h-9 rounded-full ring-1 ring-red-500/20 hover:ring-red-500/40 transition-all text-red-300 text-sm font-medium"
             >
               <RotateCcw size={14} />
-              Reset
+              <span className="hidden sm:inline">Reset</span>
             </button>
 
             {/* User Badge */}
@@ -455,7 +457,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
       )}
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8 pb-16">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-16">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard
@@ -489,7 +491,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
         </div>
 
         {/* Heatmap */}
-        <div className="mb-8">
+        <div className="mb-8 overflow-x-auto">
           <ContributionHeatmap data={heatmapData} />
         </div>
 

@@ -138,7 +138,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none"></div>
 
                 {/* CONTENT */}
-                <div className="relative z-10 flex flex-col items-center text-center px-6">
+                <div className="relative z-10 flex flex-col items-center text-center px-4 md:px-6">
                     
                     {/* LOGO */}
                     <div className="relative mb-8">
@@ -149,19 +149,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     </div>
 
                     {/* TITLE */}
-                    <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 select-none">
+                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mb-4 select-none">
                         DEV<span className="text-blue-500">HUB</span>
                     </h1>
 
                     {/* TAGLINE */}
-                    <p className="text-lg md:text-xl text-slate-400 max-w-md mb-10 leading-relaxed">
+                    <p className="text-base md:text-xl text-slate-400 max-w-md mb-8 md:mb-10 leading-relaxed">
                         Il tuo spazio di pratica per SQL, dati e sviluppo.
                     </p>
 
                     {/* GUEST ACCESS - PRIMARY */}
                     <button
                         onClick={handleGuestAccess}
-                        className="group relative px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg rounded-full transition-all duration-300 shadow-2xl shadow-blue-600/30 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 flex items-center gap-3 mb-6"
+                        className="group relative px-8 md:px-10 py-3.5 md:py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-base md:text-lg rounded-full transition-all duration-300 shadow-2xl shadow-blue-600/30 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 flex items-center gap-3 mb-6"
                     >
                         Prova come Ospite
                         <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -187,7 +187,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     </div>
 
                     {/* VERSION BADGE */}
-                    <div className="mt-16 text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">
+                    <div className="mt-10 md:mt-16 text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">
                         Beta v1.0
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown, Copy, Check, History as HistoryIcon, XCircle as XCircleIcon, Activity, Terminal, Maximize2, Minimize2 } from 'lucide-react';
+import { Home, Upload, Play, Code2, TrendingUp, FileSpreadsheet, AlertCircle, X, BarChart3, Filter, ArrowDownAZ, ArrowUpAZ, CheckSquare, Square, FileDown, ChevronDown, Copy, Check, History as HistoryIcon, XCircle as XCircleIcon, Activity, Terminal, Maximize2, Minimize2, Menu } from 'lucide-react';
 import { generateUnifiedPDF } from '../utils/pdfExport';
 import alasql from 'alasql';
 import * as XLSX from 'xlsx';
@@ -64,6 +64,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
     // Resize State
     const [editorHeight, setEditorHeight] = useState(300);
     const [isResizing, setIsResizing] = useState(false);
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
     // Debounce search query to avoid excessive re-renders during typing
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -922,18 +923,26 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
         <div className="flex h-screen bg-black text-slate-200 font-sans overflow-hidden">
             
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0 px-6 h-full">
+            <div className="flex-1 flex flex-col min-w-0 px-3 md:px-6 h-full">
                 
                 {/* Header */}
-                <div className="h-16 flex items-center justify-between mt-4 mb-1 z-10 shrink-0">
-                    <div className="flex items-center gap-4">
-                        <button onClick={onBack} className="h-[42px] w-[42px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95">
+                <div className="h-14 md:h-16 flex items-center justify-between mt-2 md:mt-4 mb-1 z-10 shrink-0">
+                    <div className="flex items-center gap-2 md:gap-4">
+                        <button onClick={onBack} className="h-[38px] w-[38px] md:h-[42px] md:w-[42px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95">
                             <Home size={18} />
                         </button>
-                        <h2 className="font-bold text-lg text-white flex items-center gap-2">
+                        {/* Mobile Sidebar Toggle */}
+                        <button
+                            onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                            className="md:hidden h-[38px] w-[38px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+                            aria-label="Gestione tabelle"
+                        >
+                            <Menu size={18} />
+                        </button>
+                        <h2 className="font-bold text-base md:text-lg text-white flex items-center gap-2">
                             <FileSpreadsheet className="text-emerald-500"/>
                             DataLab
-                            <span className="text-xs bg-emerald-900/30 text-emerald-400 px-2 py-0.5 rounded border border-emerald-900/50">Multi-Table</span>
+                            <span className="text-xs bg-emerald-900/30 text-emerald-400 px-2 py-0.5 rounded border border-emerald-900/50 hidden sm:inline">Multi-Table</span>
                         </h2>
                     </div>
                 </div>
@@ -941,8 +950,15 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 {/* Two-Column Layout: 20% Sidebar | 80% Main Content */}
                 <div className="flex-1 flex gap-4 min-h-0 overflow-hidden">
                     
+                    {/* MOBILE SIDEBAR OVERLAY */}
+                    {mobileSidebarOpen && (
+                        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setMobileSidebarOpen(false)} />
+                    )}
+
                     {/* LEFT COLUMN - Sidebar (20%) */}
-                    <div className="w-1/5 flex flex-col gap-4 pb-6 min-w-[250px]">
+                    <div className={`${
+                        mobileSidebarOpen ? 'fixed inset-y-0 left-0 z-50 w-72' : 'hidden'
+                    } md:relative md:flex md:w-1/5 flex flex-col gap-4 pb-6 md:min-w-[250px] h-full bg-black md:bg-transparent`}>
                         
                         {/* UPLOAD AREA (20% height) */}
                         <div className="h-[20%] bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex-shrink-0">
