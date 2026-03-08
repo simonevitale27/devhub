@@ -1,0 +1,3409 @@
+{
+  "total": 566,
+  "categoryCounts": {
+    "SINGLE_HINT": 377,
+    "EXPLANATION_SHORT": 18,
+    "DESC_TOO_SHORT": 43,
+    "HINT_TOO_SHORT": 106,
+    "ITALIAN_TYPO": 2,
+    "EXPLANATION_TOO_SHORT": 20
+  },
+  "issues": [
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Tutto su Products\" (L113)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Tutto su OrderItems\" (L133)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Nomi Utenti\" (L153)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Paesi Utenti\" (L173)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Prodotti e Prezzi\" (L183)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Categorie Prodotti\" (L193)",
+      "detail": "Solo 4 parole: \"Lista categorie (con duplicati).\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Date Ordini\" (L203)",
+      "detail": "Solo 4 parole: \"Seleziona 'order_date' da Orders.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Totali Ordini\" (L223)",
+      "detail": "Solo 4 parole: \"Seleziona 'order_total' da Orders.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Quantità Vendute\" (L233)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Quantità Vendute\" (L233)",
+      "detail": "Solo 4 parole: \"Seleziona 'quantity' da OrderItems.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Prezzi Unitari\" (L243)",
+      "detail": "Solo 4 parole: \"Seleziona 'unit_price' da OrderItems.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Dipartimenti Staff\" (L253)",
+      "detail": "Solo 4 parole: \"Seleziona 'department' da Employees.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Nomi Staff\" (L263)",
+      "detail": "Solo 4 parole: \"Seleziona 'name' da Employees.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Utenti Premium?\" (L273)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Paesi Unici\" (L283)",
+      "detail": "Solo 5 parole: \"Eliminazione duplicati nel result set.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Paesi Unici\" (L283)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Categorie Uniche\" (L293)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Prezzo Scontato\" (L303)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Prezzo con IVA\" (L313)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Valore Stock\" (L323)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Valore Riga Ordine\" (L333)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Alias Semplice\" (L343)",
+      "detail": "Solo 5 parole: \"Rinominare le colonne per leggibilità.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Alias Semplice\" (L343)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Easy] \"Giorni Registrazione\" (L363)",
+      "detail": "Solo 4 parole: \"Seleziona created_at da Users.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Ruoli Staff\" (L373)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Easy] \"Mix Colonne\" (L393)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Alias Nome\" (L405)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Due Alias\" (L425)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Alias con Spazi\" (L435)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Calcolo Totale Riga\" (L445)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Sconto 50%\" (L465)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Distinct Category\" (L495)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Manager Unici\" (L515)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Utenti Attivi (Ordini)\" (L525)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Valore Magazzino\" (L555)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Stima Fatturato Anno\" (L565)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"IVA Separata\" (L575)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Sconto Quantità\" (L585)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Margine\" (L595)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Nome e Categoria\" (L605)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Medium] \"Alias Numerico\" (L615)",
+      "detail": "Solo 4 parole: \"Seleziona id rinominandolo 'Codice'.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Distinct Multiplo 1\" (L625)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Distinct Multiplo 3\" (L645)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Calcolo Complesso\" (L655)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Prezzo Netto Immaginario\" (L675)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Proiezione Costante Stringa\" (L685)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Medium] \"Proiezione Costante Numero\" (L695)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Top 3 Utenti\" (L707)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Basics/Hard] \"Top 5 Prodotti\" (L717)",
+      "detail": "Hint 1: \"LIMIT 5\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Top 5 Prodotti\" (L717)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Basics/Hard] \"Singolo Ordine\" (L727)",
+      "detail": "Hint 1: \"LIMIT 1\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Singolo Ordine\" (L727)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Basics/Hard] \"Top 10 OrderItems\" (L737)",
+      "detail": "Hint 1: \"LIMIT 10\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Top 10 OrderItems\" (L737)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Basics/Hard] \"Due Dipendenti\" (L747)",
+      "detail": "Hint 1: \"LIMIT 2\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Due Dipendenti\" (L747)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Basics/Hard] \"Due Dipendenti\" (L747)",
+      "detail": "Solo 4 parole: \"Seleziona solo 2 dipendenti.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Paginazione: Pagina 2\" (L757)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Proiezione Nulla\" (L807)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Verifica Esistenza\" (L817)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Alias su Costante\" (L827)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Math su Costanti\" (L837)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Colonna + Alias + Limit\" (L847)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Distinct con Limit\" (L857)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "ITALIAN_TYPO",
+      "severity": "HIGH",
+      "exercise": "[Basics/Hard] \"Limit Grande\" (L867)",
+      "detail": "possibile \"ne\" errato"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Offset Grande\" (L877)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Ultimo (Simulato)\" (L887)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Calcolo Iva e Limit\" (L897)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Stringa Vuota\" (L907)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Booleano\" (L917)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Limit senza Offset\" (L947)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Moltiplicazione Colonne Limitata\" (L957)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Paginazione Avanzata\" (L967)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Solo Nomi Distinct\" (L977)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Solo Categorie Distinct\" (L987)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Basics/Hard] \"Select All Limitata\" (L997)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Utenti Italiani\" (L1011)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Prodotti Costosi\" (L1031)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Prodotti Economici\" (L1041)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Utenti Premium\" (L1061)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Dipendenti IT\" (L1071)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Prezzo Esatto\" (L1101)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Ordini Recenti (ID)\" (L1121)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Filtering/Easy] \"Dipartimento HR\" (L1161)",
+      "detail": "Solo 4 parole: \"Seleziona dipendenti di 'HR'.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Alta Quantità\" (L1171)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Prodotti Diversi da X\" (L1191)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Utente Specifico\" (L1221)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Data Specifica\" (L1231)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Filtering/Easy] \"Data Specifica\" (L1231)",
+      "detail": "Solo 4 parole: \"Seleziona ordini del '2023-01-01'.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Dopo una Data\" (L1241)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Filtering/Easy] \"Dopo una Data\" (L1241)",
+      "detail": "Solo 4 parole: \"Ordini successivi al '2023-01-01'.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Filtering/Easy] \"Prima di una Data\" (L1251)",
+      "detail": "Solo 4 parole: \"Ordini precedenti al '2023-06-01'.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Assunzioni Recenti\" (L1261)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Ordini Grandi\" (L1271)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Easy] \"Prodotti Stock Zero\" (L1281)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Filtering/Easy] \"Categoria Casa\" (L1291)",
+      "detail": "Solo 4 parole: \"Prodotti category = 'Home'.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Filtering/Easy] \"Utenti Francia\" (L1301)",
+      "detail": "Solo 4 parole: \"Utenti country = 'France'.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"AND Logico\" (L1313)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"OR Logico\" (L1323)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"IN List (Numeri)\" (L1333)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"IN List (Stringhe)\" (L1343)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Between Numerico\" (L1353)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Between Date\" (L1363)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"IS NULL\" (L1373)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"IS NOT NULL\" (L1383)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Filtering/Medium] \"IS NOT NULL\" (L1383)",
+      "detail": "Solo 4 parole: \"Utenti con email valorizzata.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Filtro Combinato 1\" (L1403)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Underscore Wildcard\" (L1453)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"NOT IN (Numeri)\" (L1463)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"NOT BETWEEN\" (L1473)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Priorità AND/OR 1\" (L1483)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Filtro Data Complesso\" (L1493)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Dipendenti Sales/HR\" (L1503)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Prodotti Stock Critico\" (L1523)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Ordini Recenti Non Spediti\" (L1543)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Range Date Escluso\" (L1573)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Filtro Boolean False\" (L1583)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Prezzo o Stock\" (L1593)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Medium] \"Filtro Completo\" (L1603)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Logica Complessa (A o B) e C\" (L1615)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Esclusione Complessa\" (L1625)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Ordini senza Tracking (Simulato)\" (L1635)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Utenti con Ordini\" (L1645)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Utenti Inattivi\" (L1655)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Prodotti Venduti\" (L1665)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Prodotti Invenduti\" (L1675)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Filtering/Hard] \"Prodotti Invenduti\" (L1675)",
+      "detail": "Solo 3 parole: \"Prodotti mai venduti.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Like Case Insensitive Esplicito\" (L1685)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Prezzo Scontato\" (L1715)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Stock Dispari\" (L1735)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \" Doppia Negazione\" (L1755)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Range con OR multipli\" (L1765)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Email Dominio Complesso\" (L1775)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Filtro Totale Ordine\" (L1785)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Subquery Max Price\" (L1795)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Utenti Stesso Paese Primo Utente\" (L1805)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Prodotti Categoria Popolare\" (L1815)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Ordini Stesso Giorno\" (L1825)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Ordinamento Logico Inverso\" (L1865)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Subquery EXISTS\" (L1875)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Subquery NOT EXISTS\" (L1885)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Filtering/Hard] \"Filtro Avanzato Finale\" (L1905)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Utenti per Nome (Decrescente)\" (L1929)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Utenti per Email\" (L1939)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Utenti per Email (Decrescente)\" (L1949)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Prodotti per Nome\" (L1959)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Prodotti per Nome (Inverso)\" (L1969)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Products category\" (L1979)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Sorting/Easy] \"Ordina Products category DESC\" (L1989)",
+      "detail": "Solo 3 parole: \"Ordina categorie Z-A.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Ordini per ID\" (L1999)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Ordini per ID (Recenti)\" (L2009)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Ordini per Utente\" (L2019)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Ordini per Utente (Decrescente)\" (L2029)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Sorting/Easy] \"Ordina Employees name\" (L2079)",
+      "detail": "Solo 3 parole: \"Elenco dipendenti alfabetico.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Sorting/Easy] \"Ordina Employees name DESC\" (L2089)",
+      "detail": "Solo 3 parole: \"Elenco dipendenti Z-A.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Stock Prodotti\" (L2139)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Easy] \"Ordina Stock Prodotti (Decrescente)\" (L2149)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina per Paese e Nome\" (L2221)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina Categoria e Prezzo\" (L2231)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina Stipendio e Nome\" (L2251)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina Stock e ID\" (L2261)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina Anno Assunzione\" (L2291)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Sorting/Medium] \"Ordina Casuale (Random)\" (L2301)",
+      "detail": "Solo 3 parole: \"Ordina casualmente (RANDOM()).\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina Alias\" (L2311)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina 3 Colonne\" (L2331)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Nulls First (Simulato)\" (L2341)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Nulls Last (Simulato)\" (L2351)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina per Giorno della Settimana\" (L2361)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina Boolean\" (L2401)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina per Prezzo Arrotondato\" (L2421)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina per Dominio Email\" (L2431)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Recenti e Costosi\" (L2441)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina Categoria Inversa e Prezzo\" (L2451)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina per ID Prodotto\" (L2461)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina per Parità ID\" (L2471)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina per Lunghezza Email (Decrescente)\" (L2481)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina Multiplo Dipendenti\" (L2491)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Medium] \"Ordina per Stock Aumentato\" (L2501)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina per Disponibilità\" (L2523)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina per Anno e Mese\" (L2543)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Eccezione di Ordinamento\" (L2553)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina per Fasce di Prezzo\" (L2563)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina per Iniziale del Nome\" (L2583)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordinamento Casuale\" (L2593)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina Priorità Reparto\" (L2633)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina Concatenazione\" (L2653)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina NULL in mezzo (Simulato)\" (L2663)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina Prezzo Scontato vs Pieno\" (L2693)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina Data + 7gg\" (L2703)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina Booleano Complesso\" (L2713)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina Substr e Length\" (L2763)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina Cast\" (L2773)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina Nulls Last Trick\" (L2783)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Sorting/Hard] \"Ordina Bitwise (Simulato)\" (L2793)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Easy] \"Conta Prodotti\" (L2837)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Easy] \"Conta Ordini\" (L2847)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Easy] \"Conta Dipendenti\" (L2857)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Easy] \"Range Prezzi\" (L3017)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Easy] \"Somma Vendite 2023\" (L3047)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Easy] \"Max Prezzo Accessori\" (L3077)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Prezzo Medio Categoria\" (L3149)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Stock Totale Categoria\" (L3159)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Vendite per Stato Ordine\" (L3179)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Spesa Totale Utente\" (L3209)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Ordini per Mese (Strftime)\" (L3219)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Utenti per Dominio Email\" (L3239)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Ordini Grandi (HAVING Sum)\" (L3269)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Max Prezzo per Categoria\" (L3299)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Utenti Premium per Paese\" (L3339)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Medium] \"Ordini Medi per Utente (HAVING)\" (L3409)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Conteggio Condizionale (Pivot)\" (L3431)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Somma Condizionale\" (L3441)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Having Complesso (AND)\" (L3471)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Having Complesso (OR)\" (L3481)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Filtro su Conteggio Distinto\" (L3501)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Mese di Picco Vendite\" (L3521)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Aggregation/Hard] \"Clienti e Spesa Media (Arrotondata)\" (L3541)",
+      "detail": "Hint 1: \"ROUND(AVG(...), 2)\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Categorie Binarie\" (L3551)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Varianza (Simulata)\" (L3571)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Prodotti Non Disponibili per Cat\" (L3591)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Somma Totale Globale\" (L3601)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Percentuale Stock (Subquery)\" (L3611)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Media dei Massimi\" (L3621)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Ultimi 3 Giorni di Ordini\" (L3651)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Differenza dalla Media Globale\" (L3691)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Aggregation/Hard] \"Media Escludendo Estremi\" (L3711)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Lunghezza Nome\" (L3755)",
+      "detail": "Hint 1: \"Usa LENGTH()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Prezzo Arrotondato\" (L3765)",
+      "detail": "Hint 1: \"Usa ROUND()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Concatenazione Base\" (L3775)",
+      "detail": "Hint 1: \"Usa CONCAT()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Differenza Prezzo da 100\" (L3785)",
+      "detail": "Hint 1: \"Usa ABS()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Prezzo Soffitto\" (L3795)",
+      "detail": "Hint 1: \"Usa CEIL()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Prezzo Pavimento\" (L3805)",
+      "detail": "Hint 1: \"Usa FLOOR()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Radice Quadrata\" (L3815)",
+      "detail": "Hint 1: \"Usa SQRT()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Primi Caratteri\" (L3825)",
+      "detail": "Hint 1: \"Usa LEFT()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Ultimi Caratteri\" (L3835)",
+      "detail": "Hint 1: \"Usa RIGHT()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Rimozione Spazi\" (L3845)",
+      "detail": "Hint 1: \"Usa TRIM()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Potenza\" (L3855)",
+      "detail": "Hint 1: \"Usa POWER()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Modulo (Pari/Dispari)\" (L3865)",
+      "detail": "Hint 1: \"Usa MOD()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Segno Numero\" (L3875)",
+      "detail": "Hint 1: \"Usa SIGN()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Stringa Inversa\" (L3885)",
+      "detail": "Hint 1: \"Usa REVERSE()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Lunghezza Stringa\" (L3895)",
+      "detail": "Hint 1: \"Usa REPEAT()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Posizione Carattere\" (L3905)",
+      "detail": "Hint 1: \"Usa INSTR()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Posizione Carattere\" (L3905)",
+      "detail": "Hint 2: \"Cerca '@'\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Nome Casuale\" (L3915)",
+      "detail": "Hint 1: \"Usa RAND()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Pi Greco\" (L3925)",
+      "detail": "Hint 1: \"Funzione PI()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Pi Greco\" (L3925)",
+      "detail": "Hint 2: \"Nessun argomento\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Logaritmo\" (L3935)",
+      "detail": "Solo 3 parole: \"Calcolo matematico avanzato.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Logaritmo\" (L3935)",
+      "detail": "Hint 1: \"Usa LOG()\""
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Easy] \"Esponenziale\" (L3945)",
+      "detail": "Solo 5 parole: \"Funzione inversa del logaritmo naturale.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Esponenziale\" (L3945)",
+      "detail": "Hint 1: \"Usa EXP()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Gradi a Radianti\" (L3955)",
+      "detail": "Hint 1: \"Usa RADIANS()\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Radianti a Gradi\" (L3965)",
+      "detail": "Solo 3 parole: \"Dovrebbe restituire 180.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Radianti a Gradi\" (L3965)",
+      "detail": "Hint 1: \"Usa DEGREES()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Radianti a Gradi\" (L3965)",
+      "detail": "Hint 2: \"Passa PI()\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Easy] \"Radianti a Gradi\" (L3965)",
+      "detail": "Solo 4 parole: \"Converti PI in gradi.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Sostituzione Semplice\" (L3975)",
+      "detail": "Hint 1: \"Usa REPLACE()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Spazi Sinistra\" (L3985)",
+      "detail": "Hint 1: \"Usa LTRIM()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Spazi Destra\" (L3995)",
+      "detail": "Hint 1: \"Usa RTRIM()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Codice ASCII\" (L4005)",
+      "detail": "Hint 1: \"Usa ASCII()\""
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Easy] \"Da ASCII a Char\" (L4015)",
+      "detail": "Solo 4 parole: \"Conversione inversa di ASCII.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Da ASCII a Char\" (L4015)",
+      "detail": "Hint 1: \"Usa CHAR()\""
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Easy] \"Lunghezza Bit\" (L4025)",
+      "detail": "Solo 5 parole: \"Misura la dimensione in memoria.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Easy] \"Lunghezza Bit\" (L4025)",
+      "detail": "Hint 1: \"Usa BIT_LENGTH()\""
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Medium] \"Formatta Prezzo\" (L4047)",
+      "detail": "Solo 4 parole: \"Formattazione base per display.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Formatta Prezzo\" (L4047)",
+      "detail": "Hint 1: \"Usa CONCAT\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Anonimizza Email\" (L4057)",
+      "detail": "Hint 1: \"Usa REPLACE()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Padding ID\" (L4067)",
+      "detail": "Hint 1: \"Usa LPAD()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Right Padding\" (L4077)",
+      "detail": "Hint 1: \"Usa RPAD()\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Medium] \"Iniziali\" (L4087)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Medium] \"Arrotonda Decimali\" (L4117)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Tronca Numero\" (L4127)",
+      "detail": "Hint 1: \"Usa ROUND()\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Tronca Numero\" (L4127)",
+      "detail": "Hint 2: \"Precisione 0\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Medium] \"Potenza Variabile\" (L4137)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Pari o Dispari Stringa\" (L4147)",
+      "detail": "Hint 1: \"Usa LENGTH()\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Medium] \"Formatta Valuta\" (L4157)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Null Coalesce\" (L4167)",
+      "detail": "Hint 1: \"Usa COALESCE()\""
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Medium] \"Cerca e Sostituisci\" (L4177)",
+      "detail": "Solo 4 parole: \"Modifica selettiva di stringhe.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Cerca e Sostituisci\" (L4177)",
+      "detail": "Hint 2: \"Applica REPLACE\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Medium] \"Posizione Spazio\" (L4197)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Medium] \"Lunghezza Nome Prodotto\" (L4207)",
+      "detail": "Solo 4 parole: \"Visualizzazione dati testuale (histogram).\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Lunghezza Nome Prodotto\" (L4207)",
+      "detail": "Hint 1: \"Usa REPEAT()\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Medium] \"Trim a Sinistra\" (L4217)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Medium] \"Mid String\" (L4237)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Medium] \"Confronto Case-Insensitive\" (L4247)",
+      "detail": "Solo 5 parole: \"Tecnica standard per ricerche case-insensitive.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Initcap Simulata\" (L4267)",
+      "detail": "Hint 3: \"Concatena\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Medium] \"Soundex Sim\" (L4277)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Valuta Formattata 2\" (L4297)",
+      "detail": "Hint 1: \"Dividi\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Valuta Formattata 2\" (L4297)",
+      "detail": "Hint 2: \"Poi Arrotonda\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Coalesce Multiplo\" (L4317)",
+      "detail": "Solo 3 parole: \"Catena di fallback.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Medium] \"Coalesce Multiplo\" (L4317)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Medium] \"Ascii Sum\" (L4327)",
+      "detail": "Solo 4 parole: \"Calculi su codici carattere.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Ascii Sum\" (L4327)",
+      "detail": "Hint 1: \"ASCII(LEFT...)\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Ascii Sum\" (L4327)",
+      "detail": "Hint 2: \"ASCII(RIGHT...)\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Medium] \"Ascii Sum\" (L4327)",
+      "detail": "Hint 3: \"Somma\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Mascheramento Complesso\" (L4339)",
+      "detail": "Hint 2: \"Concatena '***'\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Calcolo IVA\" (L4359)",
+      "detail": "Hint 3: \"Concatena simbolo\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Swap Case\" (L4399)",
+      "detail": "Hint 2: \"Decidi azione\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Pulizia Totale\" (L4429)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Filtro Lunghezza Dinamico\" (L4439)",
+      "detail": "Hint 2: \"Confronta LENGTH(name)\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Slugify (Sim)\" (L4469)",
+      "detail": "Hint 1: \"Lower\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Valore Futuro\" (L4479)",
+      "detail": "Hint 1: \"Base 1.10\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Coordinate (Sim)\" (L4489)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Hash Semplice\" (L4499)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Progressione\" (L4509)",
+      "detail": "Hint 1: \"Literal\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Progressione\" (L4509)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Email Oscurata Parziale\" (L4519)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Report Stock\" (L4539)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Estrai Numeri (Sim)\" (L4549)",
+      "detail": "Hint 1: \"Trova hash\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Hard] \"Nome File\" (L4559)",
+      "detail": "Solo 2 parole: \"Genera 'report_2023.txt'.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Byte Size\" (L4569)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Ultimo Spazio\" (L4579)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Bool to Str\" (L4599)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Hard] \"Bool to Str\" (L4599)",
+      "detail": "Solo 4 parole: \"Converti true/false in 'Sì'/'No'.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Safe Div\" (L4609)",
+      "detail": "Hint 1: \"NULLIF(stock,0)\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Safe Div\" (L4609)",
+      "detail": "Hint 2: \"Div\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Safe Div\" (L4609)",
+      "detail": "Hint 3: \"COALESCE(res, 0)\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Functions/Hard] \"Logica Binaria\" (L4619)",
+      "detail": "Solo 3 parole: \"Logica bitwise simulata.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Logica Binaria\" (L4619)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Functions/Hard] \"Completa\" (L4629)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Functions/Hard] \"Completa\" (L4629)",
+      "detail": "Solo 3 parole: \"Esercizio finale riassuntivo.\""
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Easy] \"Data Odierna\" (L4693)",
+      "detail": "Solo 5 parole: \"Restituisce la data corrente YYYY-MM-DD.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Data Odierna\" (L4693)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Solo Data\" (L4733)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Easy] \"Anno Ordine\" (L4743)",
+      "detail": "Solo 3 parole: \"Filtro per anno.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Data e Ora\" (L4773)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Easy] \"Settimana Anno\" (L4793)",
+      "detail": "Solo 4 parole: \"Numero della settimana (0-53).\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Easy] \"Quarter\" (L4803)",
+      "detail": "Solo 3 parole: \"Trimestre dell'ordine (1-4).\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Formatta Anno-Mese\" (L4813)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Età in Anni (Approx)\" (L4823)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Sysdate\" (L4843)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Easy] \"Time Only\" (L4853)",
+      "detail": "Solo 4 parole: \"Estrae orario da datetime.\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Easy] \"Aggiungi 0 Giorni\" (L4863)",
+      "detail": "Solo 2 parole: \"Operazione neutra.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Aggiungi 0 Giorni\" (L4863)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Easy] \"Ieri\" (L4873)",
+      "detail": "Solo 3 parole: \"Operazione data relativa.\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Easy] \"Domani\" (L4883)",
+      "detail": "Solo 2 parole: \"Data futura.\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Easy] \"Timestamp Stringa\" (L4893)",
+      "detail": "Solo 2 parole: \"Verifica parsing.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Timestamp Stringa\" (L4893)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Easy] \"Timestamp Stringa\" (L4893)",
+      "detail": "Solo 4 parole: \"Interpreta stringa come data.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Primo del Mese (Logic)\" (L4903)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Easy] \"Giorno Precedente\" (L4913)",
+      "detail": "Solo 3 parole: \"Giorno prima dell'ordine.\""
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Easy] \"Differenza Giorni Semplice\" (L4923)",
+      "detail": "Solo 4 parole: \"Verifica intervallo di tempo.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Easy] \"Differenza Giorni Semplice\" (L4923)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Differenza Giorni Ordine\" (L4945)",
+      "detail": "Solo 3 parole: \"Calcolo giorni trascorsi.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Medium] \"Differenza Giorni Ordine\" (L4945)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Medium] \"Inizio Mese Ordine\" (L4965)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Medium] \"Età Esatta (Giorni)\" (L4975)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Ore Trascorse\" (L4985)",
+      "detail": "Hint 1: \"Usa TIMESTAMPDIFF\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Ore Trascorse\" (L4985)",
+      "detail": "Hint 2: \"Unit: HOUR\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Formatta Data IT\" (L4995)",
+      "detail": "Hint 1: \"Usa DATE_FORMAT\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Formatta Data IT\" (L4995)",
+      "detail": "Hint 2: \"Specifier: %d/%m/%Y\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Formatta Data IT\" (L4995)",
+      "detail": "Solo 4 parole: \"Data in formato 'DD/MM/YYYY'.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Ultimo Giorno Mese Scorso\" (L5005)",
+      "detail": "Hint 2: \"Applica LAST_DAY\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Nome Mese Abbreviato\" (L5025)",
+      "detail": "Hint 1: \"MONTHNAME\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Nome Mese Abbreviato\" (L5025)",
+      "detail": "Solo 4 parole: \"Estrai 'Jan', 'Feb', etc.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Week of Year\" (L5035)",
+      "detail": "Hint 1: \"Usa PREPEND\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Week of Year\" (L5035)",
+      "detail": "Hint 2: \"WEEK()\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Week of Year\" (L5035)",
+      "detail": "Solo 3 parole: \"Restituisci 'Week XX'.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Medium] \"Aggiungi 2 Settimane\" (L5045)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Aggiungi 2 Settimane\" (L5045)",
+      "detail": "Solo 3 parole: \"Aggiungi 14 giorni.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Medium] \"Confronto Date Stringa\" (L5055)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Confronto Date Stringa\" (L5055)",
+      "detail": "Solo 4 parole: \"Utenti creati dopo '2023-01-01'.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Str to Date\" (L5085)",
+      "detail": "Solo 4 parole: \"Converti '01-12-2023' in data.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Trimestre Inizio\" (L5095)",
+      "detail": "Hint 2: \"Aggiungi trimestri\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Medium] \"Seconda Metà Anno\" (L5105)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Tempo Rimasto Anno\" (L5115)",
+      "detail": "Solo 4 parole: \"Giorni alla fine dell'anno.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Unix Timestamp\" (L5135)",
+      "detail": "Solo 4 parole: \"Ottieni timestamp numerico (epoch).\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Da Epoch a Data\" (L5145)",
+      "detail": "Solo 2 parole: \"Decodifica timestamp.\""
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Da Epoch a Data\" (L5145)",
+      "detail": "Solo 4 parole: \"Converti 1672531200 in data.\""
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Medium] \"Somma Ore\" (L5155)",
+      "detail": "Solo 4 parole: \"Aritmetica oltre le 24h.\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Check Data Futura\" (L5165)",
+      "detail": "Solo 2 parole: \"Validazione temporale.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Check Data Futura\" (L5165)",
+      "detail": "Hint 2: \"CASE WHEN\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Medium] \"Intervallo Mesi\" (L5175)",
+      "detail": "Hint 1: \"PERIOD_DIFF(YYYYMM, YYYYMM)\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Medium] \"Compleanno Prossimo\" (L5185)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Medium] \"Ultimo Venerdì (Sim)\" (L5195)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Medium] \"Data ISO\" (L5205)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Hard] \"Parsing Data Custom\" (L5247)",
+      "detail": "Solo 4 parole: \"Parsing complesso con orario.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Parsing Data Custom\" (L5247)",
+      "detail": "Hint 1: \"Usa STR_TO_DATE\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Giorni Lavorativi (Sim)\" (L5267)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Hard] \"Età Precisa (Mesi)\" (L5277)",
+      "detail": "Solo 3 parole: \"Mesi totali vissuti.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Inizio Anno Fiscale\" (L5287)",
+      "detail": "Hint 2: \"Estrai l'anno\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Is Leap Year?\" (L5317)",
+      "detail": "Hint 2: \"Controlla LAST_DAY\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Formatta RFC 2822\" (L5327)",
+      "detail": "Hint 2: \"%T Time\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Data Ordine Spostata\" (L5337)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Aggrega per Mese-Anno\" (L5347)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Trimestre Corrente (Date)\" (L5357)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Hard] \"Trimestre Corrente (Date)\" (L5357)",
+      "detail": "Solo 4 parole: \"Data inizio trimestre corrente.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Diff Ore Lavorative (Sim)\" (L5367)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Convert Timezone\" (L5377)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Hard] \"Prossimo Compleanno (Giorni)\" (L5387)",
+      "detail": "Solo 4 parole: \"Logica condizionale su date.\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Percentuale anno\" (L5437)",
+      "detail": "Solo 2 parole: \"Statistica temporale.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Percentuale anno\" (L5437)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Time tra Date\" (L5467)",
+      "detail": "Solo 3 parole: \"Differenza come durata.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Time tra Date\" (L5467)",
+      "detail": "Hint 2: \"Non giorni\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Aggiungi Minuti Variabili\" (L5477)",
+      "detail": "Solo 2 parole: \"Intervallo dinamico.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Aggiungi Minuti Variabili\" (L5477)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Week Mode 1\" (L5487)",
+      "detail": "Solo 2 parole: \"Standard ISO-like.\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Week Mode 1\" (L5487)",
+      "detail": "Hint 1: \"WEEK(date, mode)\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Strano Formato\" (L5497)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Hard] \"Strano Formato\" (L5497)",
+      "detail": "Solo 4 parole: \"Converti '2023.12.31' in data.\""
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Dates/Hard] \"Ultimo Secondo Giorno\" (L5507)",
+      "detail": "Solo 2 parole: \"Fine giornata.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Ultimo Secondo Giorno\" (L5507)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Hard] \"Ultimo Secondo Giorno\" (L5507)",
+      "detail": "Solo 4 parole: \"Imposta orario a 23:59:59.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Cast Datetime\" (L5517)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Mixed Add\" (L5527)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Dates/Hard] \"Median Date (Sim)\" (L5537)",
+      "detail": "Solo 4 parole: \"Calcolo punto medio temporale.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Dates/Hard] \"Median Date (Sim)\" (L5537)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Etichetta Prezzo\" (L5551)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Ordini Grandi\" (L5581)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Traduzione Status\" (L5591)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Controllo Stock\" (L5601)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Bonus Dipendenti\" (L5611)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Origine Utente\" (L5621)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Sconto Quantità\" (L5631)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Analisi Prezzi\" (L5641)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Categoria Semplificata\" (L5651)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Valore Prodotto\" (L5661)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Manager o Staff\" (L5671)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Ordine Recente\" (L5681)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Spedizione Gratuita\" (L5691)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Reparto IT\" (L5701)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Utente Attivo\" (L5711)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Stock Critico\" (L5721)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Email Aziendale\" (L5741)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Ordine in Arrivo\" (L5751)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Prezzo Arrotondato\" (L5761)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Clienti VIP\" (L5781)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Ordine Minimo\" (L5791)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Prodotti 'Lampada'\" (L5801)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Reparto HR\" (L5811)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Utenti Recenti\" (L5821)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Prezzo Simbolico\" (L5831)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Easy] \"Verifica Null\" (L5841)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Ordinamento Personalizzato\" (L5863)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Coalesce Manager\" (L5873)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Sconto Membership\" (L5893)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Raggruppamento Stati\" (L5903)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Priorità Department\" (L5913)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"NullIf Confronto\" (L5923)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Case/Medium] \"Rating Prodotto\" (L5933)",
+      "detail": "Solo 3 parole: \"Visualizzazione grafica testuale.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Rating Prodotto\" (L5933)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Spese di Spedizione\" (L5943)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Età Account\" (L5953)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Category Group\" (L5963)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "ITALIAN_TYPO",
+      "severity": "HIGH",
+      "exercise": "[Case/Medium] \"Category Group\" (L5963)",
+      "detail": "e' → è"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Valore Magazzino\" (L5973)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Identificativo\" (L5983)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Stagionalità\" (L5993)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Status Prodotto\" (L6003)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Utente Completo\" (L6013)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Formato Nome\" (L6023)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Livello Spesa\" (L6053)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Regione Fiscale\" (L6063)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Check Iscrizione\" (L6093)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Reparto Sconosciuto\" (L6103)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Fascia Oraria\" (L6113)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Top Manager\" (L6123)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Medium] \"Valuta\" (L6143)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Hard] \"Performance Spedizioni\" (L6205)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Case/Hard] \"Pivot Categorie\" (L6245)",
+      "detail": "Hint 1: \"Tipico pivoting\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Case/Hard] \"Vendite Trimestrali\" (L6295)",
+      "detail": "Hint 1: \"Usa MONTH()\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Hard] \"Pari o Dispari\" (L6305)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Hard] \"Prodotto Civetta\" (L6345)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Hard] \"Complex Sorting\" (L6355)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Hard] \"Weekend Sales\" (L6365)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Hard] \"Tax Calculation\" (L6375)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Hard] \"Inventory Health\" (L6395)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Hard] \"Shipping Zone\" (L6425)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Case/Hard] \"Product Age\" (L6435)",
+      "detail": "Solo 2 parole: \"Analisi catalogo.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Case/Hard] \"Product Age\" (L6435)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Totale Ordine e Utente\" (L6499)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Categoria Prodotti Venduti\" (L6509)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Dettagli Ordine Completi\" (L6529)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Easy] \"Ordini recenti con Nome\" (L6539)",
+      "detail": "Hint 1: \"JOIN standard\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Manager Dipendente\" (L6549)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Prodotti in Ordini Grandi\" (L6569)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Spedizioni in USA\" (L6579)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Email Ordini 'Shipped'\" (L6589)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Ordini e Ruoli Staff\" (L6609)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Valore Riga Ordine\" (L6619)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Utenti con Ordini Recenti\" (L6629)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Prodotti 'Electronics' Venduti\" (L6639)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Spesa per Riga\" (L6669)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Join Multipla Base\" (L6689)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "EXPLANATION_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Easy] \"Ordini Internazionali\" (L6709)",
+      "detail": "Solo 2 parole: \"Export sales.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Ordini Internazionali\" (L6709)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Prodotti Costosi Ordinati\" (L6719)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"ID Utente e ID Prodotto\" (L6739)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Easy] \"Cross Join Implicita (Errore)\" (L6749)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Tutti gli Utenti e Ordini\" (L6771)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Medium] \"Spesa Totale per Utente\" (L6791)",
+      "detail": "Hint 2: \"SUM(order_total)\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Numero Ordini per Paese\" (L6801)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Prodotti in Categorie Popolari\" (L6811)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Utenti con Acquisti 'Electronics'\" (L6821)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Dettaglio Ordini con Prezzi\" (L6831)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Ordini Multi-Prodotto\" (L6841)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Medium] \"Clienti e Loro Ultimo Ordine\" (L6851)",
+      "detail": "Hint 1: \"MAX(order_date)\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Utenti Italiani con Ordini > 100\" (L6881)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Ordini con Prodotti 'Out of Stock'\" (L6891)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Medium] \"Ticket Medio per Nazione\" (L6901)",
+      "detail": "Hint 1: \"Join Users-Orders\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Medium] \"Ticket Medio per Nazione\" (L6901)",
+      "detail": "Hint 2: \"AVG(total)\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Medium] \"Utenti e Conti Ordini\" (L6921)",
+      "detail": "Hint 1: \"LEFT JOIN\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Medium] \"Prodotto Più Venduto (Qta)\" (L6931)",
+      "detail": "Hint 1: \"Sum quantity\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Ordini Completi (3 Join)\" (L6941)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Utenti del Dipartimento 'Sales'\" (L6971)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Full Outer Join Simulata\" (L6991)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Medium] \"Categorie Acquistate da Utente\" (L7011)",
+      "detail": "Hint 1: \"Distinct category\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Chi ha comprato 'Laptop'?\" (L7031)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Ordini Mese Corrente\" (L7041)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Medium] \"Status Spedizione Utente\" (L7051)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Hard] \"Analisi Completa Carrello\" (L7063)",
+      "detail": "Hint 2: \"Filter status='Shipped'\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Utenti che hanno comprato TUTTE le categorie\" (L7123)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Gerarchia Completa (Recursive sim)\" (L7143)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Utenti Inattivi da 6 Mesi\" (L7163)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Joins/Hard] \"Categoria Preferita Utente\" (L7173)",
+      "detail": "Hint 1: \"Filtra Alice\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Join su Date (Range Join)\" (L7183)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Gap Analysis Vendite\" (L7193)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Ordini con Valore Errato\" (L7203)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Best Selling Product per Year\" (L7213)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Confronto Ordini Successivi\" (L7253)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Utenti Senza Acquisti Recentemente\" (L7273)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Clienti Nuovi 2023\" (L7303)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Distribuzione Ordini per Giorno\" (L7313)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Prodotti 'Solo' o 'Accoppiati'\" (L7323)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Utenti Stesso Nome Diversa Email\" (L7333)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "DESC_TOO_SHORT",
+      "severity": "MEDIUM",
+      "exercise": "[Joins/Hard] \"Utenti Stesso Nome Diversa Email\" (L7333)",
+      "detail": "Solo 3 parole: \"Controllo duplicati anagrafica.\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Media Prodotti per Ordine (Global)\" (L7343)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Joins/Hard] \"Referral Chain (Simulata)\" (L7353)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Utenti Premium o Italiani\" (L7417)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Dipendenti Manager\" (L7447)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Utenti Interessanti\" (L7467)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Stesso Paese\" (L7477)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Prodotti Popolari\" (L7487)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Stato Avanzato\" (L7497)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Stock Basso\" (L7507)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Clienti USA\" (L7517)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Utenti Monitor\" (L7527)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Utenti Senza Ordini Easy\" (L7547)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Prodotti Non Elettronica\" (L7557)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Easy] \"Totale Ordini Mario\" (L7567)",
+      "detail": "Hint 1: \"SUM(total)\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Easy] \"Conteggio Ordini Mario\" (L7577)",
+      "detail": "Hint 1: \"COUNT(*)\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Ordini Weekend (Sim)\" (L7607)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Primi 3 Users e Staff\" (L7637)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Easy] \"Prodotti Sotto Media Elettronica\" (L7657)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Medium] \"Ultimo Arrivato\" (L7739)",
+      "detail": "Hint 1: \"Usa MAX(created_at)\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Medium] \"Ordini Multipli\" (L7769)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Medium] \"Best Sellers\" (L7809)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Medium] \"Utenti Sopra-Media\" (L7819)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Medium] \"Manager Importanti\" (L7839)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Medium] \"Ordini Misti\" (L7849)",
+      "detail": "Hint 1: \"Join OrderItems-Products\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Medium] \"Monitor e Tastiera\" (L7859)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Medium] \"Prezzo Medio Mario\" (L7889)",
+      "detail": "Hint 2: \"AVG(price)\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Medium] \"Ordini Sopra Max 2\" (L7909)",
+      "detail": "Hint 2: \"Confronta\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Medium] \"Utenti Multi-Cat\" (L7919)",
+      "detail": "Hint 1: \"Join completa\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Medium] \"Prodotti Costosi Elettronica\" (L7929)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Medium] \"Clienti Locali\" (L7939)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Medium] \"Ordini Anomali\" (L7949)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Medium] \"Solo Elettronica\" (L7959)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Hard] \"Ordini Fantasma\" (L8051)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Hard] \"Fedeltà Mensile\" (L8071)",
+      "detail": "Hint 1: \"Usa MONTH(order_date)\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Hard] \"Fedeltà Mensile\" (L8071)",
+      "detail": "Hint 2: \"COUNT DISTINCT\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Hard] \"Elite Club\" (L8101)",
+      "detail": "Hint 2: \"Doppia negazione\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Hard] \"Prodotti 'Ponte'\" (L8151)",
+      "detail": "Hint 1: \"EXISTS Italieni\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Hard] \"Prodotti 'Ponte'\" (L8151)",
+      "detail": "Hint 2: \"EXISTS Americani\""
+    },
+    {
+      "category": "SINGLE_HINT",
+      "severity": "LOW",
+      "exercise": "[Advanced/Hard] \"Coppia Prodotti\" (L8171)",
+      "detail": "Solo 1 hint"
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Hard] \"Salto di Qualità\" (L8181)",
+      "detail": "Hint 3: \"Confronta totali\""
+    },
+    {
+      "category": "HINT_TOO_SHORT",
+      "severity": "HIGH",
+      "exercise": "[Advanced/Hard] \"Dipendenti Sottopagati\" (L8241)",
+      "detail": "Hint 1: \"Filtra data\""
+    }
+  ]
+}

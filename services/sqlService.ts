@@ -21,7 +21,7 @@ alasql.fn.LOG = (x: number) => Math.log(x);
 alasql.fn.EXP = (x: number) => Math.exp(x);
 alasql.fn.RADIANS = (x: number) => x * Math.PI / 180;
 alasql.fn.DEGREES = (x: number) => x * 180 / Math.PI;
-alasql.fn.BIT_LENGTH = (s: string) => Buffer.from(s).length * 8;
+alasql.fn.BIT_LENGTH = (s: string) => s ? new TextEncoder().encode(s).length * 8 : 0;
 alasql.fn.LPAD = (s: string, len: number, pad: string) => s.padStart(len, pad);
 alasql.fn.RPAD = (s: string, len: number, pad: string) => s.padEnd(len, pad);
 alasql.fn.ASCII = (s: string) => s.charCodeAt(0);
@@ -528,7 +528,7 @@ export const initDatabase = (_difficulty: Difficulty) => {
         employeesData.push({ id: 502, name: 'Rich Employee', department: 'Sales', hire_date: '2022-01-01', manager_id: 501, salary: 5000 });
         
         employeesData.forEach(r => {
-             const email = r.email || `${r.name.split(' ')[0].toLowerCase()}.${r.name.split(' ')[1] ? r.name.split(' ')[1].toLowerCase() : ''}@techstore.com`;
+             const email = `${r.name.split(' ')[0].toLowerCase()}.${r.name.split(' ')[1] ? r.name.split(' ')[1].toLowerCase() : ''}@techstore.com`;
              const managerVal = r.manager_id === null ? 'NULL' : r.manager_id;
              alasql(`INSERT INTO Employees VALUES (${r.id}, '${r.name.replace(/'/g, "''")}', '${email.replace(/'/g, "''")}', '${r.department.replace(/'/g, "''")}', '${r.hire_date}', ${managerVal}, ${r.salary})`);
         });

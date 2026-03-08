@@ -14,7 +14,7 @@ const shuffleArray = <T>(array: T[]): T[] => {
   return shuffled;
 };
 
-// --- DATA LISTS (TechStore Schema) ---
+// --- DATA LISTS (TechStore Schema — allineato con initDatabase di sqlService.ts) ---
 const DATA = {
   tables: [
     "Users",
@@ -34,46 +34,47 @@ const DATA = {
     "Germany",
     "Spain",
     "USA",
-    "Netherlands",
     "UK",
+    "Netherlands",
     "Japan",
     "Canada",
+    "Australia",
   ],
   names: [
     "Mario Rossi",
-    "Luigi Verdi",
-    "John Doe",
-    "Sophie Martin",
-    "Marco Bianchi",
-    "Giulia Neri",
-    "Luca Ferrari",
-    "Alice Chen",
+    "Alice",
+    "Ghost User",
+    "Dormant User",
   ],
   categories: [
     "Electronics",
+    "Computers",
+    "Smartphones",
+    "Tablets",
+    "Audio",
+    "Wearables",
+    "Gaming",
+    "Cameras",
+    "Accessories",
+    "Networking",
     "Home",
-    "Clothing",
-    "Books",
-    "Garden",
-    "Sports",
-    "Beauty",
   ],
   departments: [
-    "Engineering",
-    "Marketing",
+    "Executive",
     "Sales",
+    "Marketing",
+    "Engineering",
     "HR",
     "Finance",
+    "Support",
   ],
-  order_statuses: ["Pending", "Shipped", "Delivered", "Cancelled"],
+  order_statuses: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned"],
   product_names: [
-    "Laptop Pro",
-    "Smartphone X",
     "Monitor 4K",
-    "T-Shirt Basic",
-    "Modern Sofa",
-    "Wireless Mouse",
-    "Headphones Pro",
+    "Lampada Smart",
+    "Keyboard",
+    "Smartphone",
+    "Divano Luxury",
   ],
   prices_min: [10, 20, 50, 100, 150],
   prices_max: [200, 300, 500, 1000, 2000],
@@ -115,7 +116,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona tutte le colonne dalla tabella Products.",
         queryTemplate: "SELECT * FROM Products",
         hints: ["Usa SELECT *"],
-        explanation: "Recupera l'intero catalogo prodotti.",
+        explanation: "SELECT * seleziona tutte le colonne della tabella. In produzione è meglio specificare le colonne necessarie per performance e chiarezza.",
         replacements: {},
         brokenCode: "SELECT ALL FROM Products",
         debugHint: "In SQL si usa * non ALL per le colonne."
@@ -124,8 +125,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Tutto su Orders",
         descTemplate: "Seleziona tutte le colonne dalla tabella Orders.",
         queryTemplate: "SELECT * FROM Orders",
-        hints: ["SELECT * FROM Orders"],
-        explanation: "Visualizza lo storico ordini completo.",
+        hints: ["Usa l'asterisco per selezionare tutte le colonne", "La tabella degli ordini si chiama Orders"],
+        explanation: "SELECT * seleziona tutte le colonne della tabella. In produzione è meglio specificare le colonne necessarie per performance e chiarezza.",
         replacements: {},
         brokenCode: "SELECT * Orders",
         debugHint: "Manca la clausola FROM."
@@ -137,17 +138,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Seleziona tutto da OrderItems"],
         explanation: "Dettagli riga per riga degli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM OrderItems",
         debugHint: "Controlla il nome della tabella."
       },
       {
         titleTemplate: "Tutto su Employees",
         descTemplate: "Seleziona tutte le colonne dalla tabella Employees.",
         queryTemplate: "SELECT * FROM Employees",
-        hints: ["SELECT * FROM Employees"],
-        explanation: "Anagrafica dipendenti completa.",
+        hints: ["L'asterisco seleziona tutte le colonne disponibili", "La tabella dei dipendenti è Employees"],
+        explanation: "SELECT * seleziona tutte le colonne della tabella. In produzione è meglio specificare le colonne necessarie per performance e chiarezza.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELEC * FROM Employees",
         debugHint: "Ricorda SELECT * FROM."
       },
       {
@@ -155,7 +156,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona solo la colonna 'name' dalla tabella Users.",
         queryTemplate: "SELECT name FROM Users",
         hints: ["Specifica il nome della colonna dopo SELECT"],
-        explanation: "Proiezione su una singola colonna.",
+        explanation: "SELECT * seleziona tutte le colonne della tabella. In produzione è meglio specificare le colonne necessarie per performance e chiarezza.",
         replacements: {},
         brokenCode: "SELECT Users FROM name",
         debugHint: "Prima le colonne, poi la tabella."
@@ -164,10 +165,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Email Utenti",
         descTemplate: "Seleziona solo la colonna 'email' dalla tabella Users.",
         queryTemplate: "SELECT email FROM Users",
-        hints: ["SELECT email ..."],
-        explanation: "Lista contatti.",
+        hints: ["Seleziona solo il campo email", "La tabella degli utenti è Users"],
+        explanation: "La proiezione su una singola colonna permette di estrarre solo i dati necessari, riducendo la dimensione del risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT email Users",
         debugHint: "Usa SELECT email."
       },
       {
@@ -175,9 +176,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona la colonna 'country' dalla tabella Users.",
         queryTemplate: "SELECT country FROM Users",
         hints: ["Proietta solo la colonna country"],
-        explanation: "Analisi provenienza geografica.",
+        explanation: "Selezionare una singola colonna è utile quando serve analizzare solo una dimensione dei dati, come la distribuzione geografica degli utenti.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT country Users",
         debugHint: "SELECT country FROM Users."
       },
       {
@@ -185,7 +186,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona le colonne 'name' e 'price' dalla tabella Products.",
         queryTemplate: "SELECT name, price FROM Products",
         hints: ["Separa i nomi colonna con una virgola"],
-        explanation: "Proiezione multipla.",
+        explanation: "Selezionando più colonne separate da virgola si ottiene una vista personalizzata dei dati, scegliendo solo le informazioni rilevanti.",
         replacements: {},
         brokenCode: "SELECT name price FROM Products",
         debugHint: "Manca la virgola tra le colonne."
@@ -194,91 +195,91 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Categorie Prodotti",
         descTemplate: "Seleziona la colonna 'category' da Products.",
         queryTemplate: "SELECT category FROM Products",
-        hints: ["Solo category"],
+        hints: ["Seleziona solo la colonna category", "La tabella è Products"],
         explanation: "Lista categorie (con duplicati).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Products FROM category",
         debugHint: "Controlla il nome colonna."
       },
       {
         titleTemplate: "Date Ordini",
         descTemplate: "Seleziona 'order_date' da Orders.",
         queryTemplate: "SELECT order_date FROM Orders",
-        hints: ["Colonna order_date"],
-        explanation: "Timeline ordini.",
+        hints: ["Serve la colonna che contiene la data dell'ordine", "Il campo si chiama order_date nella tabella Orders"],
+        explanation: "Selezionare le date degli ordini permette di analizzare la distribuzione temporale delle vendite.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCT order_date FROM Orders",
         debugHint: "Attento all'underscore in order_date."
       },
       {
         titleTemplate: "Stati Ordini",
         descTemplate: "Seleziona la colonna 'status' da Orders.",
         queryTemplate: "SELECT status FROM Orders",
-        hints: ["Colonna status"],
-        explanation: "Monitoraggio stati.",
+        hints: ["Cerca il campo che rappresenta lo stato dell'ordine", "Il campo si chiama status nella tabella Orders"],
+        explanation: "Visualizzare lo stato degli ordini è utile per monitorare il flusso operativo e identificare eventuali colli di bottiglia.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SELECT status..."
+        brokenCode: "SELECT Orders FROM status",
+        debugHint: "Usa SELECT status FROM Orders per selezionare lo stato degli ordini."
       },
       {
         titleTemplate: "Totali Ordini",
         descTemplate: "Seleziona 'order_total' da Orders.",
         queryTemplate: "SELECT order_total FROM Orders",
-        hints: ["Colonna order_total"],
-        explanation: "Analisi volumi vendite.",
+        hints: ["Serve la colonna con l'importo totale", "Si chiama order_total nella tabella Orders"],
+        explanation: "I totali degli ordini permettono di analizzare i volumi di vendita e calcolare metriche come il valore medio dell'ordine.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "order_total."
+        brokenCode: "SELCT order_total FROM Orders",
+        debugHint: "Il nome della colonna è order_total, controlla di averlo scritto correttamente."
       },
       {
         titleTemplate: "Quantità Vendute",
         descTemplate: "Seleziona 'quantity' da OrderItems.",
         queryTemplate: "SELECT quantity FROM OrderItems",
         hints: ["Tabella OrderItems, colonna quantity"],
-        explanation: "Volume fisico vendite.",
+        explanation: "Le quantità vendute sono fondamentali per l'analisi della domanda e la gestione dell'inventario.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SELECT quantity."
+        brokenCode: "SELECT quantity OrderItems",
+        debugHint: "Usa SELECT quantity dalla tabella OrderItems."
       },
       {
         titleTemplate: "Prezzi Unitari",
         descTemplate: "Seleziona 'unit_price' da OrderItems.",
         queryTemplate: "SELECT unit_price FROM OrderItems",
-        hints: ["Colonna unit_price"],
-        explanation: "Prezzi storici di vendita.",
+        hints: ["Cerca il prezzo unitario nella tabella giusta", "La colonna si chiama unit_price in OrderItems"],
+        explanation: "Selezionare colonne specifiche (proiezione) è una best practice: riduce il trasferimento di dati e rende la query più esplicita.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "unit_price."
+        brokenCode: "SELECT unit_price OrderItems",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Dipartimenti Staff",
         descTemplate: "Seleziona 'department' da Employees.",
         queryTemplate: "SELECT department FROM Employees",
-        hints: ["Colonna department"],
-        explanation: "Struttura aziendale.",
+        hints: ["Seleziona il campo del dipartimento", "La tabella dei dipendenti è Employees"],
+        explanation: "Visualizzare i dipartimenti aiuta a comprendere la struttura organizzativa dell'azienda e le aree funzionali.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "department."
+        brokenCode: "SELECT department Employees",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Nomi Staff",
         descTemplate: "Seleziona 'name' da Employees.",
         queryTemplate: "SELECT name FROM Employees",
-        hints: ["Colonna name"],
-        explanation: "Rubrica dipendenti.",
+        hints: ["Seleziona il campo con il nome", "La tabella è Employees"],
+        explanation: "Estrarre la lista dei nomi dei dipendenti è il primo passo per creare report del personale.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SELECT name."
+        brokenCode: "SELCT name FROM Employees",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Utenti Premium?",
         descTemplate: "Seleziona 'name' e 'is_premium' da Users.",
         queryTemplate: "SELECT name, is_premium FROM Users",
         hints: ["Due colonne separate da virgola"],
-        explanation: "Status abbonamento utenti.",
+        explanation: "Il campo booleano is_premium distingue gli utenti con abbonamento premium da quelli con account gratuito.",
         replacements: {},
         brokenCode: "SELECT name is_premium FROM Users",
-        debugHint: "Virgola mancante."
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Paesi Unici",
@@ -295,7 +296,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona le categorie distinte presenti in Products.",
         queryTemplate: "SELECT DISTINCT category FROM Products",
         hints: ["SELECT DISTINCT category ..."],
-        explanation: "Lista pura delle categorie merceologiche.",
+        explanation: "COUNT(DISTINCT ...) conta i valori unici, eliminando i duplicati prima del conteggio.",
         replacements: {},
         brokenCode: "SELECT DISTINCT FROM category",
         debugHint: "DISTINCT va prima del nome colonna."
@@ -305,40 +306,40 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona il nome del prodotto e il prezzo dimezzato (price / 2).",
         queryTemplate: "SELECT name, price / 2 FROM Products",
         hints: ["Puoi fare operazioni matematiche dopo la virgola"],
-        explanation: "Colonne calcolate al volo.",
+        explanation: "SQL permette di creare colonne calcolate direttamente nella query, senza modificare i dati originali nella tabella.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa / 2."
+        brokenCode: "SELECT name price / 2 FROM Products",
+        debugHint: "Per calcolare la metà del prezzo, dividi per 2 usando l'operatore /."
       },
       {
         titleTemplate: "Prezzo con IVA",
         descTemplate: "Seleziona il nome e il prezzo aumentato del 22% (price * 1.22).",
         queryTemplate: "SELECT name, price * 1.22 FROM Products",
         hints: ["Moltiplica per 1.22"],
-        explanation: "Calcolo imposte in proiezione.",
+        explanation: "Moltiplicare il prezzo per 1.22 aggiunge il 22% di IVA, creando una colonna calcolata con il prezzo finale.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa * 1.22."
+        brokenCode: "SELECT name price * 1.22 FROM Products",
+        debugHint: "Per aggiungere il 22% di IVA, moltiplica il prezzo per 1.22."
       },
       {
         titleTemplate: "Valore Stock",
         descTemplate: "Seleziona nome e valore totale stock (price * stock) da Products.",
         queryTemplate: "SELECT name, price * stock FROM Products",
         hints: ["Moltiplica due colonne tra loro"],
-        explanation: "Operazioni tra colonne della stessa riga.",
+        explanation: "Moltiplicando due colonne si ottiene un valore calcolato per ogni riga, utile per stimare il valore dell'inventario.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "price * stock."
+        brokenCode: "SELECT name price * stock FROM Products",
+        debugHint: "Moltiplica le colonne price e stock per ottenere il valore dell'inventario."
       },
       {
         titleTemplate: "Valore Riga Ordine",
         descTemplate: "Seleziona quantity * unit_price da OrderItems.",
         queryTemplate: "SELECT quantity * unit_price FROM OrderItems",
         hints: ["Calcola il totale di riga"],
-        explanation: "Calcolo importi parziali.",
+        explanation: "Moltiplicando quantità per prezzo unitario si ottiene l'importo di ogni riga dell'ordine.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "quantity * unit_price."
+        brokenCode: "SELCET quantity * unit_price FROM OrderItems",
+        debugHint: "Il totale di riga si calcola moltiplicando quantity per unit_price."
       },
       {
         titleTemplate: "Alias Semplice",
@@ -354,51 +355,51 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Alias Prodotto",
         descTemplate: "Seleziona name as 'Prodotto' e price as 'Euro' da Products.",
         queryTemplate: "SELECT name AS Prodotto, price AS Euro FROM Products",
-        hints: ["Due alias distinti"],
-        explanation: "Alias multipli.",
+        hints: ["Rinomina entrambe le colonne usando AS", "Separa le colonne con la virgola"],
+        explanation: "Gli alias multipli permettono di rinominare contemporaneamente più colonne nel risultato, migliorando la leggibilità dei report.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name IS Prodotto, price AS Euro FROM Products",
         debugHint: "AS Prodotto, ... AS Euro."
       },
       {
         titleTemplate: "Giorni Registrazione",
         descTemplate: "Seleziona created_at da Users.",
         queryTemplate: "SELECT created_at FROM Users",
-        hints: ["Solo la data"],
-        explanation: "Dati temporali.",
+        hints: ["Cerca il campo con la data di registrazione", "Il campo si chiama created_at nella tabella Users"],
+        explanation: "Le colonne di tipo data contengono informazioni temporali utili per analisi cronologiche e filtraggio per periodi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "created_at."
+        brokenCode: "SELECT Users FROM created_at",
+        debugHint: "Il campo della data di registrazione si chiama created_at."
       },
       {
         titleTemplate: "Ruoli Staff",
         descTemplate: "Seleziona i dipartimenti distinti da Employees.",
         queryTemplate: "SELECT DISTINCT department FROM Employees",
         hints: ["Evita ripetizioni di dipartimenti"],
-        explanation: "Lista univoca reparti.",
+        explanation: "DISTINCT elimina i duplicati dal risultato, mostrando ogni valore una sola volta.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DISTINCT."
+        brokenCode: "SELECT department DISTINCT FROM Employees",
+        debugHint: "Aggiungi DISTINCT subito dopo la keyword SELECT per eliminare i duplicati."
       },
       {
         titleTemplate: "Stati Ordine Unici",
         descTemplate: "Quali sono i possibili stati di un ordine? (Usa DISTINCT).",
         queryTemplate: "SELECT DISTINCT status FROM Orders",
-        hints: ["SELECT DISTINCT status"],
-        explanation: "Enumerazione stati workflow.",
+        hints: ["Usa la keyword DISTINCT per eliminare i duplicati", "La colonna da selezionare è status dalla tabella Orders"],
+        explanation: "DISTINCT applicato alla colonna status rivela tutti gli stati possibili nel ciclo di vita di un ordine.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DISTINCT status."
+        brokenCode: "SELECT status DISTINCT FROM Orders",
+        debugHint: "DISTINCT va subito dopo SELECT, prima del nome della colonna."
       },
       {
         titleTemplate: "Mix Colonne",
         descTemplate: "Seleziona id, user_id e status da Orders.",
         queryTemplate: "SELECT id, user_id, status FROM Orders",
         hints: ["Tre colonne separate da virgole"],
-        explanation: "Proiezione specifica multi-colonna.",
+        explanation: "Selezionare colonne specifiche permette di costruire viste mirate sui dati, combinando solo le informazioni necessarie.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa le virgole."
+        brokenCode: "SELECT id user_id, status FROM Orders",
+        debugHint: "Separa i nomi delle colonne con virgole nella clausola SELECT."
       }
     ],
     [Difficulty.Medium]: [
@@ -410,26 +411,26 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         explanation: "L'alias rinomina la colonna nel risultato finale.",
         replacements: {},
         brokenCode: "SELECT name IS Utente FROM Users",
-        debugHint: "Usa AS."
+        debugHint: "La keyword AS si usa dopo il nome della colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Alias Prezzo",
         descTemplate: "Seleziona 'price' e rinominalo 'Costo_Unitario'.",
         queryTemplate: "SELECT price AS Costo_Unitario FROM Products",
-        hints: ["price AS Costo_Unitario"],
-        explanation: "Alias utile per report chiari.",
+        hints: ["Rinomina la colonna prezzo con un alias significativo", "Usa la keyword AS per creare un alias"],
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AS Costo_Unitario."
+        brokenCode: "SELECT price IS Costo_Unitario FROM Products",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Due Alias",
         descTemplate: "Seleziona name come 'Piatto' e price come 'Prezzo'.",
         queryTemplate: "SELECT name AS Piatto, price AS Prezzo FROM Products",
         hints: ["Due alias separati da virgola"],
-        explanation: "Rinomina più colonne contemporaneamente.",
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name IS Piatto, price AS Prezzo FROM Products",
         debugHint: "Usa AS per entrambi."
       },
       {
@@ -447,19 +448,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra il totale di riga (quantity * unit_price) chiamandolo 'Totale'.",
         queryTemplate: "SELECT quantity * unit_price AS Totale FROM OrderItems",
         hints: ["Fai il calcolo poi usa AS"],
-        explanation: "Colonne calcolate con alias descrittivo.",
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT quantity * unit_price IS Totale FROM OrderItems",
         debugHint: "quantity * unit_price AS Totale."
       },
       {
         titleTemplate: "Incremento Prezzo",
         descTemplate: "Simula un aumento di 5€ su ogni prodotto. Mostra il nuovo prezzo come 'NewPrice'.",
         queryTemplate: "SELECT price + 5 AS NewPrice FROM Products",
-        hints: ["Addizione semplice"],
-        explanation: "Operatori aritmetici in proiezione.",
+        hints: ["Usa l'operatore + per sommare valori", "Puoi aggiungere un numero fisso a una colonna"],
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT price + 5 IS NewPrice FROM Products",
         debugHint: "price + 5."
       },
       {
@@ -467,29 +468,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra il prezzo scontato del 50% come 'Promo'.",
         queryTemplate: "SELECT price * 0.5 AS Promo FROM Products",
         hints: ["Moltiplica per 0.5"],
-        explanation: "Calcolo percentuale semplice.",
+        explanation: "Dividere per 2 è equivalente a uno sconto del 50%. Le operazioni aritmetiche nelle query permettono calcoli al volo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT price * 0.5 IS Promo FROM Products",
         debugHint: "price * 0.5."
       },
       {
         titleTemplate: "Distinct Stati",
         descTemplate: "Trova tutti gli stati unici degli ordini.",
         queryTemplate: "SELECT DISTINCT status FROM Orders",
-        hints: ["Usa DISTINCT"],
-        explanation: "Lista stati possibili.",
+        hints: ["DISTINCT elimina i duplicati dal risultato", "Posiziona DISTINCT subito dopo SELECT"],
+        explanation: "DISTINCT fornisce la lista completa degli stati possibili, utile per validazione e analisi del workflow.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DISTINCT status."
+        brokenCode: "SELECT status DISTINCT FROM Orders",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Distinct Country",
         descTemplate: "Trova i paesi unici di provenienza degli utenti.",
         queryTemplate: "SELECT DISTINCT country FROM Users",
-        hints: ["DISTINCT country"],
-        explanation: "Analisi geografica.",
+        hints: ["Usa DISTINCT per ottenere valori unici", "Seleziona dalla tabella Users"],
+        explanation: "Usare DISTINCT sulla colonna country elimina i duplicati e mostra tutti i paesi rappresentati nel database.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT country DISTINCT FROM Users",
         debugHint: "SELECT DISTINCT country."
       },
       {
@@ -497,59 +498,59 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Elenca le categorie di prodotto senza duplicati.",
         queryTemplate: "SELECT DISTINCT category FROM Products",
         hints: ["Solo categorie uniche"],
-        explanation: "Catalogo categorie.",
+        explanation: "DISTINCT applicato alla categoria produce la lista delle categorie merceologiche disponibili nel catalogo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DISTINCT category."
+        brokenCode: "SELECT category DISTINCT FROM Products",
+        debugHint: "DISTINCT va subito dopo SELECT, prima del nome della colonna."
       },
       {
         titleTemplate: "Distinct Department",
         descTemplate: "Elenca i dipartimenti aziendali unici.",
         queryTemplate: "SELECT DISTINCT department FROM Employees",
-        hints: ["DISTINCT department"],
-        explanation: "Struttura org.",
+        hints: ["DISTINCT elimina i valori ripetuti", "Il campo del dipartimento si trova nella tabella Employees"],
+        explanation: "DISTINCT sulla colonna department restituisce la lista dei reparti aziendali senza ripetizioni.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DISTINCT department."
+        brokenCode: "SELECT department DISTINCT FROM Employees",
+        debugHint: "DISTINCT va subito dopo SELECT, prima del nome della colonna."
       },
       {
         titleTemplate: "Manager Unici",
         descTemplate: "Trova gli ID unici dei manager nella tabella Employees.",
         queryTemplate: "SELECT DISTINCT manager_id FROM Employees",
         hints: ["Attenzione ai null, ma DISTINCT li gestisce"],
-        explanation: "Lista capi.",
+        explanation: "I manager_id unici rappresentano tutti i supervisori presenti nell'organigramma aziendale.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DISTINCT manager_id."
+        brokenCode: "SELECT manager_id DISTINCT FROM Employees",
+        debugHint: "DISTINCT va subito dopo SELECT, prima del nome della colonna."
       },
       {
         titleTemplate: "Utenti Attivi (Ordini)",
         descTemplate: "Trova gli user_id unici che hanno fatto ordini.",
         queryTemplate: "SELECT DISTINCT user_id FROM Orders",
         hints: ["DISTINCT su user_id in Orders"],
-        explanation: "Identificazione clienti paganti.",
+        explanation: "Selezionare gli user_id distinti dagli ordini identifica tutti i clienti che hanno effettuato almeno un acquisto.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id DISTINCT FROM Orders",
         debugHint: "SELECT DISTINCT user_id."
       },
       {
         titleTemplate: "Prodotti Venduti",
         descTemplate: "Trova i product_id unici che sono stati venduti (in OrderItems).",
         queryTemplate: "SELECT DISTINCT product_id FROM OrderItems",
-        hints: ["DISTINCT product_id"],
-        explanation: "Analisi copertura catalogo.",
+        hints: ["Devi trovare i valori unici di product_id", "Cerca nella tabella OrderItems"],
+        explanation: "I product_id unici negli ordini mostrano quanti prodotti del catalogo sono stati effettivamente venduti.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT product_id DISTINCT FROM OrderItems",
         debugHint: "SELECT DISTINCT product_id."
       },
       {
         titleTemplate: "Ordini Multi-Prodotto",
         descTemplate: "Trova gli order_id unici in OrderItems (dovrebbero essere tutti quelli con righe).",
         queryTemplate: "SELECT DISTINCT order_id FROM OrderItems",
-        hints: ["DISTINCT order_id"],
-        explanation: "Lista ordini con item.",
+        hints: ["Cerca gli order_id unici", "La tabella è OrderItems"],
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT order_id DISTINCT FROM OrderItems",
         debugHint: "SELECT DISTINCT order_id."
       },
       {
@@ -557,9 +558,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola il valore totale per prodotto (price * stock) chiamandolo 'InventoryVal'.",
         queryTemplate: "SELECT price * stock AS InventoryVal FROM Products",
         hints: ["Moltiplicazione con alias"],
-        explanation: "KPI di magazzino.",
+        explanation: "Il valore di magazzino (prezzo × stock) è un indicatore chiave per la gestione dell'inventario e la contabilità.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT price * stock IS InventoryVal FROM Products",
         debugHint: "price * stock AS ..."
       },
       {
@@ -567,9 +568,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se ogni utente spendesse 100€, quanto incasseremmo? Calcola 100 per ogni riga (non aggregato).",
         queryTemplate: "SELECT 100 AS Potenziale FROM Users",
         hints: ["Seleziona una costante"],
-        explanation: "Colonne costanti.",
+        explanation: "Aggiungere una colonna calcolata con valore costante è utile per proiezioni e stime rapide.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT 100 IS Potenziale FROM Users",
         debugHint: "SELECT 100 ..."
       },
       {
@@ -577,9 +578,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra price, e l'importo dell'IVA (price * 0.22) come 'Solo_IVA'.",
         queryTemplate: "SELECT price, price * 0.22 AS Solo_IVA FROM Products",
         hints: ["Calcola solo il 22%"],
-        explanation: "Scorporo IVA.",
+        explanation: "Separare il prezzo netto dall'importo IVA è fondamentale per la fatturazione e la contabilità fiscale.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT price price * 0.22 AS Solo_IVA FROM Products",
         debugHint: "price * 0.22."
       },
       {
@@ -587,9 +588,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se compri 10 pezzi, quanto costa? Mostra (price * 10) come 'Costo_10_Pezzi'.",
         queryTemplate: "SELECT price * 10 AS Costo_10_Pezzi FROM Products",
         hints: ["Moltiplica prezzo per 10"],
-        explanation: "Preventivo rapido.",
+        explanation: "Con un'espressione calcolata puoi simulare scenari di prezzo, come sconti sulla quantità, direttamente nella query.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT price * 10 IS Costo_10_Pezzi FROM Products",
         debugHint: "price * 10."
       },
       {
@@ -597,9 +598,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Supponendo un costo del 60%, calcola il margine (price * 0.4) come 'Guadagno'.",
         queryTemplate: "SELECT price * 0.4 AS Guadagno FROM Products",
         hints: ["Il 40% del prezzo"],
-        explanation: "Analisi marginalità.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT price * 0.4 IS Guadagno FROM Products",
         debugHint: "price * 0.4."
       },
       {
@@ -607,39 +608,39 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona 'name' e 'category', rinominando category in 'Reparto'.",
         queryTemplate: "SELECT name, category AS Reparto FROM Products",
         hints: ["Solo il secondo ha l'alias"],
-        explanation: "Mix colonne pure e alias.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name category AS Reparto FROM Products",
         debugHint: "category AS Reparto."
       },
       {
         titleTemplate: "Alias Numerico",
         descTemplate: "Seleziona id rinominandolo 'Codice'.",
         queryTemplate: "SELECT id AS Codice FROM Users",
-        hints: ["AS Codice"],
-        explanation: "Standardizzazione nomi.",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AS Codice."
+        brokenCode: "SELECT id IS Codice FROM Users",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Distinct Multiplo 1",
         descTemplate: "Seleziona combinazioni uniche di country e is_premium da Users.",
         queryTemplate: "SELECT DISTINCT country, is_premium FROM Users",
         hints: ["DISTINCT si applica a tutte le colonne elencate"],
-        explanation: "Combinazioni uniche di valori.",
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT country, is_premium DISTINCT FROM Users",
         debugHint: "SELECT DISTINCT country, is_premium."
       },
       {
         titleTemplate: "Distinct Multiplo 2",
         descTemplate: "Seleziona combinazioni uniche di category e price da Products (per vedere se ci sono prodotti con stesso prezzo in stessa cat).",
         queryTemplate: "SELECT DISTINCT category, price FROM Products",
-        hints: ["DISTINCT category, price"],
-        explanation: "Analisi pricing per categoria.",
+        hints: ["Usa DISTINCT per eliminare i valori ripetuti", "La colonna da rendere unica è category"],
+        explanation: "COUNT(DISTINCT ...) conta i valori unici, eliminando i duplicati prima del conteggio.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category, price DISTINCT FROM Products",
         debugHint: "SELECT DISTINCT category, price."
       },
       {
@@ -647,9 +648,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona combinazioni uniche di user_id e status da Orders.",
         queryTemplate: "SELECT DISTINCT user_id, status FROM Orders",
         hints: ["Chi ha avuto quali stati"],
-        explanation: "Storia stati per utente.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id, status DISTINCT FROM Orders",
         debugHint: "DISTINCT user_id, status."
       },
       {
@@ -657,30 +658,30 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola (quantity * unit_price) + 10 (spese spedizione fisse) AS 'Totale_Pieno'.",
         queryTemplate: "SELECT (quantity * unit_price) + 10 AS Totale_Pieno FROM OrderItems",
         hints: ["Usa le parentesi per chiarezza, poi + 10"],
-        explanation: "Espressioni aritmetiche complesse.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT (quantity * unit_price) + 10 IS Totale_Pieno FROM OrderItems",
         debugHint: "(...) + 10."
       },
       {
         titleTemplate: "Metà Prezzo",
         descTemplate: "Seleziona price / 2 AS 'HalfPrice' da Products.",
         queryTemplate: "SELECT price / 2 AS HalfPrice FROM Products",
-        hints: ["Divisione"],
-        explanation: "Operatore divisione.",
+        hints: ["Seleziona dalla tabella Products", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "/ 2."
+        brokenCode: "SELECT price / 2 IS HalfPrice FROM Products",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Prezzo Netto Immaginario",
         descTemplate: "Se price include IVA 22%, calcola il netto (price / 1.22) AS 'Netto'.",
         queryTemplate: "SELECT price / 1.22 AS Netto FROM Products",
         hints: ["Dividi per 1.22"],
-        explanation: "Scorporo matematico.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "/ 1.22."
+        brokenCode: "SELECT price / 1.22 IS Netto FROM Products",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Proiezione Costante Stringa",
@@ -689,7 +690,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Stringa fissa tra apici come colonna"],
         explanation: "Aggiungere colonne statiche al result set.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name, 'Active' IS Status FROM Users",
         debugHint: "'Active' AS Status."
       },
       {
@@ -697,9 +698,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona id e il numero 1 come 'Flag' da Orders.",
         queryTemplate: "SELECT id, 1 AS Flag FROM Orders",
         hints: ["Numero 1 come colonna"],
-        explanation: "Flag statici.",
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id 1 AS Flag FROM Orders",
         debugHint: "1 AS Flag."
       }
     ],
@@ -719,10 +720,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona i primi 5 prodotti.",
         queryTemplate: "SELECT * FROM Products LIMIT 5",
         hints: ["LIMIT 5"],
-        explanation: "Restituisce un sottoinsieme iniziale.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 5."
+        brokenCode: "SELCET * FROM Products LIMIT 5",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Singolo Ordine",
@@ -731,28 +732,28 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["LIMIT 1"],
         explanation: "Utile per vedere un campione di dati.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 1."
+        brokenCode: "SELCET * FROM Orders LIMIT 1",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Top 10 OrderItems",
         descTemplate: "Seleziona le prime 10 righe di OrderItems.",
         queryTemplate: "SELECT * FROM OrderItems LIMIT 10",
         hints: ["LIMIT 10"],
-        explanation: "Paginazione semplice.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 10."
+        brokenCode: "SELCET * FROM OrderItems LIMIT 10",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Due Dipendenti",
         descTemplate: "Seleziona solo 2 dipendenti.",
         queryTemplate: "SELECT * FROM Employees LIMIT 2",
         hints: ["LIMIT 2"],
-        explanation: "Limitare il result set.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 2."
+        brokenCode: "SELCET * FROM Employees LIMIT 2",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Paginazione: Pagina 2",
@@ -768,50 +769,50 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Salto Iniziale",
         descTemplate: "Seleziona 3 prodotti saltando il primo.",
         queryTemplate: "SELECT * FROM Products LIMIT 3 OFFSET 1",
-        hints: ["LIMIT 3 OFFSET 1"],
+        hints: ["Usa LIMIT per il numero di righe e OFFSET per saltare le prime", "OFFSET 1 salta la prima riga"],
         explanation: "Ignora la prima riga e prendi le successive.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OFFSET 1."
+        brokenCode: "SELCET * FROM Products LIMIT 3 OFFSET 1",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Offset Semplice",
         descTemplate: "Seleziona 1 ordine saltando i primi 10.",
         queryTemplate: "SELECT * FROM Orders LIMIT 1 OFFSET 10",
-        hints: ["LIMIT 1 OFFSET 10"],
-        explanation: "Accesso casuale posizionale.",
+        hints: ["LIMIT imposta quante righe prendere, OFFSET quante saltarne", "Vuoi solo 1 riga, dopo aver saltato le prime 10"],
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OFFSET 10."
+        brokenCode: "SELCET * FROM Orders LIMIT 1 OFFSET 10",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Skip e Take",
         descTemplate: "Prendi 4 righe di OrderItems saltandone 2.",
         queryTemplate: "SELECT * FROM OrderItems LIMIT 4 OFFSET 2",
-        hints: ["LIMIT 4 OFFSET 2"],
-        explanation: "Paginazione custom.",
+        hints: ["OFFSET indica da dove iniziare, LIMIT quante righe prendere", "Salta le prime 2 righe, poi prendi le successive 4"],
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET * FROM OrderItems LIMIT 4 OFFSET 2",
         debugHint: "LIMIT 4 OFFSET 2."
       },
       {
         titleTemplate: "Consultazione",
         descTemplate: "Prendi 2 dipendenti saltando il primo.",
         queryTemplate: "SELECT * FROM Employees LIMIT 2 OFFSET 1",
-        hints: ["LIMIT 2 OFFSET 1"],
-        explanation: "Scorrimento dati.",
+        hints: ["Combina LIMIT e OFFSET per la paginazione", "Salta il primo dipendente e prendi i successivi 2"],
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OFFSET 1."
+        brokenCode: "SELCET * FROM Employees LIMIT 2 OFFSET 1",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Proiezione Nulla",
         descTemplate: "Seleziona una colonna con valore NULL chiamata 'Nullo' da Users (limit 1).",
         queryTemplate: "SELECT NULL AS Nullo FROM Users LIMIT 1",
         hints: ["SELECT NULL ... LIMIT 1"],
-        explanation: "Generazione di valori NULL espliciti.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT NULL IS Nullo FROM Users LIMIT 1",
         debugHint: "NULL AS Nullo."
       },
       {
@@ -821,17 +822,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["SELECT 1 ..."],
         explanation: "Spesso usato per verificare se la tabella non è vuota.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SELECT 1."
+        brokenCode: "SELCET 1 FROM Products LIMIT 1",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Alias su Costante",
         descTemplate: "Seleziona 'Test' as T da Orders LIMIT 1.",
         queryTemplate: "SELECT 'Test' AS T FROM Orders LIMIT 1",
         hints: ["Stringa fissa con alias"],
-        explanation: "Test di connettività/query.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT 'Test' IS T FROM Orders LIMIT 1",
         debugHint: "'Test' AS T."
       },
       {
@@ -839,9 +840,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola 10 * 10 come 'Cento' selezionando da Users LIMIT 1.",
         queryTemplate: "SELECT 10 * 10 AS Cento FROM Users LIMIT 1",
         hints: ["Operazione matematica pura"],
-        explanation: "SQL come calcolatrice.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT 10 * 10 IS Cento FROM Users LIMIT 1",
         debugHint: "10 * 10."
       },
       {
@@ -849,9 +850,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona name AS N dalla tabella Users, solo i primi 2.",
         queryTemplate: "SELECT name AS N FROM Users LIMIT 2",
         hints: ["Combina Alias e Limit"],
-        explanation: "Feature combinate.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name IS N FROM Users LIMIT 2",
         debugHint: "AS N ... LIMIT 2."
       },
       {
@@ -859,20 +860,20 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona i primi 3 paesi unici (DISTINCT country) da Users.",
         queryTemplate: "SELECT DISTINCT country FROM Users LIMIT 3",
         hints: ["Prima DISTINCT poi LIMIT applica il limite ai risultati unici"],
-        explanation: "Interazione tra DISTINCT e LIMIT.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT country DISTINCT FROM Users LIMIT 3",
         debugHint: "SELECT DISTINCT ... LIMIT 3."
       },
       {
         titleTemplate: "Limit Grande",
         descTemplate: "Seleziona name da Products LIMIT 100 (anche se ce ne sono meno).",
         queryTemplate: "SELECT name FROM Products LIMIT 100",
-        hints: ["LIMIT 100"],
+        hints: ["Seleziona dalla tabella Products", "Specifica il nome delle colonne dopo SELECT"],
         explanation: "Il LIMIT non fallisce se le righe sono meno.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 100."
+        brokenCode: "SELCET name FROM Products LIMIT 100",
+        debugHint: "DISTINCT va subito dopo SELECT, prima del nome della colonna."
       },
       {
         titleTemplate: "Offset Grande",
@@ -881,17 +882,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["OFFSET molto alto"],
         explanation: "Restituisce zero righe se l'offset supera il count.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OFFSET 100."
+        brokenCode: "SELCET * FROM Users LIMIT 10 OFFSET 100",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Ultimo (Simulato)",
         descTemplate: "Seleziona tutto da Orders LIMIT 1 OFFSET 4 (Simula prendere il 5° elemento).",
         queryTemplate: "SELECT * FROM Orders LIMIT 1 OFFSET 4",
         hints: ["Prende esattamente la 5a riga"],
-        explanation: "Accesso diretto all'n-esima riga.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET * FROM Orders LIMIT 1 OFFSET 4",
         debugHint: "LIMIT 1 OFFSET 4."
       },
       {
@@ -899,19 +900,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra name e prezzo+iva per i primi 3 prodotti.",
         queryTemplate: "SELECT name, price * 1.22 AS Ivato FROM Products LIMIT 3",
         hints: ["Calcolo in select, limit alla fine"],
-        explanation: "Report parziale.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 3."
+        brokenCode: "SELECT name price * 1.22 AS Ivato FROM Products LIMIT 3",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Stringa Vuota",
         descTemplate: "Seleziona una stringa vuota '' come 'Empty' da Users LIMIT 1.",
         queryTemplate: "SELECT '' AS Empty FROM Users LIMIT 1",
         hints: ["Due apici singoli ''"],
-        explanation: "Stringhe vuote vs NULL.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT '' IS Empty FROM Users LIMIT 1",
         debugHint: "'' AS Empty."
       },
       {
@@ -919,29 +920,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona true come 'Vero' da Users LIMIT 1.",
         queryTemplate: "SELECT true AS Vero FROM Users LIMIT 1",
         hints: ["Valore booleano true"],
-        explanation: "Tipi di dato letterali.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT true IS Vero FROM Users LIMIT 1",
         debugHint: "true AS Vero."
       },
       {
         titleTemplate: "Falso",
         descTemplate: "Seleziona false come 'Falso' da Users LIMIT 1.",
         queryTemplate: "SELECT false AS Falso FROM Users LIMIT 1",
-        hints: ["Valore false"],
-        explanation: "Letterali booleani.",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "false."
+        brokenCode: "SELECT false IS Falso FROM Users LIMIT 1",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Zero",
         descTemplate: "Seleziona 0 come 'Zero' da Users LIMIT 1.",
         queryTemplate: "SELECT 0 AS Zero FROM Users LIMIT 1",
-        hints: ["Numero 0"],
-        explanation: "Costanti numeriche.",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT 0 IS Zero FROM Users LIMIT 1",
         debugHint: "0 AS Zero."
       },
       {
@@ -949,39 +950,39 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "È equivalente a OFFSET 0. Seleziona * da Orders LIMIT 2 OFFSET 0.",
         queryTemplate: "SELECT * FROM Orders LIMIT 2 OFFSET 0",
         hints: ["Esplicita OFFSET 0"],
-        explanation: "Offset implicito esplicitato.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OFFSET 0."
+        brokenCode: "SELCET * FROM Orders LIMIT 2 OFFSET 0",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Moltiplicazione Colonne Limitata",
         descTemplate: "Seleziona quantity * unit_price da OrderItems LIMIT 5.",
         queryTemplate: "SELECT quantity * unit_price FROM OrderItems LIMIT 5",
         hints: ["Calcolo e Limit"],
-        explanation: "Analisi campione.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 5."
+        brokenCode: "SELCET quantity * unit_price FROM OrderItems LIMIT 5",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Paginazione Avanzata",
         descTemplate: "Seleziona 3 utenti partita dalla riga 3 (OFFSET 2).",
         queryTemplate: "SELECT * FROM Users LIMIT 3 OFFSET 2",
         hints: ["Ricorda che OFFSET è 0-based o 1-based? (In SQL standard offset N salta N righe)"],
-        explanation: "Salta 2, prendi 3.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OFFSET 2."
+        brokenCode: "SELCET * FROM Users LIMIT 3 OFFSET 2",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Solo Nomi Distinct",
         descTemplate: "Primi 3 nomi unici da Users.",
         queryTemplate: "SELECT DISTINCT name FROM Users LIMIT 3",
         hints: ["DISTINCT e LIMIT"],
-        explanation: "Campione di nomi.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name DISTINCT FROM Users LIMIT 3",
         debugHint: "SELECT DISTINCT ... LIMIT 3."
       },
       {
@@ -989,20 +990,20 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prime 2 categorie uniche da Products.",
         queryTemplate: "SELECT DISTINCT category FROM Products LIMIT 2",
         hints: ["DISTINCT category ... LIMIT 2"],
-        explanation: "Campione categorie.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 2."
+        brokenCode: "SELECT category DISTINCT FROM Products LIMIT 2",
+        debugHint: "DISTINCT va subito dopo SELECT, prima del nome della colonna."
       },
       {
         titleTemplate: "Select All Limitata",
         descTemplate: "Seleziona tutto da Employees LIMIT 1.",
         queryTemplate: "SELECT * FROM Employees LIMIT 1",
         hints: ["Ultima verifica semplice"],
-        explanation: "Single row fetch.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 1."
+        brokenCode: "SELCET * FROM Employees LIMIT 1",
+        debugHint: "DISTINCT va subito dopo SELECT, prima del nome della colonna."
       }
     ],
   },
@@ -1013,7 +1014,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona gli utenti che vivono in 'Italy'.",
         queryTemplate: "SELECT * FROM Users WHERE country = 'Italy'",
         hints: ["Usa WHERE country = 'Italy'"],
-        explanation: "Filtro esatto su stringa.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
         brokenCode: "SELECT * FROM Users WHERE country IS 'Italy'",
         debugHint: "Usa = invece di IS."
@@ -1022,10 +1023,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Ordini Spediti",
         descTemplate: "Seleziona gli ordini con status 'Shipped'.",
         queryTemplate: "SELECT * FROM Orders WHERE status = 'Shipped'",
-        hints: ["status = 'Shipped'"],
-        explanation: "Filtro su stato.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders WHERE status == 'Shipped'",
         debugHint: "status = 'Shipped'."
       },
       {
@@ -1033,29 +1034,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona i prodotti con prezzo superiore a 100.",
         queryTemplate: "SELECT * FROM Products WHERE price > 100",
         hints: ["Usa il simbolo maggiore >"],
-        explanation: "Filtro numerico maggiore.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
         brokenCode: "SELECT * FROM Products WHERE price BIGGER 100",
-        debugHint: "Usa >."
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prodotti Economici",
         descTemplate: "Seleziona i prodotti con prezzo inferiore a 20.",
         queryTemplate: "SELECT * FROM Products WHERE price < 20",
         hints: ["Usa il simbolo minore <"],
-        explanation: "Filtro numerico minore.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WERE price < 20",
         debugHint: "price < 20."
       },
       {
         titleTemplate: "Quantità Esatta",
         descTemplate: "Seleziona le righe di OrderItems con quantity uguale a 1.",
         queryTemplate: "SELECT * FROM OrderItems WHERE quantity = 1",
-        hints: ["quantity = 1"],
-        explanation: "Uguaglianza numerica.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM OrderItems WERE quantity = 1",
         debugHint: "quantity = 1."
       },
       {
@@ -1063,9 +1064,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona gli utenti con is_premium = true (o 1).",
         queryTemplate: "SELECT * FROM Users WHERE is_premium = TRUE",
         hints: ["is_premium = TRUE oppure true"],
-        explanation: "Filtro booleano.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WERE is_premium = TRUE",
         debugHint: "is_premium = TRUE."
       },
       {
@@ -1073,29 +1074,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona i dipendenti del dipartimento 'IT'.",
         queryTemplate: "SELECT * FROM Employees WHERE department = 'Sales'",
         hints: ["department = 'IT'"],
-        explanation: "Filtro dipartimento.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Employees WHERE department == 'Sales'",
         debugHint: "department = 'IT'."
       },
       {
         titleTemplate: "Categoria Elettronica",
         descTemplate: "Seleziona i prodotti della categoria 'Electronics'.",
         queryTemplate: "SELECT * FROM Products WHERE category = 'Electronics'",
-        hints: ["category = 'Electronics'"],
-        explanation: "Filtro categoria.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE category == 'Electronics'",
         debugHint: "category = 'Electronics'."
       },
       {
         titleTemplate: "Ordini di un Utente",
         descTemplate: "Seleziona gli ordini dell'utente con id 5.",
         queryTemplate: "SELECT * FROM Orders WHERE user_id = 5",
-        hints: ["user_id = 5"],
-        explanation: "Filtro per chiave esterna.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders WERE user_id = 5",
         debugHint: "user_id = 5."
       },
       {
@@ -1103,17 +1104,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona i prodotti che costano esattamente 50.",
         queryTemplate: "SELECT * FROM Products WHERE price = 50",
         hints: ["price = 50"],
-        explanation: "Equality check.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WERE price = 50",
         debugHint: "price = 50."
       },
       {
         titleTemplate: "Stock Basso",
         descTemplate: "Seleziona prodotti con stock inferiore o uguale a 10.",
         queryTemplate: "SELECT * FROM Products WHERE stock <= 10",
-        hints: ["Usa <="],
-        explanation: "Minore o uguale.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
         brokenCode: "SELECT * FROM Products WHERE stock =< 10",
         debugHint: "L'operatore è <=."
@@ -1123,49 +1124,49 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona ordini con id maggiore di 50.",
         queryTemplate: "SELECT * FROM Orders WHERE id > 50",
         hints: ["id > 50"],
-        explanation: "Filtro su chiave primaria.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders WHERE id < 50",
         debugHint: "id > 50."
       },
       {
         titleTemplate: "Utenti Non Premium",
         descTemplate: "Seleziona utenti con is_premium = FALSE (false).",
         queryTemplate: "SELECT * FROM Users WHERE is_premium = FALSE",
-        hints: ["is_premium = FALSE"],
-        explanation: "Filtro booleano negativo.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WERE is_premium = FALSE",
         debugHint: "is_premium = FALSE."
       },
       {
         titleTemplate: "Utenti USA",
         descTemplate: "Seleziona utenti che vivono in 'USA'.",
         queryTemplate: "SELECT * FROM Users WHERE country = 'USA'",
-        hints: ["country = 'USA'"],
-        explanation: "Altro filtro stringa.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WHERE country == 'USA'",
         debugHint: "country = 'USA'."
       },
       {
         titleTemplate: "Ordini Pending",
         descTemplate: "Seleziona ordini con status 'Pending'.",
         queryTemplate: "SELECT * FROM Orders WHERE status = 'Pending'",
-        hints: ["status = 'Pending'"],
-        explanation: "Filtro stato inattivo.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders WHERE status == 'Pending'",
         debugHint: "status = 'Pending'."
       },
       {
         titleTemplate: "Dipartimento HR",
         descTemplate: "Seleziona dipendenti di 'HR'.",
         queryTemplate: "SELECT * FROM Employees WHERE department = 'HR'",
-        hints: ["department = 'HR'"],
-        explanation: "Filtro reparto.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Employees WHERE department == 'HR'",
         debugHint: "department = 'HR'."
       },
       {
@@ -1173,19 +1174,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Righe ordine con quantity >= 5.",
         queryTemplate: "SELECT * FROM OrderItems WHERE quantity >= 2",
         hints: ["Maggiore o uguale >="],
-        explanation: "Quantità significative.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM OrderItems WHERE quantity <= 2",
         debugHint: "quantity >= 5."
       },
       {
         titleTemplate: "Prezzo Minimo",
         descTemplate: "Prodotti con prezzo >= 10.",
         queryTemplate: "SELECT * FROM Products WHERE price >= 10",
-        hints: ["price >= 10"],
-        explanation: "Soglia minima.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE price <= 10",
         debugHint: "price >= 10."
       },
       {
@@ -1193,7 +1194,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona prodotti che NON hanno categoria 'Toys'.",
         queryTemplate: "SELECT * FROM Products WHERE category <> 'Toys'",
         hints: ["Usa <> oppure != per diverso"],
-        explanation: "Disuguaglianza.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
         brokenCode: "SELECT * FROM Products WHERE category NOT 'Toys'",
         debugHint: "Usa <> o !=."
@@ -1202,20 +1203,20 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Ordini non Spediti",
         descTemplate: "Seleziona ordini con status diverso da 'Shipped'.",
         queryTemplate: "SELECT * FROM Orders WHERE status != 'Shipped'",
-        hints: ["status != 'Shipped'"],
-        explanation: "Esclusione.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "!= 'Shipped'."
+        brokenCode: "SELECT * FROM Orders WHERE status !== 'Shipped'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prodotto Specifico",
         descTemplate: "Trova il prodotto con nome 'Laptop'.",
         queryTemplate: "SELECT * FROM Products WHERE name = 'Laptop'",
-        hints: ["name = 'Laptop'"],
-        explanation: "Ricerca esatta nome.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE name == 'Laptop'",
         debugHint: "name = 'Laptop'."
       },
       {
@@ -1223,9 +1224,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova l'utente con email 'mario@example.com'.",
         queryTemplate: "SELECT * FROM Users WHERE email = 'mario@example.com'",
         hints: ["Filtro su email"],
-        explanation: "Lookup utente.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WHERE email == 'mario@example.com'",
         debugHint: "email = '...'."
       },
       {
@@ -1233,9 +1234,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona ordini del '2023-01-01'.",
         queryTemplate: "SELECT * FROM Orders WHERE order_date = '2023-01-01'",
         hints: ["Le date vanno tra apici come le stringhe"],
-        explanation: "Filtro data esatta.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Orders WHERE order_date = '2023-01-01'",
         debugHint: "order_date = '2023-01-01'."
       },
       {
@@ -1243,19 +1244,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordini successivi al '2023-01-01'.",
         queryTemplate: "SELECT * FROM Orders WHERE order_date > '2023-01-01'",
         hints: ["Usa > con la data stringa"],
-        explanation: "Filtro temporale.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Orders WHERE order_date > '2023-01-01'",
         debugHint: "order_date > '...'."
       },
       {
         titleTemplate: "Prima di una Data",
         descTemplate: "Ordini precedenti al '2023-06-01'.",
         queryTemplate: "SELECT * FROM Orders WHERE order_date < '2023-06-01'",
-        hints: ["Usa <"],
-        explanation: "Storico ordini.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Orders WHERE order_date < '2023-06-01'",
         debugHint: "order_date < '...'."
       },
       {
@@ -1263,9 +1264,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Dipendenti assunti dopo il '2022-01-01'.",
         queryTemplate: "SELECT * FROM Employees WHERE hire_date > '2022-01-01'",
         hints: ["hire_date > ..."],
-        explanation: "Nuovi assunti.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Employees WHERE hire_date > '2022-01-01'",
         debugHint: "hire_date > '...'."
       },
       {
@@ -1273,9 +1274,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "OrderItems con quantity > 10.",
         queryTemplate: "SELECT * FROM OrderItems WHERE quantity > 1",
         hints: ["quantity > 10"],
-        explanation: "Ordini all'ingrosso.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM OrderItems WHERE quantity < 1",
         debugHint: "quantity > 10."
       },
       {
@@ -1283,29 +1284,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti con stock = 0.",
         queryTemplate: "SELECT * FROM Products WHERE stock = 0",
         hints: ["stock = 0"],
-        explanation: "Prodotti esauriti.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WERE stock = 0",
         debugHint: "stock = 0."
       },
       {
         titleTemplate: "Categoria Casa",
         descTemplate: "Prodotti category = 'Home'.",
         queryTemplate: "SELECT * FROM Products WHERE category = 'Home'",
-        hints: ["category = 'Home'"],
-        explanation: "Reparto casa.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE category == 'Home'",
         debugHint: "category = 'Home'."
       },
       {
         titleTemplate: "Utenti Francia",
         descTemplate: "Utenti country = 'France'.",
         queryTemplate: "SELECT * FROM Users WHERE country = 'France'",
-        hints: ["country = 'France'"],
-        explanation: "Clienti francesi.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WHERE country == 'France'",
         debugHint: "country = 'France'."
       }
     ],
@@ -1328,24 +1329,24 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         explanation: "Basta che una delle condizioni sia vera.",
         replacements: {},
         brokenCode: "SELECT * FROM Products WHERE price < 10 AND category = 'Toys'",
-        debugHint: "Usa OR."
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "IN List (Numeri)",
         descTemplate: "Ordini con id 1, 3 o 5.",
         queryTemplate: "SELECT * FROM Orders WHERE id IN (1, 3, 5)",
         hints: ["Usa IN (...)"],
-        explanation: "Lista di valori possibili.",
+        explanation: "OR include righe che soddisfano almeno una delle condizioni specificate.",
         replacements: {},
         brokenCode: "SELECT * FROM Orders WHERE id = (1, 3, 5)",
-        debugHint: "Usa IN."
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "IN List (Stringhe)",
         descTemplate: "Utenti in 'Italy' o 'France'.",
         queryTemplate: "SELECT * FROM Users WHERE country IN ('Italy', 'France')",
         hints: ["Usa IN ('...', '...')"],
-        explanation: "Lista di stringhe.",
+        explanation: "IN filtra le righe il cui valore è presente nella lista specificata. È più leggibile di una catena di OR.",
         replacements: {},
         brokenCode: "SELECT * FROM Users WHERE country IN 'Italy', 'France'",
         debugHint: "Parentesi tonde obbligatorie."
@@ -1355,7 +1356,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti con prezzo tra 10 e 50 (inclusi).",
         queryTemplate: "SELECT * FROM Products WHERE price BETWEEN 10 AND 50",
         hints: ["Usa BETWEEN ... AND ..."],
-        explanation: "Intervallo inclusivo.",
+        explanation: "IN filtra le righe il cui valore è presente nella lista specificata. È più leggibile di una catena di OR.",
         replacements: {},
         brokenCode: "SELECT * FROM Products WHERE price IN 10 TO 50",
         debugHint: "Usa BETWEEN X AND Y."
@@ -1365,9 +1366,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordini fatti nel 2023 (tra 2023-01-01 e 2023-12-31).",
         queryTemplate: "SELECT * FROM Orders WHERE order_date BETWEEN '2023-01-01' AND '2023-12-31'",
         hints: ["BETWEEN con date formato stringa"],
-        explanation: "Intervallo temporale.",
+        explanation: "BETWEEN filtra per un intervallo inclusivo di valori, equivalente a >= AND <=. È più leggibile per filtri su range.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Orders WHERE order_date BETWEEN '2023-01-01' AND '2023-12-31'",
         debugHint: "BETWEEN '...' AND '...'"
       },
       {
@@ -1375,7 +1376,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti senza email (email è NULL).",
         queryTemplate: "SELECT * FROM Users WHERE email IS NULL",
         hints: ["Usa IS NULL"],
-        explanation: "Controllo assenza di valore.",
+        explanation: "BETWEEN filtra per un intervallo inclusivo di valori, equivalente a >= AND <=. È più leggibile per filtri su range.",
         replacements: {},
         brokenCode: "SELECT * FROM Users WHERE email = NULL",
         debugHint: "Non usare = NULL, usa IS NULL."
@@ -1385,7 +1386,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti con email valorizzata.",
         queryTemplate: "SELECT * FROM Users WHERE email IS NOT NULL",
         hints: ["Usa IS NOT NULL"],
-        explanation: "Esclude i valori nulli.",
+        explanation: "IS NULL verifica se un valore è NULL (assente). Non si può usare = NULL perché NULL non è un valore, è l'assenza di valore.",
         replacements: {},
         brokenCode: "SELECT * FROM Users WHERE email != NULL",
         debugHint: "Non usare != NULL, usa IS NOT NULL."
@@ -1394,38 +1395,38 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "NOT Like",
         descTemplate: "Utenti la cui email NON finisce con '.com'.",
         queryTemplate: "SELECT * FROM Users WHERE email NOT LIKE '%.com'",
-        hints: ["NOT LIKE"],
-        explanation: "Pattern matching negativo.",
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
+        explanation: "IS NOT NULL seleziona solo le righe dove il campo ha un valore definito, escludendo i NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT LIKE."
+        brokenCode: "SELECT * FROM Users WERE email NOT LIKE '%.com'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Filtro Combinato 1",
         descTemplate: "Prodotti 'Electronics' con stock > 0.",
         queryTemplate: "SELECT * FROM Products WHERE category = 'Electronics' AND stock > 0",
         hints: ["AND tra due condizioni"],
-        explanation: "Filtro su categoria e disponibilità.",
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AND."
+        brokenCode: "SELECT * FROM Products WHERE category == 'Electronics' AND stock > 0",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Filtro Combinato 2",
         descTemplate: "Prodotti 'Toys' oppure con prezzo < 5.",
         queryTemplate: "SELECT * FROM Products WHERE category = 'Tech' OR price < 50",
-        hints: ["OR logico"],
-        explanation: "Condizione disgiunta.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "AND combina più condizioni: tutte devono essere vere perché la riga sia inclusa nel risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OR."
+        brokenCode: "SELECT * FROM Products WHERE category == 'Tech' OR price < 50",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Like Iniziale",
         descTemplate: "Utenti il cui nome inizia per 'A'.",
         queryTemplate: "SELECT * FROM Users WHERE name LIKE 'A%'",
-        hints: ["LIKE 'A%'"],
-        explanation: "Prefix match.",
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
+        explanation: "OR include righe che soddisfano almeno una delle condizioni specificate.",
         replacements: {},
         brokenCode: "SELECT * FROM Users WHERE name = 'A%'",
         debugHint: "Usa LIKE per i pattern."
@@ -1434,58 +1435,58 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Like Finale",
         descTemplate: "Utenti il cui nome finisce per 'o'.",
         queryTemplate: "SELECT * FROM Users WHERE name LIKE '%o'",
-        hints: ["LIKE '%o'"],
-        explanation: "Suffix match.",
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "%o."
+        brokenCode: "SELECT * FROM Users WERE name LIKE '%o'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Like Contiene",
         descTemplate: "Utenti il cui nome contiene 'ar'.",
         queryTemplate: "SELECT * FROM Users WHERE name LIKE '%ar%'",
-        hints: ["'%ar%'"],
-        explanation: "Substring match.",
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "%ar%."
+        brokenCode: "SELECT * FROM Users WERE name LIKE '%ar%'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Underscore Wildcard",
         descTemplate: "Utenti con nome di 4 lettere che inizia per 'M' (M___).",
         queryTemplate: "SELECT * FROM Users WHERE name LIKE 'A____'",
         hints: ["3 underscore per 3 caratteri qualsiasi"],
-        explanation: "Wildcard a singolo carattere.",
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "M___"
+        brokenCode: "SELECT * FROM Users WERE name LIKE 'A____'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "NOT IN (Numeri)",
         descTemplate: "Prodotti con id NON in (1, 2).",
         queryTemplate: "SELECT * FROM Products WHERE id NOT IN (1, 2)",
         hints: ["NOT IN (...)"],
-        explanation: "Esclusione da lista.",
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT IN."
+        brokenCode: "SELECT * FROM Products WERE id NOT IN (1, 2)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "NOT BETWEEN",
         descTemplate: "Prodotti con prezzo NON tra 20 e 100.",
         queryTemplate: "SELECT * FROM Products WHERE price NOT BETWEEN 20 AND 100",
         hints: ["NOT BETWEEN x AND y"],
-        explanation: "Esclusione intervallo.",
+        explanation: "IN filtra le righe il cui valore è presente nella lista specificata. È più leggibile di una catena di OR.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT BETWEEN."
+        brokenCode: "SELECT * FROM Products WERE price NOT BETWEEN 20 AND 100",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Priorità AND/OR 1",
         descTemplate: "Prodotti (Electronics OR Computers) AND price > 500.",
         queryTemplate: "SELECT * FROM Products WHERE (category = 'Electronics' OR category = 'Computers') AND price > 500",
         hints: ["Usa le parentesi per l'OR"],
-        explanation: "Controllo precedenza operatori.",
+        explanation: "BETWEEN filtra per un intervallo inclusivo di valori, equivalente a >= AND <=. È più leggibile per filtri su range.",
         replacements: {},
         brokenCode: "SELECT * FROM Products WHERE category = 'Electronics' OR category = 'Computers' AND price > 500",
         debugHint: "Senza parentesi l'AND vince sull'OR."
@@ -1495,10 +1496,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordini spediti dopo il 2023-01-01.",
         queryTemplate: "SELECT * FROM Orders WHERE status = 'Shipped' AND order_date > '2023-01-01'",
         hints: ["AND tra stato e data"],
-        explanation: "Filtro storico spedizioni.",
+        explanation: "Combinare AND e OR richiede attenzione alle precedenze: AND ha priorità su OR. Usa le parentesi per controllo esplicito.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AND."
+        brokenCode: "SELECT FROM Orders WHERE status = 'Shipped' AND order_date > '2023-01-01'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Dipendenti Sales/HR",
@@ -1507,18 +1508,18 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa IN per brevità"],
         explanation: "IN è più conciso di OR multipli.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Employees WERE department IN ('Sales', 'HR')",
         debugHint: "IN ('Sales', 'HR')."
       },
       {
         titleTemplate: "Utenti Gmail",
         descTemplate: "Utenti con email che finisce in '@gmail.com'.",
         queryTemplate: "SELECT * FROM Users WHERE email LIKE '%@gmail.com'",
-        hints: ["LIKE '%@...'"],
-        explanation: "Filtro dominio email.",
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
+        explanation: "IN filtra le righe il cui valore è presente nella lista specificata. È più leggibile di una catena di OR.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIKE."
+        brokenCode: "SELECT * FROM Users WERE email LIKE '%@gmail.com'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prodotti Stock Critico",
@@ -1527,88 +1528,88 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["AND per intervallo aperto"],
         explanation: "Pochi pezzi rimasti ma non zero.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AND."
+        brokenCode: "SELECT * FROM Products WHERE stock < 5 AND stock < 0",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Utente Senza Paese",
         descTemplate: "Utenti dove country è NULL.",
         queryTemplate: "SELECT * FROM Users WHERE country IS NULL",
-        hints: ["IS NULL"],
-        explanation: "Dati mancanti.",
+        hints: ["Per verificare i valori nulli usa IS NULL", "Non usare = NULL, non funziona in SQL"],
+        explanation: "AND combina più condizioni: tutte devono essere vere perché la riga sia inclusa nel risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "IS NULL."
+        brokenCode: "SELECT * FROM Users WERE country IS NULL",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Ordini Recenti Non Spediti",
         descTemplate: "Ordini > '2023-01-01' ma non 'Shipped'.",
         queryTemplate: "SELECT * FROM Orders WHERE order_date > '2023-01-01' AND status != 'Shipped'",
         hints: ["AND ... !="],
-        explanation: "Backlog recente.",
+        explanation: "IS NULL verifica se un valore è NULL (assente). Non si può usare = NULL perché NULL non è un valore, è l'assenza di valore.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Orders WHERE order_date > '2023-01-01' AND status != 'Shipped'",
         debugHint: "AND status != ..."
       },
       {
         titleTemplate: "Esclusione Categorie",
         descTemplate: "Prodotti non Toys e non Books.",
         queryTemplate: "SELECT * FROM Products WHERE category NOT IN ('Toys', 'Books')",
-        hints: ["NOT IN"],
-        explanation: "Blacklist categorie.",
+        hints: ["Usa IN per confrontare con una lista di valori", "I valori nella lista vanno separati da virgola"],
+        explanation: "AND combina più condizioni: tutte devono essere vere perché la riga sia inclusa nel risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WERE category NOT IN ('Toys', 'Books')",
         debugHint: "NOT IN (...)."
       },
       {
         titleTemplate: "Like Case",
         descTemplate: "Utenti con nome che inizia per 'm' (con Like è solitamente case-insensitive in SQLite ma standard SQL chiede 'M%'). Qui usiamo 'M%'.",
         queryTemplate: "SELECT * FROM Users WHERE name LIKE 'M%'",
-        hints: ["LIKE 'M%'"],
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
         explanation: "In molti DB LIKE è Case-Insensitive, ma sii specifico.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIKE 'M%'."
+        brokenCode: "SELECT * FROM Users WERE name LIKE 'M%'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Range Date Escluso",
         descTemplate: "Ordini prima del 2022 o dopo il 2023.",
         queryTemplate: "SELECT * FROM Orders WHERE order_date < '2022-01-01' OR order_date > '2023-12-31'",
         hints: ["OR per intervalli esterni"],
-        explanation: "Intervallo esterno.",
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OR."
+        brokenCode: "SELECT FROM Orders WHERE order_date < '2022-01-01' OR order_date > '2023-12-31'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Filtro Boolean False",
         descTemplate: "Utenti non premium e con email specificata (IS NOT NULL).",
         queryTemplate: "SELECT * FROM Users WHERE is_premium = FALSE AND email IS NOT NULL",
         hints: ["AND tra booleani"],
-        explanation: "Segmentazione utenza.",
+        explanation: "OR include righe che soddisfano almeno una delle condizioni specificate.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AND."
+        brokenCode: "SELECT * FROM Users WERE is_premium = FALSE AND email IS NOT NULL",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prezzo o Stock",
         descTemplate: "Prodotti che costano > 100 oppure hanno stock < 10.",
         queryTemplate: "SELECT * FROM Products WHERE price > 100 OR stock < 10",
         hints: ["OR su metriche diverse"],
-        explanation: "Criteri misti.",
+        explanation: "IS NOT NULL seleziona solo le righe dove il campo ha un valore definito, escludendo i NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OR."
+        brokenCode: "SELECT * FROM Products WHERE price < 100 OR stock < 10",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Filtro Completo",
         descTemplate: "Utenti italiani, premium, con email.",
         queryTemplate: "SELECT * FROM Users WHERE country = 'Italy' AND is_premium = TRUE AND email IS NOT NULL",
         hints: ["Tre condizioni in AND"],
-        explanation: "Filtro stretto.",
+        explanation: "OR include righe che soddisfano almeno una delle condizioni specificate.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Tutti AND."
+        brokenCode: "SELECT * FROM Users WHERE country == 'Italy' AND is_premium = TRUE AND email IS NOT NULL",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       }
     ],
     [Difficulty.Hard]: [
@@ -1617,7 +1618,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti che sono (Electronics o Computers) e costano > 500.",
         queryTemplate: "SELECT * FROM Products WHERE (category = 'Electronics' OR category = 'Computers') AND price > 500",
         hints: ["Usa le parentesi: (cat1 OR cat2) AND price"],
-        explanation: "Controllo preciso delle precedenze.",
+        explanation: "IS NOT NULL seleziona solo le righe dove il campo ha un valore definito, escludendo i NULL.",
         replacements: {},
         brokenCode: "SELECT * FROM Products WHERE category = 'Electronics' OR category = 'Computers' AND price > 500",
         debugHint: "Mancano le parentesi per l'OR."
@@ -1637,9 +1638,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona gli ordini 'Shipped', verificando con una subquery che il loro ID NON sia nella lista degli ordini 'Pending' (Questo è un esercizio di logica NOT IN).",
         queryTemplate: "SELECT * FROM Orders WHERE status = 'Shipped' AND id NOT IN (SELECT id FROM Orders WHERE status = 'Pending')",
         hints: ["Simuliamo: id NOT IN (...)"],
-        explanation: "Subquery filter.",
+        explanation: "OR include righe che soddisfano almeno una delle condizioni specificate.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders WHERE status == 'Shipped' AND id NOT IN (SELECT id FROM Orders WHERE status = 'Pending')",
         debugHint: "Controlla la subquery."
       },
       {
@@ -1649,7 +1650,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["id IN (SELECT user_id ...)"],
         explanation: "Filtro basato su esistenza record correlati.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WERE id IN (SELECT user_id FROM Orders)",
         debugHint: "IN (SELECT ...)."
       },
       {
@@ -1657,19 +1658,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti che NON hanno fatto ordini.",
         queryTemplate: "SELECT * FROM Users WHERE id NOT IN (SELECT user_id FROM Orders)",
         hints: ["NOT IN (SELECT ...)"],
-        explanation: "Esclusione basata su relazioni.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT IN."
+        brokenCode: "SELECT * FROM Users WERE id NOT IN (SELECT user_id FROM Orders)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prodotti Venduti",
         descTemplate: "Prodotti presenti in almeno un OrderItem.",
         queryTemplate: "SELECT * FROM Products WHERE id IN (SELECT product_id FROM OrderItems)",
         hints: ["id IN (SELECT product_id ...)"],
-        explanation: "Prodotti movimentati.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WERE id IN (SELECT product_id FROM OrderItems)",
         debugHint: "IN (SELECT ...)."
       },
       {
@@ -1677,80 +1678,80 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti mai venduti.",
         queryTemplate: "SELECT * FROM Products WHERE id NOT IN (SELECT product_id FROM OrderItems)",
         hints: ["NOT IN (SELECT ...)"],
-        explanation: "Prodotti fermi.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT IN."
+        brokenCode: "SELECT * FROM Products WERE id NOT IN (SELECT product_id FROM OrderItems)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Like Case Insensitive Esplicito",
         descTemplate: "Trova 'mario' ignorando maiuscole/minuscole (usando LOWER).",
         queryTemplate: "SELECT * FROM Users WHERE LOWER(name) LIKE 'mario%'",
         hints: ["LOWER(name) = '...'"],
-        explanation: "Normalizzazione stringhe.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LOWER(name)."
+        brokenCode: "SELECT * FROM Users WERE LOWER(name) LIKE 'mario%'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Anno Corrente",
         descTemplate: "Ordini dell'anno 2023 (usando LIKE sulla data stringa).",
         queryTemplate: "SELECT * FROM Orders WHERE order_date LIKE '2023%'",
-        hints: ["LIKE '2023%'"],
-        explanation: "Filtro data come stringa.",
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIKE '2023%'."
+        brokenCode: "SELECT * FROM Orders WERE order_date LIKE '2023%'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Mese Specifico",
         descTemplate: "Ordini di Maggio di qualsiasi anno (LIKE '%-05-%').",
         queryTemplate: "SELECT * FROM Orders WHERE order_date LIKE '%-05-%'",
-        hints: ["LIKE '%-05-%'"],
-        explanation: "Pattern matching interno data.",
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "'%-05-%'."
+        brokenCode: "SELECT FROM Orders WHERE order_date LIKE '%-05-%'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prezzo Scontato",
         descTemplate: "Prodotti dove il prezzo scontato del 10% è ancora > 100.",
         queryTemplate: "SELECT * FROM Products WHERE price * 0.9 > 100",
         hints: ["Calcolo a sinistra dell'operatore"],
-        explanation: "Filtro su espressione calcolata.",
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Products WHERE price * 0.9 > 100",
         debugHint: "price * 0.9 > 100."
       },
       {
         titleTemplate: "Lunghezza Nome",
         descTemplate: "Utenti con nome più lungo di 5 caratteri.",
         queryTemplate: "SELECT * FROM Users WHERE LENGTH(name) > 5",
-        hints: ["LENGTH(name)"],
-        explanation: "Filtro su lunghezza stringa.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LENGTH."
+        brokenCode: "SELECT * FROM Users WHERE LENGTH(name) < 5",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Stock Dispari",
         descTemplate: "Prodotti con quantità di stock dispari (modulo 2).",
         queryTemplate: "SELECT * FROM Products WHERE stock % 2 <> 0",
         hints: ["stock % 2 <> 0 oppure != 0"],
-        explanation: "Operatore modulo.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "% 2."
+        brokenCode: "SELECT * FROM Products WHERE stock % 2 << 0",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Coalesce Search",
         descTemplate: "Trova utenti dove country è NULL ma supponiamo 'Unknown' e cerca 'Unknown'. (Demo tecnica).",
         queryTemplate: "SELECT * FROM Users WHERE COALESCE(country, 'Unknown') = 'Unknown'",
-        hints: ["COALESCE(country, 'Unknown')"],
-        explanation: "Gestione NULL value al volo.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COALESCE."
+        brokenCode: "SELECT * FROM Users WHERE COALESCE(country, 'Unknown') == 'Unknown'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: " Doppia Negazione",
@@ -1759,7 +1760,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["NOT (A AND B)"],
         explanation: "Equivale a category != 'Toys' OR price >= 10.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE NOT (category == 'Toys' AND price < 10)",
         debugHint: "NOT ( ... )."
       },
       {
@@ -1767,9 +1768,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti con ID 1-5 oppure 10-15.",
         queryTemplate: "SELECT * FROM Products WHERE (id BETWEEN 1 AND 5) OR (id BETWEEN 10 AND 15)",
         hints: ["(A) OR (B)"],
-        explanation: "Intervalli disgiunti.",
+        explanation: "AND combina più condizioni: tutte devono essere vere perché la riga sia inclusa nel risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WERE (id BETWEEN 1 AND 5) OR (id BETWEEN 10 AND 15)",
         debugHint: "BETWEEN ... OR ..."
       },
       {
@@ -1777,9 +1778,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti con email che contiene 'corp' ma non finisce con '.net'.",
         queryTemplate: "SELECT * FROM Users WHERE email LIKE '%corp%' AND email NOT LIKE '%.net'",
         hints: ["LIKE AND NOT LIKE"],
-        explanation: "Pattern inclusion/exclusion.",
+        explanation: "BETWEEN filtra per un intervallo inclusivo di valori, equivalente a >= AND <=. È più leggibile per filtri su range.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WERE email LIKE '%corp%' AND email NOT LIKE '%.net'",
         debugHint: "LIKE ... AND ... NOT LIKE."
       },
       {
@@ -1789,7 +1790,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Moltiplicazione nella WHERE"],
         explanation: "Filtro su valore derivato riga per riga.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM OrderItems WHERE quantity * unit_price < 50",
         debugHint: "* > 50."
       },
       {
@@ -1797,19 +1798,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti che costano più della media (simulata con subquery statica o semplice).",
         queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products)",
         hints: ["price > (SELECT AVG(price)...)"],
-        explanation: "Confronto con aggregato globale.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SELECT AVG(price)."
+        brokenCode: "SELECT * FROM Products WHERE price < (SELECT AVG(price) FROM Products)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Utenti Stesso Paese Primo Utente",
         descTemplate: "Utenti che vivono nello stesso paese dell'utente con id 1.",
         queryTemplate: "SELECT * FROM Users WHERE country = (SELECT country FROM Users WHERE id = 1)",
         hints: ["= (SELECT country ...)"],
-        explanation: "Confronto dinamico.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WERE country = (SELECT country FROM Users WHERE id = 1)",
         debugHint: "Subquery che ritorna un scalare."
       },
       {
@@ -1817,59 +1818,59 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti nella categoria del prodotto id 10.",
         queryTemplate: "SELECT * FROM Products WHERE category = (SELECT category FROM Products WHERE id = 10)",
         hints: ["= (SELECT category ...)"],
-        explanation: "Self-lookup category.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Subquery."
+        brokenCode: "SELECT * FROM Products WERE category = (SELECT category FROM Products WHERE id = 10)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Ordini Stesso Giorno",
         descTemplate: "Ordini fatti lo stesso giorno dell'ordine 1.",
         queryTemplate: "SELECT * FROM Orders WHERE order_date = (SELECT order_date FROM Orders WHERE id = 1)",
         hints: ["= (SELECT order_date ...)"],
-        explanation: "Date matching dinamico.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Subquery."
+        brokenCode: "SELECT * FROM Orders WERE order_date = (SELECT order_date FROM Orders WHERE id = 1)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Esclusione Multipla ID",
         descTemplate: "Tutti gli utenti tranne id 1, 2 e 3 (usando NOT IN).",
         queryTemplate: "SELECT * FROM Users WHERE id NOT IN (1, 2, 3)",
-        hints: ["NOT IN (1, 2, 3)"],
-        explanation: "Lista nera.",
+        hints: ["Usa IN per confrontare con una lista di valori", "I valori nella lista vanno separati da virgola"],
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT IN."
+        brokenCode: "SELECT * FROM Users WERE id NOT IN (1, 2, 3)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prezzo non nullo",
         descTemplate: "Prodotti con prezzo specificato (NOT NULL) e maggiore di 0.",
         queryTemplate: "SELECT * FROM Products WHERE price IS NOT NULL AND price > 0",
-        hints: ["AND"],
-        explanation: "Data integrity check.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "IN filtra le righe il cui valore è presente nella lista specificata. È più leggibile di una catena di OR.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE price IS NOT NULL AND price < 0",
         debugHint: "IS NOT NULL."
       },
       {
         titleTemplate: "Like Wildcard Interna",
         descTemplate: "Utenti con 'a' come seconda lettera del nome.",
         queryTemplate: "SELECT * FROM Users WHERE name LIKE '_a%'",
-        hints: ["_a%"],
-        explanation: "Underscore match posizionale.",
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
+        explanation: "IS NOT NULL seleziona solo le righe dove il campo ha un valore definito, escludendo i NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "_a%."
+        brokenCode: "SELECT * FROM Users WERE name LIKE '_a%'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Ordinamento Logico Inverso",
         descTemplate: "Utenti che NON (sono Premium AND (country = 'Italy' OR country = 'France')).",
         queryTemplate: "SELECT * FROM Users WHERE NOT (is_premium = TRUE AND (country = 'Italy' OR country = 'France'))",
         hints: ["NOT (A AND (B OR C))"],
-        explanation: "Logica annidata complessa.",
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WHERE NOT (is_premium = TRUE AND (country == 'Italy' OR country = 'France'))",
         debugHint: "Attenzione alle parentesi."
       },
       {
@@ -1877,39 +1878,39 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti per cui ESISTE almeno un ordine (EXISTS).",
         queryTemplate: "SELECT * FROM Users u WHERE EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = u.id)",
         hints: ["EXISTS (SELECT 1 ...)"],
-        explanation: "Correlazione semantica.",
+        explanation: "Combinare AND e OR richiede attenzione alle precedenze: AND ha priorità su OR. Usa le parentesi per controllo esplicito.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "EXISTS."
+        brokenCode: "SELECT * FROM Users u WERE EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = u.id)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Subquery NOT EXISTS",
         descTemplate: "Utenti per cui NON ESISTE alcun ordine.",
         queryTemplate: "SELECT * FROM Users u WHERE NOT EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = u.id)",
         hints: ["NOT EXISTS (...)"],
-        explanation: "Anti-join pattern.",
+        explanation: "EXISTS verifica se la subquery correlata restituisce almeno una riga. È spesso più efficiente di IN per dataset grandi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT EXISTS."
+        brokenCode: "SELECT * FROM Users u WERE NOT EXISTS (SELECT 1 FROM Orders o WHERE o.user_id = u.id)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Ultimo giorno mese (approx)",
         descTemplate: "Ordini fatti il giorno 31 (LIKE '%-31').",
         queryTemplate: "SELECT * FROM Orders WHERE order_date LIKE '%-01'",
-        hints: ["LIKE finale"],
-        explanation: "Estrazione giorno stringa.",
+        hints: ["Usa LIKE per il confronto con pattern", "Il simbolo % sostituisce qualsiasi sequenza di caratteri"],
+        explanation: "EXISTS verifica se la subquery correlata restituisce almeno una riga. È spesso più efficiente di IN per dataset grandi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIKE."
+        brokenCode: "SELECT FROM Orders WHERE order_date LIKE '%-01'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Filtro Avanzato Finale",
         descTemplate: "Prodotti 'Tech' con stock > 100 oppure 'Old' con stock < 5.",
         queryTemplate: "SELECT * FROM Products WHERE (category = 'Tech' AND stock < 10) OR (category = 'Electronics' AND stock < 10)",
         hints: ["(A AND B) OR (C AND D)"],
-        explanation: "Regole di business complesse.",
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE (category == 'Tech' AND stock < 10) OR (category = 'Electronics' AND stock < 10)",
         debugHint: "Parentesi separate dall'OR."
       }
     ],
@@ -1921,7 +1922,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina la lista degli utenti in base al nome, in ordine alfabetico (A-Z).",
         queryTemplate: "SELECT * FROM Users ORDER BY name ASC",
         hints: ["Usa la clausola ORDER BY", "L'ordinamento predefinito è ascendente (ASC)"],
-        explanation: "Ordinamento alfabetico standard.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
         brokenCode: "SELECT * FROM Users ORDER BY name",
         debugHint: "Specifica ASC per chiarezza (anche se default)."
@@ -1931,7 +1932,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina la lista degli utenti in ordine alfabetico inverso (Z-A).",
         queryTemplate: "SELECT * FROM Users ORDER BY name DESC",
         hints: ["Aggiungi la keyword per l'ordine decrescente dopo il nome della colonna"],
-        explanation: "Ordinamento inverso.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
         brokenCode: "SELECT * FROM Users SORT BY name DESC",
         debugHint: "SORT BY non esiste, usa ORDER BY."
@@ -1941,9 +1942,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina gli utenti in base all'indirizzo email (Crescente).",
         queryTemplate: "SELECT * FROM Users ORDER BY email ASC",
         hints: ["Ordina usando la colonna 'email'"],
-        explanation: "Ordina stringhe.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users ORDER email ASC",
         debugHint: "ORDER BY email."
       },
       {
@@ -1951,19 +1952,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina gli utenti in base all'email in ordine decrescente.",
         queryTemplate: "SELECT * FROM Users ORDER BY email DESC",
         hints: ["Usa ORDER BY seguito da DESC"],
-        explanation: "Ordina stringhe inverso.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Aggiungi DESC."
+        brokenCode: "SELECT * FROM Users ORDER email DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Prodotti per Nome",
         descTemplate: "Elenca i prodotti ordinati alfabeticamente per nome.",
         queryTemplate: "SELECT * FROM Products ORDER BY name ASC",
         hints: ["Clausola ORDER BY su 'name'"],
-        explanation: "A-Z prodotti.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products ORDER name ASC",
         debugHint: "Sintassi base ORDER BY."
       },
       {
@@ -1971,29 +1972,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Elenca i prodotti ordinati per nome in ordine inverso (Z-A).",
         queryTemplate: "SELECT * FROM Products ORDER BY name DESC",
         hints: ["Usa DESC dopo il nome della colonna"],
-        explanation: "Z-A prodotti.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DESC."
+        brokenCode: "SELECT * FROM Products ORDER name DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Products category",
         descTemplate: "Raggruppa visivamente prodotti per categoria (A-Z).",
         queryTemplate: "SELECT * FROM Products ORDER BY category ASC",
         hints: ["Ordina per category"],
-        explanation: "Utile per vedere categorie vicine.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products ORDER category ASC",
         debugHint: "ORDER BY category."
       },
       {
         titleTemplate: "Ordina Products category DESC",
         descTemplate: "Ordina categorie Z-A.",
         queryTemplate: "SELECT * FROM Products ORDER BY category DESC",
-        hints: ["ORDER BY category DESC"],
-        explanation: "Utile per vedere categorie vicine.",
+        hints: ["Ordina per category in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products ORDER category DESC",
         debugHint: "Non scordare DESC."
       },
       {
@@ -2001,9 +2002,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Visualizza gli ordini in base al loro ID crescente (cronologico inserimento).",
         queryTemplate: "SELECT * FROM Orders ORDER BY id ASC",
         hints: ["L'ID è spesso sequenziale, quindi un ordinamento per ID è cronologico"],
-        explanation: "Ordine di default spesso.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders ORDER id ASC",
         debugHint: "Usa colonna id."
       },
       {
@@ -2011,19 +2012,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Visualizza gli ordini partendo dall'ID più alto (i più recenti).",
         queryTemplate: "SELECT * FROM Orders ORDER BY id DESC",
         hints: ["Per vedere i più recenti in un sistema sequenziale, ordina con DESC"],
-        explanation: "Comune per vedere ultimi inseriti.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DESC."
+        brokenCode: "SELECT * FROM Orders ORDER id DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Ordini per Utente",
         descTemplate: "Ordina gli ordini raggruppandoli per ID utente.",
         queryTemplate: "SELECT * FROM Orders ORDER BY user_id ASC",
         hints: ["Ordina numericamente per user_id"],
-        explanation: "Raggruppa ordini dello stesso user.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders ORDER user_id ASC",
         debugHint: "Controlla la colonna."
       },
       {
@@ -2031,97 +2032,97 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina gli ordini per ID utente in ordine decrescente.",
         queryTemplate: "SELECT * FROM Orders ORDER BY user_id DESC",
         hints: ["ORDER BY con user_id e specifica la direzione"],
-        explanation: "Inverso.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DESC."
+        brokenCode: "SELECT * FROM Orders ORDER user_id DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina OrderItems id",
         descTemplate: "Ordina righe ordine per ID.",
         queryTemplate: "SELECT * FROM OrderItems ORDER BY id ASC",
-        hints: ["ORDER BY id"],
-        explanation: "Base.",
+        hints: ["Ordina per id in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Sintassi."
+        brokenCode: "SELECT * FROM OrderItems ORDER id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina OrderItems id DESC",
         descTemplate: "Ordina righe ordine ID decrescente.",
         queryTemplate: "SELECT * FROM OrderItems ORDER BY id DESC",
-        hints: ["ORDER BY id DESC"],
-        explanation: "Base invertita.",
+        hints: ["Ordina per id in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Sintassi."
+        brokenCode: "SELECT * FROM OrderItems ORDER id DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina OrderItems order_id",
         descTemplate: "Ordina righe per ID ordine di appartenenza.",
         queryTemplate: "SELECT * FROM OrderItems ORDER BY order_id ASC",
-        hints: ["ORDER BY order_id"],
+        hints: ["Ordina per order_id in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
         explanation: "Vedi righe dello stesso ordine vicine.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM OrderItems ORDER order_id ASC",
         debugHint: "Check column name."
       },
       {
         titleTemplate: "Ordina OrderItems order_id DESC",
         descTemplate: "Ordina righe per ID ordine decrescente.",
         queryTemplate: "SELECT * FROM OrderItems ORDER BY order_id DESC",
-        hints: ["ORDER BY order_id DESC"],
-        explanation: "Inverso.",
+        hints: ["Ordina per order_id in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC."
+        brokenCode: "SELECT * FROM OrderItems ORDER order_id DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Employees name",
         descTemplate: "Elenco dipendenti alfabetico.",
         queryTemplate: "SELECT * FROM Employees ORDER BY name ASC",
-        hints: ["ORDER BY name"],
-        explanation: "Directory style.",
+        hints: ["Ordina per name in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "name column."
+        brokenCode: "SELECT * FROM Employees ORDER name ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Employees name DESC",
         descTemplate: "Elenco dipendenti Z-A.",
         queryTemplate: "SELECT * FROM Employees ORDER BY name DESC",
-        hints: ["ORDER BY name DESC"],
-        explanation: "Reverse directory.",
+        hints: ["Ordina per name in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC."
+        brokenCode: "SELECT * FROM Employees ORDER name DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Employees department",
         descTemplate: "Raggruppa dipendenti per dipartimento (A-Z).",
         queryTemplate: "SELECT * FROM Employees ORDER BY department ASC",
-        hints: ["ORDER BY department"],
-        explanation: "Org chart view.",
+        hints: ["Ordina per department in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "department column."
+        brokenCode: "SELECT * FROM Employees ORDER department ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Employees department DESC",
         descTemplate: "Ordina dipendenti per dipartimento Z-A.",
         queryTemplate: "SELECT * FROM Employees ORDER BY department DESC",
-        hints: ["ORDER BY department DESC"],
-        explanation: "Org chart reverse.",
+        hints: ["Ordina per department in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC."
+        brokenCode: "SELECT * FROM Employees ORDER department DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Products price",
         descTemplate: "Ordina prodotti dal più economico.",
         queryTemplate: "SELECT * FROM Products ORDER BY price ASC",
-        hints: ["ORDER BY price ASC"],
-        explanation: "Prezzo crescente.",
+        hints: ["Ordina per price in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
         brokenCode: "SELECT * FROM Products ORDER BY cost",
         debugHint: "Colonna è price."
@@ -2130,10 +2131,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Ordina Products price DESC",
         descTemplate: "Ordina prodotti dal più costoso.",
         queryTemplate: "SELECT * FROM Products ORDER BY price DESC",
-        hints: ["ORDER BY price DESC"],
-        explanation: "Prezzo decrescente.",
+        hints: ["Ordina per price in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products ORDER price DESC",
         debugHint: "Usa DESC su price."
       },
       {
@@ -2141,80 +2142,80 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina i prodotti in base alla quantità disponibile in magazzino (dal più scarso).",
         queryTemplate: "SELECT * FROM Products ORDER BY stock ASC",
         hints: ["Ordina per la colonna 'stock'"],
-        explanation: "Inventory check.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Colonna stock."
+        brokenCode: "SELECT * FROM Products ORDER stock ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Stock Prodotti (Decrescente)",
         descTemplate: "Ordina i prodotti partendo da quelli con maggiore disponibilità.",
         queryTemplate: "SELECT * FROM Products ORDER BY stock DESC",
         hints: ["Usa DESC su stock per vedere i più abbondanti"],
-        explanation: "Most available items.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC."
+        brokenCode: "SELECT * FROM Products ORDER stock DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Utenti per Iscrizione",
         descTemplate: "Ordina gli utenti dal primo iscritto (data creazione più vecchia).",
         queryTemplate: "SELECT * FROM Users ORDER BY created_at ASC",
         hints: ["La colonna 'created_at' indica l'iscrizione", "Date più vecchie sono 'minori'"],
-        explanation: "Cronologico Users.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
         brokenCode: "ORDER BY date",
-        debugHint: "Colonna created_at."
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Users joined DESC",
         descTemplate: "Ordina utenti per nuovi iscritti.",
         queryTemplate: "SELECT * FROM Users ORDER BY created_at DESC",
-        hints: ["ORDER BY created_at DESC"],
-        explanation: "Newest Users.",
+        hints: ["Ordina per created_at in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users ORDER created_at DESC",
         debugHint: "DESC su created_at."
       },
       {
         titleTemplate: "Ordina Orders total",
         descTemplate: "Ordina ordini per importo (piccoli prima).",
         queryTemplate: "SELECT * FROM Orders ORDER BY total_amount ASC",
-        hints: ["ORDER BY total_amount"],
-        explanation: "Smallest orders.",
+        hints: ["Ordina per total_amount in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
         brokenCode: "ORDER BY amount",
-        debugHint: "Colonna total_amount."
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Orders total DESC",
         descTemplate: "Ordina ordini per importo (grandi prima).",
         queryTemplate: "SELECT * FROM Orders ORDER BY total_amount DESC",
-        hints: ["ORDER BY total_amount DESC"],
-        explanation: "Big ticket orders.",
+        hints: ["Ordina per total_amount in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC."
+        brokenCode: "SELECT * FROM Orders ORDER total_amount DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Items qty",
         descTemplate: "Ordina righe ordine per quantità.",
         queryTemplate: "SELECT * FROM OrderItems ORDER BY quantity ASC",
-        hints: ["ORDER BY quantity"],
-        explanation: "Small quantities.",
+        hints: ["Ordina per quantity in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "quantity."
+        brokenCode: "SELECT * FROM OrderItems ORDER quantity ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Items qty DESC",
         descTemplate: "Ordina righe ordine per quantità decrescente.",
         queryTemplate: "SELECT * FROM OrderItems ORDER BY quantity DESC",
-        hints: ["ORDER BY quantity DESC"],
-        explanation: "Bulk items.",
+        hints: ["Ordina per quantity in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC."
+        brokenCode: "SELECT * FROM OrderItems ORDER quantity DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       }
     ],
     [Difficulty.Medium]: [
@@ -2223,7 +2224,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina gli utenti alfabeticamente prima per Paese, poi per Nome.",
         queryTemplate: "SELECT * FROM Users ORDER BY country ASC, name ASC",
         hints: ["Elenca le colonne separate da virgola nell'ORDER BY"],
-        explanation: "Ordinamento a più livelli.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
         brokenCode: "SELECT * FROM Users ORDER BY country AND name",
         debugHint: "Usa la virgola per separare le colonne."
@@ -2233,19 +2234,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina prodotti per categoria e poi per prezzo decrescente.",
         queryTemplate: "SELECT * FROM Products ORDER BY category ASC, price DESC",
         hints: ["ORDER BY category, price DESC"],
-        explanation: "Raggruppa e ordina internamente.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products ORDER category ASC, price DESC",
         debugHint: "La virgola separa i criteri."
       },
       {
         titleTemplate: "Ordina Data e Stato",
         descTemplate: "Ordina ordini per data decrescente e poi per stato.",
         queryTemplate: "SELECT * FROM Orders ORDER BY order_date DESC, status ASC",
-        hints: ["ORDER BY order_date DESC, status"],
-        explanation: "Cronologico inverso con raggruppamento stato.",
+        hints: ["Ordina per order_date in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders ORDER order_date DESC, status ASC",
         debugHint: "DESC sulla data."
       },
       {
@@ -2253,27 +2254,27 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina dipendenti per salario (salary) e poi per nome.",
         queryTemplate: "SELECT * FROM Employees ORDER BY salary ASC, name ASC",
         hints: ["ORDER BY salary, name"],
-        explanation: "Multi-column sort.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Virgola."
+        brokenCode: "SELECT * FROM Employees ORDER salary ASC, name ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Stock e ID",
         descTemplate: "Ordina prodotti per stock e a parità di stock per ID.",
         queryTemplate: "SELECT * FROM Products ORDER BY stock ASC, id ASC",
         hints: ["ORDER BY stock, id"],
-        explanation: "Ordinamento stabile deterministico.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Stock, id."
+        brokenCode: "SELECT * FROM Products ORDER stock ASC, id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Prezzo Totale",
         descTemplate: "Ordina per valore calcolato: quantity * unit_price.",
         queryTemplate: "SELECT * FROM OrderItems ORDER BY quantity * unit_price DESC",
-        hints: ["ORDER BY quantity * unit_price DESC"],
-        explanation: "Ordinamento su espressione.",
+        hints: ["Ordina per quantity in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
         brokenCode: "SELECT * FROM OrderItems ORDER BY total",
         debugHint: "Devi ripetere l'espressione o usare alias se supportato."
@@ -2282,50 +2283,50 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Ordina Lunghezza Nome",
         descTemplate: "Ordina utenti per lunghezza del nome.",
         queryTemplate: "SELECT * FROM Users ORDER BY LENGTH(name) ASC",
-        hints: ["ORDER BY LENGTH(name)"],
-        explanation: "Funzione scalare in ORDER BY.",
+        hints: ["Ordina per LENGTH in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LENGTH."
+        brokenCode: "SELECT * FROM Users ORDER LENGTH(name) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Anno Assunzione",
-        descTemplate: "Ordina dipendenti per anno di assunzione (estratto dalla data).",
-        queryTemplate: "SELECT * FROM Employees ORDER BY YEAR(hire_date) ASC",
-        hints: ["Usa YEAR() su hire_date"],
-        explanation: "Ordinamento su parte di data.",
+        descTemplate: "Ordina dipendenti per anno di assunzione (estratto dalla data) e poi per id.",
+        queryTemplate: "SELECT * FROM Employees ORDER BY YEAR(hire_date) ASC, id ASC",
+        hints: ["Usa YEAR() su hire_date", "Aggiungi un secondo criterio di ordinamento per i record con lo stesso anno"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente. Puoi aggiungere più colonne per risolvere i pareggi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa YEAR()."
+        brokenCode: "SELECT * FROM Employees ORDER YEAR(hire_date) ASC, id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Casuale (Random)",
         descTemplate: "Ordina casualmente (RANDOM()).",
         queryTemplate: "SELECT * FROM Products ORDER BY RANDOM()",
-        hints: ["ORDER BY RANDOM()"],
-        explanation: "Shuffle.",
+        hints: ["Ordina per RANDOM in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "RANDOM()."
+        brokenCode: "SELECT * FROM Products ORDER RANDOM()",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Alias",
         descTemplate: "Seleziona prezzo * stock come 'valore' e ordina per 'valore'.",
         queryTemplate: "SELECT *, price * stock as valore FROM Products ORDER BY valore DESC",
         hints: ["Usa l'alias 'valore' in ORDER BY"],
-        explanation: "Riferimento ad alias.",
+        explanation: "ORDER BY riordina le righe nel risultato finale secondo i valori della colonna specificata.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "valore DESC."
+        brokenCode: "SELECT *, price * stock IS valore FROM Products ORDER BY valore DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Misto ASC/DESC",
         descTemplate: "Ordina per Department DESC e poi Name ASC.",
         queryTemplate: "SELECT * FROM Employees ORDER BY department DESC, name ASC",
-        hints: ["department DESC, name ASC"],
-        explanation: "Direzioni miste.",
+        hints: ["Ordina per department in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Employees ORDER department DESC, name ASC",
         debugHint: "DESC primo, ASC secondo."
       },
       {
@@ -2333,79 +2334,79 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina per Paese, poi per ID, e infine per Nome.",
         queryTemplate: "SELECT * FROM Users ORDER BY country ASC, id ASC, name ASC",
         hints: ["Puoi specificare tre colonne in ordine"],
-        explanation: "Ordinamento profondo.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Virgole."
+        brokenCode: "SELECT * FROM Users ORDER country ASC, id ASC, name ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Nulls First (Simulato)",
         descTemplate: "Ordina Email in modo che i NULL vengano prima (usando CASE o sintassi standard se supportata: solitamente NULLS FIRST/LAST è standard, ma in SQLite NULLs vengono prima di default in ASC). Forza ordinamento: CASE WHEN email IS NULL THEN 0 ELSE 1 END.",
         queryTemplate: "SELECT * FROM Users ORDER BY CASE WHEN email IS NULL THEN 0 ELSE 1 END, email ASC",
         hints: ["CASE WHEN email IS NULL ..."],
-        explanation: "Controllo posizionamento NULL.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "CASE WHEN."
+        brokenCode: "SELECT * FROM Users ORDER CASE WHEN email IS NULL THEN 0 ELSE 1 END, email ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Nulls Last (Simulato)",
         descTemplate: "Ordina Email in modo che i NULL vengano dopo.",
         queryTemplate: "SELECT * FROM Users ORDER BY CASE WHEN email IS NULL THEN 1 ELSE 0 END, email ASC",
         hints: ["CASE WHEN ... IS NULL THEN 1"],
-        explanation: "Sposta NULL in fondo.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "CASE WHEN."
+        brokenCode: "SELECT * FROM Users ORDER CASE WHEN email IS NULL THEN 1 ELSE 0 END, email ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Giorno della Settimana",
         descTemplate: "Ordina gli ordini in base al giorno della settimana (Domenica=0, Lunedì=1...).",
         queryTemplate: "SELECT * FROM Orders ORDER BY DAYOFWEEK(order_date) ASC",
         hints: ["Usa DAYOFWEEK sulla data"],
-        explanation: "0 = Domenica.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DAYOFWEEK."
+        brokenCode: "SELECT * FROM Orders ORDER DAYOFWEEK(order_date) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Mese",
         descTemplate: "Ordina gli ordini in base al mese (1-12).",
         queryTemplate: "SELECT * FROM Orders ORDER BY MONTH(order_date) ASC",
-        hints: ["Usa MONTH()"],
-        explanation: "Gennaio = 1.",
+        hints: ["Ordina per MONTH in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MONTH."
+        brokenCode: "SELECT * FROM Orders ORDER MONTH(order_date) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina ID Inverso",
         descTemplate: "Ordina gli utenti per ID decrescente (spesso equivale all'ordine di iscrizione inverso).",
         queryTemplate: "SELECT * FROM Users ORDER BY id DESC",
-        hints: ["ID decrescente"],
-        explanation: "Proxy per data creazione.",
+        hints: ["Ordina per id in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC."
+        brokenCode: "SELECT * FROM Users ORDER id DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Case Insensitive",
         descTemplate: "Ordina per nome ignorando maiuscole (LOWER(name)).",
         queryTemplate: "SELECT * FROM Users ORDER BY LOWER(name) ASC",
-        hints: ["ORDER BY LOWER(name)"],
-        explanation: "Case-insensitive sort.",
+        hints: ["Ordina per LOWER in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LOWER."
+        brokenCode: "SELECT * FROM Users ORDER LOWER(name) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Boolean",
         descTemplate: "Ordina: prima i Premium (1), poi i normali (0).",
         queryTemplate: "SELECT * FROM Users ORDER BY is_premium DESC, name ASC",
         hints: ["is_premium DESC mette 1 prima di 0"],
-        explanation: "Ordinamento booleano.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users ORDER is_premium DESC, name ASC",
         debugHint: "DESC su booleano."
       },
       {
@@ -2413,60 +2414,60 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina i prodotti mettendo per primi quelli con scorte critiche (< 5), poi tutti gli altri.",
         queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock < 5 THEN 0 ELSE 1 END, stock ASC",
         hints: ["Usa CASE WHEN nell'ORDER BY per creare un gruppo prioritario (0 per critici, 1 per altri)", "Poi ordina normalmente per stock"],
-        explanation: "Ordinamento prioritario condizionale.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "CASE logic."
+        brokenCode: "SELECT * FROM Products ORDER CASE WHEN stock < 5 THEN 0 ELSE 1 END, stock ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Prezzo Arrotondato",
         descTemplate: "Ordina i prodotti in base al prezzo arrotondato all'intero più vicino.",
         queryTemplate: "SELECT * FROM Products ORDER BY ROUND(price) ASC",
         hints: ["Usa la funzione ROUND() nella clausola ORDER BY"],
-        explanation: "Raggruppa prezzi simili.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "ROUND."
+        brokenCode: "SELECT * FROM Products ORDER ROUND(price) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Dominio Email",
         descTemplate: "Ordina gli utenti basandoti solo sul dominio dell'email (la parte dopo il simbolo '@').",
         queryTemplate: "SELECT * FROM Users ORDER BY SUBSTR(email, INSTR(email, '@') + 1) ASC",
         hints: ["Usa SUBSTR per estrarre il dominio saltando i caratteri fino a INSTR('@')"],
-        explanation: "Ordinamento su sottostringa.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "String manipulation."
+        brokenCode: "SELECT FROM Users ORDER BY SUBSTR(email, INSTR(email, '@') + 1) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Recenti e Costosi",
         descTemplate: "Visualizza gli ordini partendo dai più recenti e, a parità di data, da quelli con importo più alto.",
         queryTemplate: "SELECT * FROM Orders ORDER BY order_date DESC, total_amount DESC",
         hints: ["Specifica DESC per entrambe le colonne"],
-        explanation: "Nuovi e costosi in cima.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC, DESC."
+        brokenCode: "SELECT * FROM Orders ORDER order_date DESC, total_amount DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Categoria Inversa e Prezzo",
         descTemplate: "Ordina i prodotti per Categoria (Z-A) e poi per Prezzo (Crescente).",
         queryTemplate: "SELECT * FROM Products ORDER BY category DESC, price ASC",
         hints: ["Category DESC, Price (default ASC)"],
-        explanation: "Mixed logic.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC, ASC."
+        brokenCode: "SELECT * FROM Products ORDER category DESC, price ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per ID Prodotto",
         descTemplate: "Ordina le righe degli ordini (OrderItems) in base all'ID del prodotto.",
         queryTemplate: "SELECT * FROM OrderItems ORDER BY product_id ASC",
         hints: ["Usa la colonna product_id"],
-        explanation: "Raggruppa item dello stesso prodotto.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "product_id."
+        brokenCode: "SELECT * FROM OrderItems ORDER product_id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Parità ID",
@@ -2475,48 +2476,48 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa il modulo (%) per determinare pari (0) e dispari (1)"],
         explanation: "Even numbers (0) then Odd (1).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Mod 2."
+        brokenCode: "SELECT * FROM Users ORDER id % 2 ASC, id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Lunghezza Email (Decrescente)",
         descTemplate: "Visualizza gli utenti ordinati per lunghezza dell'email, dalle più lunghe alle più corte.",
         queryTemplate: "SELECT * FROM Users ORDER BY LENGTH(email) DESC",
         hints: ["Usa LENGTH() e ordina in modo decrescente"],
-        explanation: "Size sorting.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LENGTH."
+        brokenCode: "SELECT * FROM Users ORDER LENGTH(email) DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Multiplo Dipendenti",
         descTemplate: "Ordina per Dipartimento, poi per Salario, e infine per Nome.",
         queryTemplate: "SELECT * FROM Employees ORDER BY department ASC, salary ASC, name ASC",
         hints: ["Elenca le tre colonne in ordine"],
-        explanation: "Gerarchia completa.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Virgola separatrice."
+        brokenCode: "SELECT * FROM Employees ORDER department ASC, salary ASC, name ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Stock Aumentato",
         descTemplate: "Ordina i prodotti basandoti sul loro stock aumentato di 10 unità, in ordine decrescente.",
         queryTemplate: "SELECT * FROM Products ORDER BY (stock + 10) DESC",
         hints: ["Puoi usare espressioni matematiche nella clausola ORDER BY"],
-        explanation: "Shifted value.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Products ORDER BY (stock + 10) DESC",
         debugHint: "Parentesi opzionali ma chiare."
       },
       {
         titleTemplate: "Ordina Solo Prezzo",
         descTemplate: "Ordina solamente per prezzo (senza secondaria), verifica stabilità (potrebbe variare).",
         queryTemplate: "SELECT * FROM Products ORDER BY price ASC",
-        hints: ["price ASC"],
-        explanation: "Basic sort.",
+        hints: ["Ordina per price in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Price."
+        brokenCode: "SELECT * FROM Products ORDER price ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       }
     ],
     [Difficulty.Hard]: [
@@ -2525,29 +2526,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina mettendo prima i prodotti disponibili (stock > 0) e poi quelli esauriti. A parità di gruppo, ordina per nome.",
         queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN stock > 0 THEN 0 ELSE 1 END, name ASC",
         hints: ["Usa CASE WHEN stock > 0 THEN 0 ELSE 1 END per creare due gruppi logici"],
-        explanation: "Logica custom di priorità.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
         brokenCode: "SELECT * FROM Products ORDER BY stock",
-        debugHint: "Usa CASE."
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Lunghezza Nome Decrescente",
         descTemplate: "Utenti con nomi più lunghi in cima.",
         queryTemplate: "SELECT * FROM Users ORDER BY LENGTH(name) DESC",
-        hints: ["LENGTH(name) DESC"],
-        explanation: "Ordinamento su metrica stringa.",
+        hints: ["Ordina per LENGTH in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LENGTH."
+        brokenCode: "SELECT * FROM Users ORDER LENGTH(name) DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Anno e Mese",
         descTemplate: "Ordina gli ordini per anno decrescente, e successivamente per mese crescente.",
         queryTemplate: "SELECT * FROM Orders ORDER BY YEAR(order_date) DESC, MONTH(order_date) ASC",
         hints: ["Usa YEAR() e MONTH() sulle date"],
-        explanation: "Date part sorting.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders ORDER YEAR(order_date) DESC, MONTH(order_date) ASC",
         debugHint: "Usa YEAR e MONTH."
       },
       {
@@ -2555,9 +2556,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Elenca tutti gli utenti ordinati per ID, ma sposta l'utente con ID 1 in fondo alla lista.",
         queryTemplate: "SELECT * FROM Users ORDER BY CASE WHEN id = 1 THEN 1 ELSE 0 END, id ASC",
         hints: ["Usa CASE nell'ORDER BY per assegnare un valore 'pesante' (es. 1) all'ID 1 e 'leggero' (es. 0) agli altri"],
-        explanation: "Eccezioni nell'ordinamento.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users ORDER CASE WHEN id = 1 THEN 1 ELSE 0 END, id ASC",
         debugHint: "CASE WHEN id = 1."
       },
       {
@@ -2565,260 +2566,260 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina i prodotti in tre fasce: prima quelli economici (< 50), poi i medi (50-100), infine i costosi (> 100).",
         queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN price < 50 THEN 1 WHEN price <= 100 THEN 2 ELSE 3 END, price ASC",
         hints: ["Crea 3 livelli di priorità usando CASE WHEN multipli"],
-        explanation: "Fasce di prezzo custom.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products ORDER CASE WHEN price < 50 THEN 1 WHEN price <= 100 THEN 2 ELSE 3 END, price ASC",
         debugHint: "CASE WHEN ... THEN ... WHEN ..."
       },
       {
         titleTemplate: "Ordina per Dominio (Senza www)",
         descTemplate: "Ordina utenti per email, ignorando 'www.' se presente (su email è raro ma utile come esercizio stringa). Usiamo REPLACE.",
         queryTemplate: "SELECT * FROM Users ORDER BY REPLACE(email, 'www.', '') ASC",
-        hints: ["REPLACE(email, ...)"],
-        explanation: "Sorting su dato pulito.",
+        hints: ["Ordina per REPLACE in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "REPLACE."
+        brokenCode: "SELECT * FROM Users ORDER REPLACE(email, 'www.', '') ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina per Iniziale del Nome",
-        descTemplate: "Ordina gli utenti basandoti solo sulla prima lettera (inziale) del loro nome.",
-        queryTemplate: "SELECT * FROM Users ORDER BY SUBSTR(name, 1, 1) ASC",
-        hints: ["Usa la funzione LEFT per estrarre il primo carattere"],
-        explanation: "Ordinamento su carattere.",
+        descTemplate: "Ordina gli utenti basandoti sulla prima lettera (iniziale) del loro nome e poi per id.",
+        queryTemplate: "SELECT * FROM Users ORDER BY SUBSTR(name, 1, 1) ASC, id ASC",
+        hints: ["Usa la funzione SUBSTR per estrarre il primo carattere", "Aggiungi id come secondo criterio per risultati stabili"],
+        explanation: "ORDER BY con ASC ordina in ordine crescente. Aggiungere un secondo criterio risolve l'ambiguità tra righe con la stessa iniziale.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa LEFT."
+        brokenCode: "SELECT * FROM Users ORDER SUBSTR(name, 1, 1) ASC, id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordinamento Casuale",
         descTemplate: "Ordina la lista dei prodotti in modo casuale ad ogni esecuzione.",
         queryTemplate: "SELECT * FROM Products ORDER BY RANDOM()",
         hints: ["Esiste una funzione per generare numeri casuali (RAND o RANDOM)"],
-        explanation: "Non deterministico.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "RANDOM."
+        brokenCode: "SELECT * FROM Products ORDER RANDOM()",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Coalesce",
         descTemplate: "Ordina per telefono, se null usa email.",
         queryTemplate: "SELECT * FROM Users ORDER BY COALESCE(phone_number, email) ASC",
-        hints: ["COALESCE(phone, email)"],
-        explanation: "Fallback sorting.",
+        hints: ["Ordina per COALESCE in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY riordina le righe nel risultato finale secondo i valori della colonna specificata.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COALESCE."
+        brokenCode: "SELECT * FROM Users ORDER COALESCE(phone_number, email) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Ultima Lettera",
         descTemplate: "Ordina nomi basandoti sull'ultima lettera.",
         queryTemplate: "SELECT * FROM Users ORDER BY SUBSTR(name, -1) ASC",
-        hints: ["SUBSTR(name, -1)"],
-        explanation: "Reverse string logic.",
+        hints: ["Ordina per SUBSTR in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SUBSTR negativo."
+        brokenCode: "SELECT FROM Users ORDER BY SUBSTR(name, -1) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Escludendo Prefisso",
         descTemplate: "Ordina prodotti ignorando le prime 3 lettere del nome.",
         queryTemplate: "SELECT * FROM Products ORDER BY SUBSTR(name, 4) ASC",
-        hints: ["SUBSTR(name, 4)"],
-        explanation: "Skip prefix.",
+        hints: ["Ordina per SUBSTR in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SUBSTR."
+        brokenCode: "SELECT * FROM Products ORDER SUBSTR(name, 4) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Priorità Reparto",
         descTemplate: "HR prima, poi Sales, poi IT, poi altri.",
         queryTemplate: "SELECT * FROM Employees ORDER BY CASE department WHEN 'HR' THEN 1 WHEN 'Sales' THEN 2 WHEN 'IT' THEN 3 ELSE 4 END",
         hints: ["CASE department WHEN ..."],
-        explanation: "Mapping esplicito valori.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "CASE WHEN."
+        brokenCode: "SELECT * FROM Employees ORDER CASE department WHEN 'HR' THEN 1 WHEN 'Sales' THEN 2 WHEN 'IT' THEN 3 ELSE 4 END",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Valore Assoluto (Simulato)",
         descTemplate: "Ordina per variazione di stock da 10 (ABS(stock - 10)).",
         queryTemplate: "SELECT * FROM Products ORDER BY ABS(stock - 10) ASC",
-        hints: ["ABS(...)"],
-        explanation: "Distanza da un valore.",
+        hints: ["Ordina per ABS in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY riordina le righe nel risultato finale secondo i valori della colonna specificata.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "ABS."
+        brokenCode: "SELECT FROM Products ORDER BY ABS(stock - 10) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Concatenazione",
         descTemplate: "Ordina per 'Cognome Nome' (assumendo name sia 'Nome Cognome', facciamo sort su name intero per semplicità ma unito a ID).",
         queryTemplate: "SELECT * FROM Users ORDER BY name || id ASC",
         hints: ["|| per concatenare"],
-        explanation: "Concatenazione chiavi.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "||."
+        brokenCode: "SELECT * FROM Users ORDER name || id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina NULL in mezzo (Simulato)",
         descTemplate: "Metti i NULL di email dopo la 'M'.",
         queryTemplate: "SELECT * FROM Users ORDER BY CASE WHEN email IS NULL THEN 'M_NULL' ELSE email END ASC",
         hints: ["CASE che trasforma NULL in stringa"],
-        explanation: "Injection logica.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "CASE ELSE."
+        brokenCode: "SELECT * FROM Users ORDER CASE WHEN email IS NULL THEN 'M_NULL' ELSE email END ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Multiplo Inverso",
         descTemplate: "Ordina Stock ASC, ma se stock uguale, Price DESC.",
         queryTemplate: "SELECT * FROM Products ORDER BY stock ASC, price DESC",
-        hints: ["stock ASC, price DESC"],
-        explanation: "Standard multi-column.",
+        hints: ["Ordina per stock in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Virgola."
+        brokenCode: "SELECT * FROM Products ORDER stock ASC, price DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Solo Pari",
         descTemplate: "Ordina mettendo ID pari prima degli dispari, poi per ID.",
         queryTemplate: "SELECT * FROM Users ORDER BY id % 2 ASC, id ASC",
-        hints: ["Modulo 2"],
-        explanation: "Parity sort.",
+        hints: ["Ordina per id in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "%."
+        brokenCode: "SELECT * FROM Users ORDER id % 2 ASC, id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Prezzo Scontato vs Pieno",
         descTemplate: "Ordina per il minore tra prezzo e un prezzo fisso 50 (MIN simulato con CASE).",
         queryTemplate: "SELECT * FROM Products ORDER BY CASE WHEN price < 50 THEN price ELSE 50 END ASC",
         hints: ["CASE per 'min' o 'clamping'"],
-        explanation: "Logic sort.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "CASE."
+        brokenCode: "SELECT * FROM Products ORDER CASE WHEN price < 50 THEN price ELSE 50 END ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Data + 7gg",
         descTemplate: "Ordina per data ordine posticipata di 7 giorni (DATE(order_date, '+7 days')).",
         queryTemplate: "SELECT * FROM Orders ORDER BY DATE(order_date, '+7 days') DESC",
         hints: ["DATE(..., '+7 days')"],
-        explanation: "Date math sort.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DATE function."
+        brokenCode: "SELECT FROM Orders ORDER BY DATE(order_date, '+7 days') DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Booleano Complesso",
         descTemplate: "Ordina prima i Premium italiani, poi gli altri.",
         queryTemplate: "SELECT * FROM Users ORDER BY CASE WHEN is_premium = TRUE AND country = 'Italy' THEN 0 ELSE 1 END ASC",
         hints: ["CASE WHEN condition THEN 0"],
-        explanation: "Complex priority group.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "CASE."
+        brokenCode: "SELECT * FROM Users ORDER CASE WHEN is_premium = TRUE AND country = 'Italy' THEN 0 ELSE 1 END ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Lunghezza Desc",
         descTemplate: "Prodotti con descrizione (se esistesse) o nome più corto prima.",
         queryTemplate: "SELECT * FROM Products ORDER BY LENGTH(name) ASC",
-        hints: ["LENGTH(name) ASC"],
-        explanation: "Shortest name first.",
+        hints: ["Ordina per LENGTH in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "COUNT con CASE WHEN permette di contare selettivamente le righe che soddisfano determinate condizioni, utile per pivot e report.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LENGTH."
+        brokenCode: "SELECT * FROM Products ORDER LENGTH(name) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Round Price",
         descTemplate: "Ordina per prezzo arrotondato, poi stock.",
         queryTemplate: "SELECT * FROM Products ORDER BY ROUND(price), stock DESC",
-        hints: ["ROUND(price)"],
-        explanation: "Grouping by price range implicitly.",
+        hints: ["Ordina per ROUND in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "ROUND."
+        brokenCode: "SELECT * FROM Products ORDER ROUND(price), stock DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Alternato",
         descTemplate: "Ordina alfabeticamente ma 'Z' prima di 'A' (DESC).",
         queryTemplate: "SELECT * FROM Users ORDER BY name DESC",
-        hints: ["DESC"],
-        explanation: "Ripasso Hard: Z-A.",
+        hints: ["Ordina per name in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC."
+        brokenCode: "SELECT * FROM Users ORDER name DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Due Date",
         descTemplate: "Ordina per created_at (users) - non ha senso in join qui. Ordina Employees per hire_date.",
         queryTemplate: "SELECT * FROM Employees ORDER BY hire_date DESC",
-        hints: ["hire_date DESC"],
-        explanation: "Junior first.",
+        hints: ["Ordina per hire_date in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DESC."
+        brokenCode: "SELECT * FROM Employees ORDER hire_date DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Substr e Length",
         descTemplate: "Ordina per prima lettera e poi lunghezza.",
         queryTemplate: "SELECT * FROM Users ORDER BY SUBSTR(name, 1, 1) ASC, LENGTH(name) DESC",
         hints: ["Prima lettera, poi lunghezza"],
-        explanation: "Advanced grouping.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SUBSTR."
+        brokenCode: "SELECT * FROM Users ORDER SUBSTR(name, 1, 1) ASC, LENGTH(name) DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Cast",
         descTemplate: "Ordina zipcode come intero (supponendo sia stringa). CAST(zip_code AS INTEGER).",
         queryTemplate: "SELECT * FROM Users ORDER BY CAST(zip_code AS INTEGER) ASC",
         hints: ["CAST(... AS INTEGER)"],
-        explanation: "Numeric sort of strings.",
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "CAST."
+        brokenCode: "SELECT * FROM Users ORDER BY CAST(zip_code IS INTEGER) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Nulls Last Trick",
         descTemplate: "Ordina ID, ma i NULL (impossibile su PK) facciamo su manager_id NULLS LAST.",
         queryTemplate: "SELECT * FROM Employees ORDER BY CASE WHEN manager_id IS NULL THEN 1 ELSE 0 END, manager_id ASC",
         hints: ["CASE per NULLS LAST"],
-        explanation: "Standard pattern.",
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "CASE."
+        brokenCode: "SELECT * FROM Employees ORDER CASE WHEN manager_id IS NULL THEN 1 ELSE 0 END, manager_id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Bitwise (Simulato)",
         descTemplate: "Ordina id & 1 (dispari vs pari) DESC.",
         queryTemplate: "SELECT * FROM Users ORDER BY (id & 1) DESC, id ASC",
         hints: ["Operatore bitwise &"],
-        explanation: "Bit manipulation.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "& 1."
+        brokenCode: "SELECT * FROM Users ORDER (id & 1) DESC, id ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Parametrico",
         descTemplate: "Demo tecnica: ordinamento fisso ma complesso.",
         queryTemplate: "SELECT * FROM Products ORDER BY price * stock / 100 DESC",
-        hints: ["Espressione complessa"],
-        explanation: "KPI sort.",
+        hints: ["Ordina per price in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Formula."
+        brokenCode: "SELECT FROM Products ORDER BY price * stock / 100 DESC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Ordina Finale",
         descTemplate: "Ordina per (stock - id) ASC.",
         queryTemplate: "SELECT * FROM Products ORDER BY (stock - id) ASC",
-        hints: ["Differenza"],
-        explanation: "Nonsense metric but valid SQL.",
+        hints: ["Usa la funzione COUNT()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Math."
+        brokenCode: "SELECT * FROM Products ORDER (stock - id) ASC",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       }
     ],
   },
@@ -2828,7 +2829,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Conta Utenti Totali",
         descTemplate: "Calcola il numero totale di utenti registrati.",
         queryTemplate: "SELECT COUNT(*) FROM Users",
-        hints: ["Usa COUNT(*)"],
+        hints: ["Usa la funzione COUNT()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
         explanation: "Conta tutte le righe della tabella.",
         replacements: {},
         brokenCode: "SELECT COUNT FROM Users",
@@ -2839,67 +2840,67 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Quanti prodotti ci sono nel catalogo?",
         queryTemplate: "SELECT COUNT(*) FROM Products",
         hints: ["COUNT(*) su Products"],
-        explanation: "Numero totale record.",
+        explanation: "COUNT(*) conta tutte le righe della tabella o del set filtrato, incluse quelle con valori NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COUNT(*)."
+        brokenCode: "SELCET COUNT(*) FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Conta Ordini",
         descTemplate: "Calcola il numero totale di ordini effettuati.",
         queryTemplate: "SELECT COUNT(*) FROM Orders",
         hints: ["COUNT(*) su Orders"],
-        explanation: "Totale ordini.",
+        explanation: "COUNT(*) conta tutte le righe della tabella o del set filtrato, incluse quelle con valori NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COUNT(*)."
+        brokenCode: "SELCET COUNT(*) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Conta Dipendenti",
         descTemplate: "Quanti dipendenti lavorano in azienda?",
         queryTemplate: "SELECT COUNT(*) FROM Employees",
         hints: ["COUNT(*) su Employees"],
-        explanation: "Totale staff.",
+        explanation: "COUNT(*) conta tutte le righe della tabella o del set filtrato, incluse quelle con valori NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COUNT(*)."
+        brokenCode: "SELCET COUNT(*) FROM Employees",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Somma Prezzi Prodotti",
         descTemplate: "Calcola la somma dei prezzi di tutti i prodotti (valore inventario teorico unitario).",
         queryTemplate: "SELECT SUM(price) FROM Products",
-        hints: ["SUM(price)"],
-        explanation: "Somma algebrica colonna.",
+        hints: ["Usa la funzione SUM()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "COUNT(*) conta tutte le righe della tabella o del set filtrato, incluse quelle con valori NULL.",
         replacements: {},
         brokenCode: "SELECT TOTAL(price) FROM Products",
-        debugHint: "Usa SUM."
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Totale Valore Ordini",
         descTemplate: "Qual è il fatturato totale (somma total_amount)?",
         queryTemplate: "SELECT SUM(total_amount) FROM Orders",
-        hints: ["SUM(total_amount)"],
-        explanation: "Somma incassi.",
+        hints: ["Usa la funzione SUM()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "SUM() calcola la somma totale dei valori nella colonna specificata, ignorando i valori NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SUM."
+        brokenCode: "SELCET SUM(total_amount) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Stock In Magazzino",
         descTemplate: "Calcola la quantità totale di articoli in magazzino (somma stock).",
         queryTemplate: "SELECT SUM(stock) FROM Products",
-        hints: ["SUM(stock)"],
-        explanation: "Totale pezzi fisici.",
+        hints: ["Usa la funzione SUM()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "SUM() calcola la somma totale dei valori nella colonna specificata, ignorando i valori NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SUM stock."
+        brokenCode: "SELCET SUM(stock) FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Media Prezzo Prodotti",
         descTemplate: "Qual è il prezzo medio dei prodotti?",
         queryTemplate: "SELECT AVG(price) FROM Products",
-        hints: ["AVG(price)"],
-        explanation: "Valore medio.",
+        hints: ["Usa la funzione AVG()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "AVG calcola la media aritmetica dei valori nella colonna specificata, ignorando i NULL.",
         replacements: {},
         brokenCode: "SELECT AVERAGE(price) FROM Products",
         debugHint: "Usa AVG, non AVERAGE."
@@ -2908,58 +2909,58 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Media Ordine",
         descTemplate: "Qual è l'importo medio di un ordine?",
         queryTemplate: "SELECT AVG(total_amount) FROM Orders",
-        hints: ["AVG(total_amount)"],
-        explanation: "Scontrino medio.",
+        hints: ["Usa la funzione AVG()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "AVG() calcola la media aritmetica dei valori, ignorando i NULL. Utile per metriche come prezzo medio o stipendio medio.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AVG."
+        brokenCode: "SELCET AVG(total_amount) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Prezzo Minimo",
         descTemplate: "Trova il prezzo più basso nel catalogo.",
         queryTemplate: "SELECT MIN(price) FROM Products",
-        hints: ["MIN(price)"],
-        explanation: "Valore minimo.",
+        hints: ["Usa la funzione MIN()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "AVG() calcola la media aritmetica dei valori, ignorando i NULL. Utile per metriche come prezzo medio o stipendio medio.",
         replacements: {},
         brokenCode: "SELECT LOWEST(price)...",
-        debugHint: "Usa MIN."
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Prezzo Massimo",
         descTemplate: "Trova il prezzo più alto nel catalogo.",
         queryTemplate: "SELECT MAX(price) FROM Products",
-        hints: ["MAX(price)"],
-        explanation: "Valore massimo.",
+        hints: ["Usa la funzione MAX()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "MIN() restituisce il valore più piccolo nella colonna, utile per trovare il prezzo minimo, la data più antica, ecc.",
         replacements: {},
         brokenCode: "SELECT HIGHEST(price)...",
-        debugHint: "Usa MAX."
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Primo Utente",
         descTemplate: "Trova la data di iscrizione più vecchia (primo utente).",
         queryTemplate: "SELECT MIN(created_at) FROM Users",
-        hints: ["MIN(created_at)"],
-        explanation: "Data minore = più vecchia.",
+        hints: ["Usa la funzione MIN()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "MAX() restituisce il valore più grande nella colonna, utile per record massimi e analisi di picco.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET MIN(created_at) FROM Users",
         debugHint: "MIN su date."
       },
       {
         titleTemplate: "Ultimo Ordine",
         descTemplate: "Trova la data dell'ordine più recente.",
         queryTemplate: "SELECT MAX(order_date) FROM Orders",
-        hints: ["MAX(order_date)"],
-        explanation: "Data maggiore = più recente.",
+        hints: ["Usa la funzione MAX()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "MIN() restituisce il valore più piccolo nella colonna, utile per trovare il prezzo minimo, la data più antica, ecc.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET MAX(order_date) FROM Orders",
         debugHint: "MAX su date."
       },
       {
         titleTemplate: "Conta Paesi Unici",
         descTemplate: "Conta quanti paesi diversi ci sono tra gli utenti.",
         queryTemplate: "SELECT COUNT(DISTINCT country) FROM Users",
-        hints: ["COUNT(DISTINCT country)"],
-        explanation: "Conta senza duplicati.",
+        hints: ["Usa la funzione COUNT()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "MAX() restituisce il valore più grande nella colonna, utile per record massimi e analisi di picco.",
         replacements: {},
         brokenCode: "SELECT COUNT(country) FROM Users",
         debugHint: "Serve DISTINCT dentro COUNT."
@@ -2968,110 +2969,110 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Conta Categorie Uniche",
         descTemplate: "Quante categorie di prodotti diverse esistono?",
         queryTemplate: "SELECT COUNT(DISTINCT category) FROM Products",
-        hints: ["COUNT(DISTINCT category)"],
-        explanation: "Varietà catalogo.",
+        hints: ["Usa la funzione COUNT()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "COUNT(colonna) conta le righe in cui la colonna specificata non è NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DISTINCT."
+        brokenCode: "SELECT COUNT(DISTINCT category) DISTINCT FROM Products",
+        debugHint: "DISTINCT va subito dopo SELECT, prima del nome della colonna."
       },
       {
         titleTemplate: "Conta Ruoli Unici",
         descTemplate: "Quanti ruoli aziendali diversi ci sono?",
         queryTemplate: "SELECT COUNT(DISTINCT role) FROM Employees",
-        hints: ["COUNT(DISTINCT role)"],
-        explanation: "Tipi di posizioni.",
+        hints: ["Usa la funzione COUNT()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "COUNT(colonna) conta le righe in cui la colonna specificata non è NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DISTINCT."
+        brokenCode: "SELECT COUNT(DISTINCT role) DISTINCT FROM Employees",
+        debugHint: "DISTINCT va subito dopo SELECT, prima del nome della colonna."
       },
       {
         titleTemplate: "Conta Email (Non Null)",
         descTemplate: "Conta quante email sono presenti (esclude NULL automaticamente).",
         queryTemplate: "SELECT COUNT(email) FROM Users",
-        hints: ["COUNT(email)"],
-        explanation: "COUNT(colonna) ignora i NULL.",
+        hints: ["Usa la funzione COUNT()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "COUNT(colonna) conta le righe in cui la colonna specificata non è NULL.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET COUNT(email) FROM Users",
         debugHint: "Usa il nome colonna."
       },
       {
         titleTemplate: "Max Stock",
         descTemplate: "Qual è la quantità massima disponibile per un singolo prodotto?",
         queryTemplate: "SELECT MAX(stock) FROM Products",
-        hints: ["MAX(stock)"],
-        explanation: "Picco inventario.",
+        hints: ["Usa la funzione MAX()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "COUNT(colonna) conta le righe in cui la colonna specificata non è NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MAX."
+        brokenCode: "SELCET MAX(stock) FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Min Stock",
         descTemplate: "Qual è la quantità minima disponibile (potrebbe essere 0)?",
         queryTemplate: "SELECT MIN(stock) FROM Products",
-        hints: ["MIN(stock)"],
-        explanation: "Livello critico.",
+        hints: ["Usa la funzione MIN()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "MAX() restituisce il valore più grande nella colonna, utile per record massimi e analisi di picco.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MIN."
+        brokenCode: "SELCET MIN(stock) FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Range Prezzi",
         descTemplate: "Calcola la differenza tra prezzo massimo e minimo.",
         queryTemplate: "SELECT MAX(price) - MIN(price) FROM Products",
         hints: ["MAX(...) - MIN(...)"],
-        explanation: "Operazione tra aggregati.",
+        explanation: "MIN() restituisce il valore più piccolo nella colonna, utile per trovare il prezzo minimo, la data più antica, ecc.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET MAX(price) - MIN(price) FROM Products",
         debugHint: "Sottrazione tra funzioni."
       },
       {
         titleTemplate: "Valore Medio Magazzino",
         descTemplate: "Calcola la media dello stock.",
         queryTemplate: "SELECT AVG(stock) FROM Products",
-        hints: ["AVG(stock)"],
-        explanation: "Giacenza media.",
+        hints: ["Usa la funzione AVG()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "MIN() restituisce il valore più piccolo nella colonna, utile per trovare il prezzo minimo, la data più antica, ecc.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AVG."
+        brokenCode: "SELCET AVG(stock) FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Totale Utenti Premium",
         descTemplate: "Conta quanti utenti sono Premium (is_premium = TRUE). Puoi usare WHERE.",
         queryTemplate: "SELECT COUNT(*) FROM Users WHERE is_premium = TRUE",
-        hints: ["WHERE is_premium = TRUE"],
-        explanation: "Aggregazione filtrata.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "AVG() calcola la media aritmetica dei valori, ignorando i NULL. Utile per metriche come prezzo medio o stipendio medio.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "WHERE."
+        brokenCode: "SELECT COUNT(*) FROM Users WERE is_premium = TRUE",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Somma Vendite 2023",
         descTemplate: "Somma total_amount per ordini del 2023.",
         queryTemplate: "SELECT SUM(total_amount) FROM Orders WHERE YEAR(order_date) = '2023'",
         hints: ["WHERE con anno 2023"],
-        explanation: "Fatturato annuale.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT SUM(total_amount) FROM Orders WHERE YEAR(order_date) == '2023'",
         debugHint: "Filtra per anno."
       },
       {
         titleTemplate: "Media Prezzo Elettronica",
         descTemplate: "Prezzo medio prodotti categoria 'Electronics'.",
         queryTemplate: "SELECT AVG(price) FROM Products WHERE category = 'Electronics'",
-        hints: ["WHERE category = 'Electronics'"],
-        explanation: "Media condizionata.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT AVG(price) FROM Products WHERE category == 'Electronics'",
         debugHint: "AVG con WHERE."
       },
       {
         titleTemplate: "Conta Ordini Pendenti",
         descTemplate: "Quanti ordini sono in stato 'Pending'?",
         queryTemplate: "SELECT COUNT(*) FROM Orders WHERE status = 'Pending'",
-        hints: ["WHERE status = 'Pending'"],
-        explanation: "Conta filtrato.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT COUNT(*) FROM Orders WHERE status == 'Pending'",
         debugHint: "COUNT con WHERE."
       },
       {
@@ -3079,49 +3080,49 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prezzo più alto tra gli 'Accessories'.",
         queryTemplate: "SELECT MAX(price) FROM Products WHERE category = 'Accessories'",
         hints: ["Filtra per category"],
-        explanation: "Max di sottoinsieme.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MAX."
+        brokenCode: "SELECT MAX(price) FROM Products WHERE category == 'Accessories'",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Totale Pezzi Venduti",
         descTemplate: "Somma quantità (quantity) in OrderItems.",
         queryTemplate: "SELECT SUM(quantity) FROM OrderItems",
-        hints: ["SUM(quantity)"],
-        explanation: "Volume vendite.",
+        hints: ["Usa la funzione SUM()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SUM."
+        brokenCode: "SELCET SUM(quantity) FROM OrderItems",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Conta Righe Ordine",
         descTemplate: "Quante righe ci sono in totale in OrderItems?",
         queryTemplate: "SELECT COUNT(*) FROM OrderItems",
-        hints: ["COUNT(*)"],
-        explanation: "Totale righe dettaglio.",
+        hints: ["Usa la funzione COUNT()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "SUM() calcola la somma totale dei valori nella colonna specificata, ignorando i valori NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COUNT."
+        brokenCode: "SELCET COUNT(*) FROM OrderItems",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Conta Manager",
         descTemplate: "Conta quanti dipendenti hanno un manager (manager_id non NULL).",
         queryTemplate: "SELECT COUNT(manager_id) FROM Employees",
-        hints: ["COUNT(manager_id)"],
-        explanation: "Conta solo i non-NULL.",
+        hints: ["Usa la funzione COUNT()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "COUNT(*) conta tutte le righe della tabella o del set filtrato, incluse quelle con valori NULL.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET COUNT(manager_id) FROM Employees",
         debugHint: "Usa nome colonna."
       },
       {
         titleTemplate: "Totale Stipendi (Simulato)",
         descTemplate: "Supponendo una colonna salary (non c'è, usiamo una somma di e.id * 1000 come placeholder didattico). Somma (id * 1000).",
         queryTemplate: "SELECT SUM(id * 1000) FROM Employees",
-        hints: ["SUM(id * 1000)"],
-        explanation: "Somma di espressione.",
+        hints: ["Usa la funzione SUM()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
+        explanation: "COUNT(colonna) conta le righe in cui la colonna specificata non è NULL.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT SUM(id 1000) FROM Employees",
         debugHint: "SUM con calcolo."
       }
     ],
@@ -3130,8 +3131,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Utenti per Paese",
         descTemplate: "Conta quanti utenti ci sono per ogni paese.",
         queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country",
-        hints: ["GROUP BY country"],
-        explanation: "Distribuzione geografica.",
+        hints: ["Raggruppa per la colonna country", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "SUM() calcola la somma totale dei valori nella colonna specificata, ignorando i valori NULL.",
         replacements: {},
         brokenCode: "SELECT country, COUNT(*) FROM Users",
         debugHint: "Manca GROUP BY."
@@ -3140,20 +3141,20 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Prodotti per Categoria",
         descTemplate: "Conta il numero di prodotti in ogni categoria.",
         queryTemplate: "SELECT category, COUNT(*) FROM Products GROUP BY category",
-        hints: ["GROUP BY category"],
-        explanation: "Inventario per tipo.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP BY."
+        brokenCode: "SELECT category COUNT(*) FROM Products GROUP BY category",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Prezzo Medio Categoria",
         descTemplate: "Calcola il prezzo medio dei prodotti per ogni categoria.",
         queryTemplate: "SELECT category, AVG(price) FROM Products GROUP BY category",
         hints: ["AVG(price) ... GROUP BY category"],
-        explanation: "Analisi prezzi.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category AVG(price) FROM Products GROUP BY category",
         debugHint: "AVG e GROUP BY."
       },
       {
@@ -3161,97 +3162,97 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola la quantità totale di stock per ogni categoria.",
         queryTemplate: "SELECT category, SUM(stock) FROM Products GROUP BY category",
         hints: ["SUM(stock) ... GROUP BY category"],
-        explanation: "Volume magazzino.",
+        explanation: "GROUP BY con AVG calcola la media per ogni raggruppamento, utile per confrontare le performance tra categorie o periodi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category SUM(stock) FROM Products GROUP BY category",
         debugHint: "SUM e GROUP BY."
       },
       {
         titleTemplate: "Ordini per Stato",
         descTemplate: "Conta quanti ordini ci sono per ogni stato (status).",
         queryTemplate: "SELECT status, COUNT(*) FROM Orders GROUP BY status",
-        hints: ["GROUP BY status"],
-        explanation: "Fase ordini.",
+        hints: ["Raggruppa per la colonna status", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con SUM calcola il totale per ogni gruppo. È fondamentale per report di vendite, fatturato e volumi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP BY."
+        brokenCode: "SELECT status COUNT(*) FROM Orders GROUP BY status",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Vendite per Stato Ordine",
         descTemplate: "Somma il totale (total_amount) per ogni stato ordine.",
         queryTemplate: "SELECT status, SUM(total_amount) FROM Orders GROUP BY status",
         hints: ["SUM(total_amount) ... GROUP BY status"],
-        explanation: "Valore nel workflow.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP BY."
+        brokenCode: "SELECT status SUM(total_amount) FROM Orders GROUP BY status",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Dipendenti per Dipartimento",
         descTemplate: "Conta quanti dipendenti ci sono in ogni dipartimento.",
         queryTemplate: "SELECT department, COUNT(*) FROM Employees GROUP BY department",
-        hints: ["GROUP BY department"],
-        explanation: "Headcount.",
+        hints: ["Raggruppa per la colonna department", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con SUM calcola il totale per ogni gruppo. È fondamentale per report di vendite, fatturato e volumi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP BY."
+        brokenCode: "SELECT department COUNT(*) FROM Employees GROUP BY department",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Ordini per Utente",
         descTemplate: "Conta quanti ordini ha effettuato ciascun utente (user_id).",
         queryTemplate: "SELECT user_id, COUNT(*) FROM Orders GROUP BY user_id",
-        hints: ["GROUP BY user_id"],
-        explanation: "Frequenza acquisto.",
+        hints: ["Raggruppa per la colonna user_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP BY."
+        brokenCode: "SELECT user_id COUNT(*) FROM Orders GROUP BY user_id",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Spesa Totale Utente",
         descTemplate: "Calcola quanto ha speso in totale ogni utente.",
         queryTemplate: "SELECT user_id, SUM(total_amount) FROM Orders GROUP BY user_id",
         hints: ["SUM(total_amount) ... GROUP BY user_id"],
-        explanation: "Lifetime value.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SUM."
+        brokenCode: "SELECT user_id SUM(total_amount) FROM Orders GROUP BY user_id",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Ordini per Mese (Strftime)",
         descTemplate: "Conta gli ordini raggruppati per mese (strftime '%m').",
         queryTemplate: "SELECT MONTH(order_date) as Mese, COUNT(*) FROM Orders GROUP BY Mese",
         hints: ["GROUP BY STRFTIME(...)"],
-        explanation: "Trend mensile.",
+        explanation: "GROUP BY con SUM calcola il totale per ogni gruppo. È fondamentale per report di vendite, fatturato e volumi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT MONTH(order_date) IS Mese, COUNT(*) FROM Orders GROUP BY Mese",
         debugHint: "Usa l'espressione in GROUP BY."
       },
       {
         titleTemplate: "Ordini per Anno",
         descTemplate: "Conta gli ordini raggruppati per anno.",
         queryTemplate: "SELECT YEAR(order_date) as Anno, COUNT(*) FROM Orders GROUP BY Anno",
-        hints: ["GROUP BY Anno"],
-        explanation: "Trend annuale.",
+        hints: ["Raggruppa per la colonna Anno", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP BY."
+        brokenCode: "SELECT YEAR(order_date) IS Anno, COUNT(*) FROM Orders GROUP BY Anno",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Utenti per Dominio Email",
         descTemplate: "Conta utenti per dominio email (usa SUBSTR e INSTR, o string logic).",
         queryTemplate: "SELECT SUBSTR(email, INSTR(email, '@') + 1) as Domain, COUNT(*) FROM Users GROUP BY Domain",
         hints: ["Estrai dominio e raggruppa"],
-        explanation: "Provider stats.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT SUBSTR(email, INSTR(email, '@') + 1) IS Domain, COUNT(*) FROM Users GROUP BY Domain",
         debugHint: "Complex GROUP BY."
       },
       {
         titleTemplate: "Categorie Popolose (HAVING)",
         descTemplate: "Mostra le categorie che hanno più di 10 prodotti.",
         queryTemplate: "SELECT category, COUNT(*) FROM Products GROUP BY category HAVING COUNT(*) > 10",
-        hints: ["HAVING COUNT(*) > 10"],
-        explanation: "Filtro su aggregato.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
         brokenCode: "SELECT category, COUNT(*) FROM Products GROUP BY category WHERE COUNT(*) > 10",
         debugHint: "Usa HAVING, non WHERE per aggregati."
@@ -3260,88 +3261,88 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Paesi con Pochi Iscritti",
         descTemplate: "Trova paesi con meno di 5 utenti.",
         queryTemplate: "SELECT country, COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) < 5",
-        hints: ["HAVING COUNT(*) < 5"],
-        explanation: "Small markets.",
+        hints: ["Raggruppa per la colonna country", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING."
+        brokenCode: "SELECT country COUNT(*) FROM Users GROUP BY country HAVING COUNT(*) < 5",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Ordini Grandi (HAVING Sum)",
         descTemplate: "Trova utenti che hanno speso complessivamente più di 1000.",
         queryTemplate: "SELECT user_id, SUM(total_amount) FROM Orders GROUP BY user_id HAVING SUM(order_total) > 50",
         hints: ["HAVING SUM(...) > 1000"],
-        explanation: "High spenders.",
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING SUM."
+        brokenCode: "SELECT user_id SUM(total_amount) FROM Orders GROUP BY user_id HAVING SUM(order_total) > 50",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Articoli per Ordine",
         descTemplate: "Conta numero righe per ogni ordine.",
         queryTemplate: "SELECT order_id, COUNT(*) FROM OrderItems GROUP BY order_id",
-        hints: ["GROUP BY order_id"],
-        explanation: "Grandezza carrello.",
+        hints: ["Raggruppa per la colonna order_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP BY."
+        brokenCode: "SELECT order_id COUNT(*) FROM OrderItems GROUP BY order_id",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Quantità Totale per Ordine",
         descTemplate: "Somma 'quantity' per ogni order_id in OrderItems.",
         queryTemplate: "SELECT order_id, SUM(quantity) FROM OrderItems GROUP BY order_id",
-        hints: ["SUM(quantity)"],
-        explanation: "Totale oggetti fisici.",
+        hints: ["Raggruppa per la colonna order_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SUM."
+        brokenCode: "SELECT order_id SUM(quantity) FROM OrderItems GROUP BY order_id",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Max Prezzo per Categoria",
         descTemplate: "Trova il prodotto più costoso per ogni categoria.",
         queryTemplate: "SELECT category, MAX(price) FROM Products GROUP BY category",
         hints: ["MAX(price) ... GROUP BY category"],
-        explanation: "Top di gamma.",
+        explanation: "GROUP BY con SUM calcola il totale per ogni gruppo. È fondamentale per report di vendite, fatturato e volumi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MAX."
+        brokenCode: "SELECT category MAX(price) FROM Products GROUP BY category",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Min Prezzo per Categoria",
         descTemplate: "Trova il prodotto più economico per ogni categoria.",
         queryTemplate: "SELECT category, MIN(price) FROM Products GROUP BY category",
-        hints: ["MIN(price)"],
-        explanation: "Entry level.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con MIN/MAX trova il valore estremo in ogni gruppo, utile per analisi di range e identificazione di outlier.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MIN."
+        brokenCode: "SELECT category MIN(price) FROM Products GROUP BY category",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Ordini Multi-Item (HAVING)",
         descTemplate: "Trova ID ordini che hanno più di 3 righe (items).",
         queryTemplate: "SELECT order_id, COUNT(*) FROM OrderItems GROUP BY order_id HAVING COUNT(*) > 3",
-        hints: ["HAVING COUNT(*) > 3"],
-        explanation: "Carrelli grandi.",
+        hints: ["Raggruppa per la colonna order_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con MIN/MAX trova il valore estremo in ogni gruppo, utile per analisi di range e identificazione di outlier.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING."
+        brokenCode: "SELECT order_id COUNT(*) FROM OrderItems GROUP BY order_id HAVING COUNT(*) > 3",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Dipartimenti Piccoli",
         descTemplate: "Dipartimenti con massimo 2 dipendenti.",
         queryTemplate: "SELECT department, COUNT(*) FROM Employees GROUP BY department HAVING COUNT(*) <= 2",
-        hints: ["HAVING COUNT(*) <= 2"],
-        explanation: "Small teams.",
+        hints: ["Raggruppa per la colonna department", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING."
+        brokenCode: "SELECT department COUNT(*) FROM Employees GROUP BY department HAVING COUNT(*) <= 2",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Utenti Premium per Paese",
         descTemplate: "Conta solo utenti premium raggruppati per paese.",
         queryTemplate: "SELECT country, COUNT(*) FROM Users WHERE is_premium = TRUE GROUP BY country",
         hints: ["WHERE is_premium = TRUE prima di GROUP BY"],
-        explanation: "Filtro prima, raggruppo dopo.",
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
         brokenCode: "SELECT country, COUNT(*) FROM Users GROUP BY country WHERE is_premium = TRUE",
         debugHint: "WHERE va prima di GROUP BY."
@@ -3350,81 +3351,81 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Max Spesa Singola per Utente",
         descTemplate: "Trova l'importo dell'ordine singolo più alto per ogni utente.",
         queryTemplate: "SELECT user_id, MAX(total_amount) FROM Orders GROUP BY user_id",
-        hints: ["MAX(total_amount)"],
-        explanation: "Record personale.",
+        hints: ["Raggruppa per la colonna user_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP BY."
+        brokenCode: "SELECT user_id MAX(total_amount) FROM Orders GROUP BY user_id",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Ordini Recenti per Utente",
         descTemplate: "Trova la data dell'ultimo ordine per ogni utente.",
         queryTemplate: "SELECT user_id, MAX(order_date) FROM Orders GROUP BY user_id",
-        hints: ["MAX(order_date)"],
-        explanation: "Ultima attività.",
+        hints: ["Raggruppa per la colonna user_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con MIN/MAX trova il valore estremo in ogni gruppo, utile per analisi di range e identificazione di outlier.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP BY."
+        brokenCode: "SELECT user_id MAX(order_date) FROM Orders GROUP BY user_id",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Prodotti Scontati per Categoria",
         descTemplate: "Conta prodotti con prezzo < 50 per categoria.",
         queryTemplate: "SELECT category, COUNT(*) FROM Products WHERE price < 50 GROUP BY category",
-        hints: ["WHERE price < 50"],
-        explanation: "Budget items distribution.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con MIN/MAX trova il valore estremo in ogni gruppo, utile per analisi di range e identificazione di outlier.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "WHERE prima."
+        brokenCode: "SELECT category COUNT(*) FROM Products WHERE price < 50 GROUP BY category",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Stati con Molti Ordini",
         descTemplate: "Stati ordine (status) con più di 100 ordini totali.",
         queryTemplate: "SELECT status, COUNT(*) FROM Orders GROUP BY status HAVING COUNT(*) > 5",
-        hints: ["HAVING COUNT(*) > 5"],
-        explanation: "Stati frequenti.",
+        hints: ["Raggruppa per la colonna status", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING."
+        brokenCode: "SELECT status COUNT(*) FROM Orders GROUP BY status HAVING COUNT(*) > 5",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Media Stock per Categoria (Filtrata)",
         descTemplate: "Media stock per categoria, ma considera solo prodotti con stock > 0.",
         queryTemplate: "SELECT category, AVG(stock) FROM Products WHERE stock > 0 GROUP BY category",
-        hints: ["WHERE stock > 0"],
-        explanation: "Media attivo.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "WHERE."
+        brokenCode: "SELECT category AVG(stock) FROM Products WHERE stock > 0 GROUP BY category",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Group By 2 Colonne",
         descTemplate: "Conta utenti per paese e stato (di iscrizione, se ci fosse, usiamo is_premium). Raggruppa per country e is_premium.",
         queryTemplate: "SELECT country, is_premium, COUNT(*) FROM Users GROUP BY country, is_premium",
-        hints: ["GROUP BY country, is_premium"],
-        explanation: "Sottogruppi.",
+        hints: ["Raggruppa per la colonna country", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con AVG calcola la media per ogni raggruppamento, utile per confrontare le performance tra categorie o periodi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Multiple columns."
+        brokenCode: "SELECT country is_premium, COUNT(*) FROM Users GROUP BY country, is_premium",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Ordini Medi per Utente (HAVING)",
         descTemplate: "Utenti con media ordine superiore a 500.",
         queryTemplate: "SELECT user_id, AVG(total_amount) FROM Orders GROUP BY user_id HAVING AVG(order_total) > 20",
         hints: ["HAVING AVG(...) > 500"],
-        explanation: "High value customers.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING AVG."
+        brokenCode: "SELECT user_id AVG(total_amount) FROM Orders GROUP BY user_id HAVING AVG(order_total) > 20",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Categoria Dominante",
         descTemplate: "Categorie con stock totale > 1000.",
         queryTemplate: "SELECT category, SUM(stock) FROM Products GROUP BY category HAVING SUM(stock) > 1000",
-        hints: ["HAVING SUM(stock)"],
-        explanation: "High volume categories.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING."
+        brokenCode: "SELECT category SUM(stock) FROM Products GROUP BY category HAVING SUM(stock) > 1000",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       }
     ],
     [Difficulty.Hard]: [
@@ -3433,7 +3434,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Conta quanti ordini sono 'Shipped' e quanti 'Pending' in un'unica query per ogni utente.",
         queryTemplate: "SELECT user_id, SUM(CASE WHEN status = 'Shipped' THEN 1 ELSE 0 END) as Shipped, SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) as Pending FROM Orders GROUP BY user_id",
         hints: ["SUM(CASE WHEN status = '...' THEN 1 ELSE 0 END)"],
-        explanation: "Pivot manuale con aggregazione condizionale.",
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
         brokenCode: "SELECT user_id, COUNT(WHERE status='Shipped'), COUNT(WHERE status='Pending') FROM Orders GROUP BY user_id",
         debugHint: "Usa CASE WHEN dentro SUM."
@@ -3443,17 +3444,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola il valore totale degli ordini 'Shipped' per ogni utente.",
         queryTemplate: "SELECT user_id, SUM(CASE WHEN status = 'Shipped' THEN total_amount ELSE 0 END) as ShippedValue FROM Orders GROUP BY user_id",
         hints: ["SUM(CASE WHEN ... THEN total_amount ELSE 0 END)"],
-        explanation: "Somma solo righe specifiche.",
+        explanation: "Combinare CASE WHEN dentro una funzione aggregata come SUM permette di contare o sommare solo le righe che soddisfano una condizione specifica.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id SUM(CASE WHEN status = 'Shipped' THEN total_amount ELSE 0 END) as ShippedValue FROM Orders GROUP BY user_id",
         debugHint: "CASE dentro SUM."
       },
       {
         titleTemplate: "Media Ponderata (Teorica)",
         descTemplate: "Calcola il prezzo medio ponderato per lo stock (SUM(price * stock) / SUM(stock)) per categoria.",
         queryTemplate: "SELECT category, SUM(price * stock) / SUM(stock) as WeightedAvg FROM Products GROUP BY category",
-        hints: ["SUM(price * stock) / SUM(stock)"],
-        explanation: "Media pesata sulla quantità.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "Combinare CASE WHEN dentro una funzione aggregata come SUM permette di contare o sommare solo le righe che soddisfano una condizione specifica.",
         replacements: {},
         brokenCode: "SELECT AVG(price * stock) FROM Products GROUP BY category",
         debugHint: "La formula è SommaProdotti / SommaPesi."
@@ -3462,20 +3463,20 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Lista Nomi (Group Concat)",
         descTemplate: "Crea una lista separata da virgole dei nomi dei prodotti per ogni categoria.",
         queryTemplate: "SELECT category, GROUP_CONCAT(name, ', ') FROM Products GROUP BY category",
-        hints: ["GROUP_CONCAT(name, ', ')"],
-        explanation: "Aggregazione di stringhe.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con SUM calcola il totale per ogni gruppo. È fondamentale per report di vendite, fatturato e volumi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP_CONCAT."
+        brokenCode: "SELECT category GROUP_CONCAT(name, ', ') FROM Products GROUP BY category",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Having Complesso (AND)",
         descTemplate: "Categorie con media prezzo > 50 E totale stock > 100.",
         queryTemplate: "SELECT category, AVG(price), SUM(stock) FROM Products GROUP BY category HAVING AVG(price) > 50 AND SUM(stock) > 100",
         hints: ["HAVING condition1 AND condition2"],
-        explanation: "Filtri multipli su aggregati.",
+        explanation: "GROUP BY aggrega le righe con valori identici nella colonna specificata, permettendo di applicare funzioni come COUNT, SUM, AVG a ogni gruppo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category AVG(price), SUM(stock) FROM Products GROUP BY category HAVING AVG(price) > 50 AND SUM(stock) > 100",
         debugHint: "HAVING con AND."
       },
       {
@@ -3483,19 +3484,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Categorie con media prezzo > 100 OPPURE totale prodotti > 10.",
         queryTemplate: "SELECT category, COUNT(*) FROM Products GROUP BY category HAVING AVG(price) > 100 OR COUNT(*) > 10",
         hints: ["HAVING ... OR ..."],
-        explanation: "Logica booleana in HAVING.",
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category COUNT(*) FROM Products GROUP BY category HAVING AVG(price) > 100 OR COUNT(*) > 10",
         debugHint: "OR in HAVING."
       },
       {
         titleTemplate: "Rapporto Prezzo/Stock",
         descTemplate: "Per ogni categoria, calcola il rapporto tra somma prezzi e somma stock.",
         queryTemplate: "SELECT category, SUM(price) / SUM(stock) as Ratio FROM Products GROUP BY category",
-        hints: ["SUM(price) / SUM(stock)"],
-        explanation: "Operazioni tra aggregati.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category SUM(price) / SUM(stock) as Ratio FROM Products GROUP BY category",
         debugHint: "Divisione tra SUM."
       },
       {
@@ -3503,19 +3504,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra dipartimenti con più di 3 ruoli diversi.",
         queryTemplate: "SELECT department, COUNT(DISTINCT role) FROM Employees GROUP BY department HAVING COUNT(DISTINCT department) >= 1",
         hints: ["HAVING COUNT(DISTINCT department) > 1"],
-        explanation: "Varietà di ruoli.",
+        explanation: "GROUP BY con SUM calcola il totale per ogni gruppo. È fondamentale per report di vendite, fatturato e volumi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT department COUNT(DISTINCT role) FROM Employees GROUP BY department HAVING COUNT(DISTINCT department) >= 1",
         debugHint: "HAVING con DISTINCT."
       },
       {
         titleTemplate: "Anno con Più Ordini",
         descTemplate: "Trova l'anno con il maggior numero di ordini (limit 1).",
         queryTemplate: "SELECT YEAR(order_date) as Anno, COUNT(*) FROM Orders GROUP BY Anno ORDER BY COUNT(*) DESC LIMIT 1",
-        hints: ["GROUP BY Anno ORDER BY COUNT(*) DESC LIMIT 1"],
-        explanation: "Top 1 per aggregazione.",
+        hints: ["Raggruppa per la colonna Anno", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT YEAR(order_date) IS Anno, COUNT(*) FROM Orders GROUP BY Anno ORDER BY COUNT(*) DESC LIMIT 1",
         debugHint: "ORDER BY aggregate."
       },
       {
@@ -3523,49 +3524,49 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova il mese (01-12) con la somma totale vendite più alta.",
         queryTemplate: "SELECT MONTH(order_date) as Mese, SUM(total_amount) FROM Orders GROUP BY Mese ORDER BY SUM(total_amount) DESC LIMIT 1",
         hints: ["GROUP BY Mese ... ORDER BY SUM(...) DESC"],
-        explanation: "Stagionalità.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT MONTH(order_date) IS Mese, SUM(total_amount) FROM Orders GROUP BY Mese ORDER BY SUM(total_amount) DESC LIMIT 1",
         debugHint: "ORDER BY SUM."
       },
       {
         titleTemplate: "Ordini Senza Spedizione",
         descTemplate: "Conta ordini non ancora spediti (status != 'Shipped') per utente, solo se > 0.",
         queryTemplate: "SELECT user_id, COUNT(*) FROM Orders WHERE status != 'Shipped' GROUP BY user_id",
-        hints: ["WHERE status != 'Shipped'"],
-        explanation: "Filtro pre-aggregazione.",
+        hints: ["Raggruppa per la colonna user_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con SUM calcola il totale per ogni gruppo. È fondamentale per report di vendite, fatturato e volumi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "WHERE."
+        brokenCode: "SELECT user_id COUNT(*) FROM Orders WHERE status != 'Shipped' GROUP BY user_id",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Clienti e Spesa Media (Arrotondata)",
         descTemplate: "Per ogni paese, calcola la spesa media arrotondata a 2 decimali.",
         queryTemplate: "SELECT country, ROUND(AVG(total_amount), 2) FROM Orders o JOIN Users u ON o.user_id = u.id GROUP BY country",
         hints: ["ROUND(AVG(...), 2)", "Serve JOIN Users"],
-        explanation: "Funzione scalare su aggregato.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "ROUND(AVG)."
+        brokenCode: "SELECT country ROUND(AVG(total_amount), 2) FROM Orders o JOIN Users u ON o.user_id = u.id GROUP BY country",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Categorie Binarie",
         descTemplate: "Se una categoria ha somma stock > 500 scrivi 'High', altrimenti 'Low'.",
         queryTemplate: "SELECT category, CASE WHEN SUM(stock) > 500 THEN 'High' ELSE 'Low' END as Status FROM Products GROUP BY category",
         hints: ["CASE WHEN SUM(stock) > 500 ..."],
-        explanation: "Logica su risultato aggregato.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category CASE WHEN SUM(stock) > 500 THEN 'High' ELSE 'Low' END as Status FROM Products GROUP BY category",
         debugHint: "CASE su SUM."
       },
       {
         titleTemplate: "Conta domini unici per Paese",
         descTemplate: "Conta quanti domini email unici ci sono per ogni paese.",
         queryTemplate: "SELECT country, COUNT(DISTINCT SUBSTR(email, INSTR(email, '@') + 1)) FROM Users GROUP BY country",
-        hints: ["COUNT(DISTINCT espressione)"],
-        explanation: "Distinct su espressione.",
+        hints: ["Raggruppa per la colonna country", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "Combinare CASE WHEN dentro una funzione aggregata come SUM permette di contare o sommare solo le righe che soddisfano una condizione specifica.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT country COUNT(DISTINCT SUBSTR(email, INSTR(email, '@') + 1)) FROM Users GROUP BY country",
         debugHint: "Complex COUNT DISTINCT."
       },
       {
@@ -3573,29 +3574,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola (MAX - MIN) / AVG per i prezzi di ogni categoria (coefficiente variazione approx).",
         queryTemplate: "SELECT category, (MAX(price) - MIN(price)) / AVG(price) as VarCoeff FROM Products GROUP BY category",
         hints: ["(MAX - MIN) / AVG"],
-        explanation: "Statistica descrittiva custom.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category, (MAX(price) - MIN(price)) / AVG(price) IS VarCoeff FROM Products GROUP BY category",
         debugHint: "Formula con aggregati."
       },
       {
         titleTemplate: "Utenti con 1 solo Ordine",
         descTemplate: "Trova user_id degli utenti che hanno fatto esattamente 1 ordine.",
         queryTemplate: "SELECT user_id FROM Orders GROUP BY user_id HAVING COUNT(*) = 1",
-        hints: ["HAVING COUNT(*) = 1"],
-        explanation: "Single buyers.",
+        hints: ["Raggruppa per la colonna user_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY con AVG calcola la media per ogni raggruppamento, utile per confrontare le performance tra categorie o periodi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING."
+        brokenCode: "SELECT user_id FROM Orders GROUP user_id HAVING COUNT(*) = 1",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Prodotti Non Disponibili per Cat",
         descTemplate: "Conta quanti prodotti hanno stock = 0 per ogni categoria.",
         queryTemplate: "SELECT category, COUNT(*) FROM Products WHERE stock = 0 GROUP BY category",
         hints: ["WHERE stock = 0 ... GROUP BY"],
-        explanation: "Out of stock stats.",
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category COUNT(*) FROM Products WHERE stock = 0 GROUP BY category",
         debugHint: "WHERE stock = 0."
       },
       {
@@ -3603,9 +3604,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Un'unica riga con somma totale vendite e conteggio ordini globale (senza GROUP BY esplicito).",
         queryTemplate: "SELECT SUM(total_amount), COUNT(*) FROM Orders",
         hints: ["SELECT SUM..., COUNT..."],
-        explanation: "Aggregazione scalare totale.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET SUM(total_amount), COUNT(*) FROM Orders",
         debugHint: "Nessun GROUP BY."
       },
       {
@@ -3613,9 +3614,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Per la categoria 'Electronics', calcola la % rispetto allo stock totale (richiede subquery scalare).",
         queryTemplate: "SELECT SUM(stock) * 100.0 / (SELECT SUM(stock) FROM Products) FROM Products WHERE category = 'Electronics'",
         hints: ["SUM(stock) / (SELECT SUM(stock)...)"],
-        explanation: "Confronto parte-tutto.",
+        explanation: "COUNT(*) conta tutte le righe della tabella o del set filtrato, incluse quelle con valori NULL.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT SUM(stock) 100.0 / (SELECT SUM(stock) FROM Products) FROM Products WHERE category = 'Electronics'",
         debugHint: "Serve select annidata nel divisore."
       },
       {
@@ -3623,7 +3624,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Nota: In SQL standard non si può annidare AVG(MAX(...)) direttamente. Calcola invece MAX(price) per categoria e ordinali.",
         queryTemplate: "SELECT category, MAX(price) FROM Products GROUP BY category ORDER BY MAX(price) DESC",
         hints: ["GROUP BY ... ORDER BY MAX"],
-        explanation: "Limit SQL aggregation.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
         brokenCode: "SELECT AVG(MAX(price)) FROM Products",
         debugHint: "Non annidare aggregati."
@@ -3632,61 +3633,61 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Utenti Iscritti per Trimestre",
         descTemplate: "Raggruppa utenti per trimestre (Quarter) di created_at. (Usa espressione Case o strftime modificata).",
         queryTemplate: "SELECT CASE WHEN MONTH(created_at) BETWEEN '01' AND '03' THEN 'Q1' WHEN MONTH(created_at) BETWEEN '04' AND '06' THEN 'Q2' WHEN MONTH(created_at) BETWEEN '07' AND '09' THEN 'Q3' ELSE 'Q4' END as Quarter, COUNT(*) FROM Users GROUP BY Quarter",
-        hints: ["CASE WHEN mese BETWEEN ...", "GROUP BY Quarter"],
-        explanation: "Custom time buckets.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "GROUP BY con MIN/MAX trova il valore estremo in ogni gruppo, utile per analisi di range e identificazione di outlier.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CASE WHEN MONTH(created_at) BETWEEN '01' AND '03' THEN 'Q1' WHEN MONTH(created_at) BETWEEN '04' AND '06' THEN 'Q2' WHEN MONTH(created_at) BETWEEN '07' AND '09' THEN 'Q3' ELSE 'Q4' END IS Quarter, COUNT(*) FROM Users GROUP BY Quarter",
         debugHint: "CASE per definire gruppi."
       },
       {
         titleTemplate: "Lunghezza Media Nome per Cat",
         descTemplate: "Calcola la lunghezza media del nome prodotto per categoria.",
         queryTemplate: "SELECT category, AVG(LENGTH(name)) FROM Products GROUP BY category",
-        hints: ["AVG(LENGTH(name))"],
-        explanation: "Aggregazione su funzione scalare.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "COUNT con CASE WHEN permette di contare selettivamente le righe che soddisfano determinate condizioni, utile per pivot e report.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AVG(LENGTH)."
+        brokenCode: "SELECT category AVG(LENGTH(name)) FROM Products GROUP BY category",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Ultimi 3 Giorni di Ordini",
         descTemplate: "Conta ordini aggregati per data, solo per date negli ultimi 3 giorni (rispetto a un fisso o max).",
         queryTemplate: "SELECT order_date, COUNT(*) FROM Orders GROUP BY order_date ORDER BY order_date DESC LIMIT 3",
         hints: ["WHERE ... >= date(MAX(...), '-3 days')"],
-        explanation: "Rolling window statica.",
+        explanation: "GROUP BY con AVG calcola la media per ogni raggruppamento, utile per confrontare le performance tra categorie o periodi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT order_date COUNT(*) FROM Orders GROUP BY order_date ORDER BY order_date DESC LIMIT 3",
         debugHint: "Subquery per data max."
       },
       {
         titleTemplate: "Gruppi con Tutti i Prodotti Costosi",
         descTemplate: "Trova categorie dove il prodotto più economico costa comunque più di 20.",
         queryTemplate: "SELECT category FROM Products GROUP BY category HAVING MIN(price) > 20",
-        hints: ["HAVING MIN(price) > 20"],
-        explanation: "Tutti i membri soddisfano condizione.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING MIN."
+        brokenCode: "SELECT category FROM Products GROUP category HAVING MIN(price) > 20",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Gruppi con Almeno un Prod Costoso",
         descTemplate: "Trova categorie con almeno un prodotto sopra i 500 (usando MAX).",
         queryTemplate: "SELECT category FROM Products GROUP BY category HAVING MAX(price) > 500",
-        hints: ["HAVING MAX(price) > 500"],
-        explanation: "Esistenza tramite max.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING MAX."
+        brokenCode: "SELECT category FROM Products GROUP category HAVING MAX(price) > 500",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Concatena ID Ordini",
         descTemplate: "Per ogni utente, lista gli ID dei suoi ordini separati da pipe '|'.",
         queryTemplate: "SELECT user_id, GROUP_CONCAT(id, '|') FROM Orders GROUP BY user_id",
-        hints: ["GROUP_CONCAT(id, '|')"],
-        explanation: "Lista compatta.",
+        hints: ["Raggruppa per la colonna user_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "GROUP_CONCAT."
+        brokenCode: "SELECT user_id GROUP_CONCAT(id, '|') FROM Orders GROUP BY user_id",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Differenza dalla Media Globale",
@@ -3695,17 +3696,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["price - (SELECT AVG(...) ...)"],
         explanation: "Non è un GROUP BY normale, è window-like.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Subquery scalare."
+        brokenCode: "SELECT name price - (SELECT AVG(price) FROM Products) as Diff FROM Products",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Conta Nulli vs Non Nulli",
         descTemplate: "In Employees, conta quanti hanno manager (NonNull) e quanti no (Null) in una riga.",
         queryTemplate: "SELECT COUNT(manager_id) as HasManager, SUM(CASE WHEN manager_id IS NULL THEN 1 ELSE 0 END) as NoManager FROM Employees",
         hints: ["COUNT(col) conta non-null", "SUM(CASE WHEN col IS NULL...)"],
-        explanation: "Data quality check.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT COUNT(manager_id) IS HasManager, SUM(CASE WHEN manager_id IS NULL THEN 1 ELSE 0 END) as NoManager FROM Employees",
         debugHint: "COUNT vs SUM CASE."
       },
       {
@@ -3713,19 +3714,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola media prezzi escludendo il più alto e il più basso (concettuale).",
         queryTemplate: "SELECT (SUM(price) - MAX(price) - MIN(price)) / (COUNT(*) - 2) as TrimmedAvg FROM Products",
         hints: ["(SUM - MAX - MIN) / (COUNT - 2)"],
-        explanation: "Media olimpica semplificata.",
+        explanation: "Combinare CASE WHEN dentro una funzione aggregata come SUM permette di contare o sommare solo le righe che soddisfano una condizione specifica.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT (SUM(price) - MAX(price) - MIN(price)) / (COUNT(*) - 2) IS TrimmedAvg FROM Products",
         debugHint: "Aritmetica su aggregati."
       },
       {
         titleTemplate: "Categoria con Stock Medio Più Alto",
         descTemplate: "Trova la singola categoria con lo stock_quantity medio più alto.",
         queryTemplate: "SELECT category FROM Products GROUP BY category ORDER BY AVG(stock) DESC LIMIT 1",
-        hints: ["ORDER BY AVG(stock) DESC LIMIT 1"],
-        explanation: "Best category.",
+        hints: ["Raggruppa per categoria e ordina per media stock", "Usa DESC e LIMIT 1 per ottenere solo il valore più alto"],
+        explanation: "Combinando GROUP BY, una funzione aggregata in ORDER BY e LIMIT 1, puoi trovare il gruppo con il valore massimo di un aggregato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category FROM Products GROUP BY category ORDER AVG(stock) DESC LIMIT 1",
         debugHint: "ORDER BY aggregate."
       }
     ],
@@ -3800,14 +3801,14 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         explanation: "CEIL (Ceiling) arrotonda sempre al numero intero superiore.",
         replacements: {},
         brokenCode: "SELECT CEILING_UP(price) FROM Products",
-        debugHint: "Usa CEIL()."
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Prezzo Pavimento",
         descTemplate: "Arrotonda il prezzo per difetto (FLOOR).",
         queryTemplate: "SELECT price, FLOOR(price) as floor_price FROM Products",
         hints: ["Usa FLOOR()", "Arrotonda sempre in basso"],
-        explanation: "FLOOR arrotonda sempre all'intero inferiore.",
+        explanation: "CEIL() arrotonda un numero per eccesso all'intero successivo, utile per calcoli di spedizione e allocazione risorse.",
         replacements: {},
         brokenCode: "SELECT DOWN(price) FROM Products",
         debugHint: "La funzione si chiama FLOOR."
@@ -3840,7 +3841,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         explanation: "RIGHT estrae caratteri dalla fine della stringa.",
         replacements: {},
         brokenCode: "SELECT LAST(email, 2) FROM Users",
-        debugHint: "Usa RIGHT()."
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Rimozione Spazi",
@@ -3850,7 +3851,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         explanation: "TRIM rimuove spazi bianchi superflui agli estremi della stringa.",
         replacements: {},
         brokenCode: "SELECT CLEAN(name) FROM Users",
-        debugHint: "Usa TRIM."
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Potenza",
@@ -3879,18 +3880,18 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa SIGN()", "Restituisce 1, -1 o 0"],
         explanation: "SIGN restituisce il segno del numero.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa SIGN."
+        brokenCode: "SELECT price SIGN(price - 50) FROM Products",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Stringa Inversa",
         descTemplate: "Scrivi il nome al contrario.",
         queryTemplate: "SELECT REVERSE(name) FROM Users",
         hints: ["Usa REVERSE()", "Inverte l'ordine dei caratteri"],
-        explanation: "Semplice manipolazione di stringhe.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa REVERSE."
+        brokenCode: "SELCET REVERSE(name) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Lunghezza Stringa",
@@ -3899,8 +3900,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa REPEAT()", "Argomenti: stringa, numero ripetizioni"],
         explanation: "REPEAT duplica una stringa N volte.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa REPEAT."
+        brokenCode: "SELCET LENGTH('CEO')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Posizione Carattere",
@@ -3909,8 +3910,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa INSTR()", "Cerca '@'"],
         explanation: "INSTR (o LOCATE/POSITION) trova l'indice di una sottostringa.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa INSTR."
+        brokenCode: "SELECT email INSTR(COALESCE(email, ''), '@') as at_pos FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Nome Casuale",
@@ -3919,18 +3920,18 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa RAND()", "Non richiede argomenti"],
         explanation: "RAND genera un valore float tra 0 e 1.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa RAND()."
+        brokenCode: "SELECT id RAND() as lucky_number FROM Users",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Pi Greco",
         descTemplate: "Mostra il valore di PI greco.",
         queryTemplate: "SELECT PI()",
         hints: ["Funzione PI()", "Nessun argomento"],
-        explanation: "Restituisce la costante matematica.",
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa PI()."
+        brokenCode: "SELCET PI()",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Logaritmo",
@@ -3939,8 +3940,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa LOG()", "Applicalo a numeri positivi"],
         explanation: "Calcolo matematico avanzato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa LOG."
+        brokenCode: "SELECT price LOG(price) FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Esponenziale",
@@ -3949,18 +3950,18 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa EXP()", "Filtra prezzi bassi per evitare overflow"],
         explanation: "Funzione inversa del logaritmo naturale.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa EXP."
+        brokenCode: "SELECT price EXP(price) FROM Products WHERE price < 55",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Gradi a Radianti",
         descTemplate: "Converti 180 gradi in radianti.",
         queryTemplate: "SELECT RADIANS(180)",
         hints: ["Usa RADIANS()", "180 gradi = PI radianti"],
-        explanation: "Conversione angolare.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa RADIANS."
+        brokenCode: "SELCET RADIANS(180)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Radianti a Gradi",
@@ -3969,8 +3970,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa DEGREES()", "Passa PI()"],
         explanation: "Dovrebbe restituire 180.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DEGREES."
+        brokenCode: "SELCET DEGREES(PI())",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Sostituzione Semplice",
@@ -3979,28 +3980,28 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa REPLACE()", "Argomenti: colonna, cerca, sostituisci_con"],
         explanation: "Sostituzione di testo all'interno di una stringa.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa REPLACE."
+        brokenCode: "SELCET REPLACE(department, 'Office', 'Work') FROM Employees",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Spazi Sinistra",
         descTemplate: "Rimuovi spazi a sinistra (LTRIM).",
         queryTemplate: "SELECT LTRIM('   text')",
         hints: ["Usa LTRIM()", "Rimuove spazi leading"],
-        explanation: "Pulizia stringhe specifica.",
+        explanation: "REPLACE() sostituisce tutte le occorrenze di una sottostringa con un'altra, utile per pulizia e normalizzazione dati.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa LTRIM."
+        brokenCode: "SELCET LTRIM('   text')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Spazi Destra",
         descTemplate: "Rimuovi spazi a destra (RTRIM).",
         queryTemplate: "SELECT RTRIM('text   ')",
         hints: ["Usa RTRIM()", "Rimuove spazi trailing"],
-        explanation: "Pulizia stringhe specifica.",
+        explanation: "Le funzioni stringa SQL permettono di manipolare e trasformare dati testuali direttamente nelle query.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa RTRIM."
+        brokenCode: "SELCET RTRIM('text   ')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Codice ASCII",
@@ -4009,8 +4010,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa ASCII()", "Restituisce il codice del primo carattere"],
         explanation: "Restituisce il valore numerico del carattere.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa ASCII."
+        brokenCode: "SELECT name ASCII(name) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Da ASCII a Char",
@@ -4019,8 +4020,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa CHAR()", "65 è 'A'"],
         explanation: "Conversione inversa di ASCII.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CHAR."
+        brokenCode: "SELCET CHAR(65)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Lunghezza Bit",
@@ -4029,8 +4030,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa BIT_LENGTH()", "Solitamente 8x la lunghezza in caratteri (per ASCII)"],
         explanation: "Misura la dimensione in memoria.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa BIT_LENGTH."
+        brokenCode: "SELCET BIT_LENGTH(name) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       }
     ],
     [Difficulty.Medium]: [
@@ -4051,8 +4052,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa CONCAT", "Mischia stringa fissa e colonna numerica"],
         explanation: "Formattazione base per display.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELCET CONCAT('Prezzo: ', price) FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Anonimizza Email",
@@ -4072,27 +4073,27 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         explanation: "LPAD (Left Pad) riempie la stringa a sinistra fino alla lunghezza desiderata.",
         replacements: {},
         brokenCode: "SELECT PAD(id, 5) FROM Products",
-        debugHint: "Usa LPAD."
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Right Padding",
         descTemplate: "Aggiungi trattini alla fine del nome fino a lunghezza 20.",
         queryTemplate: "SELECT RPAD(name, 20, '-') FROM Users",
         hints: ["Usa RPAD()", "Carattere riempitivo '-'"],
-        explanation: "RPAD riempie a destra.",
+        explanation: "Le funzioni stringa SQL permettono di manipolare e trasformare dati testuali direttamente nelle query.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa RPAD."
+        brokenCode: "SELCET RPAD(name, 20, '-') FROM Users",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Iniziali",
         descTemplate: "Estrai la prima lettera del nome e il ruolo.",
         queryTemplate: "SELECT SUBSTR(name, 1, 1) as initial, department FROM Employees",
         hints: ["Usa SUBSTR(name, 1, 1)"],
-        explanation: "Estrazione rapida di dati.",
+        explanation: "Le funzioni stringa SQL permettono di manipolare e trasformare dati testuali direttamente nelle query.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa LEFT."
+        brokenCode: "SELECT SUBSTR(name, 1, 1) IS initial, department FROM Employees",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Dominio Email",
@@ -4109,9 +4110,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Estrai la parte prima della @ nell'email.",
         queryTemplate: "SELECT SUBSTR(email, 1, INSTR(email, '@') - 1) as username FROM Users",
         hints: ["Calcola lunghezza come posizione @ - 1", "Usa SUBSTR da 1"],
-        explanation: "Parsing della prima parte dell'email.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT SUBSTR(email, 1, INSTR(email, '@') - 1) IS username FROM Users",
         debugHint: "Controlla il calcolo della lunghezza."
       },
       {
@@ -4119,7 +4120,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Arrotonda un numero (es. 123.4567) a 2 decimali.",
         queryTemplate: "SELECT ROUND(123.4567, 2)",
         hints: ["Secondo argomento di ROUND è la precisione"],
-        explanation: "Controllo precisione numerica.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
         brokenCode: "SELECT ROUND(123.4567)",
         debugHint: "Manca il secondo parametro per i decimali."
@@ -4131,8 +4132,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa ROUND()", "Precisione 0"],
         explanation: "ROUND taglia i decimali, diversamente da FLOOR per i negativi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa ROUND."
+        brokenCode: "SELCET ROUND(price, 0) FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Potenza Variabile",
@@ -4141,7 +4142,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Power accetta colonne per entrambi gli argomenti"],
         explanation: "Le funzioni matematiche possono usare colonne dinamiche.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET POWER(stock, id) FROM Products",
         debugHint: "Controlla la sintassi POWER."
       },
       {
@@ -4151,7 +4152,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa LENGTH()", "Usa MOD() sul risultato", "Usa CASE WHEN"],
         explanation: "Combinazione di funzioni scalari e logica condizionale.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN MOD(LENGTH(name), 2) = 0 THEN 'Pari' ELSE 'Dispari' END FROM Users",
         debugHint: "Controlla la struttura CASE WHEN."
       },
       {
@@ -4159,10 +4160,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prefixa il prezzo con '$' convertendolo in stringa.",
         queryTemplate: "SELECT CONCAT('$', price) FROM Products",
         hints: ["Concatena il simbolo"],
-        explanation: "Formattazione visuale.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELCET CONCAT('$', price) FROM Products",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Null Coalesce",
@@ -4181,17 +4182,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Filtra con LIKE", "Applica REPLACE"],
         explanation: "Modifica selettiva di stringhe.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa REPLACE."
+        brokenCode: "SELECT REPLACE(name, 'Monitor', 'Screen') FROM Products WERE name LIKE '%Monitor%'",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Stringa Vuota",
         descTemplate: "Controlla se la descrizione è vuota (Length 0) o NULL (Coalesce).",
         queryTemplate: "SELECT name, LENGTH(COALESCE(description, '')) FROM Products",
         hints: ["Gestisci NULL con COALESCE", "Poi calcola LENGTH"],
-        explanation: "Gestione robusta di stringhe opzionali.",
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name LENGTH(COALESCE(description, '')) FROM Products",
         debugHint: "Usa COALESCE dentro LENGTH."
       },
       {
@@ -4199,10 +4200,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova la posizione del primo spazio nel nome del prodotto.",
         queryTemplate: "SELECT name, INSTR(name, ' ') FROM Products",
         hints: ["Cerca lo spazio ' '"],
-        explanation: "Utile per separare parole.",
+        explanation: "LENGTH() restituisce il numero di caratteri della stringa, utile per validazione e filtri sulla dimensione del testo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa INSTR."
+        brokenCode: "SELECT name INSTR(name, ' ') FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Lunghezza Nome Prodotto",
@@ -4211,8 +4212,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa REPEAT()", "Usa stock come conteggio"],
         explanation: "Visualizzazione dati testuale (histogram).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa REPEAT."
+        brokenCode: "SELECT name LENGTH(name) as name_len FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Trim a Sinistra",
@@ -4228,21 +4229,21 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Insert String",
         descTemplate: "Inserisci 'New' all'inizio del nome prodotto.",
         queryTemplate: "SELECT CONCAT('New ', name) FROM Products",
-        hints: ["Semplice concatenazione"],
-        explanation: "Aggiunta di prefissi.",
+        hints: ["Seleziona dalla tabella Products", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "Le funzioni stringa SQL permettono di manipolare e trasformare dati testuali direttamente nelle query.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELCET CONCAT('New ', name) FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Mid String",
         descTemplate: "Prendi caratteri dal 2 al 4 (Lungh 3).",
         queryTemplate: "SELECT SUBSTR(name, 2, 3) FROM Users",
         hints: ["Start 2, Length 3"],
-        explanation: "Estrazione centrale.",
+        explanation: "CONCAT() unisce due o più stringhe in una sola, utile per creare campi composti come nome completo o indirizzi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa SUBSTR."
+        brokenCode: "SELCET SUBSTR(name, 2, 3) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Confronto Case-Insensitive",
@@ -4269,9 +4270,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Rendi maiuscola solo la prima lettera (Simulazione Initcap).",
         queryTemplate: "SELECT CONCAT(UPPER(SUBSTR(name, 1, 1)), LOWER(SUBSTR(name,2))) FROM Users",
         hints: ["Upper del primo char", "Lower del resto", "Concatena"],
-        explanation: "Costruzione manuale di funzioni complesse.",
+        explanation: "LENGTH() restituisce il numero di caratteri della stringa, utile per validazione e filtri sulla dimensione del testo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET CONCAT(UPPER(SUBSTR(name, 1, 1)), LOWER(SUBSTR(name,2))) FROM Users",
         debugHint: "Combina UPPER, LEFT, LOWER, SUBSTR."
       },
       {
@@ -4279,10 +4280,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Confronta stringhe simili (es. uso SOUNDEX se supportato, o LEFT match).",
         queryTemplate: "SELECT * FROM Users WHERE SUBSTR(name, 1, 1) = SUBSTR('Alex', 1, 1)",
         hints: ["Confronto basato su iniziali"],
-        explanation: "Matching approssimativo semplice.",
+        explanation: "UPPER() converte tutti i caratteri in maiuscolo. Utile per standardizzare dati e per confronti case-insensitive.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa LEFT."
+        brokenCode: "SELECT * FROM Users WERE SUBSTR(name, 1, 1) = SUBSTR('Alex', 1, 1)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Random Integer",
@@ -4291,7 +4292,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["RAND() * 10 da 0 a 9.99", "FLOOR scende a 0..9", "+1 porta a 1..10"],
         explanation: "Formula standard per range casuali interi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FLOOR(RAND() 10) + 1",
         debugHint: "Ricorda di usare FLOOR."
       },
       {
@@ -4299,9 +4300,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prezzo / 100 visualizzato con 2 decimali.",
         queryTemplate: "SELECT ROUND(price / 100, 2) FROM Products",
         hints: ["Dividi", "Poi Arrotonda"],
-        explanation: "Ordine delle operazioni.",
+        explanation: "FLOOR() arrotonda per difetto all'intero inferiore, utile per troncamenti e calcoli dove i decimali non servono.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT ROUND(price 100, 2) FROM Products",
         debugHint: "ROUND va all'esterno."
       },
       {
@@ -4309,7 +4310,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Evita divisione per zero usando NULLIF.",
         queryTemplate: "SELECT 100 / NULLIF(points, 0) FROM Users",
         hints: ["NULLIF(points, 0) ritorna NULL se points è 0", "N / NULL dà NULL (sicuro)"],
-        explanation: "Gestione errori aritmetici.",
+        explanation: "ROUND() arrotonda un numero al numero di decimali specificato. Fondamentale per presentare valori monetari e percentuali.",
         replacements: {},
         brokenCode: "SELECT 100 / points FROM Users",
         debugHint: "Se points è 0, darà errore o Infinity. Usa NULLIF."
@@ -4321,8 +4322,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["COALESCE accetta N argomenti"],
         explanation: "Catena di fallback.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa COALESCE."
+        brokenCode: "SELCET COALESCE(NULL, NULL, 'Found', 'Ignored')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Ascii Sum",
@@ -4331,7 +4332,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["ASCII(LEFT...)", "ASCII(RIGHT...)", "Somma"],
         explanation: "Calculi su codici carattere.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT ASCII(SUBSTR(name, 1, 1)) ASCII(SUBSTR(name, LENGTH(name) - 1 + 1, 1)) FROM Users",
         debugHint: "Usa ASCII, LEFT, RIGHT."
       }
     ],
@@ -4343,7 +4344,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Estrai primi 2 char", "Concatena '***'", "Estrai da '@' in poi"],
         explanation: "Tecnica comune per privacy e GDPR.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET CONCAT(SUBSTR(email, 1, 2), '***', SUBSTR(email, INSTR(email, '@'))) FROM Users",
         debugHint: "Spezza il problema in 3 parti e uniscile con CONCAT."
       },
       {
@@ -4353,7 +4354,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Estrai parte dopo spazio (Cognome)", "Primo carattere (Nome)", "Concatena con virgola"],
         explanation: "Manipolazione avanzata di stringhe basata su delimitatori.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CONCAT(UPPER(SUBSTR(name, INSTR(name, ' ') 1)), ', ', UPPER(SUBSTR(name, 1, 1)), '.') FROM Users WHERE INSTR(name, ' ') > 0",
         debugHint: "Usa INSTR per trovare lo spazio."
       },
       {
@@ -4361,9 +4362,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola prezzo con IVA 22% arrotondato a 2 decimali e formattato.",
         queryTemplate: "SELECT CONCAT('€', ROUND(price * 1.22, 2)) as iva_price FROM Products",
         hints: ["Moltiplica per 1.22", "Arrotonda a 2", "Concatena simbolo"],
-        explanation: "Calcolo finanziario completo.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CONCAT('€', ROUND(price * 1.22, 2)) IS iva_price FROM Products",
         debugHint: "Attento all'ordine: prima calcola, poi arrotonda, poi stringa."
       },
       {
@@ -4371,9 +4372,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Score: Lunghezza * 10, ma max 100 (Usa LEAST/MIN non supportato? Usa CASE).",
         queryTemplate: "SELECT CASE WHEN LENGTH(name)*10 > 100 THEN 100 ELSE LENGTH(name)*10 END as score FROM Users",
         hints: ["Calcola score base", "Usa CASE per limitare (clamp) a 100"],
-        explanation: "Logica di clamping numerico.",
+        explanation: "CONCAT() unisce due o più stringhe in una sola, utile per creare campi composti come nome completo o indirizzi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CASE WHEN LENGTH(name)*10 > 100 THEN 100 ELSE LENGTH(name)*10 END IS score FROM Users",
         debugHint: "Usa CASE WHEN val > 100 THEN 100."
       },
       {
@@ -4381,9 +4382,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Estrai testo tra parentesi quadre '[tag] Content'.",
         queryTemplate: "SELECT SUBSTR(name, INSTR(name, 'e')+1, 3) FROM Products WHERE name LIKE '%e%'",
         hints: ["Trova pos '['", "Trova pos ']'", "Calcola lunghezza come diff"],
-        explanation: "Parsing complesso di testo strutturato.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT SUBSTR(name, INSTR(name, 'e') 1, 3) FROM Products WHERE name LIKE '%e%'",
         debugHint: "Lunghezza = PosChiusura - PosApertura - 1."
       },
       {
@@ -4391,9 +4392,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Genera codice: Primi 2 char categoria (Upper) + ID (pad 3) + ult char nome.",
         queryTemplate: "SELECT CONCAT(UPPER(SUBSTR(category, 1, 2)), LPAD(CAST(id AS STRING), 3, '0'), SUBSTR(name, LENGTH(name) - 1 + 1, 1)) FROM Products",
         hints: ["Unisci 3 parti", "Usa Upper, Left, Lpad, Right"],
-        explanation: "Generazione chiavi univoche custom.",
+        explanation: "LIKE filtra le stringhe per pattern: % corrisponde a qualsiasi sequenza di caratteri, _ a un singolo carattere.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CONCAT(UPPER(SUBSTR(category, 1, 2)), LPAD(CAST(id IS STRING), 3, '0'), SUBSTR(name, LENGTH(name) - 1 + 1, 1)) FROM Products",
         debugHint: "Usa CONCAT per unire tutto."
       },
       {
@@ -4401,9 +4402,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Simulazione: Se inizia con minuscola, trasforma in maiuscola, altrimenti minuscola.",
         queryTemplate: "SELECT CASE WHEN SUBSTR(name, 1, 1) = LOWER(SUBSTR(name, 1, 1)) THEN UPPER(name) ELSE LOWER(name) END FROM Users",
         hints: ["Confronta primo char con sua versione Lower", "Decidi azione"],
-        explanation: "Logica condizionale su proprietà stringa.",
+        explanation: "UPPER() converte tutti i caratteri in maiuscolo. Utile per standardizzare dati e per confronti case-insensitive.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CASE SUBSTR(name, 1, 1) = LOWER(SUBSTR(name, 1, 1)) THEN UPPER(name) ELSE LOWER(name) END FROM Users",
         debugHint: "Usa CASE WHEN."
       },
       {
@@ -4411,29 +4412,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova il prodotto col prezzo più vicino a 50.",
         queryTemplate: "SELECT * FROM Products ORDER BY ABS(price - 50) ASC LIMIT 1",
         hints: ["Ordina per ABS(price - 50)", "Prendi il primo"],
-        explanation: "Ordinamento per prossimità valore.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Products ORDER BY ABS(price - 50) ASC LIMIT 1",
         debugHint: "ORDER BY ABS(...) è la chiave."
       },
       {
         titleTemplate: "Statistiche Nome",
         descTemplate: "Stringa riassuntiva: 'Nome: X chars, Start: Y, End: Z'.",
         queryTemplate: "SELECT CONCAT('Nome: ', LENGTH(name), ' chars, Start: ', SUBSTR(name, 1, 1), ', End: ', SUBSTR(name, LENGTH(name) - 1 + 1, 1)) FROM Products",
-        hints: ["Tante concatenazioni"],
-        explanation: "Reporting testuale inline.",
+        hints: ["Seleziona dalla tabella Products", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELECT CONCAT('Nome: ', LENGTH(name), ' chars, Start: ', SUBSTR(name, 1, 1), ', End: ', SUBSTR(name, LENGTH(name) 1 + 1, 1)) FROM Products",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Pulizia Totale",
         descTemplate: "Trim, Lower e Remove '@' dall'input.",
         queryTemplate: "SELECT REPLACE(LOWER(TRIM(name)), '@', '') FROM Users",
         hints: ["Nidifica le funzioni: Replace(Lower(Trim(...)))"],
-        explanation: "Pipeline di pulizia dati.",
+        explanation: "LENGTH() restituisce il numero di caratteri della stringa, utile per validazione e filtri sulla dimensione del testo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET REPLACE(LOWER(TRIM(name)), '@', '') FROM Users",
         debugHint: "L'ordine conta: l'input di REPLACE è l'output di LOWER."
       },
       {
@@ -4443,18 +4444,18 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Subquery calcola AVG(LENGTH)", "Confronta LENGTH(name)"],
         explanation: "Funzioni scalari in combinazione con aggregazioni.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa subquery."
+        brokenCode: "SELECT name FROM Users WHERE LENGTH(name) < (SELECT AVG(LENGTH(name)) FROM Users)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Codifica Rot13 (Sim)",
         descTemplate: "Sostituisci 'A' con 'N' e 'B' con 'O' (Solo 2 char per esercizio).",
         queryTemplate: "SELECT REPLACE(REPLACE(UPPER(name), 'A', 'N'), 'B', 'O') FROM Users",
-        hints: ["Replace concatenati"],
-        explanation: "Cifratura semplice (dimostrativo).",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Nidifica REPLACE."
+        brokenCode: "SELCET REPLACE(REPLACE(UPPER(name), 'A', 'N'), 'B', 'O') FROM Users",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Conteggio Vocali (Sim)",
@@ -4463,7 +4464,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Rimuovi le 'a'", "Confronta le lunghezze"],
         explanation: "Trucco standard SQL per contare occorrenze di un char.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT LENGTH(name) - LENGTH(REPLACE(LOWER(name), 'a', '')) IS a_count FROM Users",
         debugHint: "Length(orig) - Length(removed)."
       },
       {
@@ -4471,49 +4472,49 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Converti 'Nome Prodotto' in 'nome-prodotto' (Lower, Replace space).",
         queryTemplate: "SELECT REPLACE(LOWER(name), ' ', '-') FROM Products",
         hints: ["Lower", "Replace spazio con dash"],
-        explanation: "Creazione URL slug.",
+        explanation: "LOWER() converte in minuscolo tutti i caratteri della stringa, utile per normalizzare i dati testuali.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa REPLACE."
+        brokenCode: "SELCET REPLACE(LOWER(name), ' ', '-') FROM Products",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Valore Futuro",
         descTemplate: "Points aumentati del 10% ogni anno di anzianità (Diff anni * 10%).",
         queryTemplate: "SELECT points * POWER(1.10, 2023 - YEAR(created_at)) FROM Users",
         hints: ["Base 1.10", "Esponente: Anni trascorsi"],
-        explanation: "Calcolo interesse composto.",
+        explanation: "LOWER() converte in minuscolo tutti i caratteri della stringa, utile per normalizzare i dati testuali.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa POWER."
+        brokenCode: "SELCET points * POWER(1.10, 2023 - YEAR(created_at)) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Coordinate (Sim)",
         descTemplate: "Formatta (x, y) da due colonne (id come x, stock come y).",
         queryTemplate: "SELECT CONCAT('(', id, ', ', stock, ')') as point FROM Products",
         hints: ["Concatena parentesi e virgole"],
-        explanation: "Formattazione geometrica.",
+        explanation: "YEAR() estrae il componente anno da una data, fondamentale per raggruppamenti e filtri su base annuale.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELECT CONCAT('(', id, ', ', stock, ')') IS point FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Hash Semplice",
         descTemplate: "Somma (ASCII primo char) * (ASCII ultimo char).",
         queryTemplate: "SELECT ASCII(SUBSTR(name, 1, 1)) * ASCII(SUBSTR(name, LENGTH(name) - 1 + 1, 1)) as hash FROM Users",
         hints: ["Moltiplicazione di ASCII"],
-        explanation: "Checksum banale.",
+        explanation: "CONCAT() unisce due o più stringhe in una sola, utile per creare campi composti come nome completo o indirizzi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa ASCII."
+        brokenCode: "SELECT ASCII(SUBSTR(name, 1, 1)) * ASCII(SUBSTR(name, LENGTH(name) - 1 + 1, 1)) IS hash FROM Users",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Progressione",
         descTemplate: "Genera '1-2-3' (concatenazione fissa per esercizio).",
         queryTemplate: "SELECT '1-2-3'",
         hints: ["Literal"],
-        explanation: "Testing costanti.",
+        explanation: "LENGTH() restituisce il numero di caratteri della stringa, utile per validazione e filtri sulla dimensione del testo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT '1 2-3'",
         debugHint: "Select stringa semplice."
       },
       {
@@ -4521,99 +4522,99 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se premium: mostra, se no: maschera.",
         queryTemplate: "SELECT CASE WHEN is_premium THEN email ELSE '***' END FROM Users",
         hints: ["CASE WHEN su premium"],
-        explanation: "Logica di business su display.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CASE."
+        brokenCode: "SELECT CASE is_premium THEN email ELSE '***' END FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Categoria Normalizzata",
         descTemplate: "Se categoria è NULL o vuota, 'Generico', poi UPPER.",
         queryTemplate: "SELECT UPPER(COALESCE(NULLIF(category, ''), 'Generico')) FROM Products",
         hints: ["NULLIF(cat, '') gestisce stringa vuota", "COALESCE gestisce NULL", "UPPER alla fine"],
-        explanation: "Robustezza dati.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Nidifica: UPPER(COALESCE(NULLIF...))."
+        brokenCode: "SELCET UPPER(COALESCE(NULLIF(category, ''), 'Generico')) FROM Products",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Report Stock",
         descTemplate: "'Low' se < 10, 'Med' se < 50, 'High' altrimenti.",
         queryTemplate: "SELECT name, CASE WHEN stock < 10 THEN 'Low' WHEN stock < 50 THEN 'Med' ELSE 'High' END FROM Products",
         hints: ["CASE WHEN multiplo"],
-        explanation: "Bucketing dei dati.",
+        explanation: "UPPER() converte tutti i caratteri in maiuscolo. Utile per standardizzare dati e per confronti case-insensitive.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CASE."
+        brokenCode: "SELECT name CASE WHEN stock < 10 THEN 'Low' WHEN stock < 50 THEN 'Med' ELSE 'High' END FROM Products",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Estrai Numeri (Sim)",
         descTemplate: "Dalla stringa 'Order #123', estrai '123' (Substring da pos # + 1).",
         queryTemplate: "SELECT SUBSTR('Order #123', INSTR('Order #123', '#') + 1)",
         hints: ["Trova hash", "Substr dopo hash"],
-        explanation: "Parsing ID.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa SUBSTR."
+        brokenCode: "SELECT SUBSTR('Order #123', INSTR('Order #123', '#') 1)",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Nome File",
         descTemplate: "Genera 'report_2023.txt'.",
         queryTemplate: "SELECT CONCAT('report_', 2023, '.txt')",
-        hints: ["Concatena"],
-        explanation: "Generazione nomi file.",
+        hints: ["Seleziona dalla tabella tabella", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELCET CONCAT('report_', 2023, '.txt')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Byte Size",
         descTemplate: "Lunghezza in byte (Length per charset standard).",
         queryTemplate: "SELECT LENGTH(name) FROM Users",
         hints: ["Assumiamo 1 byte char"],
-        explanation: "Stime storage.",
+        explanation: "CONCAT() unisce due o più stringhe in una sola, utile per creare campi composti come nome completo o indirizzi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa LENGTH."
+        brokenCode: "SELCET LENGTH(name) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Ultimo Spazio",
         descTemplate: "Trova posizione ultimo carattere (Length).",
         queryTemplate: "SELECT LENGTH(name) FROM Users",
         hints: ["L'ultimo indice è la lunghezza"],
-        explanation: "Info posizionali.",
+        explanation: "LENGTH() restituisce il numero di caratteri della stringa, utile per validazione e filtri sulla dimensione del testo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa LENGTH."
+        brokenCode: "SELCET LENGTH(name) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Centra Testo",
         descTemplate: "Simula centering (non esiste CENTER() std).",
         queryTemplate: "SELECT CONCAT('  ', name, '  ') FROM Users",
-        hints: ["Aggiungi spazi"],
-        explanation: "Padding manuale.",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "LENGTH() restituisce il numero di caratteri della stringa, utile per validazione e filtri sulla dimensione del testo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELCET CONCAT('  ', name, '  ') FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Bool to Str",
         descTemplate: "Converti true/false in 'Sì'/'No'.",
         queryTemplate: "SELECT CASE WHEN is_premium THEN 'Sì' ELSE 'No' END FROM Users",
         hints: ["CASE su booleano"],
-        explanation: "Localizzazione.",
+        explanation: "CONCAT() unisce due o più stringhe in una sola, utile per creare campi composti come nome completo o indirizzi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CASE."
+        brokenCode: "SELECT CASE is_premium THEN 'Sì' ELSE 'No' END FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Safe Div",
         descTemplate: "Price / Stock (Gestisci stock 0 con NULLIF e COALESCE result a 0).",
         queryTemplate: "SELECT COALESCE(price / NULLIF(stock, 0), 0) FROM Products",
         hints: ["NULLIF(stock,0)", "Div", "COALESCE(res, 0)"],
-        explanation: "Matematica sicura completa.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET COALESCE(price / NULLIF(stock, 0), 0) FROM Products",
         debugHint: "Usa COALESCE + NULLIF."
       },
       {
@@ -4623,17 +4624,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Dispari (bit 1 settato)"],
         explanation: "Logica bitwise simulata.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa MOD."
+        brokenCode: "SELECT id FROM Users WERE MOD(id, 2) = 1",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Completa",
         descTemplate: "Esercizio finale riassuntivo.",
         queryTemplate: "SELECT UPPER(TRIM(name)) FROM Users",
         hints: ["Upper + Trim"],
-        explanation: "Ripasso.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET UPPER(TRIM(name)) FROM Users",
         debugHint: "Usa UPPER e TRIM."
       }
     ],
@@ -4655,7 +4656,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Estrai il mese numerico (1-12) della data ordine.",
         queryTemplate: "SELECT MONTH(order_date) FROM Orders",
         hints: ["Cerca una funzione per ottenere il mese", "Il risultato deve essere un numero"],
-        explanation: "Estrae il mese dalla data.",
+        explanation: "YEAR() estrae il componente anno da una data, fondamentale per raggruppamenti e filtri su base annuale.",
         replacements: {},
         brokenCode: "SELECT MON(order_date) FROM Orders",
         debugHint: "La funzione è MONTH(), non MON."
@@ -4665,10 +4666,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Estrai il giorno del mese (1-31).",
         queryTemplate: "SELECT DAY(created_at) FROM Users",
         hints: ["Estrai la parte del giorno dalla data", "Funzione DAY o DAYOFMONTH"],
-        explanation: "Estrae il giorno del mese.",
+        explanation: "MONTH() restituisce il numero del mese (1-12) da una data, utile per analisi mensili e stagionali.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DAY()."
+        brokenCode: "SELCET DAY(created_at) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Ora Corrente",
@@ -4684,11 +4685,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Minuto Creazione",
         descTemplate: "Estrai il minuto dalla data di creazione.",
         queryTemplate: "SELECT MINUTE(created_at) FROM Users",
-        hints: ["Usa MINUTE()"],
-        explanation: "Estrae i minuti (0-59).",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa MINUTE()."
+        brokenCode: "SELCET MINUTE(created_at) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Data Odierna",
@@ -4717,25 +4718,25 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["C'è una funzione speculare a DAYNAME", "Restituisce la stringa del mese in inglese"],
         explanation: "Restituisce il nome completo del mese.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa MONTHNAME()."
+        brokenCode: "SELCET MONTHNAME(created_at) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Giorno Settimana",
         descTemplate: "Indice giorno settimana (1=Domenica, ecc. a seconda config standard).",
         queryTemplate: "SELECT DAYOFWEEK(order_date) FROM Orders",
-        hints: ["Usa DAYOFWEEK()"],
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
         explanation: "Restituisce un indice da 1 (Domenica) a 7 (Sabato) nello standard ODBC.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DAYOFWEEK()."
+        brokenCode: "SELCET DAYOFWEEK(order_date) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Solo Data",
         descTemplate: "Estrai solo la parte data da un datetime.",
         queryTemplate: "SELECT DATE(created_at) FROM Users",
         hints: ["Usa la funzione DATE() per troncare l'orario"],
-        explanation: "Estrae la parte YYYY-MM-DD.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
         brokenCode: "SELECT created_at FROM Users",
         debugHint: "Usa DATE() per rimuovere l'orario."
@@ -4744,38 +4745,38 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Anno Ordine",
         descTemplate: "Estrai l'anno in cui è stato fatto l'ordine.",
         queryTemplate: "SELECT YEAR(order_date) FROM Orders",
-        hints: ["Usa YEAR()"],
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
         explanation: "Filtro per anno.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa YEAR()."
+        brokenCode: "SELCET YEAR(order_date) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Secondo",
         descTemplate: "Estrai i secondi da un timestamp.",
         queryTemplate: "SELECT SECOND(created_at) FROM Users",
-        hints: ["Usa SECOND()"],
-        explanation: "Precisione al secondo.",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "YEAR() estrae il componente anno da una data, fondamentale per raggruppamenti e filtri su base annuale.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa SECOND()."
+        brokenCode: "SELCET SECOND(created_at) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Ultimo Giorno Mese",
         descTemplate: "Trova l'ultimo giorno del mese per la data ordine.",
         queryTemplate: "SELECT LAST_DAY(order_date) FROM Orders",
-        hints: ["Usa LAST_DAY()"],
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
         explanation: "Restituisce la data dell'ultimo giorno del mese (es. 28, 30, 31).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa LAST_DAY()."
+        brokenCode: "SELCET LAST_DAY(order_date) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Data e Ora",
         descTemplate: "Mostra data e ora correnti.",
         queryTemplate: "SELECT NOW()",
         hints: ["Funzione principale per timestamp corrente"],
-        explanation: "Restituisce YYYY-MM-DD HH:MM:SS.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
         brokenCode: "SELECT DATE()",
         debugHint: "DATE() richiede un argomento o non è la funzione per 'adesso'."
@@ -4784,40 +4785,40 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Giorni Trascorsi",
         descTemplate: "Che giorno dell'anno è (1-366)?",
         queryTemplate: "SELECT YEAR(NOW()) - YEAR(order_date) AS years_ago FROM Orders",
-        hints: ["Usa DAYOFYEAR()"],
-        explanation: "Progressivo annuo.",
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DAYOFYEAR()."
+        brokenCode: "SELECT YEAR(NOW()) - YEAR(order_date) IS years_ago FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Settimana Anno",
         descTemplate: "Numero della settimana (0-53).",
         queryTemplate: "SELECT WEEK(order_date) FROM Orders",
-        hints: ["Usa WEEK()"],
-        explanation: "Conteggio settimane.",
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa WEEK()."
+        brokenCode: "SELCET WEEK(order_date) FROM Orders",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Quarter",
         descTemplate: "Trimestre dell'ordine (1-4).",
         queryTemplate: "SELECT QUARTER(order_date) FROM Orders",
-        hints: ["Usa QUARTER()"],
-        explanation: "Divisione anno in 4 parti.",
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa QUARTER()."
+        brokenCode: "SELCET QUARTER(order_date) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Formatta Anno-Mese",
         descTemplate: "Stampa 'YYYY-MM' (Esercizio di estrazione, non DATE_FORMAT).",
         queryTemplate: "SELECT CONCAT(YEAR(order_date), '-', MONTH(order_date)) FROM Orders",
         hints: ["Concatena YEAR e MONTH con un trattino"],
-        explanation: "Formattazione manuale semplice.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET CONCAT(YEAR(order_date), '-', MONTH(order_date)) FROM Orders",
         debugHint: "Usa CONCAT, YEAR, MONTH."
       },
       {
@@ -4825,9 +4826,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola anni passati dalla creazione (Difference Year).",
         queryTemplate: "SELECT YEAR(NOW()) - YEAR(created_at) FROM Users",
         hints: ["Sottrai l'anno di creazione dall'anno corrente"],
-        explanation: "Calcolo età approssimativo.",
+        explanation: "YEAR() estrae il componente anno da una data, fondamentale per raggruppamenti e filtri su base annuale.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET YEAR(NOW()) - YEAR(created_at) FROM Users",
         debugHint: "Usa YEAR(NOW()) - YEAR(...)."
       },
       {
@@ -4835,9 +4836,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Verifica se è Domenica (DayOfWeek = 1).",
         queryTemplate: "SELECT order_date, DAYOFWEEK(order_date) = 1 as is_sunday FROM Orders",
         hints: ["DAYOFWEEK restituisce 1 per Domenica (standard ODBC)", "Confronta con 1"],
-        explanation: "Check giorno festivo semplice.",
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT order_date DAYOFWEEK(order_date) = 1 as is_sunday FROM Orders",
         debugHint: "Usa DAYOFWEEK(date) = 1."
       },
       {
@@ -4845,20 +4846,20 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Alias per NOW() (spesso usato).",
         queryTemplate: "SELECT SYSDATE()",
         hints: ["Simile a NOW()"],
-        explanation: "Restituisce data/ora sistema.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa SYSDATE()."
+        brokenCode: "SELCET SYSDATE()",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Time Only",
         descTemplate: "Estrai solo la parte orario (HH:MM:SS).",
         queryTemplate: "SELECT TIME(created_at) FROM Users",
-        hints: ["Usa TIME()"],
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
         explanation: "Estrae orario da datetime.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa TIME()."
+        brokenCode: "SELCET TIME(created_at) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Aggiungi 0 Giorni",
@@ -4867,8 +4868,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["DATE_ADD con 0"],
         explanation: "Operazione neutra.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DATE_ADD."
+        brokenCode: "SELCET DATE_ADD(order_date, INTERVAL 0 DAY) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Ieri",
@@ -4887,8 +4888,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["ADDDATE o DATE_ADD", "Parti da CURDATE()"],
         explanation: "Data futura.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa ADDDATE."
+        brokenCode: "SELCET ADDDATE(CURDATE(), 1)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Timestamp Stringa",
@@ -4897,28 +4898,28 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Casting implicito o funzionale"],
         explanation: "Verifica parsing.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DATE('stringa')."
+        brokenCode: "SELECT DATE('2023 12-25')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Primo del Mese (Logic)",
         descTemplate: "Costruisci la data del primo giorno del mese corrente.",
         queryTemplate: "SELECT CONCAT(YEAR(NOW()), '-', MONTH(NOW()), '-01')",
         hints: ["Concatena Anno, Mese e '-01'"],
-        explanation: "Costruzione data.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELECT CONCAT(YEAR(NOW()), ' ', MONTH(NOW()), '-01')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Giorno Precedente",
         descTemplate: "Giorno prima dell'ordine.",
         queryTemplate: "SELECT DATE_SUB(order_date, INTERVAL 1 DAY) FROM Orders",
-        hints: ["Usa DATE_SUB", "INTERVAL 1 DAY"],
-        explanation: "Date math base.",
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DATE_SUB."
+        brokenCode: "SELCET DATE_SUB(order_date, INTERVAL 1 DAY) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Differenza Giorni Semplice",
@@ -4927,18 +4928,18 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa TIMESTAMPDIFF('DAY', start, end) per contare i giorni"],
         explanation: "Verifica intervallo di tempo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa TIMESTAMPDIFF."
+        brokenCode: "SELCET TIMESTAMPDIFF('DAY', SUBDATE(CURDATE(), 1), CURDATE())",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Anno Corrente Variabile",
         descTemplate: "Seleziona solo l'anno 2023 (hardcoded per esempio).",
         queryTemplate: "SELECT 2023",
-        hints: ["Numero"],
-        explanation: "Costante.",
+        hints: ["Seleziona dalla tabella tabella", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "TIMESTAMPDIFF calcola la differenza tra due date/timestamp nell'unità specificata (SECOND, MINUTE, HOUR, DAY, MONTH, YEAR).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Scrivi 2023."
+        brokenCode: "SELCET 2023",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       }
     ],
     [Difficulty.Medium]: [
@@ -4956,8 +4957,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Scadenza Ordine",
         descTemplate: "Calcola la data di scadenza (30 giorni dopo l'ordine).",
         queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 30 DAY) FROM Orders",
-        hints: ["Usa DATE_ADD", "INTERVAL 30 DAY"],
-        explanation: "Proiezione data futura.",
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "TIMESTAMPDIFF calcola la differenza tra due date/timestamp nell'unità specificata (SECOND, MINUTE, HOUR, DAY, MONTH, YEAR).",
         replacements: {},
         brokenCode: "SELECT order_date + 30 FROM Orders",
         debugHint: "Usa DATE_ADD(date, INTERVAL ...)."
@@ -4977,17 +4978,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Giorni vissuti dall'utente (created_at come nascita fittizia).",
         queryTemplate: "SELECT TIMESTAMPDIFF('DAY', created_at, CURDATE()) FROM Users",
         hints: ["Usa TIMESTAMPDIFF con 'DAY'"],
-        explanation: "Calcolo età in giorni.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa TIMESTAMPDIFF."
+        brokenCode: "SELCET TIMESTAMPDIFF('DAY', created_at, CURDATE()) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Ore Trascorse",
         descTemplate: "Calcola ore trascorse dalla creazione account.",
         queryTemplate: "SELECT TIMESTAMPDIFF(HOUR, created_at, NOW()) FROM Users",
         hints: ["Usa TIMESTAMPDIFF", "Unit: HOUR"],
-        explanation: "Differenza temporale precisa.",
+        explanation: "TIMESTAMPDIFF calcola la differenza tra due date/timestamp nell'unità specificata (SECOND, MINUTE, HOUR, DAY, MONTH, YEAR).",
         replacements: {},
         brokenCode: "SELECT MONTH(created_at) * 30 FROM Users",
         debugHint: "DATEDIFF conta solo i cambi di giorno, TIMESTAMPDIFF è più preciso per le ore."
@@ -4997,19 +4998,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Data in formato 'DD/MM/YYYY'.",
         queryTemplate: "SELECT DATE_FORMAT(created_at, '%d/%m/%Y') FROM Users",
         hints: ["Usa DATE_FORMAT", "Specifier: %d/%m/%Y"],
-        explanation: "Formattazione locale.",
+        explanation: "TIMESTAMPDIFF calcola la differenza tra due date/timestamp nell'unità specificata (SECOND, MINUTE, HOUR, DAY, MONTH, YEAR).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DATE_FORMAT."
+        brokenCode: "SELCET DATE_FORMAT(created_at, '%d/%m/%Y') FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Ultimo Giorno Mese Scorso",
         descTemplate: "Ultimo giorno del mese precedente alla creazione.",
         queryTemplate: "SELECT LAST_DAY(DATE_SUB(created_at, INTERVAL 1 MONTH)) FROM Users",
         hints: ["Sottrai 1 mese", "Applica LAST_DAY"],
-        explanation: "Navigazione tra mesi.",
+        explanation: "DATE_FORMAT formatta una data secondo il pattern specificato, permettendo di visualizzare date in formati personalizzati.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET LAST_DAY(DATE_SUB(created_at, INTERVAL 1 MONTH)) FROM Users",
         debugHint: "Usa DATE_SUB poi LAST_DAY."
       },
       {
@@ -5017,19 +5018,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Aggiungi giorni fino a raggiungere Lunedì (Simulazione logica).",
         queryTemplate: "SELECT DATE_ADD(created_at, INTERVAL (7 - WEEKDAY(created_at)) % 7 DAY) FROM Users",
         hints: ["WEEKDAY restituisce indice (0=Mon...)", "Logica modulo 7"],
-        explanation: "Calcolo ricorrenze settimanali.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa WEEKDAY."
+        brokenCode: "SELCET DATE_ADD(created_at, INTERVAL (7 - WEEKDAY(created_at)) % 7 DAY) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Nome Mese Abbreviato",
         descTemplate: "Estrai 'Jan', 'Feb', etc.",
         queryTemplate: "SELECT SUBSTR(MONTHNAME(created_at), 1, 3) FROM Users",
         hints: ["MONTHNAME", "LEFT 3 char"],
-        explanation: "Manipolazione stringa su data.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET SUBSTR(MONTHNAME(created_at), 1, 3) FROM Users",
         debugHint: "Usa MONTHNAME e LEFT."
       },
       {
@@ -5037,19 +5038,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Restituisci 'Week XX'.",
         queryTemplate: "SELECT CONCAT('Week ', WEEK(created_at)) FROM Users",
         hints: ["Usa PREPEND", "WEEK()"],
-        explanation: "Reporting settimanale.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELCET CONCAT('Week ', WEEK(created_at)) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Aggiungi 2 Settimane",
         descTemplate: "Aggiungi 14 giorni.",
         queryTemplate: "SELECT DATE_ADD(created_at, INTERVAL 2 WEEK) FROM Users",
         hints: ["INTERVAL 2 WEEK è valido in SQL std"],
-        explanation: "Aritmetica con unità diverse.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET DATE_ADD(created_at, INTERVAL 2 WEEK) FROM Users",
         debugHint: "Usa INTERVAL 2 WEEK."
       },
       {
@@ -5067,9 +5068,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Converti giorni trascorsi in anni (diviso 365.25).",
         queryTemplate: "SELECT ROUND(TIMESTAMPDIFF('DAY', created_at, NOW()) / 365.25, 1) FROM Users",
         hints: ["Dividi i giorni totali per 365.25", "Arrotonda il risultato"],
-        explanation: "Stima anni precisa.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT ROUND(TIMESTAMPDIFF('DAY', created_at, NOW()) 365.25, 1) FROM Users",
         debugHint: "Dividi il risultato di TIMESTAMPDIFF."
       },
       {
@@ -5077,49 +5078,49 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Anno e mese combinati come intero YYYYMM (es. 202301).",
         queryTemplate: "SELECT YEAR(created_at) * 100 + MONTH(created_at) FROM Users",
         hints: ["Moltiplica l'anno per 100", "Somma il mese"],
-        explanation: "Formato numerico compatto.",
+        explanation: "TIMESTAMPDIFF calcola la differenza tra due date/timestamp nell'unità specificata (SECOND, MINUTE, HOUR, DAY, MONTH, YEAR).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT YEAR(created_at) 100 + MONTH(created_at) FROM Users",
         debugHint: "Usa YEAR() * 100 + MONTH()."
       },
       {
         titleTemplate: "Str to Date",
         descTemplate: "Converti '01-12-2023' in data.",
         queryTemplate: "SELECT STR_TO_DATE('01-12-2023', '%d-%m-%Y')",
-        hints: ["STR_TO_DATE", "Pattern inverso"],
-        explanation: "Parsing date custom.",
+        hints: ["Seleziona dalla tabella tabella", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "YEAR() estrae il componente anno da una data, fondamentale per raggruppamenti e filtri su base annuale.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa STR_TO_DATE."
+        brokenCode: "SELECT STR_TO_DATE('01 12-2023', '%d-%m-%Y')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Trimestre Inizio",
         descTemplate: "Primo giorno del trimestre corrente.",
         queryTemplate: "SELECT MAKEDATE(YEAR(NOW()), 1) + INTERVAL QUARTER(NOW()) * 3 - 3 MONTH",
         hints: ["Complesso: MAKEDATE anno", "Aggiungi trimestri"],
-        explanation: "Calcolo avanzato periodi.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Costruisci logicamente."
+        brokenCode: "SELECT MAKEDATE(YEAR(NOW()), 1) INTERVAL QUARTER(NOW()) * 3 - 3 MONTH",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Seconda Metà Anno",
         descTemplate: "Seleziona se orario > 12:00.",
         queryTemplate: "SELECT * FROM Orders WHERE MONTH(order_date) >= 6",
         hints: ["Filtra con HOUR()"],
-        explanation: "Filtri basati su parte oraria.",
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa HOUR."
+        brokenCode: "SELECT * FROM Orders WHERE MONTH(order_date) <= 6",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Tempo Rimasto Anno",
         descTemplate: "Giorni alla fine dell'anno.",
         queryTemplate: "SELECT TIMESTAMPDIFF('DAY', NOW(), CONCAT(YEAR(NOW()), '-12-31'))",
         hints: ["Costruisci la data del 31 dicembre", "Usa TIMESTAMPDIFF per la differenza"],
-        explanation: "Countdown.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT TIMESTAMPDIFF('DAY', NOW(), CONCAT(YEAR(NOW()), ' 12-31'))",
         debugHint: "Costruisci la data target fine anno."
       },
       {
@@ -5127,40 +5128,40 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Es: 'Friday, 01 January 2023'.",
         queryTemplate: "SELECT DATE_FORMAT(NOW(), '%W, %d %M %Y')",
         hints: ["%W nome giorno", "%M nome mese"],
-        explanation: "Formattazione verbosa.",
+        explanation: "TIMESTAMPDIFF calcola la differenza tra due date/timestamp nell'unità specificata (SECOND, MINUTE, HOUR, DAY, MONTH, YEAR).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET DATE_FORMAT(NOW(), '%W, %d %M %Y')",
         debugHint: "Controlla gli specifier di DATE_FORMAT."
       },
       {
         titleTemplate: "Unix Timestamp",
         descTemplate: "Ottieni timestamp numerico (epoch).",
         queryTemplate: "SELECT UNIX_TIMESTAMP(created_at) FROM Users",
-        hints: ["Usa UNIX_TIMESTAMP"],
-        explanation: "Interoperabilità con sistemi backend.",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "DATE_FORMAT formatta una data secondo il pattern specificato, permettendo di visualizzare date in formati personalizzati.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa UNIX_TIMESTAMP."
+        brokenCode: "SELCET UNIX_TIMESTAMP(created_at) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Da Epoch a Data",
         descTemplate: "Converti 1672531200 in data.",
         queryTemplate: "SELECT FROM_UNIXTIME(1672531200)",
-        hints: ["FROM_UNIXTIME"],
+        hints: ["Seleziona dalla tabella tabella", "Specifica il nome delle colonne dopo SELECT"],
         explanation: "Decodifica timestamp.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa FROM_UNIXTIME."
+        brokenCode: "SELCET FROM_UNIXTIME(1672531200)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Somma Ore",
         descTemplate: "Aggiungi 36 ore alla data ordine.",
         queryTemplate: "SELECT DATE_ADD(order_date, INTERVAL 36 HOUR) FROM Orders",
-        hints: ["INTERVAL 36 HOUR"],
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
         explanation: "Aritmetica oltre le 24h.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa HOUR."
+        brokenCode: "SELCET DATE_ADD(order_date, INTERVAL 36 HOUR) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Check Data Futura",
@@ -5169,7 +5170,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Confronto con NOW()", "CASE WHEN"],
         explanation: "Validazione temporale.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CASE order_date > NOW() THEN 'Future' ELSE 'Past' END FROM Orders",
         debugHint: "Usa CASE WHEN."
       },
       {
@@ -5177,9 +5178,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Differenza in mesi tra la data corrente e la creazione.",
         queryTemplate: "SELECT PERIOD_DIFF(YEAR(NOW()) * 100 + MONTH(NOW()), YEAR(created_at) * 100 + MONTH(created_at)) FROM Users",
         hints: ["PERIOD_DIFF(YYYYMM, YYYYMM)", "Costruisci YYYYMM con matematica"],
-        explanation: "Calcolo differenza mesi accurato.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT PERIOD_DIFF(YEAR(NOW()) 100 + MONTH(NOW()), YEAR(created_at) * 100 + MONTH(created_at)) FROM Users",
         debugHint: "Usa PERIOD_DIFF e calcola YYYYMM."
       },
       {
@@ -5187,9 +5188,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Data compleanno nell'anno corrente (Simulazione: Sostituisci anno nascita con Anno corr).",
         queryTemplate: "SELECT CONCAT(YEAR(NOW()), '-', DATE_FORMAT(created_at, '%m-%d')) FROM Users",
         hints: ["Concatena Anno Corr con Mese-Giorno nascita"],
-        explanation: "Calcolo ricorrenze.",
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET CONCAT(YEAR(NOW()), '-', DATE_FORMAT(created_at, '%m-%d')) FROM Users",
         debugHint: "Usa CONCAT e DATE_FORMAT."
       },
       {
@@ -5197,50 +5198,50 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova data, sottrai giorni fino a Ven (Esercizio logico).",
         queryTemplate: "SELECT DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW()) + 3) % 7 DAY)",
         hints: ["Logica complessa sui giorni settimana: Weekday(Ven)=4"],
-        explanation: "Algoritmi su date.",
+        explanation: "DATE_FORMAT formatta una data secondo il pattern specificato, permettendo di visualizzare date in formati personalizzati.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DATE_SUB."
+        brokenCode: "SELECT DATE_SUB(NOW(), INTERVAL (WEEKDAY(NOW()) 3) % 7 DAY)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Data ISO",
         descTemplate: "Formatta come ISO 8601 (YYYY-MM-DDTHH:MM:SS).",
         queryTemplate: "SELECT DATE_FORMAT(NOW(), '%Y-%m-%dT%T')",
         hints: ["%T è HH:mm:ss"],
-        explanation: "Standard interscambio.",
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DATE_FORMAT."
+        brokenCode: "SELCET DATE_FORMAT(NOW(), '%Y-%m-%dT%T')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Secondi a Mezzanotte",
         descTemplate: "Secondi passati dall'inizio della giornata.",
         queryTemplate: "SELECT TIME_TO_SEC(TIME(NOW()))",
-        hints: ["TIME_TO_SEC", "TIME(NOW)"],
-        explanation: "Conversione in scalare.",
+        hints: ["Seleziona dalla tabella tabella", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "DATE_FORMAT formatta una data secondo il pattern specificato, permettendo di visualizzare date in formati personalizzati.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa TIME_TO_SEC."
+        brokenCode: "SELCET TIME_TO_SEC(TIME(NOW()))",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Mese Scorso Stesso Giorno",
         descTemplate: "Data oggi meno 1 mese.",
         queryTemplate: "SELECT DATE_SUB(NOW(), INTERVAL 1 MONTH)",
-        hints: ["DATE_SUB"],
-        explanation: "Periodicità mensile.",
+        hints: ["Seleziona dalla tabella tabella", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DATE_SUB."
+        brokenCode: "SELCET DATE_SUB(NOW(), INTERVAL 1 MONTH)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Time Delta",
         descTemplate: "Differenza tra due orari stabiliti.",
         queryTemplate: "SELECT TIMEDIFF('18:00:00', '12:00:00')",
-        hints: ["TIMEDIFF"],
-        explanation: "Aritmetica time puri.",
+        hints: ["Seleziona dalla tabella tabella", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa TIMEDIFF."
+        brokenCode: "SELCET TIMEDIFF('18:00:00', '12:00:00')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       }
     ],
     [Difficulty.Hard]: [
@@ -5259,7 +5260,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola il primo giorno del mese successivo.",
         queryTemplate: "SELECT DATE_ADD(LAST_DAY(NOW()), INTERVAL 1 DAY)",
         hints: ["LAST_DAY(NOW()) trova fine mese", "Aggiungi 1 giorno"],
-        explanation: "Navigazione date logica.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
         brokenCode: "SELECT LAST_DAY(NOW()) + 1",
         debugHint: "Usa DATE_ADD o INTERVAL."
@@ -5269,7 +5270,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Filtra ordini fatti Lun-Ven (WeekDay 0-4).",
         queryTemplate: "SELECT * FROM Orders WHERE WEEKDAY(order_date) < 5",
         hints: ["WEEKDAY: 0=Mon, 4=Fri, 5=Sat, 6=Sun"],
-        explanation: "Filtro business days.",
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
         brokenCode: "SELECT * FROM Orders WHERE DAYNAME(order_date) NOT IN ('Saturday', 'Sunday')",
         debugHint: "WEEKDAY è più robusto della lingua."
@@ -5278,20 +5279,20 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Età Precisa (Mesi)",
         descTemplate: "Mesi totali vissuti.",
         queryTemplate: "SELECT TIMESTAMPDIFF(MONTH, created_at, NOW()) FROM Users",
-        hints: ["TIMESTAMPDIFF", "Unit: MONTH"],
-        explanation: "Differenza in mesi interi.",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa TIMESTAMPDIFF."
+        brokenCode: "SELCET TIMESTAMPDIFF(MONTH, created_at, NOW()) FROM Users",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Inizio Anno Fiscale",
         descTemplate: "Se l'anno fiscale inizia a Ottobre, calcola l'anno fiscale della data ordine.",
         queryTemplate: "SELECT YEAR(DATE_ADD(order_date, INTERVAL 3 MONTH)) FROM Orders",
         hints: ["Aggiungi 3 mesi per shiftare Ottobre a Gennaio", "Estrai l'anno"],
-        explanation: "Tecnica per anni fiscali sfalsati.",
+        explanation: "TIMESTAMPDIFF calcola la differenza tra due date/timestamp nell'unità specificata (SECOND, MINUTE, HOUR, DAY, MONTH, YEAR).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET YEAR(DATE_ADD(order_date, INTERVAL 3 MONTH)) FROM Orders",
         debugHint: "Shifta la data."
       },
       {
@@ -5299,9 +5300,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola il 31 Dicembre dell'anno dell'ordine.",
         queryTemplate: "SELECT MAKEDATE(YEAR(order_date), 1) + INTERVAL 1 YEAR - INTERVAL 1 DAY FROM Orders",
         hints: ["MAKEDATE(Year, 1) = 1 Gen", "Aggiungi 1 anno, togli 1 giorno"],
-        explanation: "Costruzione date limiti.",
+        explanation: "YEAR() estrae il componente anno da una data, fondamentale per raggruppamenti e filtri su base annuale.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET MAKEDATE(YEAR(order_date), 1) + INTERVAL 1 YEAR - INTERVAL 1 DAY FROM Orders",
         debugHint: "Usa logica intervalli."
       },
       {
@@ -5309,9 +5310,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Quanti secondi rimangono alla fine del mese corrente (da NOW)?",
         queryTemplate: "SELECT TIMESTAMPDIFF(SECOND, NOW(), DATE_ADD(LAST_DAY(NOW()), INTERVAL 1 DAY))",
         hints: ["Diff tra NOW e Inizio prox mese", "Inizio prox mese = LAST_DAY + 1 day"],
-        explanation: "Precisione al secondo.",
+        explanation: "YEAR() estrae il componente anno da una data, fondamentale per raggruppamenti e filtri su base annuale.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET TIMESTAMPDIFF(SECOND, NOW(), DATE_ADD(LAST_DAY(NOW()), INTERVAL 1 DAY))",
         debugHint: "Costruisci il target temporale."
       },
       {
@@ -5319,9 +5320,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Verifica se l'anno corrente è bisestile (Feb ha 29 giorni).",
         queryTemplate: "SELECT DAY(LAST_DAY(CONCAT(YEAR(NOW()), '-02-01'))) = 29",
         hints: ["Costruisci data Febbraio", "Controlla LAST_DAY"],
-        explanation: "Algoritmo bisestile SQL.",
+        explanation: "TIMESTAMPDIFF calcola la differenza tra due date/timestamp nell'unità specificata (SECOND, MINUTE, HOUR, DAY, MONTH, YEAR).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT DAY(LAST_DAY(CONCAT(YEAR(NOW()), ' 02-01'))) = 29",
         debugHint: "Controlla l'ultimo giorno di Febbraio."
       },
       {
@@ -5329,9 +5330,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Simile a 'Sat, 01 Jan 2023 12:00:00'.",
         queryTemplate: "SELECT DATE_FORMAT(created_at, '%a, %d %b %Y %T') FROM Users",
         hints: ["%a DayShort, %b MonthShort", "%T Time"],
-        explanation: "Formati standard web.",
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET DATE_FORMAT(created_at, '%a, %d %b %Y %T') FROM Users",
         debugHint: "Controlla gli specifier."
       },
       {
@@ -5339,19 +5340,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Sposta la data ordine al lunedì della stessa settimana.",
         queryTemplate: "SELECT DATE_SUB(order_date, INTERVAL WEEKDAY(order_date) DAY) FROM Orders",
         hints: ["Sottrai WEEKDAY giorni"],
-        explanation: "Normalizzazione a inizio settimana.",
+        explanation: "DATE_FORMAT formatta una data secondo il pattern specificato, permettendo di visualizzare date in formati personalizzati.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa WEEKDAY."
+        brokenCode: "SELCET DATE_SUB(order_date, INTERVAL WEEKDAY(order_date) DAY) FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Aggrega per Mese-Anno",
         descTemplate: "Conta ordini per ogni Mese-Anno (es. '2023-01').",
         queryTemplate: "SELECT DATE_FORMAT(order_date, '%Y-%m') as periodo, COUNT(*) FROM Orders GROUP BY periodo",
         hints: ["GROUP BY su stringa formattata"],
-        explanation: "Reporting temporale.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT DATE_FORMAT(order_date, '%Y-%m') IS periodo, COUNT(*) FROM Orders GROUP BY periodo",
         debugHint: "Usa DATE_FORMAT nel Select e Group By."
       },
       {
@@ -5359,19 +5360,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Data inizio trimestre corrente.",
         queryTemplate: "SELECT MAKEDATE(YEAR(NOW()), 1) + INTERVAL QUARTER(NOW()) * 3 - 3 MONTH",
         hints: ["Già visto in Medium? Ripasso logica complessa"],
-        explanation: "Calcolo date finanziarie.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa QUARTER."
+        brokenCode: "SELECT MAKEDATE(YEAR(NOW()), 1) INTERVAL QUARTER(NOW()) * 3 - 3 MONTH",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Diff Ore Lavorative (Sim)",
         descTemplate: "Diff ore ma assumendo 8h al giorno (moltiplica giorni * 8).",
         queryTemplate: "SELECT YEAR(NOW()) - YEAR(created_at) FROM Users",
         hints: ["DATEDIFF * 8"],
-        explanation: "Stima effort.",
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET YEAR(NOW()) - YEAR(created_at) FROM Users",
         debugHint: "Moltiplica i giorni."
       },
       {
@@ -5379,10 +5380,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Simula conversione UTC a CET (+1).",
         queryTemplate: "SELECT DATE_ADD(created_at, INTERVAL 1 HOUR) FROM Users",
         hints: ["Aggiungi 1 ora"],
-        explanation: "Timezone math semplice.",
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DATE_ADD."
+        brokenCode: "SELCET DATE_ADD(created_at, INTERVAL 1 HOUR) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Prossimo Compleanno (Giorni)",
@@ -5391,48 +5392,48 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Se compleanno passato, target year = year+1", "Costruisci target date"],
         explanation: "Logica condizionale su date.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT MONTH(created_at) 30 FROM Users",
         debugHint: "Gestisci anno corrente vs prossimo."
       },
       {
         titleTemplate: "Giorni Trascorsi da Creazione",
         descTemplate: "Converti in Julian Day number.",
         queryTemplate: "SELECT YEAR(NOW()) - YEAR(created_at) FROM Users",
-        hints: ["TO_DAYS"],
-        explanation: "Formato numerico continuo.",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "MONTH() restituisce il numero del mese (1-12) da una data, utile per analisi mensili e stagionali.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa TO_DAYS."
+        brokenCode: "SELCET YEAR(NOW()) - YEAR(created_at) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "From Julian",
         descTemplate: "Riconverti numero giorni in data.",
         queryTemplate: "SELECT DATE_ADD('0000-01-01', INTERVAL 738500 DAY)",
-        hints: ["FROM_DAYS"],
-        explanation: "Inverso di TO_DAYS.",
+        hints: ["Seleziona dalla tabella tabella", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa FROM_DAYS."
+        brokenCode: "SELECT DATE_ADD('0000 01-01', INTERVAL 738500 DAY)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Aggrega per Giorno Week",
         descTemplate: "Conta utenti creati per giorno della settimana.",
         queryTemplate: "SELECT DAYNAME(created_at), COUNT(*) FROM Users GROUP BY DAYNAME(created_at)",
-        hints: ["GROUP BY DAYNAME"],
-        explanation: "Analisi trend settimanali.",
+        hints: ["Raggruppa per la colonna DAYNAME", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DAYNAME."
+        brokenCode: "SELECT DAYNAME(created_at), COUNT(*) FROM Users GROUP DAYNAME(created_at)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Sec to Time Esteso",
         descTemplate: "Converti 100000 secondi in orario (può superare 24h).",
         queryTemplate: "SELECT TIME(FROM_UNIXTIME(100000))",
-        hints: ["SEC_TO_TIME"],
-        explanation: "Formato HHH:MM:SS.",
+        hints: ["Seleziona dalla tabella tabella", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa SEC_TO_TIME."
+        brokenCode: "SELCET TIME(FROM_UNIXTIME(100000))",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Percentuale anno",
@@ -5441,25 +5442,25 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["DayOfYear / 365 * 100"],
         explanation: "Statistica temporale.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT ROUND(MONTH(created_at) 12 * 100, 2) FROM Users",
         debugHint: "Dividi e moltiplica."
       },
       {
         titleTemplate: "Nullific Date",
         descTemplate: "Usa NULLIF se la data è '0000-00-00' (simulazione).",
         queryTemplate: "SELECT NULLIF(order_date, '0000-00-00') FROM Orders",
-        hints: ["NULLIF(val, '0000-00-00')"],
-        explanation: "Data cleaning.",
+        hints: ["Seleziona dalla tabella Orders", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "MONTH() restituisce il numero del mese (1-12) da una data, utile per analisi mensili e stagionali.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa NULLIF."
+        brokenCode: "SELECT NULLIF(order_date, '0000 00-00') FROM Orders",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Coalesce Dates",
         descTemplate: "Se updated_at è NULL, usa created_at.",
         queryTemplate: "SELECT COALESCE(updated_at, created_at) FROM Users",
-        hints: ["COALESCE(primary, fallback)"],
-        explanation: "Fallback valori.",
+        hints: ["Seleziona dalla tabella Users", "Specifica il nome delle colonne dopo SELECT"],
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
         brokenCode: "SELECT IFNULL...",
         debugHint: "COALESCE è standard."
@@ -5471,8 +5472,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["TIMEDIFF restituisce un TIME", "Non giorni"],
         explanation: "Differenza come durata.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa TIMEDIFF."
+        brokenCode: "SELCET TIMEDIFF(updated_at, created_at) FROM Users",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Aggiungi Minuti Variabili",
@@ -5481,7 +5482,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["INTERVAL col_name MINUTE"],
         explanation: "Intervallo dinamico.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET DATE_ADD(created_at, INTERVAL id MINUTE) FROM Users",
         debugHint: "Puoi usare colonne nell'INTERVAL."
       },
       {
@@ -5491,7 +5492,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["WEEK(date, mode)", "Mode 1 = Monday first"],
         explanation: "Standard ISO-like.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET WEEK(order_date, 1) FROM Orders",
         debugHint: "Usa secondo argomento di WEEK."
       },
       {
@@ -5499,10 +5500,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Converti '2023.12.31' in data.",
         queryTemplate: "SELECT STR_TO_DATE('2023.12.31', '%Y.%m.%d')",
         hints: ["Specifier con punti"],
-        explanation: "Parsing non standard.",
+        explanation: "Le funzioni di data SQL permettono di estrarre, calcolare e formattare componenti temporali per analisi cronologiche.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa STR_TO_DATE."
+        brokenCode: "SELCET STR_TO_DATE('2023.12.31', '%Y.%m.%d')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Ultimo Secondo Giorno",
@@ -5511,25 +5512,25 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Concatena Data e orario fisso"],
         explanation: "Fine giornata.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CONCAT."
+        brokenCode: "SELCET CONCAT(DATE(NOW()), ' 23:59:59')",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Cast Datetime",
         descTemplate: "Cast stringa esplicito (CAST .. AS DATETIME).",
         queryTemplate: "SELECT CAST('2023-01-01 12:00:00' AS DATETIME)",
         hints: ["CAST(str AS TYPE)"],
-        explanation: "Explicit type conversion.",
+        explanation: "NOW() restituisce la data e ora correnti del server, utile per calcoli relativi al presente.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa CAST."
+        brokenCode: "SELECT CAST('2023-01-01 12:00:00' IS DATETIME)",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Mixed Add",
         descTemplate: "Aggiungi 1 anno e 2 mesi.",
         queryTemplate: "SELECT DATE_ADD(DATE_ADD(created_at, INTERVAL 1 YEAR), INTERVAL 2 MONTH) FROM Users",
         hints: ["Chaining di DATE_ADD"],
-        explanation: "Cumulo operazioni.",
+        explanation: "Le espressioni aritmetiche in SQL permettono di creare colonne calcolate al volo, combinando valori delle colonne con operatori matematici.",
         replacements: {},
         brokenCode: "DATE_ADD(..., INTERVAL 1 YEAR 2 MONTH)",
         debugHint: "DATE_ADD accetta un solo interval expression standard alla volta (o sintassi composta specifica non portabile)."
@@ -5541,7 +5542,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Meta differenza giorni aggiunta a start"],
         explanation: "Calcolo punto medio temporale.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT YEAR(created_at) / 2 IS median_years FROM Users",
         debugHint: "Calcola diff, dividi, aggiungi."
       }
     ],
@@ -5583,7 +5584,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se il totale ordine > 200 etichetta come 'Big', altrimenti 'Small'.",
         queryTemplate: "SELECT id, CASE WHEN order_total > 200 THEN 'Big' ELSE 'Small' END as size FROM Orders",
         hints: ["Confronta order_total con 200"],
-        explanation: "Categorizzazione semplice di valori numerici.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
         brokenCode: "SELECT id, CASE WHEN order_total > 200 'Big' ELSE 'Small' END FROM Orders",
         debugHint: "Manca THEN dopo la condizione."
@@ -5603,7 +5604,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se stock < 10 scrivi 'Ordina Subito', altrimenti 'OK'.",
         queryTemplate: "SELECT name, CASE WHEN stock < 10 THEN 'Ordina Subito' ELSE 'OK' END as action FROM Products",
         hints: ["Soglia critica: 10 unità"],
-        explanation: "Logica decisionale semplice per reportistica.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
         brokenCode: "SELECT name, CHECK(stock < 10, 'Ordina Subito', 'OK') FROM Products",
         debugHint: "La funzione CHECK non esiste in questo contesto. Usa CASE."
@@ -5613,7 +5614,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se dipartimento è 'Sales' scrivi 'Bonus', altrimenti 'Nessuno'.",
         queryTemplate: "SELECT name, CASE WHEN department = 'Sales' THEN 'Bonus' ELSE 'Nessuno' END as bonus_eligibility FROM Employees",
         hints: ["Confronta department con la stringa 'Sales'"],
-        explanation: "Assegnazione condizionale basata su stringhe.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
         brokenCode: "SELECT name, CASE WHEN department IS 'Sales' ...",
         debugHint: "Usa '=' per confrontare stringhe, non IS (che si usa per NULL)."
@@ -5623,7 +5624,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se country è 'Italy' scrivi 'Nazionale', altrimenti 'Estero'.",
         queryTemplate: "SELECT email, CASE WHEN country = 'Italy' THEN 'Nazionale' ELSE 'Estero' END as origin FROM Users",
         hints: ["CASE WHEN country = 'Italy' ..."],
-        explanation: "Segmentazione geografica basilare.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
         brokenCode: "SELECT email, IF country = 'Italy' THEN ...",
         debugHint: "Sintassi errata. Inizia con CASE WHEN."
@@ -5633,7 +5634,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se quantity > 5 mostra 'Sconto Applicato', altrimenti 'Prezzo Pieno'.",
         queryTemplate: "SELECT product_id, CASE WHEN quantity > 5 THEN 'Sconto Applicato' ELSE 'Prezzo Pieno' END as discount_status FROM OrderItems",
         hints: ["Lavora sulla tabella OrderItems"],
-        explanation: "Logica applicata ai dettagli dell'ordine.",
+        explanation: "COUNT con CASE WHEN permette di contare selettivamente le righe che soddisfano determinate condizioni, utile per pivot e report.",
         replacements: {},
         brokenCode: "CASE quantity > 5 ...",
         debugHint: "Manca SELECT e FROM. CASE è parte della lista colonne."
@@ -5655,7 +5656,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Raggruppa tutto ciò che non è Electronics in 'Altro'"],
         explanation: "Esempio di raggruppamento logico di categorie.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN category = 'Electronics' THEN 'Tech' ELSE 'Altro' END as simple_cat FROM Products",
         debugHint: "Controlla le stringhe e la sintassi CASE."
       },
       {
@@ -5673,9 +5674,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se manager_id è NULL scrivi 'Capo', altrimenti 'Staff'.",
         queryTemplate: "SELECT name, CASE WHEN manager_id IS NULL THEN 'Capo' ELSE 'Staff' END as role FROM Employees",
         hints: ["manager_id IS NULL identifica chi non ha superiori"],
-        explanation: "Identificazione ruoli basata su gerarchia.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN manager_id IS NULL THEN 'Capo' ELSE 'Staff' END as role FROM Employees",
         debugHint: "Usa IS NULL."
       },
       {
@@ -5683,9 +5684,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se order_date > '2023-01-01' scrivi 'Nuovo', altrimenti 'Vecchio'.",
         queryTemplate: "SELECT id, CASE WHEN order_date > '2023-01-01' THEN 'Nuovo' ELSE 'Vecchio' END as age FROM Orders",
         hints: ["Confronta date come stringhe 'YYYY-MM-DD'"],
-        explanation: "Etichettatura temporale.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN order_date > '2023-01-01' THEN 'Nuovo' ELSE 'Vecchio' END as age FROM Orders",
         debugHint: "Formatta la data correttamente YYYY-MM-DD."
       },
       {
@@ -5693,9 +5694,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se totale > 100 'Free Shipping', else 'Paid'.",
         queryTemplate: "SELECT id, CASE WHEN order_total > 100 THEN 'Free Shipping' ELSE 'Paid' END as shipping FROM Orders",
         hints: ["Soglia 100 euro"],
-        explanation: "Logica promozionale di base.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN order_total > 100 THEN 'Free Shipping' ELSE 'Paid' END as shipping FROM Orders",
         debugHint: "Controlla sintassi CASE."
       },
       {
@@ -5703,9 +5704,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se department = 'IT' scrivi 'Tech Team', else 'Business Team'.",
         queryTemplate: "SELECT name, CASE WHEN department = 'IT' THEN 'Tech Team' ELSE 'Business Team' END as team_type FROM Employees",
         hints: ["Divisione binaria dei dipartimenti"],
-        explanation: "Raggruppamento organizzativo.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN department = 'IT' THEN 'Tech Team' ELSE 'Business Team' END as team_type FROM Employees",
         debugHint: "Controlla il nome del dipartimento."
       },
       {
@@ -5715,7 +5716,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Non serve sempre CASE se il valore è fisso, ma prova con CASE WHEN 1=1..."],
         explanation: "A volte basta una stringa costante, ma col CASE puoi aggiungere logica futura.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT email, 'Attivo' IS status FROM Users",
         debugHint: "Basta selezionare la stringa direttamente."
       },
       {
@@ -5723,19 +5724,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se stock < 5 'Critico', else 'Normale'.",
         queryTemplate: "SELECT name, CASE WHEN stock < 5 THEN 'Critico' ELSE 'Normale' END as stock_level FROM Products",
         hints: ["Soglia molto bassa"],
-        explanation: "Alerting su livelli di magazzino.",
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN stock < 5 THEN 'Critico' ELSE 'Normale' END as stock_level FROM Products",
         debugHint: "Controlla la condizione < 5."
       },
       {
         titleTemplate: "Prodotti Costosi",
         descTemplate: "Se prezzo >= 1000 'Luxury', else 'Standard'.",
         queryTemplate: "SELECT name, CASE WHEN price >= 1000 THEN 'Luxury' ELSE 'Standard' END as segment FROM Products",
-        hints: ["Usa >="],
-        explanation: "Segmentazione di mercato.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN price >= 1000 THEN 'Luxury' ELSE 'Standard' END as segment FROM Products",
         debugHint: "Attento all'operatore >=."
       },
       {
@@ -5743,7 +5744,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se email finisce con '.com' scrivi 'Commercial', else 'Other'.",
         queryTemplate: "SELECT email, CASE WHEN email LIKE '%.com' THEN 'Commercial' ELSE 'Other' END as domain_type FROM Users",
         hints: ["Usa LIKE '%.com'"],
-        explanation: "Pattern matching dentro un CASE.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
         brokenCode: "CASE WHEN email = '*.com' ...",
         debugHint: "Per i pattern serve LIKE, non =."
@@ -5755,7 +5756,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Focus su Delivered"],
         explanation: "Semplificazione dello stato ordine per il cliente.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN status = 'Delivered' THEN 'Consegnato' ELSE 'In viaggio' END as track_status FROM Orders",
         debugHint: "Controlla lo spelling di Delivered."
       },
       {
@@ -5765,27 +5766,27 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa modulo % 1"],
         explanation: "Controllo matematico sui tipi di numero.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT price CASE WHEN price % 1 = 0 THEN 'Intero' ELSE 'Decimale' END as number_type FROM Products",
         debugHint: "Modulo restituisce il resto della divisione."
       },
       {
         titleTemplate: "Quantità Stock",
         descTemplate: "Se stock > 100 'Abbondante', else 'Limitato'.",
         queryTemplate: "SELECT name, CASE WHEN stock > 100 THEN 'Abbondante' ELSE 'Limitato' END as quantity_desc FROM Products",
-        hints: ["Soglia 100"],
-        explanation: "Descrizione qualitativa della quantità.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Controlla sintassi."
+        brokenCode: "SELECT name CASE WHEN stock > 100 THEN 'Abbondante' ELSE 'Limitato' END as quantity_desc FROM Products",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Clienti VIP",
         descTemplate: "Se id < 10 scrivi 'Early Adopter', else 'User'.",
         queryTemplate: "SELECT email, CASE WHEN id < 10 THEN 'Early Adopter' ELSE 'User' END as user_segment FROM Users",
         hints: ["ID bassi indicano i primi iscritti"],
-        explanation: "Segmentazione basata su ID sequenziali.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT email CASE WHEN id < 10 THEN 'Early Adopter' ELSE 'User' END as user_segment FROM Users",
         debugHint: "Controlla condizione ID."
       },
       {
@@ -5793,9 +5794,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se total < 50 'Sotto Minimo', else 'Valido'.",
         queryTemplate: "SELECT id, CASE WHEN order_total < 50 THEN 'Sotto Minimo' ELSE 'Valido' END as validation FROM Orders",
         hints: ["Check sul minimo d'ordine"],
-        explanation: "Validazione regole di business.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN order_total < 50 THEN 'Sotto Minimo' ELSE 'Valido' END as validation FROM Orders",
         debugHint: "Usa < 50."
       },
       {
@@ -5803,19 +5804,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se il nome contiene 'Lampada' scrivi 'Illuminazione', else 'Altro'.",
         queryTemplate: "SELECT name, CASE WHEN name LIKE '%Lampada%' THEN 'Illuminazione' ELSE 'Altro' END as type FROM Products",
         hints: ["Usa LIKE con wildcards %"],
-        explanation: "Categorizzazione basata sul nome.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIKE '%...%'."
+        brokenCode: "SELECT name CASE WHEN name LIKE '%Lampada%' THEN 'Illuminazione' ELSE 'Altro' END as type FROM Products",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Reparto HR",
         descTemplate: "Se department è 'HR' scrivi 'Human Resources', else department.",
         queryTemplate: "SELECT name, CASE WHEN department = 'HR' THEN 'Human Resources' ELSE department END as dept_full FROM Employees",
         hints: ["Espandi sigla HR"],
-        explanation: "Normalizzazione dati.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN department = 'HR' THEN 'Human Resources' ELSE department END as dept_full FROM Employees",
         debugHint: "Usa ELSE department per mantenere gli altri."
       },
       {
@@ -5823,9 +5824,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se created_at > '2023-06-01' scrivi 'Nuovo Iscritto', else 'Veterano'.",
         queryTemplate: "SELECT email, CASE WHEN created_at > '2023-06-01' THEN 'Nuovo Iscritto' ELSE 'Veterano' END as seniority FROM Users",
         hints: ["Data a metà anno"],
-        explanation: "Analisi coorte temporale.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT email CASE WHEN created_at > '2023-06-01' THEN 'Nuovo Iscritto' ELSE 'Veterano' END as seniority FROM Users",
         debugHint: "Formato data stringa."
       },
       {
@@ -5835,7 +5836,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Cerca il prezzo specifico del computer quantistico"],
         explanation: "Identificazione casi speciali tramite valori sentinella.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN price = 99999.99 THEN 'Prototipo' ELSE 'Prodotto' END as type FROM Products",
         debugHint: "Usa uguaglianza esatta."
       },
       {
@@ -5843,10 +5844,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se email è NULL 'Mancante', else 'Presente'.",
         queryTemplate: "SELECT id, CASE WHEN email IS NULL THEN 'Mancante' ELSE 'Presente' END as email_check FROM Users",
         hints: ["Controllo completezza dati"],
-        explanation: "Audit qualità dati.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "IS NULL."
+        brokenCode: "SELECT id CASE WHEN email IS NULL THEN 'Mancante' ELSE 'Presente' END as email_check FROM Users",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       }
     ],
     [Difficulty.Medium]: [
@@ -5855,7 +5856,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Classifica i prodotti in: 'Low' (< 50), 'Mid' (50-200), 'High' (> 200).",
         queryTemplate: "SELECT name, price, CASE WHEN price < 50 THEN 'Low' WHEN price <= 200 THEN 'Mid' ELSE 'High' END as price_tier FROM Products",
         hints: ["Usa più clausole WHEN in sequenza", "L'ordine conta: SQL valuta dall'alto in basso"],
-        explanation: "Gestione di range numerici multipli.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
         brokenCode: "SELECT CASE price < 50 'Low', price < 200 'Mid' ...",
         debugHint: "Sintassi errata. Usa CASE WHEN ... THEN ... WHEN ... THEN ... ELSE ... END."
@@ -5897,7 +5898,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Puoi usare il CASE per determinare un moltiplicatore"],
         explanation: "Applicazione di logica di business per calcoli dinamici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN is_premium = true THEN '20%' ELSE '0%' END as discount, CASE WHEN is_premium = true THEN 0.8 ELSE 1.0 END * 100 as effective_price_pct FROM Users",
         debugHint: "Imposta il moltiplicatore nel CASE."
       },
       {
@@ -5905,9 +5906,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Raggruppa gli stati ordini in 'Active' (Processing, Shipped) e 'Completed' (Delivered).",
         queryTemplate: "SELECT id, CASE WHEN status IN ('Processing', 'Shipped') THEN 'Active' ELSE 'Completed' END as state_group FROM Orders",
         hints: ["Puoi usare IN dentro la condizione WHEN"],
-        explanation: "Semplificazione di stati operativi complessi.",
+        explanation: "COUNT con CASE WHEN permette di contare selettivamente le righe che soddisfano determinate condizioni, utile per pivot e report.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN status IN ('Processing', 'Shipped') THEN 'Active' ELSE 'Completed' END as state_group FROM Orders",
         debugHint: "Usa IN ('Processing', 'Shipped')."
       },
       {
@@ -5915,9 +5916,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordina dipendenti: prima 'Sales', poi 'IT', poi gli altri.",
         queryTemplate: "SELECT name, department FROM Employees ORDER BY CASE WHEN department = 'Sales' THEN 1 WHEN department = 'IT' THEN 2 ELSE 3 END",
         hints: ["CASE nell'ORDER BY"],
-        explanation: "Ordinamento gerarchico arbitrario.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name department FROM Employees ORDER BY CASE WHEN department = 'Sales' THEN 1 WHEN department = 'IT' THEN 2 ELSE 3 END",
         debugHint: "Assegna numeri bassi a chi vuoi vedere prima."
       },
       {
@@ -5927,8 +5928,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Esercizio teorico su NULLIF"],
         explanation: "Se i due valori sono uguali, ottieni NULL.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NULLIF(val1, val2)."
+        brokenCode: "SELCET NULLIF(stock, price) FROM Products",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Rating Prodotto",
@@ -5937,7 +5938,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa stringhe come output del CASE"],
         explanation: "Visualizzazione grafica testuale.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN price < 50 THEN '*' WHEN price < 100 THEN '**' ELSE '***' END as stars FROM Products",
         debugHint: "Controlla le soglie."
       },
       {
@@ -5945,9 +5946,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se totale > 100 spedizione 0, tra 50 e 100 spedizione 5, altrimenti 10.",
         queryTemplate: "SELECT id, CASE WHEN order_total > 100 THEN 0 WHEN order_total >= 50 THEN 5 ELSE 10 END as shipping_cost FROM Orders",
         hints: ["Attento all'ordine delle condizioni (dal più restrittivo o viceversa)"],
-        explanation: "Logica a scaglioni tipica dell'e-commerce.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN order_total > 100 THEN 0 WHEN order_total >= 50 THEN 5 ELSE 10 END as shipping_cost FROM Orders",
         debugHint: "Se metti condition > 50 prima di > 100, la logica potrebbe rompersi."
       },
       {
@@ -5955,9 +5956,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se creato prima del 2022 'Vintage', 2022-2023 'Established', dopo 'New'.",
         queryTemplate: "SELECT email, CASE WHEN created_at < '2022-01-01' THEN 'Vintage' WHEN created_at < '2024-01-01' THEN 'Established' ELSE 'New' END as age_group FROM Users",
         hints: ["Confronta date stringa"],
-        explanation: "Segmentazione storica della user base.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT email CASE WHEN created_at < '2022-01-01' THEN 'Vintage' WHEN created_at < '2024-01-01' THEN 'Established' ELSE 'New' END as age_group FROM Users",
         debugHint: "Usa formato YYYY-MM-DD."
       },
       {
@@ -5965,9 +5966,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se category inizia con 'E' o 'C' -> 'Tech', altrimenti 'General'.",
         queryTemplate: "SELECT name, CASE WHEN category LIKE 'E%' OR category LIKE 'C%' THEN 'Tech' ELSE 'General' END as macro_cat FROM Products",
         hints: ["Usa OR tra condizioni LIKE"],
-        explanation: "Raggruppamento per pattern di testo.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN category LIKE 'E%' OR category LIKE 'C%' THEN 'Tech' ELSE 'General' END as macro_cat FROM Products",
         debugHint: "LIKE 'E%' OR LIKE 'C%'."
       },
       {
@@ -5977,7 +5978,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Moltiplica solo se presente"],
         explanation: "Evitare calcoli inutili o concettualmente errati.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN stock > 0 THEN price * stock ELSE 0 END as full_value FROM Products",
         debugHint: "Case When Stock > 0."
       },
       {
@@ -5987,7 +5988,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa operatore di concatenazione || (o + in alcuni SQL, qui standard || o concat)"],
         explanation: "Logica di fallback per display UI.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CASE WHEN name IS NOT NULL THEN 'Nome: ' || name ELSE 'ID: ' || id END IS display_label FROM Users",
         debugHint: "Usa IS NOT NULL."
       },
       {
@@ -5995,9 +5996,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se mese ordine (MONTH(order_date)) è 12 o 1 -> 'Inverno', 6-8 -> 'Estate', else 'Altro'.",
         queryTemplate: "SELECT id, CASE WHEN MONTH(order_date) IN (12, 1) THEN 'Inverno' WHEN MONTH(order_date) BETWEEN 6 AND 8 THEN 'Estate' ELSE 'Altro' END as season FROM Orders",
         hints: ["Usa MONTH() e BETWEEN"],
-        explanation: "Arricchimento dati temporali.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN MONTH(order_date) IN (12, 1) THEN 'Inverno' WHEN MONTH(order_date) BETWEEN 6 AND 8 THEN 'Estate' ELSE 'Altro' END as season FROM Orders",
         debugHint: "MONTH() restituisce un intero 1-12."
       },
       {
@@ -6005,9 +6006,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se stock > 50 'High', stock > 20 'Med', stock > 0 'Low', 0 'None'.",
         queryTemplate: "SELECT name, CASE WHEN stock > 50 THEN 'High' WHEN stock > 20 THEN 'Med' WHEN stock > 0 THEN 'Low' ELSE 'None' END as inventory FROM Products",
         hints: ["4 stati possibili"],
-        explanation: "Granularità fine nello stato.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN stock > 50 THEN 'High' WHEN stock > 20 THEN 'Med' WHEN stock > 0 THEN 'Low' ELSE 'None' END as inventory FROM Products",
         debugHint: "Controlla l'ordine decrescente delle soglie."
       },
       {
@@ -6017,7 +6018,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa AND tra controlli NOT NULL"],
         explanation: "Data quality check su più colonne.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN email IS NOT NULL AND country IS NOT NULL THEN 'Complete' ELSE 'Partial' END as profile_status FROM Users",
         debugHint: "IS NOT NULL AND ..."
       },
       {
@@ -6025,40 +6026,40 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se il nome è lungo (>15 chars) troncalo e aggiungi '...', altrimenti mostralo intero.",
         queryTemplate: "SELECT CASE WHEN LENGTH(name) > 15 THEN SUBSTRING(name, 1, 15) || '...' ELSE name END as short_name FROM Products",
         hints: ["Usa LENGTH() e SUBSTRING()"],
-        explanation: "Manipolazione stringhe condizionale per UI.",
+        explanation: "COUNT con CASE WHEN permette di contare selettivamente le righe che soddisfano determinate condizioni, utile per pivot e report.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CASE WHEN LENGTH(name) > 15 THEN SUBSTRING(name, 1, 15) || '...' ELSE name END IS short_name FROM Products",
         debugHint: "LENGTH(col) > 15."
       },
       {
         titleTemplate: "Incremento Simulato",
         descTemplate: "Simula un aumento di prezzo del 10% solo per i prodotti 'Electronics'.",
         queryTemplate: "SELECT name, price as old_price, CASE WHEN category = 'Electronics' THEN price * 1.10 ELSE price END as new_price FROM Products",
-        hints: ["Calcolo condizionale"],
-        explanation: "Preview di update massivi.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name price as old_price, CASE WHEN category = 'Electronics' THEN price * 1.10 ELSE price END as new_price FROM Products",
         debugHint: "Moltiplica per 1.10."
       },
       {
         titleTemplate: "Dettaglio Ordine",
         descTemplate: "In OrderItems, se quantity > 10 'Bulk', > 5 'Pack', else 'Single'.",
         queryTemplate: "SELECT id, CASE WHEN quantity > 10 THEN 'Bulk' WHEN quantity > 5 THEN 'Pack' ELSE 'Single' END as type FROM OrderItems",
-        hints: ["Categorizzazione quantità"],
-        explanation: "Analisi tipo acquisto.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Case quantity..."
+        brokenCode: "SELECT id CASE WHEN quantity > 10 THEN 'Bulk' WHEN quantity > 5 THEN 'Pack' ELSE 'Single' END as type FROM OrderItems",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Livello Spesa",
         descTemplate: "Basato su totale ordine: >1000 'Whlae', >500 'Heavy', >100 'Regular', else 'Light'.",
         queryTemplate: "SELECT id, CASE WHEN order_total > 1000 THEN 'Whale' WHEN order_total > 500 THEN 'Heavy' WHEN order_total > 100 THEN 'Regular' ELSE 'Light' END as spender_type FROM Orders",
         hints: ["Segmentazione clienti transaction-based"],
-        explanation: "RFM Analysis component (Monetary).",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Ordine decrescente."
+        brokenCode: "SELECT id CASE WHEN order_total > 1000 THEN 'Whale' WHEN order_total > 500 THEN 'Heavy' WHEN order_total > 100 THEN 'Regular' ELSE 'Light' END as spender_type FROM Orders",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Regione Fiscale",
@@ -6077,17 +6078,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Subquery nel CASE o Join implicita", "Ma qui stiamo su Orders... prova a usare dati disponibili o una JOIN"],
         explanation: "Logica multi-tabella nel CASE (avanzato per Medium ma fattibile con subquery scalare).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN (SELECT is_premium FROM Users WHERE id = Orders.user_id) AND order_total > 500 THEN 'High Priority' ELSE 'Standard' END FROM Orders",
         debugHint: "Prova con una subquery semplice per is_premium."
       },
       {
         titleTemplate: "Email Provider",
         descTemplate: "Estrai il provider: se contiene 'gmail' -> 'Google', 'yahoo' -> 'Yahoo', else 'Other'.",
         queryTemplate: "SELECT email, CASE WHEN email LIKE '%gmail%' THEN 'Google' WHEN email LIKE '%yahoo%' THEN 'Yahoo' ELSE 'Other' END as provider FROM Users",
-        hints: ["LIKE '%text%'"],
-        explanation: "Parsing grezzo di stringhe.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT email CASE WHEN email LIKE '%gmail%' THEN 'Google' WHEN email LIKE '%yahoo%' THEN 'Yahoo' ELSE 'Other' END as provider FROM Users",
         debugHint: "LIKE con %."
       },
       {
@@ -6095,9 +6096,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se created_at IS NULL restituisci 'Data Ignota' usando COALESCE (simulato con cast).",
         queryTemplate: "SELECT email, COALESCE(CAST(created_at AS VARCHAR), 'Data Ignota') FROM Users",
         hints: ["COALESCE richiede tipi compatibili, quindi casta la data a stringa"],
-        explanation: "Gestione tipi in COALESCE.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT email COALESCE(CAST(created_at AS VARCHAR), 'Data Ignota') FROM Users",
         debugHint: "COALESCE(created_at, 'Ignoto') potrebbe fallire se i tipi sono diversi."
       },
       {
@@ -6105,9 +6106,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se department è NULL o vuoto -> 'Unassigned'.",
         queryTemplate: "SELECT name, CASE WHEN department IS NULL OR department = '' THEN 'Unassigned' ELSE department END FROM Employees",
         hints: ["Gestione doppio caso di assenza dati"],
-        explanation: "Data cleaning robusto.",
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN department IS NULL OR department = '' THEN 'Unassigned' ELSE department END FROM Employees",
         debugHint: "OR department = ''."
       },
       {
@@ -6115,29 +6116,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ipotizzando una colonna time (qui usiamo order_date come dummy), se giorno pari 'Pari', dispari 'Dispari'.",
         queryTemplate: "SELECT id, CASE WHEN DAY(order_date) % 2 = 0 THEN 'Pari' ELSE 'Dispari' END as day_type FROM Orders",
         hints: ["DAY() e modulo % 2"],
-        explanation: "Logica su date.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "% 2."
+        brokenCode: "SELECT id CASE WHEN DAY(order_date) % 2 = 0 THEN 'Pari' ELSE 'Dispari' END as day_type FROM Orders",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Top Manager",
         descTemplate: "Se id è 1 -> 'CEO', se id < 5 -> 'Executive', else 'Manager'.",
         queryTemplate: "SELECT name, CASE WHEN id = 501 THEN 'CEO' WHEN id < 505 THEN 'Executive' ELSE 'Manager' END as title FROM Employees WHERE manager_id IS NULL OR manager_id = 'NULL' OR id = 501",
         hints: ["Filtra solo i manager (manager_id null o in lista)"],
-        explanation: "Gerarchia custom.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN id = 501 THEN 'CEO' WHEN id < 505 THEN 'Executive' ELSE 'Manager' END as title FROM Employees WHERE manager_id IS NULL OR manager_id = 'NULL' OR id = 501",
         debugHint: "Where manager_id IS NULL."
       },
       {
         titleTemplate: "Ordine Anomalo",
         descTemplate: "Se total=0 -> 'Gratis', total < 10 -> 'Micro', total > 2000 -> 'Anomalo'.",
         queryTemplate: "SELECT id, CASE WHEN order_total = 0 THEN 'Gratis' WHEN order_total < 10 THEN 'Micro' WHEN order_total > 2000 THEN 'Anomalo' ELSE 'Ok' END as audit FROM Orders",
-        hints: ["Audit finanziario"],
-        explanation: "Rilevamento outlier.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN order_total = 0 THEN 'Gratis' WHEN order_total < 10 THEN 'Micro' WHEN order_total > 2000 THEN 'Anomalo' ELSE 'Ok' END as audit FROM Orders",
         debugHint: "Controlla tutte le condizioni."
       },
       {
@@ -6145,9 +6146,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Aggiungi simbolo valuta: se country='USA' -> '$', 'UK' -> '£', else '€'.",
         queryTemplate: "SELECT CASE country WHEN 'USA' THEN '$' WHEN 'UK' THEN '£' ELSE '€' END || price as localized_price FROM Products CROSS JOIN (SELECT 'Italy' as country) as dummy LIMIT 5",
         hints: ["Esercizio simulato di localizzazione"],
-        explanation: "Formattazione output per locale.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CASE country WHEN 'USA' THEN '$' WHEN 'UK' THEN '£' ELSE '€' END || price IS localized_price FROM Products CROSS JOIN (SELECT 'Italy' as country) as dummy LIMIT 5",
         debugHint: "La logica è corretta, attenzione alla JOIN simulata."
       }
     ],
@@ -6169,7 +6170,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Serve JOIN e GROUP BY", "Il CASE va sull'aggregato SUM(order_total)"],
         explanation: "Analisi del valore del cliente basata su metriche aggregate.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.id, CASE WHEN SUM(o.order_total) > 1000 THEN 'VIP' ELSE 'Regular' END IS segment FROM Users u JOIN Orders o ON u.id = o.user_id GROUP BY u.id",
         debugHint: "CASE WHEN SUM(...) > 1000."
       },
       {
@@ -6179,7 +6180,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["GROUP BY 1 raggruppa per la prima colonna (il CASE)", "Definisci i range temporali"],
         explanation: "Creazione di gruppi logici basati su date.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CASE WHEN created_at >= '2022-01-01' AND created_at < '2023-01-01' THEN '2022' WHEN created_at >= '2023-01-01' THEN '2023' ELSE 'Pre-2022' END IS cohort, COUNT(*) FROM Users GROUP BY 1",
         debugHint: "Usa i riferimenti posizionali nel GROUP BY o ripeti il CASE."
       },
       {
@@ -6189,7 +6190,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Logica annidata o sequenziale", "Critical ha due condizioni AND"],
         explanation: "Matrice di decisione basata su più variabili.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN stock < 5 AND price > 100 THEN 'Critical' WHEN stock < 10 THEN 'Urgent' ELSE 'Normal' END as priority FROM Products",
         debugHint: "Verifica prima la condizione più specifica (Critical)."
       },
       {
@@ -6199,7 +6200,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Il CASE restituisce il moltiplicatore", "Moltiplica price per il risultato del CASE"],
         explanation: "Applicazione di regole di pricing complesse.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name price * (CASE WHEN stock > 100 THEN 0.9 WHEN category = 'Home' THEN 0.95 ELSE 1 END) as promo_price FROM Products",
         debugHint: "Price * CASE ..."
       },
       {
@@ -6207,9 +6208,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola tempo spedizione stimato: se status 'Shipped' -> 'In Transito', Delivered -> 'Chiuso', Processing + data vecchia -> 'In Ritardo'.",
         queryTemplate: "SELECT id, CASE WHEN status = 'Delivered' THEN 'Chiuso' WHEN status = 'Processing' AND order_date < '2023-01-01' THEN 'In Ritardo' ELSE 'In Corso' END as kpi FROM Orders",
         hints: ["Combina status e date"],
-        explanation: "Monitoraggio SLA.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN status = 'Delivered' THEN 'Chiuso' WHEN status = 'Processing' AND order_date < '2023-01-01' THEN 'In Ritardo' ELSE 'In Corso' END as kpi FROM Orders",
         debugHint: "Status = 'Processing' AND date < ..."
       },
       {
@@ -6219,7 +6220,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Se MIN(cat) == MAX(cat) == 'Electronics', allora ci sono solo prodotti Electronics", "Serve tripla JOIN"],
         explanation: "Logica avanzata sugli insiemi tramite aggregazione.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o.id, CASE WHEN MIN(p.category) = 'Electronics' AND MAX(p.category) = 'Electronics' THEN 'Solo Tech' ELSE 'Misto' END IS mix FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY o.id",
         debugHint: "MIN/MAX su stringhe aiutano a capire l'omogeneità."
       },
       {
@@ -6227,9 +6228,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola ROI: (Price - 50) / Price. Gestisci divisione per zero e casi negativi (ROI 0).",
         queryTemplate: "SELECT name, CASE WHEN price = 0 THEN 0 WHEN (price - 50) < 0 THEN 0 ELSE (price - 50) / price END as roi FROM Products",
         hints: ["Gestisci denominatore zero", "Gestisci numeratore negativo"],
-        explanation: "Formule finanziarie robuste.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN price = 0 THEN 0 WHEN (price - 50) < 0 THEN 0 ELSE (price - 50) / price END as roi FROM Products",
         debugHint: "Prima controlla price = 0."
       },
       {
@@ -6237,9 +6238,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Score utente: +10 punti se Premium, +1 punto per ogni ordine.",
         queryTemplate: "SELECT u.email, (CASE WHEN is_premium THEN 10 ELSE 0 END) + (SELECT COUNT(*) FROM Orders WHERE user_id = u.id) as score FROM Users u",
         hints: ["Subquery scalare sommata a un CASE", "Oppure JOIN e GROUP BY"],
-        explanation: "Scoring system composito.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.email, (CASE WHEN is_premium THEN 10 ELSE 0 END) + (SELECT COUNT(*) FROM Orders WHERE user_id = u.id) IS score FROM Users u",
         debugHint: "Somma i due contributi."
       },
       {
@@ -6247,9 +6248,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Conta quanti prodotti 'Electronics' e quanti 'Home' per ogni ordine.",
         queryTemplate: "SELECT order_id, SUM(CASE WHEN category = 'Electronics' THEN 1 ELSE 0 END) as tech_items, SUM(CASE WHEN category = 'Home' THEN 1 ELSE 0 END) as home_items FROM OrderItems oi JOIN Products p ON oi.product_id = p.id GROUP BY order_id",
         hints: ["Tipico pivoting", "Join necessaria per category"],
-        explanation: "Analisi composizione carrello.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT order_id SUM(CASE WHEN category = 'Electronics' THEN 1 ELSE 0 END) as tech_items, SUM(CASE WHEN category = 'Home' THEN 1 ELSE 0 END) as home_items FROM OrderItems oi JOIN Products p ON oi.product_id = p.id GROUP BY order_id",
         debugHint: "SUM(CASE...) con GROUP BY order_id."
       },
       {
@@ -6257,19 +6258,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola anni di servizio e classifica: <1 'Junior', 1-3 'Mid', >3 'Senior'.",
         queryTemplate: "SELECT name, CASE WHEN YEAR(NOW()) - YEAR(hire_date) < 2 THEN 'Junior' WHEN YEAR(NOW()) - YEAR(hire_date) < 5 THEN 'Mid' ELSE 'Senior' END as level FROM Employees",
         hints: ["DATEDIFF restuituisce giorni", "365 giorni = 1 anno"],
-        explanation: "Calcolo derivato da date.",
+        explanation: "Combinare CASE WHEN dentro una funzione aggregata come SUM permette di contare o sommare solo le righe che soddisfano una condizione specifica.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DATEDIFF(end, start)."
+        brokenCode: "SELECT name CASE WHEN YEAR(NOW()) - YEAR(hire_date) < 2 THEN 'Junior' WHEN YEAR(NOW()) - YEAR(hire_date) < 5 THEN 'Mid' ELSE 'Senior' END as level FROM Employees",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Spesa Media Tier",
         descTemplate: "Calcola AVG spesa e etichetta: > Media Globale 'Sopra Media', else 'Sotto'.",
         queryTemplate: "SELECT id, order_total, CASE WHEN order_total > (SELECT AVG(order_total) FROM Orders) THEN 'Sopra Media' ELSE 'Sotto Media' END as comparison FROM Orders",
         hints: ["Subquery per la media globale", "Confronto riga per riga"],
-        explanation: "Benchmarking relativo.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id order_total, CASE WHEN order_total > (SELECT AVG(order_total) FROM Orders) THEN 'Sopra Media' ELSE 'Sotto Media' END as comparison FROM Orders",
         debugHint: "Total > (SELECT AVG...)."
       },
       {
@@ -6279,7 +6280,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Conta i prodotti a rischio", "Se count > 0 allora status risk"],
         explanation: "KPI aggregato a livello di sistema.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT CASE WHEN SUM(CASE WHEN stock < 10 THEN 1 ELSE 0 END) > 0 THEN 'Attenzione' ELSE 'Ottimo' END IS global_status FROM Products",
         debugHint: "SUM(...) > 0."
       },
       {
@@ -6287,20 +6288,20 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Formatta email: se contiene 'test' o 'fake' -> NULLIF(email, email) [cioè NULL], else email.",
         queryTemplate: "SELECT id, CASE WHEN email LIKE '%test%' OR email LIKE '%fake%' THEN NULL ELSE email END as valid_email FROM Users",
         hints: ["Data cleaning logico", "Imposta a NULL i dati sporchi"],
-        explanation: "Sanitizzazione dati in lettura.",
+        explanation: "Combinare CASE WHEN dentro una funzione aggregata come SUM permette di contare o sommare solo le righe che soddisfano una condizione specifica.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "THEN NULL."
+        brokenCode: "SELECT id CASE WHEN email LIKE '%test%' OR email LIKE '%fake%' THEN NULL ELSE email END as valid_email FROM Users",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Vendite Trimestrali",
         descTemplate: "Assegna trimestre: Q1 (Jan-Mar), Q2 (Apr-Jun)...",
         queryTemplate: "SELECT id, CASE WHEN MONTH(order_date) <= 3 THEN 'Q1' WHEN MONTH(order_date) <= 6 THEN 'Q2' WHEN MONTH(order_date) <= 9 THEN 'Q3' ELSE 'Q4' END as quarter FROM Orders",
         hints: ["Usa MONTH()", "Logica a scaglioni"],
-        explanation: "Reporting finanziario.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MONTH()."
+        brokenCode: "SELECT id CASE WHEN MONTH(order_date) <= 3 THEN 'Q1' WHEN MONTH(order_date) <= 6 THEN 'Q2' WHEN MONTH(order_date) <= 9 THEN 'Q3' ELSE 'Q4' END as quarter FROM Orders",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Pari o Dispari",
@@ -6309,7 +6310,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Operatore modulo %"],
         explanation: "Logica aritmetica per A/B testing splitting.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN id % 2 = 0 THEN 'Even' ELSE 'Odd' END as parity FROM Users",
         debugHint: "% 2 = 0."
       },
       {
@@ -6317,9 +6318,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se manager IS NULL -> 'Root', manager IN (Select manager_id...) -> 'Middle', else 'Leaf'.",
         queryTemplate: "SELECT name, CASE WHEN manager_id IS NULL THEN 'Root' WHEN id IN (SELECT manager_id FROM Employees) THEN 'Middle' ELSE 'Leaf' END as node_type FROM Employees",
         hints: ["Subquery per vedere se è manager di qualcuno", "Gerarchia ad albero"],
-        explanation: "Analisi struttura ad albero/grafo.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN manager_id IS NULL THEN 'Root' WHEN id IN (SELECT manager_id FROM Employees) THEN 'Middle' ELSE 'Leaf' END as node_type FROM Employees",
         debugHint: "IN (SELECT manager_id...)."
       },
       {
@@ -6327,19 +6328,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se country='Italy' e region è NULL -> 'Error', else 'OK'.",
         queryTemplate: "SELECT email, CASE WHEN country='Italy' AND (country IS NULL OR country = 'Italy') THEN 'Check' ELSE 'OK' END as validation FROM Users",
         hints: ["Esercizio simulato (non abbiamo region)", "Simuliamo logica complessa"],
-        explanation: "Validazione condizionale cross-field.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Logica AND."
+        brokenCode: "SELECT email CASE WHEN country='Italy' AND (country IS NULL OR country = 'Italy') THEN 'Check' ELSE 'OK' END as validation FROM Users",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Trend Ordini",
         descTemplate: "Confronta totale con ordine precedente (Simuliamo con LAG o self join... qui usiamo media utente). Se > avg 'Up', < avg 'Down'.",
         queryTemplate: "SELECT o.id, CASE WHEN o.order_total > u_avg.avg_spent THEN 'Up' ELSE 'Down' END as trend FROM Orders o JOIN (SELECT user_id, AVG(order_total) as avg_spent FROM Orders GROUP BY user_id) u_avg ON o.user_id = u_avg.user_id",
         hints: ["Calcola media per utente", "Joina e confronta"],
-        explanation: "Analisi trend personalizzato.",
+        explanation: "COUNT con CASE WHEN permette di contare selettivamente le righe che soddisfano determinate condizioni, utile per pivot e report.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o.id, CASE WHEN o.order_total > u_avg.avg_spent THEN 'Up' ELSE 'Down' END IS trend FROM Orders o JOIN (SELECT user_id, AVG(order_total) as avg_spent FROM Orders GROUP BY user_id) u_avg ON o.user_id = u_avg.user_id",
         debugHint: "Join con subquery aggregata."
       },
       {
@@ -6347,19 +6348,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se price < 20 e category='Electronics' -> 'Loss Leader', else 'Standard'.",
         queryTemplate: "SELECT name, CASE WHEN price < 50 AND category = 'Electronics' THEN 'Special' ELSE 'Standard' END AS promo_type FROM Products",
         hints: ["Business logic specifica"],
-        explanation: "Identificazione strategie di pricing.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AND condition."
+        brokenCode: "SELECT name CASE WHEN price < 50 AND category = 'Electronics' THEN 'Special' ELSE 'Standard' END AS promo_type FROM Products",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Complex Sorting",
         descTemplate: "Ordina per: Premium Users first, then High Value Orders, then Date.",
         queryTemplate: "SELECT o.id FROM Orders o JOIN Users u ON o.user_id = u.id ORDER BY CASE WHEN u.is_premium THEN 0 ELSE 1 END, CASE WHEN o.order_total > 500 THEN 0 ELSE 1 END, o.order_date DESC",
         hints: ["Case multipli in Order By"],
-        explanation: "Ranking multicriterio.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o.id FROM Orders o JOIN Users u ON o.user_id = u.id ORDER CASE WHEN u.is_premium THEN 0 ELSE 1 END, CASE WHEN o.order_total > 500 THEN 0 ELSE 1 END, o.order_date DESC",
         debugHint: "Order By Case1, Case2."
       },
       {
@@ -6367,9 +6368,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Se giorno settimana Sab-Dom -> 'Weekend', else 'Weekday'.",
         queryTemplate: "SELECT id, CASE WHEN WEEKDAY(order_date) IN (5, 6) THEN 'Weekend' ELSE 'Weekday' END as day_type FROM Orders",
         hints: ["WEEKDAY() o DAYOFWEEK() - in AlaSQL WEEKDAY 0=Mon, 5=Sat, 6=Sun"],
-        explanation: "Analisi temporale settimanale.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN WEEKDAY(order_date) IN (5, 6) THEN 'Weekend' ELSE 'Weekday' END as day_type FROM Orders",
         debugHint: "WEEKDAY() returns 0-6."
       },
       {
@@ -6377,49 +6378,49 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Applica IVA: 22% Italia, 20% UK, 0% USA.",
         queryTemplate: "SELECT id, order_total * (CASE WHEN (SELECT country FROM Users WHERE id=o.user_id) = 'Italy' THEN 0.22 WHEN (SELECT country FROM Users WHERE id=o.user_id) = 'UK' THEN 0.20 ELSE 0 END) as tax FROM Orders o",
         hints: ["Subquery scalare per paese utente"],
-        explanation: "Calcolo imposte dinamico.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id order_total * (CASE WHEN (SELECT country FROM Users WHERE id=o.user_id) = 'Italy' THEN 0.22 WHEN (SELECT country FROM Users WHERE id=o.user_id) = 'UK' THEN 0.20 ELSE 0 END) as tax FROM Orders o",
         debugHint: "Select country where id=..."
       },
       {
         titleTemplate: "Fidelity Bonus",
         descTemplate: "Se ordini effettuati > 2 e totale speso > 500 -> 'Gold', >2 ordini -> 'Silver', else 'Bronze'.",
         queryTemplate: "SELECT user_id, CASE WHEN COUNT(*) > 2 AND SUM(order_total) > 500 THEN 'Gold' WHEN COUNT(*) > 2 THEN 'Silver' ELSE 'Bronze' END as tier FROM Orders GROUP BY user_id",
-        hints: ["Case su aggregati (COUNT, SUM)", "Group By user_id"],
-        explanation: "Tier system basato su aggregati.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COUNT(*)."
+        brokenCode: "SELECT user_id CASE WHEN COUNT(*) > 2 AND SUM(order_total) > 500 THEN 'Gold' WHEN COUNT(*) > 2 THEN 'Silver' ELSE 'Bronze' END as tier FROM Orders GROUP BY user_id",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Inventory Health",
         descTemplate: "Se stock=0 'OOS', stock < avg_stock/2 'Low', stock > avg*2 'Overstock', else 'Healthy'.",
         queryTemplate: "SELECT name, CASE WHEN stock = 0 THEN 'OOS' WHEN stock < (SELECT AVG(stock) FROM Products)/2 THEN 'Low' WHEN stock > (SELECT AVG(stock) FROM Products)*2 THEN 'Overstock' ELSE 'Healthy' END as health FROM Products",
         hints: ["Confronto con subquery media"],
-        explanation: "Gestione inventario avanzata.",
+        explanation: "Combinare CASE WHEN dentro una funzione aggregata come SUM permette di contare o sommare solo le righe che soddisfano una condizione specifica.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "SELECT AVG(stock)."
+        brokenCode: "SELECT name CASE WHEN stock = 0 THEN 'OOS' WHEN stock < (SELECT AVG(stock) FROM Products)/2 THEN 'Low' WHEN stock > (SELECT AVG(stock) FROM Products)*2 THEN 'Overstock' ELSE 'Healthy' END as health FROM Products",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Customer Type",
         descTemplate: "B2B se email ha dominio aziendale (non gmail/yahoo), B2C altrimenti.",
         queryTemplate: "SELECT email, CASE WHEN email NOT LIKE '%gmail%' AND email NOT LIKE '%yahoo%' THEN 'B2B' ELSE 'B2C' END as type FROM Users",
-        hints: ["NOT LIKE"],
-        explanation: "Inferenza tipo cliente.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT LIKE."
+        brokenCode: "SELECT email CASE WHEN email NOT LIKE '%gmail%' AND email NOT LIKE '%yahoo%' THEN 'B2B' ELSE 'B2C' END as type FROM Users",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Discount Recovery",
         descTemplate: "Calcola quanto sconto recuperare: se total < 100 e usato sconto (simulato) -> 'Recupera'.",
         queryTemplate: "SELECT id, CASE WHEN order_total < 100 THEN 'Surcharge' ELSE 'No Action' END FROM Orders",
-        hints: ["Logica semplice"],
-        explanation: "Business rule enforcement.",
+        hints: ["Usa CASE WHEN per classificare i valori", "Ricorda di chiudere con END"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id CASE WHEN order_total < 100 THEN 'Surcharge' ELSE 'No Action' END FROM Orders",
         debugHint: "Total < 100."
       },
       {
@@ -6427,10 +6428,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Italy -> Zone 1, Europe (simulated) -> Zone 2, World -> Zone 3.",
         queryTemplate: "SELECT email, CASE country WHEN 'Italy' THEN 'Zone 1' WHEN 'France' THEN 'Zone 2' WHEN 'Germany' THEN 'Zone 2' ELSE 'Zone 3' END as zone FROM Users",
         hints: ["Case semplice o searched"],
-        explanation: "Zonizzazione logistica.",
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Case country."
+        brokenCode: "SELECT email CASE country WHEN 'Italy' THEN 'Zone 1' WHEN 'France' THEN 'Zone 2' WHEN 'Germany' THEN 'Zone 2' ELSE 'Zone 3' END as zone FROM Users",
+        debugHint: "Verifica che CASE abbia la struttura: CASE WHEN condizione THEN valore END."
       },
       {
         titleTemplate: "Product Age",
@@ -6439,17 +6440,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["ID come proxy temporale"],
         explanation: "Analisi catalogo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name CASE WHEN id <= 10 THEN 'Launch' WHEN id >= 40 THEN 'New' ELSE 'Standard' END as lifecycle FROM Products",
         debugHint: "ID <= 10."
       },
       {
         titleTemplate: "Data Quality Score",
         descTemplate: "100 - (10 se email null) - (20 se country null).",
         queryTemplate: "SELECT id, 100 - (CASE WHEN email IS NULL THEN 10 ELSE 0 END) - (CASE WHEN country IS NULL THEN 20 ELSE 0 END) as quality_score FROM Users",
-        hints: ["Sottrazione condizionale"],
-        explanation: "Scoring algorithm.",
+        hints: ["Collega le tabelle Users e Orders", "Usa la clausola ON per specificare la condizione di collegamento"],
+        explanation: "CASE WHEN è l'equivalente SQL dell'if-else: valuta condizioni in sequenza e restituisce il valore corrispondente alla prima condizione vera.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id 100 - (CASE WHEN email IS NULL THEN 10 ELSE 0 END) - (CASE WHEN country IS NULL THEN 20 ELSE 0 END) as quality_score FROM Users",
         debugHint: "100 - CASE..."
       }
     ],
@@ -6480,10 +6481,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Email e Ordini",
         descTemplate: "Ottieni l'email dell'utente per ogni ordine effettuato.",
         queryTemplate: "SELECT Users.email, Orders.id FROM Users JOIN Orders ON Users.id = Orders.user_id",
-        hints: ["JOIN Orders ON Users.id = Orders.user_id"],
+        hints: ["Collega le tabelle Users e Orders", "Usa la clausola ON per specificare la condizione di collegamento"],
         explanation: "Recuperiamo dati utente (email) partendo dalla tabella ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Users.email, Orders.id FROM Users JOIN Orders Users.id = Orders.user_id",
         debugHint: "Usa ON Users.id = Orders.user_id."
       },
       {
@@ -6493,7 +6494,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa OrderItems come punto di partenza", "Prendi il prezzo da Products"],
         explanation: "Accediamo alle proprietà del prodotto tramite la foreign key.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT OrderItems.id, Products.price FROM OrderItems JOIN Products OrderItems.product_id = Products.id",
         debugHint: "Collega product_id con id."
       },
       {
@@ -6501,9 +6502,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra lo User Name e il totale (order_total) per ogni ordine.",
         queryTemplate: "SELECT Users.name, Orders.order_total FROM Users JOIN Orders ON Users.id = Orders.user_id",
         hints: ["Seleziona name da Users e order_total da Orders"],
-        explanation: "Combiniamo informazioni anagrafiche e transazionali.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Users.name, Orders.order_total FROM Users JOIN Orders Users.id = Orders.user_id",
         debugHint: "La JOIN va fatta su user_id."
       },
       {
@@ -6513,7 +6514,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Join tra OrderItems e Products"],
         explanation: "Vediamo a quali categorie appartengono gli oggetti venduti.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT OrderItems.id, Products.category FROM OrderItems JOIN Products OrderItems.product_id = Products.id",
         debugHint: "Usa JOIN Products ON ..."
       },
       {
@@ -6531,9 +6532,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra ID ordine, Nome Prodotto e Quantità per ogni riga.",
         queryTemplate: "SELECT OrderItems.order_id, Products.name, OrderItems.quantity FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
         hints: ["Seleziona colonne da entrambe le tabelle"],
-        explanation: "Vista dettagliata delle righe d'ordine.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT OrderItems.order_id, Products.name, OrderItems.quantity FROM OrderItems JOIN Products OrderItems.product_id = Products.id",
         debugHint: "Join su product_id = id."
       },
       {
@@ -6541,9 +6542,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra nome utente e data ordine per ordini dopo il 2023-01-01.",
         queryTemplate: "SELECT Users.name, Orders.order_date FROM Users JOIN Orders ON Users.id = Orders.user_id WHERE Orders.order_date > '2023-01-01'",
         hints: ["JOIN standard", "Filtro sulla data"],
-        explanation: "Join filtrata temporalmente.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Users.name, Orders.order_date FROM Users JOIN Orders ON Users.id = Orders.user_id WHERE Orders.order_date > '2023 01-01'",
         debugHint: "Prima JOIN poi WHERE."
       },
       {
@@ -6551,9 +6552,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Per ogni dipendente, mostra il suo nome e l'ID del suo manager (Self Join concettuale ma qui basta select semplice se non chiesto nome manager). Richiesta: Mostra nome e manager_id, escludendo chi non ha manager.",
         queryTemplate: "SELECT name, manager_id FROM Employees WHERE manager_id IS NOT NULL",
         hints: ["Basta filtrare NULL se non dobbiamo unire la tabella con se stessa"],
-        explanation: "Filtraggio base su chiavi esterne.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name manager_id FROM Employees WHERE manager_id IS NOT NULL",
         debugHint: "IS NOT NULL."
       },
       {
@@ -6561,7 +6562,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova tutti gli ordini fatti da utenti di nome 'Alice'.",
         queryTemplate: "SELECT Orders.* FROM Orders JOIN Users ON Orders.user_id = Users.id WHERE Users.name = 'Alice'",
         hints: ["Join con Users", "Filtra per name = 'Alice'"],
-        explanation: "Filtraggio tramite relazione.",
+        explanation: "IS NOT NULL seleziona solo le righe dove il campo ha un valore definito, escludendo i NULL.",
         replacements: {},
         brokenCode: "SELECT * FROM Orders WHERE name = 'Alice'",
         debugHint: "La colonna 'name' non è in Orders, devi fare JOIN con Users."
@@ -6571,9 +6572,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra i nomi dei prodotti inclusi in ordini con quantità > 5.",
         queryTemplate: "SELECT Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id WHERE OrderItems.quantity > 1",
         hints: ["Filtra OrderItems.quantity > 5"],
-        explanation: "Analisi vendite all'ingrosso.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id WHERE OrderItems.quantity < 1",
         debugHint: "Join e Where."
       },
       {
@@ -6581,9 +6582,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra ID ordine e status per utenti in 'USA'.",
         queryTemplate: "SELECT Orders.id, Orders.status FROM Orders JOIN Users ON Orders.user_id = Users.id WHERE Users.country = 'USA'",
         hints: ["Join su country"],
-        explanation: "Filtro geografico.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Orders.id, Orders.status FROM Orders JOIN Users ON Orders.user_id = Users.id WHERE Users.country == 'USA'",
         debugHint: "Join Users ON ..."
       },
       {
@@ -6591,29 +6592,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Elenca email degli utenti che hanno ordini con status 'Shipped'.",
         queryTemplate: "SELECT Users.email FROM Users JOIN Orders ON Users.id = Orders.user_id WHERE Orders.status = 'Shipped'",
         hints: ["Filtro su status ordine"],
-        explanation: "Join per recuperare contatti target.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Users.email FROM Users JOIN Orders ON Users.id = Orders.user_id WHERE Orders.status == 'Shipped'",
         debugHint: "Where status = 'Shipped'."
       },
       {
         titleTemplate: "Stock Prodotti Ordinati",
         descTemplate: "Per ogni riga ordine, mostra quanta scorta (stock) rimane del prodotto.",
         queryTemplate: "SELECT OrderItems.id, Products.stock FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
-        hints: ["Visualizza Products.stock"],
-        explanation: "Verifica disponibilità per ordini passati.",
+        hints: ["Collega le tabelle OrderItems e Products", "Usa la clausola ON per specificare la condizione di collegamento"],
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Join Products."
+        brokenCode: "SELECT OrderItems.id, Products.stock FROM OrderItems JOIN Products OrderItems.product_id = Products.id",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Ordini e Ruoli Staff",
         descTemplate: "Immagina che anche gli impiegati facciano ordini (non c'è link diretto nello schema standard, ma supponiamo Join su email o simile se esistesse). Qui: Join Users e Orders (Classico).",
         queryTemplate: "SELECT u.name, o.id FROM Users u JOIN Orders o ON u.id = o.user_id",
         hints: ["Usa gli alias per brevità (Users u, Orders o)"],
-        explanation: "Introduzione agli alias di tabella.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name, o.id FROM Users u JOIN Orders o u.id = o.user_id",
         debugHint: "u.id = o.user_id."
       },
       {
@@ -6621,9 +6622,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola il valore totale della riga (quantity * Products.price).",
         queryTemplate: "SELECT OrderItems.id, OrderItems.quantity * Products.price as line_total FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
         hints: ["Moltiplica qt della riga per prezzo del prodotto"],
-        explanation: "Calcolo derivato da due tabelle.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT OrderItems.id, OrderItems.quantity * Products.price IS line_total FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id",
         debugHint: "Quantity * Price."
       },
       {
@@ -6631,10 +6632,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona distinct users che hanno ordinato dopo il 2023-06-01.",
         queryTemplate: "SELECT DISTINCT Users.name FROM Users JOIN Orders ON Users.id = Orders.user_id WHERE Orders.order_date > '2023-06-01'",
         hints: ["Usa DISTINCT per evitare duplicati"],
-        explanation: "Lista utenti univoca da join.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DISTINCT name."
+        brokenCode: "SELECT Users.name DISTINCT FROM Users JOIN Orders ON Users.id = Orders.user_id WHERE Orders.order_date > '2023-06-01'",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Prodotti 'Electronics' Venduti",
@@ -6643,25 +6644,25 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Filtra per category"],
         explanation: "Filtro basato su proprietà della tabella destra.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT OrderItems.order_id FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id WHERE Products.category == 'Electronics'",
         debugHint: "Category = 'Electronics'."
       },
       {
         titleTemplate: "Ordini di Utenti Premium",
         descTemplate: "Mostra tutti gli ordini degli utenti con is_premium = true.",
         queryTemplate: "SELECT Orders.* FROM Orders JOIN Users ON Orders.user_id = Users.id WHERE Users.is_premium = true",
-        hints: ["Filtra is_premium"],
-        explanation: "Segmentazione clienti.",
+        hints: ["Collega le tabelle Orders e Users", "Usa la clausola ON per specificare la condizione di collegamento"],
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Orders.* FROM Orders JOIN Users ON Orders.user_id = Users.id WERE Users.is_premium = true",
         debugHint: "Join Users e Where Premium."
       },
       {
         titleTemplate: "Nome e Data Ordine Alias",
         descTemplate: "Usa alias 'u' e 'o' per selezionare nome e data.",
         queryTemplate: "SELECT u.name, o.order_date FROM Users u JOIN Orders o ON u.id = o.user_id",
-        hints: ["FROM Users u JOIN Orders o"],
-        explanation: "Best practice: alias brevi.",
+        hints: ["Collega le tabelle Users e Orders", "Usa la clausola ON per specificare la condizione di collegamento"],
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
         brokenCode: "SELECT u.name FROM Users JOIN Orders",
         debugHint: "Devi definire l'alias: FROM Users u."
@@ -6671,40 +6672,40 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra nome prodotto e quanto è stato speso per quella riga (qty * price).",
         queryTemplate: "SELECT p.name, oi.quantity * p.price FROM OrderItems oi JOIN Products p ON oi.product_id = p.id",
         hints: ["Join OrderItems e Products"],
-        explanation: "Report dettagliato.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT p.name, oi.quantity * p.price FROM OrderItems oi JOIN Products p oi.product_id = p.id",
         debugHint: "Join con alias."
       },
       {
         titleTemplate: "Ordini senza Sconto",
         descTemplate: "Seleziona ordini di utenti non premium.",
         queryTemplate: "SELECT o.id FROM Orders o JOIN Users u ON o.user_id = u.id WHERE u.is_premium = false",
-        hints: ["is_premium = false"],
-        explanation: "Filtro negativo.",
+        hints: ["Collega le tabelle Orders e Users", "Usa la clausola ON per specificare la condizione di collegamento"],
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Check boolean."
+        brokenCode: "SELECT o.id FROM Orders o JOIN Users u ON o.user_id = u.id WERE u.is_premium = false",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Join Multipla Base",
         descTemplate: "Collega OrderItems -> Products (ma seleziona solo nome prodotto e id riga).",
         queryTemplate: "SELECT oi.id, p.name FROM OrderItems oi JOIN Products p ON oi.product_id = p.id",
         hints: ["Semplice join FK"],
-        explanation: "Navigazione schema.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT oi.id, p.name FROM OrderItems oi JOIN Products p oi.product_id = p.id",
         debugHint: "ON product_id = id."
       },
       {
         titleTemplate: "Dipartimento Dipendente",
         descTemplate: "Mostra nome impiegato e dipartimento (Query su singola tabella, ma concettualmente prepara a join reali).",
         queryTemplate: "SELECT name, department FROM Employees",
-        hints: ["Selezione colonne"],
+        hints: ["Seleziona dalla tabella Employees", "Specifica il nome delle colonne dopo SELECT"],
         explanation: "A volte i dati sono denormalizzati.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Select normale."
+        brokenCode: "SELECT name department FROM Employees",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Ordini Internazionali",
@@ -6713,7 +6714,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["WHERE country != 'Italy'"],
         explanation: "Export sales.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o.id, u.country FROM Orders o JOIN Users u ON o.user_id = u.id WHERE u.country !== 'Italy'",
         debugHint: "<> o !=."
       },
       {
@@ -6721,29 +6722,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova righe d'ordine riferite a prodotti con prezzo > 100.",
         queryTemplate: "SELECT oi.id FROM OrderItems oi JOIN Products p ON oi.product_id = p.id WHERE p.price > 100",
         hints: ["Filter joining table"],
-        explanation: "High value items.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT oi.id FROM OrderItems oi JOIN Products p ON oi.product_id = p.id WHERE p.price < 100",
         debugHint: "Price > 100."
       },
       {
         titleTemplate: "Utenti con Ordini Pendenti",
         descTemplate: "Nomi utenti con ordini 'Pending'.",
         queryTemplate: "SELECT DISTINCT u.name FROM Users u JOIN Orders o ON u.id = o.user_id WHERE o.status = 'Pending'",
-        hints: ["Status 'Pending'"],
-        explanation: "Operational dashboard.",
+        hints: ["Usa DISTINCT per eliminare i valori ripetuti", "La colonna da rendere unica è u"],
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Join Orders."
+        brokenCode: "SELECT u.name DISTINCT FROM Users u JOIN Orders o ON u.id = o.user_id WHERE o.status = 'Pending'",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "ID Utente e ID Prodotto",
         descTemplate: "Chi ha comprato cosa (solo ID). Richiede Join a 3 tabelle (Users->Orders->Items) o 2 (Orders->Items). Facciamo Orders->Items.",
         queryTemplate: "SELECT o.user_id, oi.product_id FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id",
         hints: ["Orders join OrderItems"],
-        explanation: "Associazione Utente-Prodotto indiretta.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o.user_id, oi.product_id FROM Orders o JOIN OrderItems oi o.id = oi.order_id",
         debugHint: "Join su order_id."
       },
       {
@@ -6775,17 +6776,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["LEFT JOIN mantiene tutti gli utenti"],
         explanation: "Vogliamo la lista anagrafica completa, arricchita ove possibile.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LEFT JOIN."
+        brokenCode: "SELECT Users.name, Orders.id FROM Users LEFT JOIN Orders Users.id = Orders.user_id",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Prodotti Mai Ordinati",
         descTemplate: "Trova i nomi dei prodotti che non sono mai stati inseriti in un ordine.",
         queryTemplate: "SELECT Products.name FROM Products LEFT JOIN OrderItems ON Products.id = OrderItems.product_id WHERE OrderItems.id IS NULL",
         hints: ["LEFT JOIN tra Products e OrderItems", "Check NULL su OrderItems.id"],
-        explanation: "Analisi dell'invenduto.",
+        explanation: "LEFT JOIN restituisce tutte le righe dalla tabella di sinistra, anche quelle senza corrispondenza nella tabella destra (con NULL per le colonne mancanti).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Products.name FROM Products LEFT JOIN OrderItems ON Products.id = OrderItems.product_id WERE OrderItems.id IS NULL",
         debugHint: "LEFT JOIN ... IS NULL."
       },
       {
@@ -6793,7 +6794,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Calcola quanto ha speso in totale ogni utente (Users Join Orders Group By Name).",
         queryTemplate: "SELECT Users.name, SUM(Orders.order_total) as total_spent FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.name",
         hints: ["Join e poi Group By Users.name", "SUM(order_total)"],
-        explanation: "Aggregazione dopo il join.",
+        explanation: "LEFT JOIN restituisce tutte le righe dalla tabella di sinistra, anche quelle senza corrispondenza nella tabella destra (con NULL per le colonne mancanti).",
         replacements: {},
         brokenCode: "SELECT Users.name, SUM(Orders.order_total) FROM Users JOIN Orders",
         debugHint: "Manca GROUP BY Users.name."
@@ -6803,9 +6804,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Conta quanti ordini provengono da ogni paese (Users Join Orders).",
         queryTemplate: "SELECT Users.country, COUNT(Orders.id) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP BY Users.country",
         hints: ["Raggruppa per country"],
-        explanation: "Statistiche geografiche.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT Users.country, COUNT(Orders.id) FROM Users JOIN Orders ON Users.id = Orders.user_id GROUP Users.country",
         debugHint: "Count su colonna orders."
       },
       {
@@ -6815,7 +6816,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Join, Group By, Having"],
         explanation: "Filtro su aggregati di due tabelle.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT p.name, p.category, SUM(oi.quantity) FROM Products p JOIN OrderItems oi ON p.id = oi.product_id GROUP p.name, p.category HAVING SUM(oi.quantity) > 10",
         debugHint: "HAVING SUM > 10."
       },
       {
@@ -6823,9 +6824,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Nomi utenti che hanno comprato prodotti della categoria 'Electronics'.",
         queryTemplate: "SELECT DISTINCT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE p.category = 'Electronics'",
         hints: ["Join a 4 tabelle: Users -> Orders -> Items -> Products"],
-        explanation: "Navigazione profonda dello schema.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name DISTINCT FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE p.category = 'Electronics'",
         debugHint: "Collega tutte le tabelle."
       },
       {
@@ -6833,9 +6834,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra Order ID, Nome Prodotto, Quantità e Prezzo Totale Riga (qty * price).",
         queryTemplate: "SELECT oi.order_id, p.name, oi.quantity, (oi.quantity * p.price) as subtotal FROM OrderItems oi JOIN Products p ON oi.product_id = p.id",
         hints: ["Calcolo aritmetico su colonne di tabelle diverse"],
-        explanation: "Fatturazione dettagliata.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT oi.order_id, p.name, oi.quantity, (oi.quantity * p.price) IS subtotal FROM OrderItems oi JOIN Products p ON oi.product_id = p.id",
         debugHint: "Join e moltiplicazione."
       },
       {
@@ -6843,9 +6844,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova gli ID degli ordini che contengono più di 1 riga (più prodotti diversi).",
         queryTemplate: "SELECT order_id FROM OrderItems GROUP BY order_id HAVING COUNT(*) > 1",
         hints: ["Non serve JOIN qui, solo Group By su OrderItems, ma concettualmente lega prodotti"],
-        explanation: "Analisi composizione carrello.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT order_id FROM OrderItems GROUP order_id HAVING COUNT(*) > 1",
         debugHint: "Having Count > 1."
       },
       {
@@ -6853,17 +6854,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra nome utente e la data del loro ordine più recente.",
         queryTemplate: "SELECT u.name, MAX(o.order_date) FROM Users u JOIN Orders o ON u.id = o.user_id GROUP BY u.name",
         hints: ["MAX(order_date)", "Group By user"],
-        explanation: "Aggregazione temporale per entità.",
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MAX(date)."
+        brokenCode: "SELECT u.name, MAX(o.order_date) FROM Users u JOIN Orders o ON u.id = o.user_id GROUP u.name",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Manager e Sottoposti",
         descTemplate: "Per ogni impiegato mostrare il nome e il nome del suo manager (Self Join).",
         queryTemplate: "SELECT e1.name as Employee, e2.name as Manager FROM Employees e1 JOIN Employees e2 ON e1.manager_id = e2.id",
-        hints: ["Usa due alias per la stessa tabella Employees (e1, e2)", "e1.manager_id = e2.id"],
-        explanation: "Self Join per gerarchie.",
+        hints: ["Collega le tabelle Employees e Employees", "Usa la clausola ON per specificare la condizione di collegamento"],
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
         brokenCode: "SELECT name, manager_name FROM Employees",
         debugHint: "Devi unire Employees con se stessa."
@@ -6873,9 +6874,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Lista tutti i prodotti e la somma totale delle quantità vendute (usa LEFT JOIN per includere 0 vendite).",
         queryTemplate: "SELECT p.name, COALESCE(SUM(oi.quantity), 0) FROM Products p LEFT JOIN OrderItems oi ON p.id = oi.product_id GROUP BY p.name",
         hints: ["LEFT JOIN per non perdere prodotti invenduti", "COALESCE per trasformare NULL in 0"],
-        explanation: "Report completo inventario/vendite.",
+        explanation: "Un self-join collega una tabella con sé stessa, utile per gerarchie come dipendente-manager dove la relazione è nella stessa tabella.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT p.name, COALESCE(SUM(oi.quantity), 0) FROM Products p LEFT JOIN OrderItems oi ON p.id = oi.product_id GROUP p.name",
         debugHint: "LEFT JOIN + COALESCE."
       },
       {
@@ -6883,29 +6884,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova utenti italiani che hanno fatto almeno un ordine sopra i 100 euro.",
         queryTemplate: "SELECT DISTINCT u.name FROM Users u JOIN Orders o ON u.id = o.user_id WHERE u.country = 'Italy' AND o.order_total > 100",
         hints: ["Join + 2 condizioni Where"],
-        explanation: "Segmentazione avanzata.",
+        explanation: "LEFT JOIN restituisce tutte le righe dalla tabella di sinistra, anche quelle senza corrispondenza nella tabella destra (con NULL per le colonne mancanti).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "AND condition."
+        brokenCode: "SELECT u.name DISTINCT FROM Users u JOIN Orders o ON u.id = o.user_id WHERE u.country = 'Italy' AND o.order_total > 100",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Ordini con Prodotti 'Out of Stock'",
         descTemplate: "Trova ID ordini che contengono prodotti con stock = 0.",
         queryTemplate: "SELECT DISTINCT oi.order_id FROM OrderItems oi JOIN Products p ON oi.product_id = p.id WHERE p.stock = 0",
         hints: ["Join su prodotti, where stock=0"],
-        explanation: "Verifica integrità o backorder.",
+        explanation: "COUNT(DISTINCT ...) conta i valori unici, eliminando i duplicati prima del conteggio.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Distinct order_id."
+        brokenCode: "SELECT oi.order_id DISTINCT FROM OrderItems oi JOIN Products p ON oi.product_id = p.id WHERE p.stock = 0",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Ticket Medio per Nazione",
         descTemplate: "Calcola il valore medio degli ordini per ogni nazione.",
         queryTemplate: "SELECT u.country, AVG(o.order_total) FROM Users u JOIN Orders o ON u.id = o.user_id GROUP BY u.country",
         hints: ["Join Users-Orders", "AVG(total)", "Group By country"],
-        explanation: "KPI geografico.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.country, AVG(o.order_total) FROM Users u JOIN Orders o ON u.id = o.user_id GROUP u.country",
         debugHint: "AVG con Group By."
       },
       {
@@ -6913,9 +6914,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova coppie di impiegati che lavorano nello stesso dipartimento.",
         queryTemplate: "SELECT e1.name, e2.name FROM Employees e1 JOIN Employees e2 ON e1.department = e2.department WHERE e1.id < e2.id",
         hints: ["Self Join su department", "e1.id < e2.id per evitare duplicati/riflessi"],
-        explanation: "Combinazioni a coppie.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT e1.name, e2.name FROM Employees e1 JOIN Employees e2 ON e1.department = e2.department WERE e1.id < e2.id",
         debugHint: "Condizione < sull'ID."
       },
       {
@@ -6923,9 +6924,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra nome utente e numero di ordini effettuati (incluso 0).",
         queryTemplate: "SELECT u.name, COUNT(o.id) FROM Users u LEFT JOIN Orders o ON u.id = o.user_id GROUP BY u.name",
         hints: ["LEFT JOIN", "COUNT(o.id) conta solo i non-nulli"],
-        explanation: "Statistica inclusiva.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name, COUNT(o.id) FROM Users u LEFT JOIN Orders o ON u.id = o.user_id GROUP u.name",
         debugHint: "LEFT JOIN e Group By."
       },
       {
@@ -6933,9 +6934,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova il nome del prodotto con la somma quantità più alta.",
         queryTemplate: "SELECT p.name, SUM(oi.quantity) as total_qty FROM Products p JOIN OrderItems oi ON p.id = oi.product_id GROUP BY p.name ORDER BY total_qty DESC LIMIT 1",
         hints: ["Sum quantity", "Order Desc Limit 1"],
-        explanation: "Top performer.",
+        explanation: "LEFT JOIN restituisce tutte le righe dalla tabella di sinistra, anche quelle senza corrispondenza nella tabella destra (con NULL per le colonne mancanti).",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT p.name, SUM(oi.quantity) IS total_qty FROM Products p JOIN OrderItems oi ON p.id = oi.product_id GROUP BY p.name ORDER BY total_qty DESC LIMIT 1",
         debugHint: "Order By SUM DESC."
       },
       {
@@ -6943,9 +6944,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mostra ID Ordine, Email Utente, Nome Prodotto per ogni riga ordine.",
         queryTemplate: "SELECT o.id, u.email, p.name FROM Orders o JOIN Users u ON o.user_id = u.id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id",
         hints: ["Catena di 4 join"],
-        explanation: "Vista denormalizzata completa.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o.id, u.email, p.name FROM Orders o JOIN Users u o.user_id = u.id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id",
         debugHint: "Segui le chiavi esterne."
       },
       {
@@ -6955,7 +6956,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Group By name", "HAVING SUM > 500"],
         explanation: "Filtro su aggregato derivato da join.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id GROUP u.name HAVING SUM(o.order_total) > 500",
         debugHint: "HAVING dopo Group By."
       },
       {
@@ -6963,29 +6964,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Confronta prezzo pagato (OrderItems... non abbiamo prezzo storico, usiamo prezzo attuale) e totale ordine.",
         queryTemplate: "SELECT o.id, o.order_total, SUM(oi.quantity * p.price) as calc_total FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY o.id, o.order_total",
         hints: ["Verifica consistenza dati", "Confronta campo calcolato e campo salvato"],
-        explanation: "Audit di consistenza.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Sum(qty*price)."
+        brokenCode: "SELECT o.id, o.order_total, SUM(oi.quantity * p.price) IS calc_total FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY o.id, o.order_total",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Utenti del Dipartimento 'Sales'",
         descTemplate: "Supponendo link Users-Employees (non c'è, esercizio teorico), facciamo: Utenti che hanno stesso nome di un impiegato.",
         queryTemplate: "SELECT u.name FROM Users u JOIN Employees e ON u.name = e.name",
         hints: ["Join su campo name (non ideale ma possibile)"],
-        explanation: "Join su chiavi non primarie/esterne.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name FROM Users u JOIN Employees e u.name = e.name",
         debugHint: "ON u.name = e.name."
       },
       {
         titleTemplate: "Cross Join Esplicita",
         descTemplate: "Combina tutti i Users con tutti i Products (Cartesian).",
         queryTemplate: "SELECT u.name, p.name FROM Users u CROSS JOIN Products p",
-        hints: ["CROSS JOIN"],
+        hints: ["Collega le tabelle Users e Products", "Usa la clausola ON per specificare la condizione di collegamento"],
         explanation: "Generazione di tutte le combinazioni possibili.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET u.name, p.name FROM Users u CROSS JOIN Products p",
         debugHint: "CROSS JOIN non ha ON."
       },
       {
@@ -6993,39 +6994,39 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Poiché molti DB (e AlaSQL) non hanno FULL JOIN, simulala con LEFT JOIN Union RIGHT JOIN (o LEFT Union LEFT inversa). Qui: Lista tutti users e orders (User senza ordini E Ordini orfani).",
         queryTemplate: "SELECT u.name, o.id FROM Users u LEFT JOIN Orders o ON u.id = o.user_id UNION SELECT u.name, o.id FROM Orders o LEFT JOIN Users u ON o.user_id = u.id",
         hints: ["Union di due Left Join invertite"],
-        explanation: "Full Outer Join workaround.",
+        explanation: "CROSS JOIN produce il prodotto cartesiano: ogni riga della prima tabella viene combinata con ogni riga della seconda.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "UNION."
+        brokenCode: "SELECT u.name, o.id FROM Users u LEFT JOIN Orders o u.id = o.user_id UNION SELECT u.name, o.id FROM Orders o LEFT JOIN Users u ON o.user_id = u.id",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Ordini con Almeno 3 Articoli",
         descTemplate: "Trova ordini con count(items) >= 3.",
         queryTemplate: "SELECT o.id FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id GROUP BY o.id HAVING COUNT(oi.id) >= 3",
         hints: ["Group By Order ID", "Having Count >= 3"],
-        explanation: "Filtro sulla cardinalità della relazione.",
+        explanation: "UNION combina i risultati di due SELECT in un unico set, eliminando i duplicati. Usa UNION ALL per mantenere tutti i duplicati.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING COUNT."
+        brokenCode: "SELECT o.id FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id GROUP o.id HAVING COUNT(oi.id) >= 3",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Categorie Acquistate da Utente",
         descTemplate: "Mostra categorie distinte acquistate da 'Alice'.",
         queryTemplate: "SELECT DISTINCT p.category FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE u.name = 'Alice'",
         hints: ["Distinct category", "Filter user name"],
-        explanation: "Profilazione interessi utente.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Chain joins."
+        brokenCode: "SELECT p.category DISTINCT FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE u.name = 'Alice'",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Prodotti Non 'Electronics'",
         descTemplate: "Ordini che contengono prodotti NON Electronics.",
         queryTemplate: "SELECT DISTINCT o.id FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE p.category != 'Electronics'",
-        hints: ["Category != 'Electronics'"],
-        explanation: "Filtro esclusivo.",
+        hints: ["Usa DISTINCT per eliminare i valori ripetuti", "La colonna da rendere unica è o"],
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o.id DISTINCT FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE p.category != 'Electronics'",
         debugHint: "!= o <>."
       },
       {
@@ -7033,30 +7034,30 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova email di chi ha comprato prodotto con nome 'Laptop'.",
         queryTemplate: "SELECT DISTINCT u.email FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE p.name = 'Laptop'",
         hints: ["Filtra per nome prodotto"],
-        explanation: "Targeting specifico.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Join chain."
+        brokenCode: "SELECT u.email DISTINCT FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE p.name = 'Laptop'",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Ordini Mese Corrente",
         descTemplate: "Join Users-Orders filtrando per mese corrente (NOW).",
         queryTemplate: "SELECT u.name, o.id FROM Users u JOIN Orders o ON u.id = o.user_id WHERE YEAR(o.order_date) = YEAR(NOW())",
         hints: ["Confronta Month e Year con NOW()"],
-        explanation: "Reporting real-time.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MONTH(NOW())."
+        brokenCode: "SELECT u.name, o.id FROM Users u JOIN Orders o ON u.id = o.user_id WERE YEAR(o.order_date) = YEAR(NOW())",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Status Spedizione Utente",
         descTemplate: "Mostra 'Spedito' se tutti gli ordini dell'utente sono Shipped ?? No, mostra semplicemente status ordini per utente.",
         queryTemplate: "SELECT u.name, o.status FROM Users u JOIN Orders o ON u.id = o.user_id",
         hints: ["Select semplice join"],
-        explanation: "Tracking stato.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Join."
+        brokenCode: "SELECT u.name, o.status FROM Users u JOIN Orders o u.id = o.user_id",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       }
     ],
     [Difficulty.Hard]: [
@@ -7067,7 +7068,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Join 4 tabelle", "Filter status='Shipped'"],
         explanation: "Vista completa denormalizzata per ordini evasi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name, u.email, o.order_date, p.name, oi.quantity FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE o.status == 'Shipped'",
         debugHint: "Segui la catena di chiavi esterne."
       },
       {
@@ -7075,9 +7076,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova gli impiegati che guadagnano più del proprio manager (Self Join).",
         queryTemplate: "SELECT E.name FROM Employees E JOIN Employees M ON E.manager_id = M.id WHERE E.salary > M.salary",
         hints: ["Self Join: Employees E, Employees M", "Confronta E.salary > M.salary"],
-        explanation: "Analisi anomalie retributive.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT E.name FROM Employees E JOIN Employees M ON E.manager_id = M.id WHERE E.salary < M.salary",
         debugHint: "Join su manager_id = id."
       },
       {
@@ -7085,9 +7086,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova prodotti che NON sono stati venduti in ordini del 2023.",
         queryTemplate: "SELECT p.name FROM Products p LEFT JOIN (SELECT oi.product_id FROM OrderItems oi JOIN Orders o ON oi.order_id = o.id WHERE YEAR(o.order_date) = 2023) sold_23 ON p.id = sold_23.product_id WHERE sold_23.product_id IS NULL",
         hints: ["Left Join con subquery o Left Join + condition in ON/Where", "Filtra IS NULL"],
-        explanation: "Esclusione basata su periodo temporale.",
+        explanation: "Un self-join collega una tabella con sé stessa, utile per gerarchie come dipendente-manager dove la relazione è nella stessa tabella.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT p.name FROM Products p LEFT JOIN (SELECT oi.product_id FROM OrderItems oi JOIN Orders o ON oi.order_id = o.id WERE YEAR(o.order_date) = 2023) sold_23 ON p.id = sold_23.product_id WHERE sold_23.product_id IS NULL",
         debugHint: "LEFT JOIN ... IS NULL."
       },
       {
@@ -7095,9 +7096,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trovami utenti che hanno fatto più di un ordine sopra i 500 euro.",
         queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id WHERE o.order_total > 500 GROUP BY u.name HAVING COUNT(o.id) > 1",
         hints: ["Filter order_total in Where", "Filter count in Having"],
-        explanation: "Identificazione clienti VIP.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id WHERE o.order_total < 500 GROUP BY u.name HAVING COUNT(o.id) > 1",
         debugHint: "Where price > 500 first."
       },
       {
@@ -7105,9 +7106,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Per ogni nazione, trova la categoria di prodotti più venduta (sommando quantity).",
         queryTemplate: "SELECT u.country, p.category, SUM(oi.quantity) as sold FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.country, p.category ORDER BY u.country, sold DESC",
         hints: ["Group By country, category", "Order by country, sum desc"],
-        explanation: "Analisi di mercato geografica.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.country, p.category, SUM(oi.quantity) IS sold FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.country, p.category ORDER BY u.country, sold DESC",
         debugHint: "Join 4 tables."
       },
       {
@@ -7115,9 +7116,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova coppie di prodotti (A, B) che appaiono nello stesso ordine (Self Join su OrderItems).",
         queryTemplate: "SELECT oi1.product_id as P1, oi2.product_id as P2, COUNT(*) as frequency FROM OrderItems oi1 JOIN OrderItems oi2 ON oi1.order_id = oi2.order_id WHERE oi1.product_id < oi2.product_id GROUP BY P1, P2 ORDER BY frequency DESC LIMIT 1",
         hints: ["Self Join OrderItems on order_id", "P1 < P2 per evitare duplicati speculari"],
-        explanation: "Market Basket Analysis semplificata.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT oi1.product_id IS P1, oi2.product_id as P2, COUNT(*) as frequency FROM OrderItems oi1 JOIN OrderItems oi2 ON oi1.order_id = oi2.order_id WHERE oi1.product_id < oi2.product_id GROUP BY P1, P2 ORDER BY frequency DESC LIMIT 1",
         debugHint: "oi1.order_id = oi2.order_id."
       },
       {
@@ -7125,9 +7126,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Sfida logica: Utenti che hanno acquistato almeno un prodotto per ogni categoria disponibile. (Concetto di Divisione Relazionale, simulata).",
         queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.name HAVING COUNT(DISTINCT p.category) >= 2",
         hints: ["Count Distinct Category dell'utente = Count Distinct Category Totale"],
-        explanation: "Relational Division.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name DISTINCT FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.name HAVING COUNT(DISTINCT p.category) >= 2",
         debugHint: "HAVING COUNT = (subquery)."
       },
       {
@@ -7135,9 +7136,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Per ogni prodotto, confronta il valore dello stock attuale (stock * price) con il totale guadagnato dalle vendite passate.",
         queryTemplate: "SELECT p.name, (p.stock * p.price) as inventory_value, COALESCE(SUM(oi.quantity * p.price), 0) as sales_value FROM Products p LEFT JOIN OrderItems oi ON p.id = oi.product_id GROUP BY p.id, p.name, p.stock, p.price",
         hints: ["Left Join Products-OrderItems", "Calcoli aggregati vs scalari"],
-        explanation: "ROI potential analysis.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT p.name, (p.stock * p.price) IS inventory_value, COALESCE(SUM(oi.quantity * p.price), 0) as sales_value FROM Products p LEFT JOIN OrderItems oi ON p.id = oi.product_id GROUP BY p.id, p.name, p.stock, p.price",
         debugHint: "Group By p.id."
       },
       {
@@ -7147,27 +7148,27 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["LEFT Join su self"],
         explanation: "Include il CEO (che ha manager NULL).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LEFT JOIN."
+        brokenCode: "SELECT E.name IS Emp, M.name as Boss FROM Employees E LEFT JOIN Employees M ON E.manager_id = M.id",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Ordini con prodotti di categorie miste",
         descTemplate: "Trova ordini che contengono prodotti di almeno 2 categorie diverse.",
         queryTemplate: "SELECT oi.order_id FROM OrderItems oi JOIN Products p ON oi.product_id = p.id GROUP BY oi.order_id HAVING COUNT(DISTINCT p.category) > 1",
-        hints: ["Join Products", "Having Count Distinct category > 1"],
-        explanation: "Analisi varietà carrello.",
+        hints: ["Collega le tabelle OrderItems e Products", "Usa la clausola ON per specificare la condizione di collegamento"],
+        explanation: "LEFT JOIN restituisce tutte le righe dalla tabella di sinistra, anche quelle senza corrispondenza nella tabella destra (con NULL per le colonne mancanti).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Count Distinct."
+        brokenCode: "SELECT oi.order_id DISTINCT FROM OrderItems oi JOIN Products p ON oi.product_id = p.id GROUP BY oi.order_id HAVING COUNT(DISTINCT p.category) > 1",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Utenti Inattivi da 6 Mesi",
         descTemplate: "Utenti che non hanno ordini con data > oggi - 6 mesi.",
         queryTemplate: "SELECT u.name FROM Users u LEFT JOIN Orders o ON u.id = o.user_id AND o.order_date > DATE('now', '-6 months') WHERE o.id IS NULL",
         hints: ["Left Join con condizione temporale complessa o Where Not Exists"],
-        explanation: "Churn analysis.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name FROM Users u LEFT JOIN Orders o ON u.id = o.user_id AND o.order_date > DATE('now', ' 6 months') WHERE o.id IS NULL",
         debugHint: "o.id IS NULL."
       },
       {
@@ -7175,19 +7176,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Per ogni utente, trova la categoria su cui ha speso di più (Query complessa, semplifichiamo: Categoria più acquistata da 'Alice').",
         queryTemplate: "SELECT p.category, SUM(oi.quantity) as qty FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE u.name = 'Alice' GROUP BY p.category ORDER BY qty DESC LIMIT 1",
         hints: ["Filtra Alice", "Group by category", "Order desc limit 1"],
-        explanation: "Profilazione personalizzata.",
+        explanation: "LEFT JOIN restituisce tutte le righe dalla tabella di sinistra, anche quelle senza corrispondenza nella tabella destra (con NULL per le colonne mancanti).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Limit 1."
+        brokenCode: "SELECT p.category, SUM(oi.quantity) IS qty FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE u.name = 'Alice' GROUP BY p.category ORDER BY qty DESC LIMIT 1",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Join su Date (Range Join)",
         descTemplate: "Trova ordini effettuati lo stesso giorno di un 'Evento'. (Simuliamo tabella Eventi con subquery/CTE). Diciamo: Ordini fatti lo stesso giorno dell'ordine #1.",
         queryTemplate: "SELECT o2.id FROM Orders o1 JOIN Orders o2 ON o1.order_date = o2.order_date WHERE o1.id = 9301 AND o2.id != 9301",
         hints: ["Self Join on order_date"],
-        explanation: "Correlazione temporale.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o2.id FROM Orders o1 JOIN Orders o2 ON o1.order_date = o2.order_date WERE o1.id = 9301 AND o2.id != 9301",
         debugHint: "o1.id = 1."
       },
       {
@@ -7195,9 +7196,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova gli utenti che hanno comprato 'Smartphone' ma NON 'Cover'.",
         queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE p.name LIKE '%Laptop%' AND u.name NOT IN (SELECT u2.name FROM Users u2 JOIN Orders o2 ON u2.id = o2.user_id JOIN OrderItems oi2 ON o2.id = oi2.order_id JOIN Products p2 ON oi2.product_id = p2.id WHERE p2.name LIKE '%Cover%')",
         hints: ["In standard SQL: WHERE u.id IN (Smartphone buyers) AND u.id NOT IN (Cover buyers)"],
-        explanation: "Cross-selling opportunities.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WERE p.name LIKE '%Laptop%' AND u.name NOT IN (SELECT u2.name FROM Users u2 JOIN Orders o2 ON u2.id = o2.user_id JOIN OrderItems oi2 ON o2.id = oi2.order_id JOIN Products p2 ON oi2.product_id = p2.id WHERE p2.name LIKE '%Cover%')",
         debugHint: "Subquery NOT IN."
       },
       {
@@ -7205,9 +7206,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova ordini dove order_total != somma(items).",
         queryTemplate: "SELECT o.id FROM Orders o JOIN (SELECT order_id, SUM(quantity*unit_price) as calc_sum FROM OrderItems GROUP BY order_id) detail ON o.id = detail.order_id WHERE o.order_total != detail.calc_sum",
         hints: ["Join con derived table aggregata"],
-        explanation: "Data Integrity Check avanzato.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o.id FROM Orders o JOIN (SELECT order_id, SUM(quantity*unit_price) IS calc_sum FROM OrderItems GROUP BY order_id) detail ON o.id = detail.order_id WHERE o.order_total != detail.calc_sum",
         debugHint: "Subquery nel FROM."
       },
       {
@@ -7215,69 +7216,69 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Anno | Prodotto | Qta. Richiede Window Functions o Group complessi. Qui facciamo Group By Year, Product.",
         queryTemplate: "SELECT YEAR(o.order_date) as yr, p.name, SUM(oi.quantity) FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY yr, p.name ORDER BY yr, SUM(oi.quantity) DESC",
         hints: ["Group By Year(date), product"],
-        explanation: "Trend annuali.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "STRFTIME Year."
+        brokenCode: "SELECT YEAR(o.order_date) IS yr, p.name, SUM(oi.quantity) FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY yr, p.name ORDER BY yr, SUM(oi.quantity) DESC",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Utenti e Avg Stock Acquistato",
         descTemplate: "Media dello stock attuale dei prodotti comprati da ogni utente.",
         queryTemplate: "SELECT u.name, AVG(p.stock) FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.name",
-        hints: ["Avg(p.stock)"],
-        explanation: "Metrica inusuale cross-domain.",
+        hints: ["Collega le tabelle Users e Products", "Usa la clausola ON per specificare la condizione di collegamento"],
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Avg."
+        brokenCode: "SELECT u.name, AVG(p.stock) FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP u.name",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Salari Manager vs Avg Dipartimento",
         descTemplate: "Manager che guadagnano meno della media del proprio dipartimento.",
         queryTemplate: "SELECT e.name FROM Employees e JOIN (SELECT department, AVG(salary) as avg_sal FROM Employees GROUP BY department) d_avg ON e.department = d_avg.department WHERE e.salary > d_avg.avg_sal",
         hints: ["Join con subquery aggregata per dept", "manager_id IS NULL identifica manager/capi (o logica specifica)"],
-        explanation: "Salary equity.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Join subquery."
+        brokenCode: "SELECT e.name FROM Employees e JOIN (SELECT department, AVG(salary) IS avg_sal FROM Employees GROUP BY department) d_avg ON e.department = d_avg.department WHERE e.salary > d_avg.avg_sal",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Clienti e Prodotti Esclusivi",
         descTemplate: "Clienti che hanno comprato SOLO prodotti 'Electronics'.",
         queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.name HAVING COUNT(DISTINCT p.category) > 0",
         hints: ["Group By User", "HAVING MIN(cat) = MAX(cat) = 'Electronics' è un trick per dire 'solo questa categoria'"],
-        explanation: "Set condition checking.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Min=Max trick."
+        brokenCode: "SELECT u.name DISTINCT FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.name HAVING COUNT(DISTINCT p.category) > 0",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Confronto Ordini Successivi",
         descTemplate: "Trova ordini che hanno valore inferiore all'ordine immediatamente precedente dello stesso utente. (Self Join o Window, usiamo Self Join su ID-1 o logica temporale).",
         queryTemplate: "SELECT o1.id FROM Orders o1 JOIN Orders o2 ON o1.user_id = o2.user_id WHERE o1.id = o2.id + 1 AND o1.order_total < o2.order_total",
         hints: ["Assumiamo ID sequenziali: o1.id = o2.id + 1"],
-        explanation: "Sequential analysis.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o1.id FROM Orders o1 JOIN Orders o2 ON o1.user_id = o2.user_id WHERE o1.id = o2.id 1 AND o1.order_total < o2.order_total",
         debugHint: "o1.id = o2.id + 1."
       },
       {
         titleTemplate: "Full Order Details JSON",
         descTemplate: "Simulazione: Crea stringa dettagli ordine concatenando nomi prodotti (Group_Concat).",
         queryTemplate: "SELECT o.id, GROUP_CONCAT(p.name) as items FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY o.id",
-        hints: ["GROUP_CONCAT(p.name)"],
-        explanation: "Denormalizzazione per export.",
+        hints: ["Collega le tabelle Orders e Products", "Usa la clausola ON per specificare la condizione di collegamento"],
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Group_Concat."
+        brokenCode: "SELECT o.id, GROUP_CONCAT(p.name) IS items FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY o.id",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Utenti Senza Acquisti Recentemente",
         descTemplate: "Utenti con acquisiti in passato ma NULLA negli ultimi 3 mesi.",
         queryTemplate: "SELECT DISTINCT u.name FROM Users u JOIN Orders o ON u.id = o.user_id WHERE u.id NOT IN (SELECT user_id FROM Orders WHERE order_date > DATE('now', '-3 months'))",
         hints: ["IN (all history) AND NOT IN (recent history)"],
-        explanation: "Dormant users.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.name DISTINCT FROM Users u JOIN Orders o ON u.id = o.user_id WHERE u.id NOT IN (SELECT user_id FROM Orders WHERE order_date > DATE('now', '-3 months'))",
         debugHint: "NOT IN Subquery."
       },
       {
@@ -7285,39 +7286,39 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Classifica prodotti per Entrate Totali (qty*price).",
         queryTemplate: "SELECT p.name, SUM(oi.quantity * p.price) as rev FROM Products p JOIN OrderItems oi ON p.id = oi.product_id GROUP BY p.name ORDER BY rev DESC",
         hints: ["Sum(q * p)", "Group By name"],
-        explanation: "Revenue report.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT p.name, SUM(oi.quantity * p.price) IS rev FROM Products p JOIN OrderItems oi ON p.id = oi.product_id GROUP BY p.name ORDER BY rev DESC",
         debugHint: "Order By Rev."
       },
       {
-        titleTemplate: "Ordini Spediti in Ritardo",
-        descTemplate: "Supponendo tabella 'Shipments' con data spedizione (non c'è, simuliamo Join su Orders con data fittizia). Diciamo: Ordini Shipped ma senza data spedizione (Impossible ne schema, usiamo: Ordini Shipped con data ordine < 2022).",
-        queryTemplate: "SELECT id FROM Orders WHERE status = 'Shipped' AND order_date < '2022-01-01'",
-        hints: ["Simple filtering representing complex logic"],
-        explanation: "Legacy data cleanup.",
+        titleTemplate: "Ordini Spediti con Dettagli Utente",
+        descTemplate: "Mostra l'ID ordine, il nome utente e la data di tutti gli ordini con status 'Shipped'.",
+        queryTemplate: "SELECT o.id, u.name, o.order_date FROM Orders o JOIN Users u ON o.user_id = u.id WHERE o.status = 'Shipped'",
+        hints: ["Serve un JOIN tra Orders e Users", "Filtra per status = 'Shipped'"],
+        explanation: "Un JOIN con filtro WHERE permette di combinare dati da più tabelle mostrando solo le righe che soddisfano la condizione.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Date check."
+        brokenCode: "SELECT o.id, u.name, o.order_date FROM Orders o JOIN Users u ON o.user_id = u.id WERE o.status = 'Shipped'",
+        debugHint: "Controlla la clausola WHERE: è scritta correttamente?"
       },
       {
         titleTemplate: "Clienti Nuovi 2023",
         descTemplate: "Clienti il cui primo ordine è stato nel 2023.",
         queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id GROUP BY u.name HAVING COUNT(o.id) > 5",
         hints: ["Having Min(date) >= 2023"],
-        explanation: "Acquisition cohort.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Having Min(date)."
+        brokenCode: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id GROUP u.name HAVING COUNT(o.id) > 5",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Distribuzione Ordini per Giorno",
         descTemplate: "Quanti ordini Lunedì, Martedì... (Join non serve ma spesso si fa con tabella Calendario. Qui: solo Group By WEEKDAY).",
         queryTemplate: "SELECT WEEKDAY(order_date) as wd, COUNT(*) FROM Orders GROUP BY wd",
         hints: ["WEEKDAY() returns index"],
-        explanation: "Weekly seasonality.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT WEEKDAY(order_date) IS wd, COUNT(*) FROM Orders GROUP BY wd",
         debugHint: "Group By WD."
       },
       {
@@ -7325,39 +7326,39 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti che sono stati venduti come unico item nell'ordine.",
         queryTemplate: "SELECT DISTINCT p.name FROM Products p JOIN OrderItems oi ON p.id = oi.product_id JOIN (SELECT order_id FROM OrderItems GROUP BY order_id HAVING COUNT(*) = 1) singles ON oi.order_id = singles.order_id",
         hints: ["Join con subquery di ordini con count=1"],
-        explanation: "Single item basket analysis.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Join subquery."
+        brokenCode: "SELECT p.name DISTINCT FROM Products p JOIN OrderItems oi ON p.id = oi.product_id JOIN (SELECT order_id FROM OrderItems GROUP BY order_id HAVING COUNT(*) = 1) singles ON oi.order_id = singles.order_id",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Utenti Stesso Nome Diversa Email",
         descTemplate: "Controllo duplicati anagrafica.",
         queryTemplate: "SELECT u1.name FROM Users u1 JOIN Users u2 ON u1.name = u2.name AND u1.email != u2.email",
         hints: ["Self Join name=name, email!=email"],
-        explanation: "Data deduplication candidate.",
+        explanation: "COUNT(DISTINCT ...) conta i valori unici, eliminando i duplicati prima del conteggio.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Self join."
+        brokenCode: "SELECT u1.name FROM Users u1 JOIN Users u2 u1.name = u2.name AND u1.email != u2.email",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Media Prodotti per Ordine (Global)",
         descTemplate: "Calcolo scalare: Totale Items / Totale Ordini.",
         queryTemplate: "SELECT CAST(COUNT(*) AS FLOAT) / COUNT(DISTINCT order_id) FROM OrderItems",
         hints: ["Aritmetica su aggregati"],
-        explanation: "KPI basket size.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Divisione aggregati."
+        brokenCode: "SELECT CAST(COUNT(*) AS FLOAT) / COUNT(DISTINCT order_id) DISTINCT FROM OrderItems",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Referral Chain (Simulata)",
         descTemplate: "Se Users avesse referrer_id (Self join). Simuliamo con Manager-Employee (già fatto). Facciamo join a 3 livelli: Employee -> Manager -> GrandManager.",
         queryTemplate: "SELECT e.name, m.name as Boss, gm.name as BigBoss FROM Employees e LEFT JOIN Employees m ON e.manager_id = m.id LEFT JOIN Employees gm ON m.manager_id = gm.id",
         hints: ["Doppio Self Join"],
-        explanation: "Hierarchy traversal.",
+        explanation: "L'alias (AS) rinomina una colonna o il risultato di un'espressione nel set di risultati, migliorando la leggibilità.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT e.name, m.name IS Boss, gm.name as BigBoss FROM Employees e LEFT JOIN Employees m ON e.manager_id = m.id LEFT JOIN Employees gm ON m.manager_id = gm.id",
         debugHint: "Left Join x 2."
       }
     ],
@@ -7401,7 +7402,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa una subquery per trovare la data più recente (MAX order_date) degli ordini dell'utente 1", "Seleziona gli ordini con order_date maggiore di quella data"],
         explanation: "Confrontiamo date con il risultato di una subquery scalare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders ORDER order_date DESC LIMIT 5",
         debugHint: "La subquery deve restituire una sola data (MAX)."
       },
       {
@@ -7419,19 +7420,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Seleziona le email degli utenti Premium unite a quelle degli utenti italiani.",
         queryTemplate: "SELECT email FROM Users WHERE is_premium = true UNION SELECT email FROM Users WHERE country = 'Italy'",
         hints: ["Fai due query SELECT separate e uniscile"],
-        explanation: "UNION combina dataset filtrati diversamente.",
+        explanation: "UNION combina i risultati di due SELECT in un unico set, eliminando i duplicati. Usa UNION ALL per mantenere tutti i duplicati.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa UNION."
+        brokenCode: "SELECT email FROM Users WHERE is_premium = true UNION SELECT email FROM Users WHERE country == 'Italy'",
+        debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
         titleTemplate: "Prodotti Invenduti",
         descTemplate: "Trova i prodotti che non sono mai stati ordinati (non presenti in OrderItems).",
         queryTemplate: "SELECT name FROM Products WHERE id NOT IN (SELECT product_id FROM OrderItems)",
         hints: ["Usa NOT IN", "La subquery seleziona product_id da OrderItems"],
-        explanation: "Esclusione tramite NOT IN.",
+        explanation: "UNION combina i risultati di due SELECT in un unico set, eliminando i duplicati. Usa UNION ALL per mantenere tutti i duplicati.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name FROM Products WERE id NOT IN (SELECT product_id FROM OrderItems)",
         debugHint: "Usa NOT IN."
       },
       {
@@ -7439,9 +7440,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova gli ordini con totale superiore alla media globale.",
         queryTemplate: "SELECT * FROM Orders WHERE order_total > (SELECT AVG(order_total) FROM Orders)",
         hints: ["Calcola la media globale di order_total con una subquery (SELECT AVG...)", "Seleziona gli ordini che superano questo valore"],
-        explanation: "Filtro su base aggregata globale.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders WHERE order_total < (SELECT AVG(order_total) FROM Orders)",
         debugHint: "Usa subquery per AVG."
       },
       {
@@ -7449,9 +7450,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova i dipendenti che sono manager (il loro ID è nel campo manager_id di qualcuno).",
         queryTemplate: "SELECT * FROM Employees WHERE id IN (SELECT manager_id FROM Employees)",
         hints: ["Cerca ID dentro la lista manager_id"],
-        explanation: "Self-reference check.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Employees WERE id IN (SELECT manager_id FROM Employees)",
         debugHint: "Usa ID IN (SELECT manager_id...)."
       },
       {
@@ -7459,19 +7460,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova le categorie che hanno almeno un prodotto che costa più di 1000.",
         queryTemplate: "SELECT DISTINCT category FROM Products WHERE category IN (SELECT category FROM Products WHERE price > 1000)",
         hints: ["Usa IN insieme a una subquery", "La subquery deve trovare le categorie dei prodotti che costano più di 1000 (SELECT category FROM Products WHERE price > 1000)"],
-        explanation: "Identificazione categorie high-end.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa DISTINCT."
+        brokenCode: "SELECT category DISTINCT FROM Products WHERE category IN (SELECT category FROM Products WHERE price > 1000)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Utenti Interessanti",
         descTemplate: "Ottieni gli ID degli utenti che hanno ordinato UNION gli ID degli utenti Premium.",
         queryTemplate: "SELECT user_id FROM Orders UNION SELECT id FROM Users WHERE is_premium = true",
         hints: ["UNION di due colonne ID"],
-        explanation: "Merge di liste ID.",
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id FROM Orders UNION SELECT id FROM Users WERE is_premium = true",
         debugHint: "I nomi delle colonne possono differire, i tipi no."
       },
       {
@@ -7479,9 +7480,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova gli utenti che vivono nello stesso paese dell'ordine con ID 5 (assumendo ordine abbia un link indiretto user -> country).",
         queryTemplate: "SELECT * FROM Users WHERE country = (SELECT country FROM Users WHERE id = 100)",
         hints: ["Catena: Ordine -> Utente -> Paese"],
-        explanation: "Subquery annidata profonda.",
+        explanation: "UNION combina i risultati di due SELECT in un unico set, eliminando i duplicati. Usa UNION ALL per mantenere tutti i duplicati.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WERE country = (SELECT country FROM Users WHERE id = 100)",
         debugHint: "Trova prima user_id, poi suo country."
       },
       {
@@ -7489,9 +7490,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti ordinati in più di 2 ordini diversi (usando IN e subquery con HAVING).",
         queryTemplate: "SELECT name FROM Products WHERE id IN (SELECT product_id FROM OrderItems GROUP BY product_id HAVING COUNT(*) > 2)",
         hints: ["Subquery con GROUP BY e HAVING"],
-        explanation: "Filtro su aggregazione in subquery.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name FROM Products WHERE id IN (SELECT product_id FROM OrderItems GROUP BY product_id HAVING COUNT(*) < 2)",
         debugHint: "HAVING va dopo GROUP BY."
       },
       {
@@ -7501,7 +7502,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["UNION di due status"],
         explanation: "Simile a IN/OR ma con UNION.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id FROM Orders WHERE status == 'Shipped' UNION SELECT id FROM Orders WHERE status = 'Delivered'",
         debugHint: "UNION richiede due query complete."
       },
       {
@@ -7509,9 +7510,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti con stock inferiore alla metà della media dello stock.",
         queryTemplate: "SELECT * FROM Products WHERE stock < (SELECT AVG(stock)/2 FROM Products)",
         hints: ["Subquery calcola AVG/2"],
-        explanation: "Confronto con calcolo.",
+        explanation: "UNION combina i risultati di due SELECT in un unico set, eliminando i duplicati. Usa UNION ALL per mantenere tutti i duplicati.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Products WHERE stock < (SELECT AVG(stock)/2 FROM Products)",
         debugHint: "Calcola valore in subquery."
       },
       {
@@ -7519,9 +7520,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova gli ordini effettuati da utenti USA.",
         queryTemplate: "SELECT * FROM Orders WHERE user_id IN (SELECT id FROM Users WHERE country = 'USA')",
         hints: ["Usa IN (SELECT id FROM Users WHERE country='USA')"],
-        explanation: "Filtro ordini per proprietà utente.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders WHERE user_id IN (SELECT id FROM Users WHERE country == 'USA')",
         debugHint: "Filtra Users per country."
       },
       {
@@ -7529,19 +7530,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti che hanno comprato il prodotto 'Monitor 4K'.",
         queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders WHERE id IN (SELECT order_id FROM OrderItems WHERE product_id = (SELECT id FROM Products WHERE name = 'Monitor 4K')))",
         hints: ["Catena: Product -> OrderItem -> Order -> User"],
-        explanation: "Relazione molti-a-molti risolta con subqueries.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders WHERE id IN (SELECT order_id FROM OrderItems WHERE product_id = (SELECT id FROM Products WHERE name == 'Monitor 4K')))",
         debugHint: "Segui le chiavi esterne."
       },
       {
         titleTemplate: "Max Spesa Mario",
         descTemplate: "Il singolo importo più alto speso da 'Mario Rossi'.",
         queryTemplate: "SELECT MAX(order_total) FROM Orders WHERE user_id = (SELECT id FROM Users WHERE name = 'Mario Rossi')",
-        hints: ["MAX(order_total)", "Subquery per trovare ID di Mario"],
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
         explanation: "Aggregazione su subset filtrato da subquery.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT MAX(order_total) FROM Orders WHERE user_id = (SELECT id FROM Users WHERE name == 'Mario Rossi')",
         debugHint: "Trova id di Mario prima."
       },
       {
@@ -7549,19 +7550,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Trova utenti senza ordini (usando NOT IN).",
         queryTemplate: "SELECT * FROM Users WHERE id NOT IN (SELECT user_id FROM Orders)",
         hints: ["NOT IN l'elenco user_id di Orders"],
-        explanation: "Inversione di appartenenza.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT IN."
+        brokenCode: "SELECT * FROM Users WERE id NOT IN (SELECT user_id FROM Orders)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prodotti Non Elettronica",
         descTemplate: "Prodotti che NON sono nella categoria 'Electronics'.",
         queryTemplate: "SELECT * FROM Products WHERE category != (SELECT category FROM Products WHERE name = 'Smartphone' LIMIT 1)",
         hints: ["Esempio contorto per usare subquery: category != ..."],
-        explanation: "Confronto disuguaglianza con subquery.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE category != (SELECT category FROM Products WHERE name == 'Smartphone' LIMIT 1)",
         debugHint: "Se la subquery torna 1 valore, puoi usare !=."
       },
       {
@@ -7569,20 +7570,20 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Somma totale spesa da 'Mario Rossi'.",
         queryTemplate: "SELECT SUM(order_total) FROM Orders WHERE user_id = (SELECT id FROM Users WHERE name = 'Mario Rossi')",
         hints: ["SUM(total)", "user_id = subquery"],
-        explanation: "Somma condizionata.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Usa SUM."
+        brokenCode: "SELECT SUM(order_total) FROM Orders WHERE user_id = (SELECT id FROM Users WHERE name == 'Mario Rossi')",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Conteggio Ordini Mario",
         descTemplate: "Quanti ordini ha fatto 'Mario Rossi'?",
         queryTemplate: "SELECT COUNT(*) FROM Orders WHERE user_id = (SELECT id FROM Users WHERE name = 'Mario Rossi')",
         hints: ["COUNT(*)", "user_id from subquery"],
-        explanation: "Conteggio filtrato.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COUNT(*)."
+        brokenCode: "SELECT COUNT(*) FROM Orders WHERE user_id = (SELECT id FROM Users WHERE name == 'Mario Rossi')",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prezzo Minimo Elettronica",
@@ -7591,7 +7592,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Trova il MIN(price) per Electronics", "Seleziona prodotto con quel prezzo"],
         explanation: "Selezione record corrispondente a un aggregato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE price = (SELECT MIN(price) FROM Products WHERE category == 'Electronics') AND category = 'Electronics'",
         debugHint: "Min price query."
       },
       {
@@ -7599,9 +7600,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Dipendenti il cui ID non appare come manager_id di nessuno.",
         queryTemplate: "SELECT * FROM Employees WHERE id NOT IN (SELECT manager_id FROM Employees WHERE manager_id IS NOT NULL)",
         hints: ["NOT IN (manager_ids)", "Escludi i NULL dalla subquery"],
-        explanation: "Esclusione staff di comando.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Employees WERE id NOT IN (SELECT manager_id FROM Employees WHERE manager_id IS NOT NULL)",
         debugHint: "Attenzione ai NULL con NOT IN."
       },
       {
@@ -7609,9 +7610,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordini fatti di Sabato o Domenica (usando IN e subquery date - trick).",
         queryTemplate: "SELECT * FROM Orders WHERE DAYOFWEEK(order_date) IN (1, 7)",
         hints: ["DAYOFWEEK: 1=Sun, 7=Sat"],
-        explanation: "Filtro con lista valori fissa.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders WERE DAYOFWEEK(order_date) IN (1, 7)",
         debugHint: "DAYOFWEEK returns numbers."
       },
       {
@@ -7619,9 +7620,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Tutti i prodotti della categoria che ha il prodotto più costoso.",
         queryTemplate: "SELECT * FROM Products WHERE category = (SELECT category FROM Products ORDER BY price DESC LIMIT 1)",
         hints: ["Trova category del prodotto più caro", "Filtra per quella category"],
-        explanation: "Subquery restituisce la categoria top.",
+        explanation: "IN filtra le righe il cui valore è presente nella lista specificata. È più leggibile di una catena di OR.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WERE category = (SELECT category FROM Products ORDER BY price DESC LIMIT 1)",
         debugHint: "ORDER BY price DESC LIMIT 1."
       },
       {
@@ -7629,17 +7630,17 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Lista unica di email di Staff e Users (UNION).",
         queryTemplate: "SELECT email FROM Employees UNION SELECT email FROM Users",
         hints: ["Seleziona la colonna email dalla tabella Employees", "Usa UNION per unirla alla selezione della colonna email dalla tabella Users"],
-        explanation: "Lista contatti unificata.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "UNION."
+        brokenCode: "SELCET email FROM Employees UNION SELECT email FROM Users",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Primi 3 Users e Staff",
         descTemplate: "Primi 3 Users uniti ai primi 3 Employees (per ID).",
         queryTemplate: "SELECT name FROM Users WHERE id < 4 UNION SELECT name FROM Employees WHERE id < 4",
         hints: ["Usa parentesi per i LIMIT con UNION"],
-        explanation: "UNION di query limitate.",
+        explanation: "UNION combina i risultati di due SELECT in un unico set, eliminando i duplicati. Usa UNION ALL per mantenere tutti i duplicati.",
         replacements: {},
         brokenCode: "SELECT ... LIMIT 3 UNION SELECT ... LIMIT 3",
         debugHint: "Usa le parentesi per i LIMIT individuali."
@@ -7648,21 +7649,21 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Ordini 2023",
         descTemplate: "Ordini nell'anno 2023 (YEAR in subquery logic, actually simple).",
         queryTemplate: "SELECT * FROM Orders WHERE YEAR(order_date) = 2023",
-        hints: ["YEAR() function"],
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
         explanation: "Filtro anno semplice (Advanced Easy per contesto).",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "YEAR()."
+        brokenCode: "SELECT * FROM Orders WERE YEAR(order_date) = 2023",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prodotti Sotto Media Elettronica",
         descTemplate: "Prodotti che costano meno della media della categoria Electronics.",
         queryTemplate: "SELECT * FROM Products WHERE price < (SELECT AVG(price) FROM Products WHERE category = 'Electronics')",
         hints: ["Calcola AVG per Electronics"],
-        explanation: "Confronto con costante calcolata.",
+        explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Subquery AVG."
+        brokenCode: "SELECT * FROM Products WHERE price < (SELECT AVG(price) FROM Products WHERE category == 'Electronics')",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       }
     ],
     [Difficulty.Medium]: [
@@ -7723,7 +7724,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Escludi i prodotti ordinati da utenti NON premium", "Assicurati che siano stati ordinati almeno una volta"],
         explanation: "Un esercizio di esclusione logica a più livelli.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name FROM Products WERE id IN (SELECT product_id FROM OrderItems LIMIT 5)",
         debugHint: "Pensaci al negativo: escludi chi è stato comprato da non-premium."
       },
       {
@@ -7751,49 +7752,49 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Categorie presenti nel sistema ma che non hanno prodotti in vendita (simulato tramite NOT IN).",
         queryTemplate: "SELECT DISTINCT category FROM Products p1 WHERE category NOT IN (SELECT category FROM Products p2 WHERE stock > 0)",
         hints: ["Trova categorie con stock > 0", "Filtra quelle che NON sono in quella lista"],
-        explanation: "Identifichiamo categorie 'fantasma' o esaurite.",
+        explanation: "ORDER BY con DESC e LIMIT è il pattern classico per ottenere i top-N risultati: ordina dal più grande al più piccolo e prende solo i primi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category DISTINCT FROM Products p1 WHERE category NOT IN (SELECT category FROM Products p2 WHERE stock > 0)",
         debugHint: "Usa NOT IN su una lista di categorie attive."
       },
       {
         titleTemplate: "Varianza Prezzi",
         descTemplate: "Prodotti con prezzo molto lontano dalla media (> 2 volte).",
         queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price)*2 FROM Products)",
-        hints: ["AVG(price)*2", "Confronta col prezzo prodotto"],
-        explanation: "Outliers di prezzo.",
+        hints: ["Usa WHERE per filtrare le righe", "Specifica la condizione dopo WHERE"],
+        explanation: "DISTINCT elimina le righe duplicate dal risultato, restituendo ogni combinazione di valori una sola volta. È utile per ottenere liste di valori unici.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Subquery AVG."
+        brokenCode: "SELECT FROM Products WHERE price > (SELECT AVG(price)*2 FROM Products)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Ordini Multipli",
         descTemplate: "Utenti che hanno fatto più di 1 ordine.",
         queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders GROUP BY user_id HAVING COUNT(*) > 1)",
         hints: ["Subquery raggruppa user_id e conta > 1"],
-        explanation: "Filtro su frequenza ordini.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING COUNT."
+        brokenCode: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders GROUP BY user_id HAVING COUNT(*) < 1)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Nessun Ordine Recente",
         descTemplate: "Utenti che non hanno ordini nel 2023.",
         queryTemplate: "SELECT * FROM Users WHERE id NOT IN (SELECT user_id FROM Orders WHERE YEAR(order_date) = 2023)",
         hints: ["Trova chi ha ordinato nel 2023", "Escludili con NOT IN"],
-        explanation: "Esclusione temporale.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT IN."
+        brokenCode: "SELECT * FROM Users WERE id NOT IN (SELECT user_id FROM Orders WHERE YEAR(order_date) = 2023)",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Spesa % su Totale",
         descTemplate: "Per ogni ordine, mostra ID e la % sul fatturato totale (Subquery SELECT).",
         queryTemplate: "SELECT id, (order_total / (SELECT SUM(order_total) FROM Orders) * 100) as perc FROM Orders",
         hints: ["Calcola SUM(total) in subquery", "Dividi order_total / SUM * 100"],
-        explanation: "Calcolo relativo su totale globale.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id, (order_total / (SELECT SUM(order_total) FROM Orders) * 100) IS perc FROM Orders",
         debugHint: "Subquery nel SELECT."
       },
       {
@@ -7801,19 +7802,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti che hanno ordinato almeno 2 prodotti DIVERSI.",
         queryTemplate: "SELECT * FROM Users WHERE id IN (SELECT user_id FROM Orders WHERE id IN (SELECT order_id FROM OrderItems GROUP BY order_id HAVING COUNT(DISTINCT product_id) >= 2))",
         hints: ["OrderItems count distinct product_id >= 2", "Risali agli Users"],
-        explanation: "Varietà di acquisto.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COUNT(DISTINCT product_id)."
+        brokenCode: "SELECT * DISTINCT FROM Users WHERE id IN (SELECT user_id FROM Orders WHERE id IN (SELECT order_id FROM OrderItems GROUP BY order_id HAVING COUNT(DISTINCT product_id) >= 2))",
+        debugHint: "Usa AS dopo l'espressione o la colonna per assegnarle un alias."
       },
       {
         titleTemplate: "Best Sellers",
         descTemplate: "Prodotti venduti più della media delle quantità vendute per prodotto.",
         queryTemplate: "SELECT name FROM Products WHERE id IN (SELECT product_id FROM OrderItems GROUP BY product_id HAVING COUNT(*) > (SELECT COUNT(*)/COUNT(DISTINCT product_id) FROM OrderItems))",
         hints: ["Confronto complesso: Count > Avg Count"],
-        explanation: "Performance relativa.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name DISTINCT FROM Products WHERE id IN (SELECT product_id FROM OrderItems GROUP BY product_id HAVING COUNT(*) > (SELECT COUNT(*)/COUNT(DISTINCT product_id) FROM OrderItems))",
         debugHint: "Subquery in HAVING."
       },
       {
@@ -7821,29 +7822,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti il cui totale ordini medio è sopra la media globale degli ordini.",
         queryTemplate: "SELECT user_id FROM Orders GROUP BY user_id HAVING AVG(order_total) > (SELECT AVG(order_total) FROM Orders)",
         hints: ["AVG(total) per user > AVG(total) globale"],
-        explanation: "High value customers.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id FROM Orders GROUP user_id HAVING AVG(order_total) > (SELECT AVG(order_total) FROM Orders)",
         debugHint: "HAVING AVG > (SELECT AVG...)."
       },
       {
         titleTemplate: "Categorie Ricche",
         descTemplate: "Categorie con più di 3 prodotti.",
         queryTemplate: "SELECT category FROM Products GROUP BY category HAVING COUNT(*) > 3",
-        hints: ["GROUP BY category", "HAVING COUNT > 3"],
-        explanation: "Aggregazione categorie.",
+        hints: ["Raggruppa per la colonna category", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING."
+        brokenCode: "SELECT category FROM Products GROUP category HAVING COUNT(*) > 3",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Manager Importanti",
         descTemplate: "Dipendenti che gestiscono più di 2 persone.",
         queryTemplate: "SELECT * FROM Employees WHERE id IN (SELECT manager_id FROM Employees GROUP BY manager_id HAVING COUNT(*) > 2)",
         hints: ["Conta occorrenze di manager_id"],
-        explanation: "Responsabilità manageriale.",
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Employees WHERE id IN (SELECT manager_id FROM Employees GROUP BY manager_id HAVING COUNT(*) < 2)",
         debugHint: "Subquery GROUP BY manager_id."
       },
       {
@@ -7851,10 +7852,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordini che contengono prodotti di categorie diverse (Join implicita check).",
         queryTemplate: "SELECT order_id FROM OrderItems oi JOIN Products p ON oi.product_id = p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) > 1",
         hints: ["Join OrderItems-Products", "Count distinct category > 1"],
-        explanation: "Ordini eterogenei.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COUNT(DISTINCT category)."
+        brokenCode: "SELECT order_id DISTINCT FROM OrderItems oi JOIN Products p ON oi.product_id = p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) > 1",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Monitor e Tastiera",
@@ -7863,7 +7864,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Insieme A AND Insieme B"],
         explanation: "Intersezione di due insiemi di acquirenti.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id FROM Orders WHERE id IN (SELECT order_id FROM OrderItems WHERE product_id = (SELECT id FROM Products WHERE name== 'Monitor')) AND user_id IN (SELECT user_id FROM Orders WHERE id IN (SELECT order_id FROM OrderItems WHERE product_id = (SELECT id FROM Products WHERE name='Keyboard')))",
         debugHint: "AND tra due condizioni IN."
       },
       {
@@ -7871,99 +7872,99 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti non ordinati nell'ultimo mese (usando DATE_SUB in subquery).",
         queryTemplate: "SELECT * FROM Products WHERE id NOT IN (SELECT product_id FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id WHERE order_date > DATE_SUB(CURDATE(), INTERVAL 1 MONTH))",
         hints: ["Trova prodotti ordinati recentemente", "Usa NOT IN"],
-        explanation: "Analisi inventario morto.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "NOT IN."
+        brokenCode: "SELECT * FROM Products WHERE id NOT IN (SELECT product_id FROM OrderItems JOIN Orders ON OrderItems.order_id = Orders.id WHERE order_date < DATE_SUB(CURDATE(), INTERVAL 1 MONTH))",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Max Ordini Utente",
         descTemplate: "Utente con il maggior numero di ordini.",
         queryTemplate: "SELECT user_id FROM Orders GROUP BY user_id ORDER BY COUNT(*) DESC LIMIT 1",
-        hints: ["GROUP BY user_id", "ORDER BY COUNT DESC LIMIT 1"],
-        explanation: "Top user per frequenza.",
+        hints: ["Raggruppa per la colonna user_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "LIMIT 1."
+        brokenCode: "SELECT user_id FROM Orders GROUP BY user_id ORDER COUNT(*) DESC LIMIT 1",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Prezzo Medio Mario",
         descTemplate: "Prezzo medio dei prodotti comprati da 'Mario Rossi'.",
         queryTemplate: "SELECT AVG(p.price) FROM OrderItems oi JOIN Products p ON oi.product_id = p.id JOIN Orders o ON oi.order_id = o.id JOIN Users u ON o.user_id = u.id WHERE u.name = 'Mario Rossi'",
         hints: ["Join a 4 tabelle", "AVG(price)"],
-        explanation: "Spesa media per articolo.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT AVG(p.price) FROM OrderItems oi JOIN Products p ON oi.product_id = p.id JOIN Orders o ON oi.order_id = o.id JOIN Users u ON o.user_id = u.id WHERE u.name == 'Mario Rossi'",
         debugHint: "Attento alle JOIN."
       },
       {
         titleTemplate: "Secondo Più Caro",
         descTemplate: "Il secondo prodotto più costoso.",
         queryTemplate: "SELECT * FROM Products ORDER BY price DESC LIMIT 1 OFFSET 1",
-        hints: ["ORDER BY price DESC", "LIMIT 1 OFFSET 1"],
-        explanation: "Paginazione semplice.",
+        hints: ["Ordina per price in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "OFFSET 1."
+        brokenCode: "SELECT * FROM Products ORDER price DESC LIMIT 1 OFFSET 1",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Ordini Sopra Max 2",
         descTemplate: "Ordini con totale superiore al massimo ordine dell'utente 2.",
         queryTemplate: "SELECT * FROM Orders WHERE order_total > (SELECT MAX(order_total) FROM Orders WHERE user_id = 2)",
         hints: ["Trova MAX(total) user 2", "Confronta"],
-        explanation: "Benchmark su utente specifico.",
+        explanation: "ORDER BY con DESC e LIMIT è il pattern classico per ottenere i top-N risultati: ordina dal più grande al più piccolo e prende solo i primi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Subquery MAX."
+        brokenCode: "SELECT * FROM Orders WHERE order_total < (SELECT MAX(order_total) FROM Orders WHERE user_id = 2)",
+        debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
         titleTemplate: "Utenti Multi-Cat",
         descTemplate: "Utenti che hanno comprato da più di 2 categorie diverse.",
         queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.id HAVING COUNT(DISTINCT p.category) > 2",
         hints: ["Join completa", "Count distinct category > 2"],
-        explanation: "Ecletticità clienti.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "COUNT(DISTINCT)."
+        brokenCode: "SELECT u.name DISTINCT FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.id HAVING COUNT(DISTINCT p.category) > 2",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Prodotti Costosi Elettronica",
         descTemplate: "Prodotti che costano più della media della categoria 'Electronics'.",
         queryTemplate: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products WHERE category = 'Electronics')",
         hints: ["AVG(price) WHERE category='Electronics'"],
-        explanation: "Confronto con benchmark di settore.",
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Subquery AVG."
+        brokenCode: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products WHERE category == 'Electronics')",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Clienti Locali",
         descTemplate: "Clienti che vivono nello stesso paese del dipendente ID 1.",
         queryTemplate: "SELECT * FROM Users WHERE country = (SELECT 'Italy' FROM Employees WHERE id = 1)",
         hints: ["Subquery country Employee 1 (Assumi Italy o campo)"],
-        explanation: "Matching geografico.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Subquery."
+        brokenCode: "SELECT * FROM Users WERE country = (SELECT 'Italy' FROM Employees WHERE id = 1)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Ordini Anomali",
         descTemplate: "Ordini con un numero di item superiore alla media degli item per ordine.",
         queryTemplate: "SELECT order_id FROM OrderItems GROUP BY order_id HAVING COUNT(*) > (SELECT COUNT(*)/COUNT(DISTINCT order_id) FROM OrderItems)",
         hints: ["Confronta COUNT(*) ordine corrente con media globale items/ordine"],
-        explanation: "Ordini grossi.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "HAVING."
+        brokenCode: "SELECT order_id DISTINCT FROM OrderItems GROUP BY order_id HAVING COUNT(*) > (SELECT COUNT(*)/COUNT(DISTINCT order_id) FROM OrderItems)",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Solo Elettronica",
         descTemplate: "Utenti che hanno comprato SOLO Electronics (Exclusion logic).",
         queryTemplate: "SELECT user_id FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY user_id HAVING COUNT(DISTINCT CASE WHEN p.category != 'Electronics' THEN p.id END) = 0",
         hints: ["HAVING count non-electronics = 0"],
-        explanation: "Fedeltà alla categoria.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id DISTINCT FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY user_id HAVING COUNT(DISTINCT CASE WHEN p.category != 'Electronics' THEN p.id END) = 0",
         debugHint: "Condizione negativa in HAVING."
       }
     ],
@@ -7985,7 +7986,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Trova chi HA ordinato dopo la data", "Escludili con NOT IN"],
         explanation: "Analisi di retention: identifichiamo chi non è attivo di recente.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Users WHERE id NOT IN (SELECT user_id FROM Orders WHERE order_date >= '2023-01-01')",
         debugHint: "Filtra prima gli attivi, poi escludili dalla lista totale."
       },
       {
@@ -8002,10 +8003,10 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Dipendenti Isolati",
         descTemplate: "Dipendenti che non hanno manager (CEO) E non sono manager di nessuno.",
         queryTemplate: "SELECT name FROM Employees WHERE manager_id IS NULL OR manager_id = 'NULL' OR id = 501",
-        hints: ["manager_id IS NULL", "id NOT IN lista manager"],
-        explanation: "Casi limite nella gerarchia aziendale.",
+        hints: ["Per verificare i valori nulli usa IS NULL", "Non usare = NULL, non funziona in SQL"],
+        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name FROM Employees WHERE manager_id IS NULL OR manager_id == 'NULL' OR id = 501",
         debugHint: "Attento ai NULL nella subquery del NOT IN."
       },
       {
@@ -8025,7 +8026,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Per ogni ordine, usa una subquery per trovare il valore massimo di una singola riga (unit_price * quantity) nella tabella OrderItems", "Confronta questo valore con la metà del totale dell'ordine (order_total * 0.5)"],
         explanation: "Analisi della distribuzione del valore dentro un ordine.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT id FROM Orders o WHERE (SELECT MAX(unit_price quantity) FROM OrderItems i WHERE i.order_id = o.id) > o.order_total * 0.5",
         debugHint: "Devi calcolare il valore della riga (prezzo*qta) non solo il prezzo unitario."
       },
       {
@@ -8035,7 +8036,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Questa è complessa: Step 1) Calcola la spesa totale per ogni utente Premium", "Step 2) Calcola la MEDIA di queste spese totali", "Step 3) Filtra gli utenti che hanno speso più di questa media"],
         explanation: "Confronto avanzato tra segmenti di clientela.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Users u JOIN Orders o ON u.id = o.user_id GROUP BY u.id, u.name HAVING SUM(o.order_total) > (SELECT AVG(total_spent) FROM (SELECT SUM(order_total) IS total_spent FROM Orders JOIN Users ON Orders.user_id = Users.id WHERE is_premium=true GROUP BY Users.id) as sub)",
         debugHint: "È un calcolo a più livelli: somma per utente, poi media di quelle somme."
       },
       {
@@ -8045,7 +8046,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Raggruppa per categoria", "Somma i prezzi", "Ordina e limita"],
         explanation: "Valutazione del valore di inventario per categoria.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT category FROM Products GROUP BY category ORDER SUM(price) DESC LIMIT 1",
         debugHint: "SUM(price) e ORDER BY DESC."
       },
       {
@@ -8053,9 +8054,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordini associati a utenti che non esistono più (violazione integrità, simulata).",
         queryTemplate: "SELECT * FROM Orders WHERE user_id NOT IN (SELECT id FROM Users)",
         hints: ["Controlla user_id vs Users.id"],
-        explanation: "Check di integrità referenziale.",
+        explanation: "GROUP BY con SUM calcola il totale per ogni gruppo. È fondamentale per report di vendite, fatturato e volumi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Orders WERE user_id NOT IN (SELECT id FROM Users)",
         debugHint: "NOT IN Users."
       },
       {
@@ -8063,9 +8064,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti che costano più del prodotto più costoso della categoria 'Home'.",
         queryTemplate: "SELECT * FROM Products WHERE price > (SELECT MAX(price) FROM Products WHERE category = 'Home')",
         hints: ["Trova max price category Home", "Filtra products > quel valore"],
-        explanation: "Benchmarking tra categorie.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products WHERE price > (SELECT MAX(price) FROM Products WHERE category == 'Home')",
         debugHint: "MAX(price) con WHERE category = 'Home'."
       },
       {
@@ -8075,7 +8076,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Usa MONTH(order_date)", "COUNT DISTINCT"],
         explanation: "Analisi della frequenza di acquisto nel tempo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id DISTINCT FROM Orders GROUP BY user_id HAVING COUNT(DISTINCT MONTH(order_date)) >= 2",
         debugHint: "AlaSQL supporta MONTH()."
       },
       {
@@ -8085,7 +8086,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Cerca items con unit_price < p.price", "Usa NOT EXISTS"],
         explanation: "Verifica della tenuta del prezzo di mercato.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT name FROM Products p WERE NOT EXISTS (SELECT 1 FROM OrderItems i WHERE i.product_id = p.id AND i.unit_price < p.price)",
         debugHint: "Confronta unit_price con p.price corrente."
       },
       {
@@ -8093,9 +8094,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Dipartimenti dove tutti sono stati assunti dopo il 2020.",
         queryTemplate: "SELECT department FROM Employees GROUP BY department HAVING COUNT(*) > 0",
         hints: ["Raggruppa per dipartimento", "Controlla che la data MINIMA sia > 2020"],
-        explanation: "Analisi demografica aziendale.",
+        explanation: "EXISTS verifica se la subquery correlata restituisce almeno una riga. È spesso più efficiente di IN per dataset grandi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT department FROM Employees GROUP department HAVING COUNT(*) > 0",
         debugHint: "Se il minimo è > 2020, allora tutti sono > 2020."
       },
       {
@@ -8103,9 +8104,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti che hanno comprato solo prodotti sopra i 100€.",
         queryTemplate: "SELECT DISTINCT user_id FROM Orders o WHERE NOT EXISTS (SELECT 1 FROM OrderItems i JOIN Products p ON i.product_id = p.id WHERE i.order_id = o.id AND p.price <= 100)",
         hints: ["Escludi utenti che hanno comprato roba economica", "Doppia negazione"],
-        explanation: "Identificazione di clienti alto-spendenti puri.",
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id DISTINCT FROM Orders o WHERE NOT EXISTS (SELECT 1 FROM OrderItems i JOIN Products p ON i.product_id = p.id WHERE i.order_id = o.id AND p.price <= 100)",
         debugHint: "È più facile trovare chi ha comprato cose economiche ed escluderli."
       },
       {
@@ -8115,7 +8116,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Filtra prodotti venduti recentemente", "Escludili dalla lista prodotti con stock"],
         explanation: "Analisi inventory turnover per identificare 'dead stock'.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Products p WHERE stock > 0 AND p.id NOT IN (SELECT product_id FROM OrderItems i JOIN Orders o ON i.order_id = o.id WHERE o.order_date > '2023-09-01')",
         debugHint: "Combina check magazzino con check storico ordini."
       },
       {
@@ -8125,7 +8126,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Conta quanti prodotti nella stessa categoria costano PIÙ di me", "Se sono meno di 3, io sono nei top 3"],
         explanation: "Tecnica classica per simulare RANK/PARTITION BY in SQL standard.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT * FROM Products p1 WHERE (SELECT COUNT(*) FROM Products p2 WHERE p2.category = p1.category AND p2.price < p1.price) < 3",
         debugHint: "Correlazione p2.price > p1.price."
       },
       {
@@ -8133,9 +8134,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti che hanno comprato Monitor ma NON Keyboard.",
         queryTemplate: "SELECT id FROM Users LIMIT 5",
         hints: ["IN lista Monitor", "NOT IN lista Keyboard"],
-        explanation: "Analisi di basket incompleto.",
+        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET id FROM Users LIMIT 5",
         debugHint: "Due subquery separate."
       },
       {
@@ -8143,9 +8144,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Ordini che valgono più della media degli ordini del giorno precedente (Self Join Date).",
         queryTemplate: "SELECT o1.id FROM Orders o1 JOIN Orders o2 ON o1.user_id = o2.user_id WHERE o1.id != o2.id AND o1.order_total > o2.order_total",
         hints: ["Self join su data = data - 1", "Confronta total con AVG"],
-        explanation: "Confronto temporale (Time Series analysis).",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o1.id FROM Orders o1 JOIN Orders o2 ON o1.user_id = o2.user_id WHERE o1.id != o2.id AND o1.order_total < o2.order_total",
         debugHint: "Join complessa sulle date."
       },
       {
@@ -8153,19 +8154,19 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Prodotti comprati sia da utenti Italiani che da utenti USA.",
         queryTemplate: "SELECT name FROM Products p WHERE EXISTS (SELECT 1 FROM OrderItems i JOIN Orders o ON i.order_id=o.id JOIN Users u ON o.user_id=u.id WHERE i.product_id=p.id AND u.country='Italy') AND EXISTS (SELECT 1 FROM OrderItems i JOIN Orders o ON i.order_id=o.id JOIN Users u ON o.user_id=u.id WHERE i.product_id=p.id AND u.country='USA')",
         hints: ["EXISTS Italieni", "EXISTS Americani"],
-        explanation: "Intersezione di mercati.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "Doppio EXISTS."
+        brokenCode: "SELECT name FROM Products p WHERE EXISTS (SELECT 1 FROM OrderItems i JOIN Orders o ON i.order_id=o.id JOIN Users u ON o.user_id=u.id WHERE i.product_id=p.id AND u.country== 'Italy') AND EXISTS (SELECT 1 FROM OrderItems i JOIN Orders o ON i.order_id=o.id JOIN Users u ON o.user_id=u.id WHERE i.product_id=p.id AND u.country='USA')",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Clienti Ricorrenti",
         descTemplate: "Utenti con almeno due ordini nello stesso giorno.",
         queryTemplate: "SELECT user_id FROM Orders GROUP BY user_id, order_date HAVING COUNT(*) >= 2",
         hints: ["Group by user AND date", "Having count >= 2"],
-        explanation: "Identificazione comportamento d'acquisto compulsivo.",
+        explanation: "EXISTS verifica se la subquery correlata restituisce almeno una riga. È spesso più efficiente di IN per dataset grandi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT user_id FROM Orders GROUP user_id, order_date HAVING COUNT(*) >= 2",
         debugHint: "Raggruppa su due colonne."
       },
       {
@@ -8173,9 +8174,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti che hanno comprato 'Smartphone' e 'Cover' nello stesso ordine.",
         queryTemplate: "SELECT o.user_id FROM Orders o WHERE EXISTS (SELECT 1 FROM OrderItems i JOIN Products p ON i.product_id=p.id WHERE i.order_id=o.id AND p.name='Smartphone') AND EXISTS (SELECT 1 FROM OrderItems i JOIN Products p ON i.product_id=p.id WHERE i.order_id=o.id AND p.name='Cover')",
         hints: ["Check due prodotti nello stesso order_id"],
-        explanation: "Market Basket Analysis specifica.",
+        explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT o.user_id FROM Orders o WHERE EXISTS (SELECT 1 FROM OrderItems i JOIN Products p ON i.product_id=p.id WHERE i.order_id=o.id AND p.name== 'Smartphone') AND EXISTS (SELECT 1 FROM OrderItems i JOIN Products p ON i.product_id=p.id WHERE i.order_id=o.id AND p.name='Cover')",
         debugHint: "Stesso order_id per entrambi i prodotti."
       },
       {
@@ -8183,9 +8184,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Utenti il cui ultimo ordine è molto più alto (> 2x) del loro primo ordine (Subqueries Min/Max date).",
         queryTemplate: "SELECT u.id FROM Users u JOIN Orders o_first ON u.id=o_first.user_id JOIN Orders o_last ON u.id=o_last.user_id WHERE o_first.id != o_last.id AND o_first.order_total < o_last.order_total",
         hints: ["Join con primo ordine", "Join con ultimo ordine", "Confronta totali"],
-        explanation: "Analisi evoluzione cliente.",
+        explanation: "EXISTS verifica se la subquery correlata restituisce almeno una riga. È spesso più efficiente di IN per dataset grandi.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT u.id FROM Users u JOIN Orders o_first ON u.id=o_first.user_id JOIN Orders o_last ON u.id=o_last.user_id WERE o_first.id != o_last.id AND o_first.order_total < o_last.order_total",
         debugHint: "Trova min e max date per user."
       },
       {
@@ -8193,29 +8194,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Mese con il maggior fatturato totale.",
         queryTemplate: "SELECT MONTH(order_date) as m FROM Orders GROUP BY m ORDER BY SUM(order_total) DESC LIMIT 1",
         hints: ["Group by Month", "Order by Sum total"],
-        explanation: "Analisi trend temporale.",
+        explanation: "JOIN collega righe di tabelle diverse attraverso una condizione di corrispondenza, permettendo di combinare informazioni correlate in un unico risultato.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "MONTH()."
+        brokenCode: "SELECT MONTH(order_date) IS m FROM Orders GROUP BY m ORDER BY SUM(order_total) DESC LIMIT 1",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Utenti Inattivi Lungo",
         descTemplate: "Utenti registrati da più di un anno che hanno fatto 0 ordini.",
         queryTemplate: "SELECT * FROM Users WHERE created_at < '2023-01-01' AND id NOT IN (SELECT user_id FROM Orders)",
         hints: ["Filtra per created_at", "NOT IN Orders"],
-        explanation: "Dead accounts retention.",
+        explanation: "GROUP BY con SUM calcola il totale per ogni gruppo. È fondamentale per report di vendite, fatturato e volumi.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DATE_SUB."
+        brokenCode: "SELECT FROM Users WHERE created_at < '2023-01-01' AND id NOT IN (SELECT user_id FROM Orders)",
+        debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
         titleTemplate: "Prezzo Mediano (Sim)",
         descTemplate: "Trova il prodotto che sta a metà classifica di prezzo (Ranking trick).",
         queryTemplate: "SELECT * FROM Products p1 WHERE (SELECT COUNT(*) FROM Products p2 WHERE p2.price <= p1.price) >= (SELECT COUNT(*) FROM Products p3) / 2",
         hints: ["Conta quanti costano meno", "Confronta con metà del count totale"],
-        explanation: "Simulazione calcolo mediana.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT FROM Products p1 WHERE (SELECT COUNT(*) FROM Products p2 WHERE p2.price <= p1.price) >= (SELECT COUNT(*) FROM Products p3) / 2",
         debugHint: "Difficile: conta i 'minori o uguali'."
       },
       {
@@ -8225,7 +8226,7 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         hints: ["Non esiste un prodotto Accessories che l'utente NON ha comprato", "Doppio NOT EXISTS"],
         explanation: "Relational Division: l'utente ha coperto l'intero set.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELCET u.id FROM Users u LIMIT 5",
         debugHint: "Logica molto avanzata: Users senza (Prodotti Accessories senza Ordini)."
       },
       {
@@ -8233,9 +8234,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Paesi (presi dagli Utenti) dove non ci sono ordini sopra i 500€.",
         queryTemplate: "SELECT DISTINCT country FROM Users u1 WHERE NOT EXISTS (SELECT 1 FROM Orders o JOIN Users u2 ON o.user_id=u2.id WHERE u2.country=u1.country AND o.order_total > 500)",
         hints: ["Per ogni paese, check se esiste order > 500", "Se non esiste, selezionalo"],
-        explanation: "Analisi performance geografica.",
+        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT country DISTINCT FROM Users u1 WHERE NOT EXISTS (SELECT 1 FROM Orders o JOIN Users u2 ON o.user_id=u2.id WHERE u2.country=u1.country AND o.order_total > 500)",
         debugHint: "Correlazione su country."
       },
       {
@@ -8243,29 +8244,29 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         descTemplate: "Dipendenti assunti dopo il 2021 che però sono manager.",
         queryTemplate: "SELECT * FROM Employees WHERE hire_date > '2021-01-01' AND id IN (SELECT manager_id FROM Employees)",
         hints: ["Filtra data", "Check se sono manager"],
-        explanation: "Analisi carriera rapida.",
+        explanation: "COUNT(DISTINCT ...) conta i valori unici, eliminando i duplicati prima del conteggio.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "IN manager_id."
+        brokenCode: "SELECT FROM Employees WHERE hire_date > '2021-01-01' AND id IN (SELECT manager_id FROM Employees)",
+        debugHint: "Controlla che la clausola JOIN abbia sia la tabella che la condizione ON."
       },
       {
         titleTemplate: "Ordini per Giorno",
         descTemplate: "Giorno della settimana con più ordini in assoluto.",
         queryTemplate: "SELECT DAYNAME(order_date) as d FROM Orders GROUP BY d ORDER BY COUNT(*) DESC LIMIT 1",
         hints: ["DAYNAME o DAYOFWEEK", "Group by, count, order desc"],
-        explanation: "Ottimizzazione logistica settimanale.",
+        explanation: "Una subquery con IN filtra le righe il cui valore è presente nel set restituito dalla query interna. Questo approccio è leggibile e modulare.",
         replacements: {},
-        brokenCode: "...",
-        debugHint: "DAYNAME."
+        brokenCode: "SELECT DAYNAME(order_date) IS d FROM Orders GROUP BY d ORDER BY COUNT(*) DESC LIMIT 1",
+        debugHint: "Controlla la sintassi della clausola WHERE e i valori nel confronto."
       },
       {
         titleTemplate: "Full House",
         descTemplate: "Ordini che contengono almeno un prodotto per OGNI categoria esistente (molto difficile).",
         queryTemplate: "SELECT order_id FROM OrderItems oi JOIN Products p ON oi.product_id=p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) >= 2",
         hints: ["Conta categorie nell'ordine", "Confronta con count totale categorie"],
-        explanation: "Completezza dell'ordine.",
+        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "...",
+        brokenCode: "SELECT order_id DISTINCT FROM OrderItems oi JOIN Products p ON oi.product_id=p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) >= 2",
         debugHint: "Subquery per il numero totale di categorie."
       }
     ],

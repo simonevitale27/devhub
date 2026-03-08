@@ -1,0 +1,22 @@
+{
+  "problems": [],
+  "missingCountries": [],
+  "missingCats": [
+    "Clothing",
+    "Books",
+    "Garden",
+    "Sports",
+    "Beauty"
+  ],
+  "missingDepts": [],
+  "missingStatuses": [],
+  "missingNames": [
+    "Luigi Verdi",
+    "John Doe",
+    "Sophie Martin",
+    "Marco Bianchi",
+    "Giulia Neri",
+    "Luca Ferrari",
+    "Alice Chen"
+  ]
+}
