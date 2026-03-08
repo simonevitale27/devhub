@@ -44,26 +44,36 @@ function AppContent() {
       );
     }
 
-    switch (currentPage) {
-      case Page.Landing:
-        return <LandingPage onNavigate={setCurrentPage} />;
-      case Page.Home:
-        return <Home onNavigate={setCurrentPage} />;
-      case Page.SqlGym:
-        return <SqlGym onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />;
-      case Page.DataLab:
-        return <DataLab onBack={() => setCurrentPage(Page.Home)} />;
-      case Page.PythonGym:
-        return <PythonGym onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />;
-      case Page.Analytics:
-        return <AnalyticsDashboard onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />;
-      case Page.Account:
-        return <AccountPage onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />;
-      case Page.ResetPassword:
-        return <ResetPasswordPage onNavigate={setCurrentPage} />;
-      default:
-        return <LandingPage onNavigate={setCurrentPage} />;
+    if (currentPage === Page.Landing) {
+      return <LandingPage onNavigate={setCurrentPage} />;
     }
+    
+    if (currentPage === Page.ResetPassword) {
+      return <ResetPasswordPage onNavigate={setCurrentPage} />;
+    }
+
+    return (
+      <>
+        <div className={currentPage === Page.Home ? "block" : "hidden"}>
+          <Home onNavigate={setCurrentPage} />
+        </div>
+        <div className={currentPage === Page.SqlGym ? "block" : "hidden"}>
+          <SqlGym onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />
+        </div>
+        <div className={currentPage === Page.DataLab ? "block" : "hidden"}>
+          <DataLab onBack={() => setCurrentPage(Page.Home)} />
+        </div>
+        <div className={currentPage === Page.PythonGym ? "block" : "hidden"}>
+          <PythonGym onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />
+        </div>
+        <div className={currentPage === Page.Analytics ? "block" : "hidden"}>
+          <AnalyticsDashboard onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />
+        </div>
+        <div className={currentPage === Page.Account ? "block" : "hidden"}>
+          <AccountPage onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />
+        </div>
+      </>
+    );
   };
 
   return <>{renderPage()}</>;

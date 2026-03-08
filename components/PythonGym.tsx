@@ -230,6 +230,9 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
         setUserCode(currentExercise.brokenCode || currentExercise.starterCode);
       }
       setOutput("");
+      setErrorOutput("");
+      setActivePanel('output');
+      setSyntaxErrors([]);
       setShowHint(false);
       setShowSolution(false);
       setValidationResult(null);
@@ -561,6 +564,9 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
         setUserCode(currentExercise.brokenCode || currentExercise.starterCode);
       }
       setOutput("");
+      setErrorOutput("");
+      setActivePanel('output');
+      setSyntaxErrors([]);
       setValidationResult(null);
       setShowHint(false);
       setShowSolution(false);

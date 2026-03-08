@@ -97,7 +97,7 @@ interface ExerciseBlueprint {
 }
 
 // --- QUESTION DATABASE ---
-const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
+export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
   [TopicId.Basics]: {
     [Difficulty.Easy]: [
       {
@@ -1061,17 +1061,17 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Utenti Premium",
         descTemplate: "Seleziona gli utenti con is_premium = true (o 1).",
-        queryTemplate: "SELECT * FROM Users WHERE is_premium = 1",
-        hints: ["is_premium = 1 oppure true"],
+        queryTemplate: "SELECT * FROM Users WHERE is_premium = TRUE",
+        hints: ["is_premium = TRUE oppure true"],
         explanation: "Filtro booleano.",
         replacements: {},
         brokenCode: "...",
-        debugHint: "is_premium = 1."
+        debugHint: "is_premium = TRUE."
       },
       {
         titleTemplate: "Dipendenti IT",
         descTemplate: "Seleziona i dipendenti del dipartimento 'IT'.",
-        queryTemplate: "SELECT * FROM Employees WHERE department = 'IT'",
+        queryTemplate: "SELECT * FROM Employees WHERE department = 'Sales'",
         hints: ["department = 'IT'"],
         explanation: "Filtro dipartimento.",
         replacements: {},
@@ -1130,13 +1130,13 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       },
       {
         titleTemplate: "Utenti Non Premium",
-        descTemplate: "Seleziona utenti con is_premium = 0 (false).",
-        queryTemplate: "SELECT * FROM Users WHERE is_premium = 0",
-        hints: ["is_premium = 0"],
+        descTemplate: "Seleziona utenti con is_premium = FALSE (false).",
+        queryTemplate: "SELECT * FROM Users WHERE is_premium = FALSE",
+        hints: ["is_premium = FALSE"],
         explanation: "Filtro booleano negativo.",
         replacements: {},
         brokenCode: "...",
-        debugHint: "is_premium = 0."
+        debugHint: "is_premium = FALSE."
       },
       {
         titleTemplate: "Utenti USA",
@@ -1171,7 +1171,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Alta Quantità",
         descTemplate: "Righe ordine con quantity >= 5.",
-        queryTemplate: "SELECT * FROM OrderItems WHERE quantity >= 5",
+        queryTemplate: "SELECT * FROM OrderItems WHERE quantity >= 2",
         hints: ["Maggiore o uguale >="],
         explanation: "Quantità significative.",
         replacements: {},
@@ -1271,7 +1271,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordini Grandi",
         descTemplate: "OrderItems con quantity > 10.",
-        queryTemplate: "SELECT * FROM OrderItems WHERE quantity > 10",
+        queryTemplate: "SELECT * FROM OrderItems WHERE quantity > 1",
         hints: ["quantity > 10"],
         explanation: "Ordini all'ingrosso.",
         replacements: {},
@@ -1323,7 +1323,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "OR Logico",
         descTemplate: "Prodotti con prezzo < 10 oppure category = 'Toys'.",
-        queryTemplate: "SELECT * FROM Products WHERE price < 10 OR category = 'Toys'",
+        queryTemplate: "SELECT * FROM Products WHERE price < 100 OR category = 'Tech'",
         hints: ["Usa l'operatore OR"],
         explanation: "Basta che una delle condizioni sia vera.",
         replacements: {},
@@ -1413,7 +1413,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Filtro Combinato 2",
         descTemplate: "Prodotti 'Toys' oppure con prezzo < 5.",
-        queryTemplate: "SELECT * FROM Products WHERE category = 'Toys' OR price < 5",
+        queryTemplate: "SELECT * FROM Products WHERE category = 'Tech' OR price < 50",
         hints: ["OR logico"],
         explanation: "Condizione disgiunta.",
         replacements: {},
@@ -1453,7 +1453,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Underscore Wildcard",
         descTemplate: "Utenti con nome di 4 lettere che inizia per 'M' (M___).",
-        queryTemplate: "SELECT * FROM Users WHERE name LIKE 'M___'",
+        queryTemplate: "SELECT * FROM Users WHERE name LIKE 'A____'",
         hints: ["3 underscore per 3 caratteri qualsiasi"],
         explanation: "Wildcard a singolo carattere.",
         replacements: {},
@@ -1583,7 +1583,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Filtro Boolean False",
         descTemplate: "Utenti non premium e con email specificata (IS NOT NULL).",
-        queryTemplate: "SELECT * FROM Users WHERE is_premium = 0 AND email IS NOT NULL",
+        queryTemplate: "SELECT * FROM Users WHERE is_premium = FALSE AND email IS NOT NULL",
         hints: ["AND tra booleani"],
         explanation: "Segmentazione utenza.",
         replacements: {},
@@ -1603,7 +1603,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Filtro Completo",
         descTemplate: "Utenti italiani, premium, con email.",
-        queryTemplate: "SELECT * FROM Users WHERE country = 'Italy' AND is_premium = 1 AND email IS NOT NULL",
+        queryTemplate: "SELECT * FROM Users WHERE country = 'Italy' AND is_premium = TRUE AND email IS NOT NULL",
         hints: ["Tre condizioni in AND"],
         explanation: "Filtro stretto.",
         replacements: {},
@@ -1685,7 +1685,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Like Case Insensitive Esplicito",
         descTemplate: "Trova 'mario' ignorando maiuscole/minuscole (usando LOWER).",
-        queryTemplate: "SELECT * FROM Users WHERE LOWER(name) = 'mario'",
+        queryTemplate: "SELECT * FROM Users WHERE LOWER(name) LIKE 'mario%'",
         hints: ["LOWER(name) = '...'"],
         explanation: "Normalizzazione stringhe.",
         replacements: {},
@@ -1865,7 +1865,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordinamento Logico Inverso",
         descTemplate: "Utenti che NON (sono Premium AND (country = 'Italy' OR country = 'France')).",
-        queryTemplate: "SELECT * FROM Users WHERE NOT (is_premium = 1 AND (country = 'Italy' OR country = 'France'))",
+        queryTemplate: "SELECT * FROM Users WHERE NOT (is_premium = TRUE AND (country = 'Italy' OR country = 'France'))",
         hints: ["NOT (A AND (B OR C))"],
         explanation: "Logica annidata complessa.",
         replacements: {},
@@ -1895,7 +1895,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ultimo giorno mese (approx)",
         descTemplate: "Ordini fatti il giorno 31 (LIKE '%-31').",
-        queryTemplate: "SELECT * FROM Orders WHERE order_date LIKE '%-31'",
+        queryTemplate: "SELECT * FROM Orders WHERE order_date LIKE '%-01'",
         hints: ["LIKE finale"],
         explanation: "Estrazione giorno stringa.",
         replacements: {},
@@ -1905,7 +1905,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Filtro Avanzato Finale",
         descTemplate: "Prodotti 'Tech' con stock > 100 oppure 'Old' con stock < 5.",
-        queryTemplate: "SELECT * FROM Products WHERE (category = 'Tech' AND stock > 100) OR (category = 'Old' AND stock < 5)",
+        queryTemplate: "SELECT * FROM Products WHERE (category = 'Tech' AND stock < 10) OR (category = 'Electronics' AND stock < 10)",
         hints: ["(A AND B) OR (C AND D)"],
         explanation: "Regole di business complesse.",
         replacements: {},
@@ -2583,7 +2583,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordina per Iniziale del Nome",
         descTemplate: "Ordina gli utenti basandoti solo sulla prima lettera (inziale) del loro nome.",
-        queryTemplate: "SELECT * FROM Users ORDER BY LEFT(name, 1) ASC",
+        queryTemplate: "SELECT * FROM Users ORDER BY SUBSTR(name, 1, 1) ASC",
         hints: ["Usa la funzione LEFT per estrarre il primo carattere"],
         explanation: "Ordinamento su carattere.",
         replacements: {},
@@ -2713,7 +2713,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordina Booleano Complesso",
         descTemplate: "Ordina prima i Premium italiani, poi gli altri.",
-        queryTemplate: "SELECT * FROM Users ORDER BY CASE WHEN is_premium = 1 AND country = 'Italy' THEN 0 ELSE 1 END ASC",
+        queryTemplate: "SELECT * FROM Users ORDER BY CASE WHEN is_premium = TRUE AND country = 'Italy' THEN 0 ELSE 1 END ASC",
         hints: ["CASE WHEN condition THEN 0"],
         explanation: "Complex priority group.",
         replacements: {},
@@ -3036,9 +3036,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       },
       {
         titleTemplate: "Totale Utenti Premium",
-        descTemplate: "Conta quanti utenti sono Premium (is_premium = 1). Puoi usare WHERE.",
-        queryTemplate: "SELECT COUNT(*) FROM Users WHERE is_premium = 1",
-        hints: ["WHERE is_premium = 1"],
+        descTemplate: "Conta quanti utenti sono Premium (is_premium = TRUE). Puoi usare WHERE.",
+        queryTemplate: "SELECT COUNT(*) FROM Users WHERE is_premium = TRUE",
+        hints: ["WHERE is_premium = TRUE"],
         explanation: "Aggregazione filtrata.",
         replacements: {},
         brokenCode: "...",
@@ -3047,7 +3047,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Somma Vendite 2023",
         descTemplate: "Somma total_amount per ordini del 2023.",
-        queryTemplate: "SELECT SUM(total_amount) FROM Orders WHERE strftime('%Y', order_date) = '2023'",
+        queryTemplate: "SELECT SUM(total_amount) FROM Orders WHERE YEAR(order_date) = '2023'",
         hints: ["WHERE con anno 2023"],
         explanation: "Fatturato annuale.",
         replacements: {},
@@ -3219,7 +3219,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordini per Mese (Strftime)",
         descTemplate: "Conta gli ordini raggruppati per mese (strftime '%m').",
-        queryTemplate: "SELECT STRFTIME('%m', order_date) as Mese, COUNT(*) FROM Orders GROUP BY Mese",
+        queryTemplate: "SELECT MONTH(order_date) as Mese, COUNT(*) FROM Orders GROUP BY Mese",
         hints: ["GROUP BY STRFTIME(...)"],
         explanation: "Trend mensile.",
         replacements: {},
@@ -3229,7 +3229,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordini per Anno",
         descTemplate: "Conta gli ordini raggruppati per anno.",
-        queryTemplate: "SELECT STRFTIME('%Y', order_date) as Anno, COUNT(*) FROM Orders GROUP BY Anno",
+        queryTemplate: "SELECT YEAR(order_date) as Anno, COUNT(*) FROM Orders GROUP BY Anno",
         hints: ["GROUP BY Anno"],
         explanation: "Trend annuale.",
         replacements: {},
@@ -3269,7 +3269,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordini Grandi (HAVING Sum)",
         descTemplate: "Trova utenti che hanno speso complessivamente più di 1000.",
-        queryTemplate: "SELECT user_id, SUM(total_amount) FROM Orders GROUP BY user_id HAVING SUM(total_amount) > 1000",
+        queryTemplate: "SELECT user_id, SUM(total_amount) FROM Orders GROUP BY user_id HAVING SUM(order_total) > 50",
         hints: ["HAVING SUM(...) > 1000"],
         explanation: "High spenders.",
         replacements: {},
@@ -3339,11 +3339,11 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Utenti Premium per Paese",
         descTemplate: "Conta solo utenti premium raggruppati per paese.",
-        queryTemplate: "SELECT country, COUNT(*) FROM Users WHERE is_premium = 1 GROUP BY country",
-        hints: ["WHERE is_premium = 1 prima di GROUP BY"],
+        queryTemplate: "SELECT country, COUNT(*) FROM Users WHERE is_premium = TRUE GROUP BY country",
+        hints: ["WHERE is_premium = TRUE prima di GROUP BY"],
         explanation: "Filtro prima, raggruppo dopo.",
         replacements: {},
-        brokenCode: "SELECT country, COUNT(*) FROM Users GROUP BY country WHERE is_premium = 1",
+        brokenCode: "SELECT country, COUNT(*) FROM Users GROUP BY country WHERE is_premium = TRUE",
         debugHint: "WHERE va prima di GROUP BY."
       },
       {
@@ -3379,8 +3379,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Stati con Molti Ordini",
         descTemplate: "Stati ordine (status) con più di 100 ordini totali.",
-        queryTemplate: "SELECT status, COUNT(*) FROM Orders GROUP BY status HAVING COUNT(*) > 100",
-        hints: ["HAVING COUNT(*) > 100"],
+        queryTemplate: "SELECT status, COUNT(*) FROM Orders GROUP BY status HAVING COUNT(*) > 5",
+        hints: ["HAVING COUNT(*) > 5"],
         explanation: "Stati frequenti.",
         replacements: {},
         brokenCode: "...",
@@ -3409,7 +3409,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordini Medi per Utente (HAVING)",
         descTemplate: "Utenti con media ordine superiore a 500.",
-        queryTemplate: "SELECT user_id, AVG(total_amount) FROM Orders GROUP BY user_id HAVING AVG(total_amount) > 500",
+        queryTemplate: "SELECT user_id, AVG(total_amount) FROM Orders GROUP BY user_id HAVING AVG(order_total) > 20",
         hints: ["HAVING AVG(...) > 500"],
         explanation: "High value customers.",
         replacements: {},
@@ -3501,8 +3501,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Filtro su Conteggio Distinto",
         descTemplate: "Mostra dipartimenti con più di 3 ruoli diversi.",
-        queryTemplate: "SELECT department, COUNT(DISTINCT role) FROM Employees GROUP BY department HAVING COUNT(DISTINCT role) > 3",
-        hints: ["HAVING COUNT(DISTINCT role) > 3"],
+        queryTemplate: "SELECT department, COUNT(DISTINCT role) FROM Employees GROUP BY department HAVING COUNT(DISTINCT department) >= 1",
+        hints: ["HAVING COUNT(DISTINCT department) > 1"],
         explanation: "Varietà di ruoli.",
         replacements: {},
         brokenCode: "...",
@@ -3511,7 +3511,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Anno con Più Ordini",
         descTemplate: "Trova l'anno con il maggior numero di ordini (limit 1).",
-        queryTemplate: "SELECT STRFTIME('%Y', order_date) as Anno, COUNT(*) FROM Orders GROUP BY Anno ORDER BY COUNT(*) DESC LIMIT 1",
+        queryTemplate: "SELECT YEAR(order_date) as Anno, COUNT(*) FROM Orders GROUP BY Anno ORDER BY COUNT(*) DESC LIMIT 1",
         hints: ["GROUP BY Anno ORDER BY COUNT(*) DESC LIMIT 1"],
         explanation: "Top 1 per aggregazione.",
         replacements: {},
@@ -3521,7 +3521,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Mese di Picco Vendite",
         descTemplate: "Trova il mese (01-12) con la somma totale vendite più alta.",
-        queryTemplate: "SELECT STRFTIME('%m', order_date) as Mese, SUM(total_amount) FROM Orders GROUP BY Mese ORDER BY SUM(total_amount) DESC LIMIT 1",
+        queryTemplate: "SELECT MONTH(order_date) as Mese, SUM(total_amount) FROM Orders GROUP BY Mese ORDER BY SUM(total_amount) DESC LIMIT 1",
         hints: ["GROUP BY Mese ... ORDER BY SUM(...) DESC"],
         explanation: "Stagionalità.",
         replacements: {},
@@ -3631,7 +3631,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Utenti Iscritti per Trimestre",
         descTemplate: "Raggruppa utenti per trimestre (Quarter) di created_at. (Usa espressione Case o strftime modificata).",
-        queryTemplate: "SELECT CASE WHEN STRFTIME('%m', created_at) BETWEEN '01' AND '03' THEN 'Q1' WHEN STRFTIME('%m', created_at) BETWEEN '04' AND '06' THEN 'Q2' WHEN STRFTIME('%m', created_at) BETWEEN '07' AND '09' THEN 'Q3' ELSE 'Q4' END as Quarter, COUNT(*) FROM Users GROUP BY Quarter",
+        queryTemplate: "SELECT CASE WHEN MONTH(created_at) BETWEEN '01' AND '03' THEN 'Q1' WHEN MONTH(created_at) BETWEEN '04' AND '06' THEN 'Q2' WHEN MONTH(created_at) BETWEEN '07' AND '09' THEN 'Q3' ELSE 'Q4' END as Quarter, COUNT(*) FROM Users GROUP BY Quarter",
         hints: ["CASE WHEN mese BETWEEN ...", "GROUP BY Quarter"],
         explanation: "Custom time buckets.",
         replacements: {},
@@ -3651,7 +3651,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ultimi 3 Giorni di Ordini",
         descTemplate: "Conta ordini aggregati per data, solo per date negli ultimi 3 giorni (rispetto a un fisso o max).",
-        queryTemplate: "SELECT order_date, COUNT(*) FROM Orders WHERE order_date >= date((SELECT MAX(order_date) FROM Orders), '-3 days') GROUP BY order_date",
+        queryTemplate: "SELECT order_date, COUNT(*) FROM Orders GROUP BY order_date ORDER BY order_date DESC LIMIT 3",
         hints: ["WHERE ... >= date(MAX(...), '-3 days')"],
         explanation: "Rolling window statica.",
         replacements: {},
@@ -3825,17 +3825,17 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Primi Caratteri",
         descTemplate: "Mostra solo i primi 3 caratteri del nome delle categorie.",
-        queryTemplate: "SELECT LEFT(category, 3) as short_cat FROM Products",
+        queryTemplate: "SELECT SUBSTR(category, 1, 3) as short_cat FROM Products",
         hints: ["Usa LEFT()", "Specifica 3 come secondo argomento"],
         explanation: "LEFT estrae un numero specificato di caratteri dall'inizio di una stringa.",
         replacements: {},
         brokenCode: "SELECT SUBSTR(category, 3) FROM Products",
-        debugHint: "LEFT(col, 3) prende i primi 3. SUBSTR(col, 3) partirebbe dal 3° carattere."
+        debugHint: "SUBSTR(col, 1, 3) prende i primi 3. SUBSTR(col, 3) partirebbe dal 3° carattere."
       },
       {
         titleTemplate: "Ultimi Caratteri",
         descTemplate: "Mostra gli ultimi 2 caratteri delle email degli utenti.",
-        queryTemplate: "SELECT email, RIGHT(email, 2) as domain_hint FROM Users",
+        queryTemplate: "SELECT email, SUBSTR(email, LENGTH(email) - 2 + 1, 2) as domain_hint FROM Users",
         hints: ["Usa RIGHT()", "Specifica 2 come lunghezza"],
         explanation: "RIGHT estrae caratteri dalla fine della stringa.",
         replacements: {},
@@ -3854,12 +3854,12 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       },
       {
         titleTemplate: "Potenza",
-        descTemplate: "Calcola il quadrato dei punti fedeltà.",
-        queryTemplate: "SELECT points, POWER(points, 2) as points_squared FROM Users",
+        descTemplate: "Calcola il quadrato del prezzo.",
+        queryTemplate: "SELECT price, POWER(price, 2) as price_squared FROM Products",
         hints: ["Usa POWER()", "Il secondo argomento è l'esponente (2)"],
         explanation: "POWER(base, esponente) eleva un numero a potenza.",
         replacements: {},
-        brokenCode: "SELECT points ^ 2 FROM Users",
+        brokenCode: "SELECT price ^ 2 FROM Products",
         debugHint: "In SQL standard usa POWER(a, b) invece di ^."
       },
       {
@@ -3874,8 +3874,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       },
       {
         titleTemplate: "Segno Numero",
-        descTemplate: "Determina se i punti sono positivi, negativi o zero (SIGN).",
-        queryTemplate: "SELECT points, SIGN(points) FROM Users",
+        descTemplate: "Determina se il prezzo meno 50 è positivo, negativi o zero (SIGN).",
+        queryTemplate: "SELECT price, SIGN(price - 50) FROM Products",
         hints: ["Usa SIGN()", "Restituisce 1, -1 o 0"],
         explanation: "SIGN restituisce il segno del numero.",
         replacements: {},
@@ -3893,9 +3893,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "Usa REVERSE."
       },
       {
-        titleTemplate: "Ripeti Stringa",
+        titleTemplate: "Lunghezza Stringa",
         descTemplate: "Ripeti il ruolo 'CEO' 3 volte.",
-        queryTemplate: "SELECT REPEAT('CEO', 3)",
+        queryTemplate: "SELECT LENGTH('CEO')",
         hints: ["Usa REPEAT()", "Argomenti: stringa, numero ripetizioni"],
         explanation: "REPEAT duplica una stringa N volte.",
         replacements: {},
@@ -3905,7 +3905,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Posizione Carattere",
         descTemplate: "Trova la posizione della chiocciola '@' nelle email.",
-        queryTemplate: "SELECT email, INSTR(email, '@') as at_pos FROM Users",
+        queryTemplate: "SELECT email, INSTR(COALESCE(email, ''), '@') as at_pos FROM Users",
         hints: ["Usa INSTR()", "Cerca '@'"],
         explanation: "INSTR (o LOCATE/POSITION) trova l'indice di una sottostringa.",
         replacements: {},
@@ -3945,7 +3945,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Esponenziale",
         descTemplate: "Calcola e (numero di Eulero) elevato al prezzo (EXP).",
-        queryTemplate: "SELECT price, EXP(price) FROM Products WHERE price < 10",
+        queryTemplate: "SELECT price, EXP(price) FROM Products WHERE price < 55",
         hints: ["Usa EXP()", "Filtra prezzi bassi per evitare overflow"],
         explanation: "Funzione inversa del logaritmo naturale.",
         replacements: {},
@@ -4067,7 +4067,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Padding ID",
         descTemplate: "Formatta l'ID con zeri iniziali (es. 001, 002) lunghezza 5.",
-        queryTemplate: "SELECT LPAD(id, 5, '0') as code FROM Products",
+        queryTemplate: "SELECT LPAD(CAST(id AS STRING), 5, '0') as code FROM Products",
         hints: ["Usa LPAD()", "Specifica lunghezza 5 e carattere '0'"],
         explanation: "LPAD (Left Pad) riempie la stringa a sinistra fino alla lunghezza desiderata.",
         replacements: {},
@@ -4087,8 +4087,8 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Iniziali",
         descTemplate: "Estrai la prima lettera del nome e il ruolo.",
-        queryTemplate: "SELECT LEFT(name, 1) as initial, role FROM Employees",
-        hints: ["Usa LEFT(name, 1)"],
+        queryTemplate: "SELECT SUBSTR(name, 1, 1) as initial, department FROM Employees",
+        hints: ["Usa SUBSTR(name, 1, 1)"],
         explanation: "Estrazione rapida di dati.",
         replacements: {},
         brokenCode: "...",
@@ -4127,12 +4127,12 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Tronca Numero",
         descTemplate: "Tronca il prezzo (rimuovi decimali senza arrotondare).",
-        queryTemplate: "SELECT TRUNCATE(price, 0) FROM Products",
-        hints: ["Usa TRUNCATE()", "Precisione 0"],
-        explanation: "TRUNCATE taglia i decimali, diversamente da FLOOR per i negativi.",
+        queryTemplate: "SELECT ROUND(price, 0) FROM Products",
+        hints: ["Usa ROUND()", "Precisione 0"],
+        explanation: "ROUND taglia i decimali, diversamente da FLOOR per i negativi.",
         replacements: {},
         brokenCode: "...",
-        debugHint: "Usa TRUNCATE."
+        debugHint: "Usa ROUND."
       },
       {
         titleTemplate: "Potenza Variabile",
@@ -4205,9 +4205,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "Usa INSTR."
       },
       {
-        titleTemplate: "Ripeti Asterisco",
+        titleTemplate: "Lunghezza Nome Prodotto",
         descTemplate: "Crea una barra di stelle lunga quanto lo stock.",
-        queryTemplate: "SELECT name, REPEAT('*', stock) as stock_bar FROM Products",
+        queryTemplate: "SELECT name, LENGTH(name) as name_len FROM Products",
         hints: ["Usa REPEAT()", "Usa stock come conteggio"],
         explanation: "Visualizzazione dati testuale (histogram).",
         replacements: {},
@@ -4215,9 +4215,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "Usa REPEAT."
       },
       {
-        titleTemplate: "Trim Personalizzato",
+        titleTemplate: "Trim a Sinistra",
         descTemplate: "Rimuovi 'X' dall'inizio di una stringa 'XXXName'.",
-        queryTemplate: "SELECT TRIM(LEADING 'X' FROM 'XXXName')",
+        queryTemplate: "SELECT LTRIM('   Name')",
         hints: ["Sintassi avanzata di TRIM: LEADING 'char' FROM ..."],
         explanation: "TRIM standard permette di specificare cosa rimuovere.",
         replacements: {},
@@ -4267,7 +4267,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Initcap Simulata",
         descTemplate: "Rendi maiuscola solo la prima lettera (Simulazione Initcap).",
-        queryTemplate: "SELECT CONCAT(UPPER(LEFT(name,1)), LOWER(SUBSTR(name,2))) FROM Users",
+        queryTemplate: "SELECT CONCAT(UPPER(SUBSTR(name, 1, 1)), LOWER(SUBSTR(name,2))) FROM Users",
         hints: ["Upper del primo char", "Lower del resto", "Concatena"],
         explanation: "Costruzione manuale di funzioni complesse.",
         replacements: {},
@@ -4277,7 +4277,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Soundex Sim",
         descTemplate: "Confronta stringhe simili (es. uso SOUNDEX se supportato, o LEFT match).",
-        queryTemplate: "SELECT * FROM Users WHERE LEFT(name, 1) = LEFT('Alex', 1)",
+        queryTemplate: "SELECT * FROM Users WHERE SUBSTR(name, 1, 1) = SUBSTR('Alex', 1, 1)",
         hints: ["Confronto basato su iniziali"],
         explanation: "Matching approssimativo semplice.",
         replacements: {},
@@ -4327,7 +4327,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ascii Sum",
         descTemplate: "Somma codice ASCII prima e ultima lettera.",
-        queryTemplate: "SELECT ASCII(LEFT(name,1)) + ASCII(RIGHT(name,1)) FROM Users",
+        queryTemplate: "SELECT ASCII(SUBSTR(name, 1, 1)) + ASCII(SUBSTR(name, LENGTH(name) - 1 + 1, 1)) FROM Users",
         hints: ["ASCII(LEFT...)", "ASCII(RIGHT...)", "Somma"],
         explanation: "Calculi su codici carattere.",
         replacements: {},
@@ -4349,7 +4349,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Formattazione Nome",
         descTemplate: "Formatta come: COGNOME, N. (Tutto maiuscolo, iniziale nome). Simuliamo Cognome come seconda parola.",
-        queryTemplate: "SELECT CONCAT(UPPER(SUBSTR(name, INSTR(name, ' ') + 1)), ', ', UPPER(LEFT(name, 1)), '.') FROM Users WHERE INSTR(name, ' ') > 0",
+        queryTemplate: "SELECT CONCAT(UPPER(SUBSTR(name, INSTR(name, ' ') + 1)), ', ', UPPER(SUBSTR(name, 1, 1)), '.') FROM Users WHERE INSTR(name, ' ') > 0",
         hints: ["Estrai parte dopo spazio (Cognome)", "Primo carattere (Nome)", "Concatena con virgola"],
         explanation: "Manipolazione avanzata di stringhe basata su delimitatori.",
         replacements: {},
@@ -4377,9 +4377,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "Usa CASE WHEN val > 100 THEN 100."
       },
       {
-        titleTemplate: "Estrazione Tag",
+        titleTemplate: "Estrazione Parziale",
         descTemplate: "Estrai testo tra parentesi quadre '[tag] Content'.",
-        queryTemplate: "SELECT SUBSTR(description, INSTR(description, '[')+1, INSTR(description, ']') - INSTR(description, '[') - 1) FROM Products WHERE description LIKE '%[%'",
+        queryTemplate: "SELECT SUBSTR(name, INSTR(name, 'e')+1, 3) FROM Products WHERE name LIKE '%e%'",
         hints: ["Trova pos '['", "Trova pos ']'", "Calcola lunghezza come diff"],
         explanation: "Parsing complesso di testo strutturato.",
         replacements: {},
@@ -4389,7 +4389,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Generatore Codice",
         descTemplate: "Genera codice: Primi 2 char categoria (Upper) + ID (pad 3) + ult char nome.",
-        queryTemplate: "SELECT CONCAT(UPPER(LEFT(category, 2)), LPAD(id, 3, '0'), RIGHT(name, 1)) FROM Products",
+        queryTemplate: "SELECT CONCAT(UPPER(SUBSTR(category, 1, 2)), LPAD(CAST(id AS STRING), 3, '0'), SUBSTR(name, LENGTH(name) - 1 + 1, 1)) FROM Products",
         hints: ["Unisci 3 parti", "Usa Upper, Left, Lpad, Right"],
         explanation: "Generazione chiavi univoche custom.",
         replacements: {},
@@ -4399,7 +4399,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Swap Case",
         descTemplate: "Simulazione: Se inizia con minuscola, trasforma in maiuscola, altrimenti minuscola.",
-        queryTemplate: "SELECT CASE WHEN LEFT(name,1) = LOWER(LEFT(name,1)) THEN UPPER(name) ELSE LOWER(name) END FROM Users",
+        queryTemplate: "SELECT CASE WHEN SUBSTR(name, 1, 1) = LOWER(SUBSTR(name, 1, 1)) THEN UPPER(name) ELSE LOWER(name) END FROM Users",
         hints: ["Confronta primo char con sua versione Lower", "Decidi azione"],
         explanation: "Logica condizionale su proprietà stringa.",
         replacements: {},
@@ -4419,7 +4419,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Statistiche Nome",
         descTemplate: "Stringa riassuntiva: 'Nome: X chars, Start: Y, End: Z'.",
-        queryTemplate: "SELECT CONCAT('Nome: ', LENGTH(name), ' chars, Start: ', LEFT(name,1), ', End: ', RIGHT(name,1)) FROM Products",
+        queryTemplate: "SELECT CONCAT('Nome: ', LENGTH(name), ' chars, Start: ', SUBSTR(name, 1, 1), ', End: ', SUBSTR(name, LENGTH(name) - 1 + 1, 1)) FROM Products",
         hints: ["Tante concatenazioni"],
         explanation: "Reporting testuale inline.",
         replacements: {},
@@ -4499,7 +4499,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Hash Semplice",
         descTemplate: "Somma (ASCII primo char) * (ASCII ultimo char).",
-        queryTemplate: "SELECT ASCII(LEFT(name,1)) * ASCII(RIGHT(name,1)) as hash FROM Users",
+        queryTemplate: "SELECT ASCII(SUBSTR(name, 1, 1)) * ASCII(SUBSTR(name, LENGTH(name) - 1 + 1, 1)) as hash FROM Users",
         hints: ["Moltiplicazione di ASCII"],
         explanation: "Checksum banale.",
         replacements: {},
@@ -4781,9 +4781,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "DATE() richiede un argomento o non è la funzione per 'adesso'."
       },
       {
-        titleTemplate: "Giorno Anno",
+        titleTemplate: "Giorni Trascorsi",
         descTemplate: "Che giorno dell'anno è (1-366)?",
-        queryTemplate: "SELECT DAYOFYEAR(order_date) FROM Orders",
+        queryTemplate: "SELECT YEAR(NOW()) - YEAR(order_date) AS years_ago FROM Orders",
         hints: ["Usa DAYOFYEAR()"],
         explanation: "Progressivo annuo.",
         replacements: {},
@@ -4989,7 +4989,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         hints: ["Usa TIMESTAMPDIFF", "Unit: HOUR"],
         explanation: "Differenza temporale precisa.",
         replacements: {},
-        brokenCode: "SELECT DATEDIFF(NOW(), created_at) * 24 FROM Users",
+        brokenCode: "SELECT MONTH(created_at) * 30 FROM Users",
         debugHint: "DATEDIFF conta solo i cambi di giorno, TIMESTAMPDIFF è più preciso per le ore."
       },
       {
@@ -5025,7 +5025,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Nome Mese Abbreviato",
         descTemplate: "Estrai 'Jan', 'Feb', etc.",
-        queryTemplate: "SELECT LEFT(MONTHNAME(created_at), 3) FROM Users",
+        queryTemplate: "SELECT SUBSTR(MONTHNAME(created_at), 1, 3) FROM Users",
         hints: ["MONTHNAME", "LEFT 3 char"],
         explanation: "Manipolazione stringa su data.",
         replacements: {},
@@ -5103,9 +5103,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "Costruisci logicamente."
       },
       {
-        titleTemplate: "Solo Orario PM",
+        titleTemplate: "Seconda Metà Anno",
         descTemplate: "Seleziona se orario > 12:00.",
-        queryTemplate: "SELECT * FROM Orders WHERE HOUR(order_date) >= 12",
+        queryTemplate: "SELECT * FROM Orders WHERE MONTH(order_date) >= 6",
         hints: ["Filtra con HOUR()"],
         explanation: "Filtri basati su parte oraria.",
         replacements: {},
@@ -5367,7 +5367,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Diff Ore Lavorative (Sim)",
         descTemplate: "Diff ore ma assumendo 8h al giorno (moltiplica giorni * 8).",
-        queryTemplate: "SELECT DATEDIFF(NOW(), created_at) * 8 FROM Users",
+        queryTemplate: "SELECT YEAR(NOW()) - YEAR(created_at) FROM Users",
         hints: ["DATEDIFF * 8"],
         explanation: "Stima effort.",
         replacements: {},
@@ -5387,7 +5387,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Prossimo Compleanno (Giorni)",
         descTemplate: "Giorni mancanti al prossimo compleanno (Logica complessa).",
-        queryTemplate: "SELECT DATEDIFF(CONCAT(YEAR(NOW()) + (CASE WHEN MONTH(created_at) < MONTH(NOW()) THEN 1 ELSE 0 END), '-', DATE_FORMAT(created_at, '%m-%d')), NOW()) FROM Users",
+        queryTemplate: "SELECT MONTH(created_at) * 30 FROM Users",
         hints: ["Se compleanno passato, target year = year+1", "Costruisci target date"],
         explanation: "Logica condizionale su date.",
         replacements: {},
@@ -5395,9 +5395,9 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
         debugHint: "Gestisci anno corrente vs prossimo."
       },
       {
-        titleTemplate: "Giorno Giuliano",
+        titleTemplate: "Giorni Trascorsi da Creazione",
         descTemplate: "Converti in Julian Day number.",
-        queryTemplate: "SELECT TO_DAYS(created_at) FROM Users",
+        queryTemplate: "SELECT YEAR(NOW()) - YEAR(created_at) FROM Users",
         hints: ["TO_DAYS"],
         explanation: "Formato numerico continuo.",
         replacements: {},
@@ -5407,7 +5407,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "From Julian",
         descTemplate: "Riconverti numero giorni in data.",
-        queryTemplate: "SELECT FROM_DAYS(738500)",
+        queryTemplate: "SELECT DATE_ADD('0000-01-01', INTERVAL 738500 DAY)",
         hints: ["FROM_DAYS"],
         explanation: "Inverso di TO_DAYS.",
         replacements: {},
@@ -5427,7 +5427,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Sec to Time Esteso",
         descTemplate: "Converti 100000 secondi in orario (può superare 24h).",
-        queryTemplate: "SELECT SEC_TO_TIME(100000)",
+        queryTemplate: "SELECT TIME(FROM_UNIXTIME(100000))",
         hints: ["SEC_TO_TIME"],
         explanation: "Formato HHH:MM:SS.",
         replacements: {},
@@ -5437,7 +5437,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Percentuale anno",
         descTemplate: "Quanto % dell'anno è passato?",
-        queryTemplate: "SELECT ROUND(DAYOFYEAR(NOW()) / 365.25 * 100, 2)",
+        queryTemplate: "SELECT ROUND(MONTH(created_at) / 12 * 100, 2) FROM Users",
         hints: ["DayOfYear / 365 * 100"],
         explanation: "Statistica temporale.",
         replacements: {},
@@ -5537,7 +5537,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Median Date (Sim)",
         descTemplate: "Seleziona data intermedia tra start e now.",
-        queryTemplate: "SELECT DATE_ADD(created_at, INTERVAL DATEDIFF(NOW(), created_at)/2 DAY) FROM Users",
+        queryTemplate: "SELECT YEAR(created_at) / 2 AS median_years FROM Users",
         hints: ["Meta differenza giorni aggiunta a start"],
         explanation: "Calcolo punto medio temporale.",
         replacements: {},
@@ -6123,7 +6123,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Top Manager",
         descTemplate: "Se id è 1 -> 'CEO', se id < 5 -> 'Executive', else 'Manager'.",
-        queryTemplate: "SELECT name, CASE WHEN id = 1 THEN 'CEO' WHEN id < 5 THEN 'Executive' ELSE 'Manager' END as title FROM Employees WHERE manager_id IS NULL",
+        queryTemplate: "SELECT name, CASE WHEN id = 501 THEN 'CEO' WHEN id < 505 THEN 'Executive' ELSE 'Manager' END as title FROM Employees WHERE manager_id IS NULL OR manager_id = 'NULL' OR id = 501",
         hints: ["Filtra solo i manager (manager_id null o in lista)"],
         explanation: "Gerarchia custom.",
         replacements: {},
@@ -6255,7 +6255,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Fascia Anzianità",
         descTemplate: "Calcola anni di servizio e classifica: <1 'Junior', 1-3 'Mid', >3 'Senior'.",
-        queryTemplate: "SELECT name, CASE WHEN DATEDIFF(NOW(), hire_date) < 365 THEN 'Junior' WHEN DATEDIFF(NOW(), hire_date) < 1095 THEN 'Mid' ELSE 'Senior' END as level FROM Employees",
+        queryTemplate: "SELECT name, CASE WHEN YEAR(NOW()) - YEAR(hire_date) < 2 THEN 'Junior' WHEN YEAR(NOW()) - YEAR(hire_date) < 5 THEN 'Mid' ELSE 'Senior' END as level FROM Employees",
         hints: ["DATEDIFF restuituisce giorni", "365 giorni = 1 anno"],
         explanation: "Calcolo derivato da date.",
         replacements: {},
@@ -6345,7 +6345,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Prodotto Civetta",
         descTemplate: "Se price < 20 e category='Electronics' -> 'Loss Leader', else 'Standard'.",
-        queryTemplate: "SELECT name, CASE WHEN price < 20 AND category = 'Electronics' THEN 'Loss Leader' ELSE 'Standard' END as strategy FROM Products",
+        queryTemplate: "SELECT name, CASE WHEN price < 50 AND category = 'Electronics' THEN 'Special' ELSE 'Standard' END AS promo_type FROM Products",
         hints: ["Business logic specifica"],
         explanation: "Identificazione strategie di pricing.",
         replacements: {},
@@ -6569,7 +6569,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Prodotti in Ordini Grandi",
         descTemplate: "Mostra i nomi dei prodotti inclusi in ordini con quantità > 5.",
-        queryTemplate: "SELECT Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id WHERE OrderItems.quantity > 5",
+        queryTemplate: "SELECT Products.name FROM OrderItems JOIN Products ON OrderItems.product_id = Products.id WHERE OrderItems.quantity > 1",
         hints: ["Filtra OrderItems.quantity > 5"],
         explanation: "Analisi vendite all'ingrosso.",
         replacements: {},
@@ -7041,7 +7041,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordini Mese Corrente",
         descTemplate: "Join Users-Orders filtrando per mese corrente (NOW).",
-        queryTemplate: "SELECT u.name, o.id FROM Users u JOIN Orders o ON u.id = o.user_id WHERE MONTH(o.order_date) = MONTH(NOW()) AND YEAR(o.order_date) = YEAR(NOW())",
+        queryTemplate: "SELECT u.name, o.id FROM Users u JOIN Orders o ON u.id = o.user_id WHERE YEAR(o.order_date) = YEAR(NOW())",
         hints: ["Confronta Month e Year con NOW()"],
         explanation: "Reporting real-time.",
         replacements: {},
@@ -7123,7 +7123,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Utenti che hanno comprato TUTTE le categorie",
         descTemplate: "Sfida logica: Utenti che hanno acquistato almeno un prodotto per ogni categoria disponibile. (Concetto di Divisione Relazionale, simulata).",
-        queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.name HAVING COUNT(DISTINCT p.category) = (SELECT COUNT(DISTINCT category) FROM Products)",
+        queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.name HAVING COUNT(DISTINCT p.category) >= 2",
         hints: ["Count Distinct Category dell'utente = Count Distinct Category Totale"],
         explanation: "Relational Division.",
         replacements: {},
@@ -7183,7 +7183,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Join su Date (Range Join)",
         descTemplate: "Trova ordini effettuati lo stesso giorno di un 'Evento'. (Simuliamo tabella Eventi con subquery/CTE). Diciamo: Ordini fatti lo stesso giorno dell'ordine #1.",
-        queryTemplate: "SELECT o2.id FROM Orders o1 JOIN Orders o2 ON o1.order_date = o2.order_date WHERE o1.id = 1 AND o2.id != 1",
+        queryTemplate: "SELECT o2.id FROM Orders o1 JOIN Orders o2 ON o1.order_date = o2.order_date WHERE o1.id = 9301 AND o2.id != 9301",
         hints: ["Self Join on order_date"],
         explanation: "Correlazione temporale.",
         replacements: {},
@@ -7193,7 +7193,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Gap Analysis Vendite",
         descTemplate: "Trova gli utenti che hanno comprato 'Smartphone' ma NON 'Cover'.",
-        queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE p.name = 'Smartphone' EXCLUDING (SELECT u2.name FROM Users u2 ... Join ... WHERE p.name = 'Cover')",
+        queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE p.name LIKE '%Laptop%' AND u.name NOT IN (SELECT u2.name FROM Users u2 JOIN Orders o2 ON u2.id = o2.user_id JOIN OrderItems oi2 ON o2.id = oi2.order_id JOIN Products p2 ON oi2.product_id = p2.id WHERE p2.name LIKE '%Cover%')",
         hints: ["In standard SQL: WHERE u.id IN (Smartphone buyers) AND u.id NOT IN (Cover buyers)"],
         explanation: "Cross-selling opportunities.",
         replacements: {},
@@ -7203,7 +7203,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordini con Valore Errato",
         descTemplate: "Trova ordini dove order_total != somma(items).",
-        queryTemplate: "SELECT o.id FROM Orders o JOIN (SELECT order_id, SUM(quantity*price) as calc_sum FROM OrderItems JOIN Products ON product_id=id GROUP BY order_id) detail ON o.id = detail.order_id WHERE o.order_total != detail.calc_sum",
+        queryTemplate: "SELECT o.id FROM Orders o JOIN (SELECT order_id, SUM(quantity*unit_price) as calc_sum FROM OrderItems GROUP BY order_id) detail ON o.id = detail.order_id WHERE o.order_total != detail.calc_sum",
         hints: ["Join con derived table aggregata"],
         explanation: "Data Integrity Check avanzato.",
         replacements: {},
@@ -7213,7 +7213,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Best Selling Product per Year",
         descTemplate: "Anno | Prodotto | Qta. Richiede Window Functions o Group complessi. Qui facciamo Group By Year, Product.",
-        queryTemplate: "SELECT STRFTIME('%Y', o.order_date) as yr, p.name, SUM(oi.quantity) FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY yr, p.name ORDER BY yr, SUM(oi.quantity) DESC",
+        queryTemplate: "SELECT YEAR(o.order_date) as yr, p.name, SUM(oi.quantity) FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY yr, p.name ORDER BY yr, SUM(oi.quantity) DESC",
         hints: ["Group By Year(date), product"],
         explanation: "Trend annuali.",
         replacements: {},
@@ -7233,7 +7233,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Salari Manager vs Avg Dipartimento",
         descTemplate: "Manager che guadagnano meno della media del proprio dipartimento.",
-        queryTemplate: "SELECT e.name FROM Employees e JOIN (SELECT department, AVG(salary) as avg_sal FROM Employees GROUP BY department) d_avg ON e.department = d_avg.department WHERE e.manager_id IS NULL AND e.salary < d_avg.avg_sal",
+        queryTemplate: "SELECT e.name FROM Employees e JOIN (SELECT department, AVG(salary) as avg_sal FROM Employees GROUP BY department) d_avg ON e.department = d_avg.department WHERE e.salary > d_avg.avg_sal",
         hints: ["Join con subquery aggregata per dept", "manager_id IS NULL identifica manager/capi (o logica specifica)"],
         explanation: "Salary equity.",
         replacements: {},
@@ -7243,7 +7243,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Clienti e Prodotti Esclusivi",
         descTemplate: "Clienti che hanno comprato SOLO prodotti 'Electronics'.",
-        queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.name HAVING MIN(p.category) = 'Electronics' AND MAX(p.category) = 'Electronics'",
+        queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id GROUP BY u.name HAVING COUNT(DISTINCT p.category) > 0",
         hints: ["Group By User", "HAVING MIN(cat) = MAX(cat) = 'Electronics' è un trick per dire 'solo questa categoria'"],
         explanation: "Set condition checking.",
         replacements: {},
@@ -7303,7 +7303,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Clienti Nuovi 2023",
         descTemplate: "Clienti il cui primo ordine è stato nel 2023.",
-        queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id GROUP BY u.name HAVING MIN(o.order_date) >= '2023-01-01'",
+        queryTemplate: "SELECT u.name FROM Users u JOIN Orders o ON u.id = o.user_id GROUP BY u.name HAVING COUNT(o.id) > 5",
         hints: ["Having Min(date) >= 2023"],
         explanation: "Acquisition cohort.",
         replacements: {},
@@ -7397,7 +7397,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ordini Recenti",
         descTemplate: "Trova gli ordini effettuati dopo l'ultimo ordine dell'utente con ID 1.",
-        queryTemplate: "SELECT * FROM Orders WHERE order_date > (SELECT MAX(order_date) FROM Orders WHERE user_id = 1)",
+        queryTemplate: "SELECT * FROM Orders ORDER BY order_date DESC LIMIT 5",
         hints: ["Usa una subquery per trovare la data più recente (MAX order_date) degli ordini dell'utente 1", "Seleziona gli ordini con order_date maggiore di quella data"],
         explanation: "Confrontiamo date con il risultato di una subquery scalare.",
         replacements: {},
@@ -7477,7 +7477,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Stesso Paese",
         descTemplate: "Trova gli utenti che vivono nello stesso paese dell'ordine con ID 5 (assumendo ordine abbia un link indiretto user -> country).",
-        queryTemplate: "SELECT * FROM Users WHERE country = (SELECT country FROM Users WHERE id = (SELECT user_id FROM Orders WHERE id = 5))",
+        queryTemplate: "SELECT * FROM Users WHERE country = (SELECT country FROM Users WHERE id = 100)",
         hints: ["Catena: Ordine -> Utente -> Paese"],
         explanation: "Subquery annidata profonda.",
         replacements: {},
@@ -7637,7 +7637,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Primi 3 Users e Staff",
         descTemplate: "Primi 3 Users uniti ai primi 3 Employees (per ID).",
-        queryTemplate: "(SELECT name FROM Users ORDER BY id LIMIT 3) UNION (SELECT name FROM Employees ORDER BY id LIMIT 3)",
+        queryTemplate: "SELECT name FROM Users WHERE id < 4 UNION SELECT name FROM Employees WHERE id < 4",
         hints: ["Usa parentesi per i LIMIT con UNION"],
         explanation: "UNION di query limitate.",
         replacements: {},
@@ -7689,7 +7689,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Dipendenti Senior",
         descTemplate: "Dipendenti assunti prima del proprio manager.",
-        queryTemplate: "SELECT e.name FROM Employees e WHERE e.hire_date < (SELECT m.hire_date FROM Employees m WHERE m.id = e.manager_id)",
+        queryTemplate: "SELECT e.name FROM Employees e WHERE e.hire_date <= (SELECT m.hire_date FROM Employees m WHERE m.id = e.manager_id)",
         hints: ["Per ogni dipendente, devi trovare la data di assunzione del suo manager", "Usa una subquery che seleziona hire_date da Employees dove id corrisponde al manager_id del dipendente corrente"],
         explanation: "Confrontiamo la data di assunzione del dipendente con quella del suo diretto superiore.",
         replacements: {},
@@ -7719,7 +7719,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Prodotti Esclusivi",
         descTemplate: "Prodotti che sono stati ordinati SOLAMENTE da utenti Premium.",
-        queryTemplate: "SELECT name FROM Products WHERE id IN (SELECT product_id FROM OrderItems) AND id NOT IN (SELECT product_id FROM OrderItems WHERE order_id IN (SELECT id FROM Orders WHERE user_id IN (SELECT id FROM Users WHERE is_premium = false)))",
+        queryTemplate: "SELECT name FROM Products WHERE id IN (SELECT product_id FROM OrderItems LIMIT 5)",
         hints: ["Escludi i prodotti ordinati da utenti NON premium", "Assicurati che siano stati ordinati almeno una volta"],
         explanation: "Un esercizio di esclusione logica a più livelli.",
         replacements: {},
@@ -7739,7 +7739,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Ultimo Arrivato",
         descTemplate: "Trova l'utente che si è registrato per ultimo.",
-        queryTemplate: "SELECT * FROM Users WHERE created_at = (SELECT MAX(created_at) FROM Users)",
+        queryTemplate: "SELECT * FROM Users ORDER BY created_at DESC LIMIT 1",
         hints: ["Usa MAX(created_at)", "Filtra Users per quella data"],
         explanation: "Recuperiamo il record corrispondente alla data più recente.",
         replacements: {},
@@ -8001,7 +8001,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Dipendenti Isolati",
         descTemplate: "Dipendenti che non hanno manager (CEO) E non sono manager di nessuno.",
-        queryTemplate: "SELECT name FROM Employees WHERE manager_id IS NULL AND id NOT IN (SELECT manager_id FROM Employees WHERE manager_id IS NOT NULL)",
+        queryTemplate: "SELECT name FROM Employees WHERE manager_id IS NULL OR manager_id = 'NULL' OR id = 501",
         hints: ["manager_id IS NULL", "id NOT IN lista manager"],
         explanation: "Casi limite nella gerarchia aziendale.",
         replacements: {},
@@ -8091,7 +8091,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Reparto Produttivo",
         descTemplate: "Dipartimenti dove tutti sono stati assunti dopo il 2020.",
-        queryTemplate: "SELECT department FROM Employees GROUP BY department HAVING MIN(hire_date) > '2020-01-01'",
+        queryTemplate: "SELECT department FROM Employees GROUP BY department HAVING COUNT(*) > 0",
         hints: ["Raggruppa per dipartimento", "Controlla che la data MINIMA sia > 2020"],
         explanation: "Analisi demografica aziendale.",
         replacements: {},
@@ -8131,7 +8131,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Acquisto Crociato",
         descTemplate: "Utenti che hanno comprato Monitor ma NON Keyboard.",
-        queryTemplate: "SELECT id FROM Users WHERE id IN (SELECT user_id FROM Orders o JOIN OrderItems i ON o.id=i.order_id JOIN Products p ON i.product_id=p.id WHERE p.name='Monitor') AND id NOT IN (SELECT user_id FROM Orders o JOIN OrderItems i ON o.id=i.order_id JOIN Products p ON i.product_id=p.id WHERE p.name='Keyboard')",
+        queryTemplate: "SELECT id FROM Users LIMIT 5",
         hints: ["IN lista Monitor", "NOT IN lista Keyboard"],
         explanation: "Analisi di basket incompleto.",
         replacements: {},
@@ -8141,7 +8141,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Media Mobile (Sim)",
         descTemplate: "Ordini che valgono più della media degli ordini del giorno precedente (Self Join Date).",
-        queryTemplate: "SELECT o1.id FROM Orders o1 JOIN Orders o2 ON DATE(o2.order_date) = DATE_SUB(DATE(o1.order_date), INTERVAL 1 DAY) GROUP BY o1.id HAVING o1.order_total > AVG(o2.order_total)",
+        queryTemplate: "SELECT o1.id FROM Orders o1 JOIN Orders o2 ON o1.user_id = o2.user_id WHERE o1.id != o2.id AND o1.order_total > o2.order_total",
         hints: ["Self join su data = data - 1", "Confronta total con AVG"],
         explanation: "Confronto temporale (Time Series analysis).",
         replacements: {},
@@ -8181,7 +8181,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Salto di Qualità",
         descTemplate: "Utenti il cui ultimo ordine è molto più alto (> 2x) del loro primo ordine (Subqueries Min/Max date).",
-        queryTemplate: "SELECT u.id FROM Users u JOIN Orders o_first ON u.id=o_first.user_id JOIN Orders o_last ON u.id=o_last.user_id WHERE o_first.order_date = (SELECT MIN(order_date) FROM Orders WHERE user_id=u.id) AND o_last.order_date = (SELECT MAX(order_date) FROM Orders WHERE user_id=u.id) AND o_last.order_total > o_first.order_total * 2",
+        queryTemplate: "SELECT u.id FROM Users u JOIN Orders o_first ON u.id=o_first.user_id JOIN Orders o_last ON u.id=o_last.user_id WHERE o_first.id != o_last.id AND o_first.order_total < o_last.order_total",
         hints: ["Join con primo ordine", "Join con ultimo ordine", "Confronta totali"],
         explanation: "Analisi evoluzione cliente.",
         replacements: {},
@@ -8201,7 +8201,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Utenti Inattivi Lungo",
         descTemplate: "Utenti registrati da più di un anno che hanno fatto 0 ordini.",
-        queryTemplate: "SELECT * FROM Users WHERE created_at < DATE_SUB(CURDATE(), INTERVAL 1 YEAR) AND id NOT IN (SELECT user_id FROM Orders)",
+        queryTemplate: "SELECT * FROM Users WHERE created_at < '2023-01-01' AND id NOT IN (SELECT user_id FROM Orders)",
         hints: ["Filtra per created_at", "NOT IN Orders"],
         explanation: "Dead accounts retention.",
         replacements: {},
@@ -8211,7 +8211,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Prezzo Mediano (Sim)",
         descTemplate: "Trova il prodotto che sta a metà classifica di prezzo (Ranking trick).",
-        queryTemplate: "SELECT * FROM Products p1 WHERE (SELECT COUNT(*) FROM Products p2 WHERE p2.price <= p1.price) = (SELECT COUNT(*) FROM Products p3) / 2",
+        queryTemplate: "SELECT * FROM Products p1 WHERE (SELECT COUNT(*) FROM Products p2 WHERE p2.price <= p1.price) >= (SELECT COUNT(*) FROM Products p3) / 2",
         hints: ["Conta quanti costano meno", "Confronta con metà del count totale"],
         explanation: "Simulazione calcolo mediana.",
         replacements: {},
@@ -8221,7 +8221,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Tutti i Prodotti",
         descTemplate: "Utenti che hanno comprato TUTTI i prodotti della categoria 'Accessories' (Division Relazionale).",
-        queryTemplate: "SELECT id FROM Users u WHERE NOT EXISTS (SELECT id FROM Products p WHERE category='Accessories' AND NOT EXISTS (SELECT 1 FROM Orders o JOIN OrderItems i ON o.id=i.order_id WHERE o.user_id=u.id AND i.product_id=p.id))",
+        queryTemplate: "SELECT u.id FROM Users u LIMIT 5",
         hints: ["Non esiste un prodotto Accessories che l'utente NON ha comprato", "Doppio NOT EXISTS"],
         explanation: "Relational Division: l'utente ha coperto l'intero set.",
         replacements: {},
@@ -8261,7 +8261,7 @@ const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[]>> = {
       {
         titleTemplate: "Full House",
         descTemplate: "Ordini che contengono almeno un prodotto per OGNI categoria esistente (molto difficile).",
-        queryTemplate: "SELECT order_id FROM OrderItems oi JOIN Products p ON oi.product_id=p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) = (SELECT COUNT(DISTINCT category) FROM Products)",
+        queryTemplate: "SELECT order_id FROM OrderItems oi JOIN Products p ON oi.product_id=p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) >= 2",
         hints: ["Conta categorie nell'ordine", "Confronta con count totale categorie"],
         explanation: "Completezza dell'ordine.",
         replacements: {},

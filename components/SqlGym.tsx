@@ -297,12 +297,16 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
 
   const handleResetInput = () => {
     setUserResult(null);
+    setExpectedResult([]);
     setValidation(null);
     setShowHint(false);
     setShowErrorExplanation(false);
     setSqlCode("");
     setShowSolution(false);
     setShowStatsModal(false); // Close stats modal on reset
+    setExecutionTime(null);
+    setShowChartModal(false);
+    setIsDownloadMenuOpen(false);
   };
 
   const handleFormatSQL = () => {
