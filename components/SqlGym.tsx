@@ -65,7 +65,7 @@ import {
 import { explainSqlError } from "../services/mockAiService";
 import { generateExercises } from "../services/exerciseGenerator";
 import SchemaViewer from "./SchemaViewer";
-import SyntaxHighlightedEditor from "./SyntaxHighlightedEditor";
+import SyntaxHighlightedEditor, { EditorHandle } from "./SyntaxHighlightedEditor";
 import ResultsTable from "./ResultsTable";
 import ResultStats from "./ResultStats";
 import SchemaERDiagram from "./SchemaERDiagram";
@@ -126,7 +126,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
   const [executionTime, setExecutionTime] = useState<number | null>(null);
   const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
   const [showChartModal, setShowChartModal] = useState(false);
-  const editorRef = useRef<HTMLTextAreaElement | null>(null);
+  const editorRef = useRef<EditorHandle | null>(null);
   
   // Refs for sliding effect
   const itemsRef = useRef<{ [key: string]: HTMLButtonElement | null }>({});
@@ -520,34 +520,40 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
   }, []);
 
   // Handle column/table click from SchemaViewer - replaces selection or inserts at cursor
+  // Reads live cursor/selection from the textarea DOM via imperative handle
   const handleTextInsertion = useCallback((textToInsert: string) => {
-    // Check if there's selected text to replace
-    if (selectionStart !== selectionEnd) {
+    const editor = editorRef.current;
+    // Read live selection from the DOM, not stale React state
+    const range = editor?.getSelectionRange() ?? { selectionStart: sqlCode.length, selectionEnd: sqlCode.length };
+    const { selectionStart: liveStart, selectionEnd: liveEnd } = range;
+
+    let newCode: string;
+    let newCursorPos: number;
+
+    if (liveStart !== liveEnd) {
       // Replace selected text
-      const before = sqlCode.substring(0, selectionStart);
-      const after = sqlCode.substring(selectionEnd);
-      const newCode = before + textToInsert + after;
-      setSqlCode(newCode);
-      
-      // Update cursor position to after the inserted text
-      const newCursorPos = selectionStart + textToInsert.length;
-      setCursorPosition(newCursorPos);
-      setSelectionStart(newCursorPos);
-      setSelectionEnd(newCursorPos);
+      const before = sqlCode.substring(0, liveStart);
+      const after = sqlCode.substring(liveEnd);
+      newCode = before + textToInsert + after;
+      newCursorPos = liveStart + textToInsert.length;
     } else {
       // Insert at cursor position
-      const before = sqlCode.substring(0, cursorPosition);
-      const after = sqlCode.substring(cursorPosition);
-      const newCode = before + textToInsert + after;
-      setSqlCode(newCode);
-      
-      // Update cursor position to after the inserted text
-      const newCursorPos = cursorPosition + textToInsert.length;
-      setCursorPosition(newCursorPos);
-      setSelectionStart(newCursorPos);
-      setSelectionEnd(newCursorPos);
+      const before = sqlCode.substring(0, liveStart);
+      const after = sqlCode.substring(liveStart);
+      newCode = before + textToInsert + after;
+      newCursorPos = liveStart + textToInsert.length;
     }
-  }, [sqlCode, cursorPosition, selectionStart, selectionEnd]);
+
+    setSqlCode(newCode);
+
+    // Refocus the editor and set cursor position after React re-renders
+    setTimeout(() => {
+      if (editor) {
+        editor.focus();
+        editor.setSelection(newCursorPos, newCursorPos);
+      }
+    }, 0);
+  }, [sqlCode]);
 
   // Handle column click from SchemaViewer
   const handleColumnClick = useCallback((columnName: string) => {
@@ -1087,6 +1093,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                   {/* Editor Area - Moved to Left Column */}
                   <div className="flex-1 min-w-0 min-h-[200px] relative bg-black/20 ring-1 ring-black/20 inset rounded-2xl overflow-hidden">
                     <SyntaxHighlightedEditor
+                      ref={editorRef}
                       value={sqlCode}
                       onChange={setSqlCode}
                       onRun={handleRun}
@@ -1274,6 +1281,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                   <div className="flex-1 min-w-0 relative flex flex-col min-h-0">
                     <div className="flex-1 min-w-0 relative">
                       <SyntaxHighlightedEditor
+                        ref={editorRef}
                         value={sqlCode}
                         onChange={setSqlCode}
                         onRun={handleRun}

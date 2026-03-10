@@ -2180,8 +2180,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Ordina Orders total",
         descTemplate: "Ordina ordini per importo (piccoli prima).",
-        queryTemplate: "SELECT * FROM Orders ORDER BY total_amount ASC",
-        hints: ["Ordina per total_amount in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        queryTemplate: "SELECT * FROM Orders ORDER BY order_total ASC",
+        hints: ["Ordina per order_total in ordine crescente", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
         explanation: "ORDER BY con DESC ordina i risultati in ordine decrescente (dal più grande al più piccolo, dalla Z alla A).",
         replacements: {},
         brokenCode: "ORDER BY amount",
@@ -2190,11 +2190,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Ordina Orders total DESC",
         descTemplate: "Ordina ordini per importo (grandi prima).",
-        queryTemplate: "SELECT * FROM Orders ORDER BY total_amount DESC",
-        hints: ["Ordina per total_amount in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
+        queryTemplate: "SELECT * FROM Orders ORDER BY order_total DESC",
+        hints: ["Ordina per order_total in ordine decrescente (DESC)", "ORDER BY si mette dopo la clausola WHERE (se presente)"],
         explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders ORDER total_amount DESC",
+        brokenCode: "SELECT * FROM Orders ORDER order_total DESC",
         debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
@@ -2442,11 +2442,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Recenti e Costosi",
         descTemplate: "Visualizza gli ordini partendo dai più recenti e, a parità di data, da quelli con importo più alto.",
-        queryTemplate: "SELECT * FROM Orders ORDER BY order_date DESC, total_amount DESC",
+        queryTemplate: "SELECT * FROM Orders ORDER BY order_date DESC, order_total DESC",
         hints: ["Specifica DESC per entrambe le colonne"],
         explanation: "ORDER BY con ASC ordina i risultati in ordine crescente (dal più piccolo al più grande, dalla A alla Z). ASC è il default.",
         replacements: {},
-        brokenCode: "SELECT * FROM Orders ORDER order_date DESC, total_amount DESC",
+        brokenCode: "SELECT * FROM Orders ORDER order_date DESC, order_total DESC",
         debugHint: "Verifica che ORDER BY sia scritto correttamente e che la colonna di ordinamento esista."
       },
       {
@@ -2877,12 +2877,12 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       },
       {
         titleTemplate: "Totale Valore Ordini",
-        descTemplate: "Qual è il fatturato totale (somma total_amount)?",
-        queryTemplate: "SELECT SUM(total_amount) FROM Orders",
+        descTemplate: "Qual è il fatturato totale (somma order_total)?",
+        queryTemplate: "SELECT SUM(order_total) FROM Orders",
         hints: ["Usa la funzione SUM()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
         explanation: "SUM() calcola la somma totale dei valori nella colonna specificata, ignorando i valori NULL.",
         replacements: {},
-        brokenCode: "SELCET SUM(total_amount) FROM Orders",
+        brokenCode: "SELCET SUM(order_total) FROM Orders",
         debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
@@ -2908,11 +2908,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Media Ordine",
         descTemplate: "Qual è l'importo medio di un ordine?",
-        queryTemplate: "SELECT AVG(total_amount) FROM Orders",
+        queryTemplate: "SELECT AVG(order_total) FROM Orders",
         hints: ["Usa la funzione AVG()", "Le funzioni aggregate operano sull'intero set se non c'è GROUP BY"],
         explanation: "AVG() calcola la media aritmetica dei valori, ignorando i NULL. Utile per metriche come prezzo medio o stipendio medio.",
         replacements: {},
-        brokenCode: "SELCET AVG(total_amount) FROM Orders",
+        brokenCode: "SELCET AVG(order_total) FROM Orders",
         debugHint: "Controlla attentamente la sintassi SQL e i nomi delle colonne e tabelle."
       },
       {
@@ -3047,12 +3047,12 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       },
       {
         titleTemplate: "Somma Vendite 2023",
-        descTemplate: "Somma total_amount per ordini del 2023.",
-        queryTemplate: "SELECT SUM(total_amount) FROM Orders WHERE YEAR(order_date) = '2023'",
+        descTemplate: "Somma order_total per ordini del 2023.",
+        queryTemplate: "SELECT SUM(order_total) FROM Orders WHERE YEAR(order_date) = '2023'",
         hints: ["WHERE con anno 2023"],
         explanation: "WHERE filtra le righe della tabella in base a una condizione, restituendo solo quelle che la soddisfano.",
         replacements: {},
-        brokenCode: "SELECT SUM(total_amount) FROM Orders WHERE YEAR(order_date) == '2023'",
+        brokenCode: "SELECT SUM(order_total) FROM Orders WHERE YEAR(order_date) == '2023'",
         debugHint: "Filtra per anno."
       },
       {
@@ -3179,12 +3179,12 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       },
       {
         titleTemplate: "Vendite per Stato Ordine",
-        descTemplate: "Somma il totale (total_amount) per ogni stato ordine.",
-        queryTemplate: "SELECT status, SUM(total_amount) FROM Orders GROUP BY status",
-        hints: ["SUM(total_amount) ... GROUP BY status"],
+        descTemplate: "Somma il totale (order_total) per ogni stato ordine.",
+        queryTemplate: "SELECT status, SUM(order_total) FROM Orders GROUP BY status",
+        hints: ["SUM(order_total) ... GROUP BY status"],
         explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "SELECT status SUM(total_amount) FROM Orders GROUP BY status",
+        brokenCode: "SELECT status SUM(order_total) FROM Orders GROUP BY status",
         debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
@@ -3210,11 +3210,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Spesa Totale Utente",
         descTemplate: "Calcola quanto ha speso in totale ogni utente.",
-        queryTemplate: "SELECT user_id, SUM(total_amount) FROM Orders GROUP BY user_id",
-        hints: ["SUM(total_amount) ... GROUP BY user_id"],
+        queryTemplate: "SELECT user_id, SUM(order_total) FROM Orders GROUP BY user_id",
+        hints: ["SUM(order_total) ... GROUP BY user_id"],
         explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "SELECT user_id SUM(total_amount) FROM Orders GROUP BY user_id",
+        brokenCode: "SELECT user_id SUM(order_total) FROM Orders GROUP BY user_id",
         debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
@@ -3270,11 +3270,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Ordini Grandi (HAVING Sum)",
         descTemplate: "Trova utenti che hanno speso complessivamente più di 1000.",
-        queryTemplate: "SELECT user_id, SUM(total_amount) FROM Orders GROUP BY user_id HAVING SUM(order_total) > 50",
+        queryTemplate: "SELECT user_id, SUM(order_total) FROM Orders GROUP BY user_id HAVING SUM(order_total) > 50",
         hints: ["HAVING SUM(...) > 1000"],
         explanation: "HAVING filtra i gruppi dopo l'aggregazione, a differenza di WHERE che filtra le righe prima del raggruppamento. Si usa con GROUP BY.",
         replacements: {},
-        brokenCode: "SELECT user_id SUM(total_amount) FROM Orders GROUP BY user_id HAVING SUM(order_total) > 50",
+        brokenCode: "SELECT user_id SUM(order_total) FROM Orders GROUP BY user_id HAVING SUM(order_total) > 50",
         debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
@@ -3350,11 +3350,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Max Spesa Singola per Utente",
         descTemplate: "Trova l'importo dell'ordine singolo più alto per ogni utente.",
-        queryTemplate: "SELECT user_id, MAX(total_amount) FROM Orders GROUP BY user_id",
+        queryTemplate: "SELECT user_id, MAX(order_total) FROM Orders GROUP BY user_id",
         hints: ["Raggruppa per la colonna user_id", "Usa una funzione aggregata come COUNT, SUM o AVG nella SELECT"],
         explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "SELECT user_id MAX(total_amount) FROM Orders GROUP BY user_id",
+        brokenCode: "SELECT user_id MAX(order_total) FROM Orders GROUP BY user_id",
         debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
@@ -3410,11 +3410,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Ordini Medi per Utente (HAVING)",
         descTemplate: "Utenti con media ordine superiore a 500.",
-        queryTemplate: "SELECT user_id, AVG(total_amount) FROM Orders GROUP BY user_id HAVING AVG(order_total) > 20",
+        queryTemplate: "SELECT user_id, AVG(order_total) FROM Orders GROUP BY user_id HAVING AVG(order_total) > 20",
         hints: ["HAVING AVG(...) > 500"],
         explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "SELECT user_id AVG(total_amount) FROM Orders GROUP BY user_id HAVING AVG(order_total) > 20",
+        brokenCode: "SELECT user_id AVG(order_total) FROM Orders GROUP BY user_id HAVING AVG(order_total) > 20",
         debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
@@ -3442,11 +3442,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Somma Condizionale",
         descTemplate: "Calcola il valore totale degli ordini 'Shipped' per ogni utente.",
-        queryTemplate: "SELECT user_id, SUM(CASE WHEN status = 'Shipped' THEN total_amount ELSE 0 END) as ShippedValue FROM Orders GROUP BY user_id",
-        hints: ["SUM(CASE WHEN ... THEN total_amount ELSE 0 END)"],
+        queryTemplate: "SELECT user_id, SUM(CASE WHEN status = 'Shipped' THEN order_total ELSE 0 END) as ShippedValue FROM Orders GROUP BY user_id",
+        hints: ["SUM(CASE WHEN ... THEN order_total ELSE 0 END)"],
         explanation: "Combinare CASE WHEN dentro una funzione aggregata come SUM permette di contare o sommare solo le righe che soddisfano una condizione specifica.",
         replacements: {},
-        brokenCode: "SELECT user_id SUM(CASE WHEN status = 'Shipped' THEN total_amount ELSE 0 END) as ShippedValue FROM Orders GROUP BY user_id",
+        brokenCode: "SELECT user_id SUM(CASE WHEN status = 'Shipped' THEN order_total ELSE 0 END) as ShippedValue FROM Orders GROUP BY user_id",
         debugHint: "CASE dentro SUM."
       },
       {
@@ -3522,11 +3522,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Mese di Picco Vendite",
         descTemplate: "Trova il mese (01-12) con la somma totale vendite più alta.",
-        queryTemplate: "SELECT MONTH(order_date) as Mese, SUM(total_amount) FROM Orders GROUP BY Mese ORDER BY SUM(total_amount) DESC LIMIT 1",
+        queryTemplate: "SELECT MONTH(order_date) as Mese, SUM(order_total) FROM Orders GROUP BY Mese ORDER BY SUM(order_total) DESC LIMIT 1",
         hints: ["GROUP BY Mese ... ORDER BY SUM(...) DESC"],
         explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "SELECT MONTH(order_date) IS Mese, SUM(total_amount) FROM Orders GROUP BY Mese ORDER BY SUM(total_amount) DESC LIMIT 1",
+        brokenCode: "SELECT MONTH(order_date) IS Mese, SUM(order_total) FROM Orders GROUP BY Mese ORDER BY SUM(order_total) DESC LIMIT 1",
         debugHint: "ORDER BY SUM."
       },
       {
@@ -3542,11 +3542,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Clienti e Spesa Media (Arrotondata)",
         descTemplate: "Per ogni paese, calcola la spesa media arrotondata a 2 decimali.",
-        queryTemplate: "SELECT country, ROUND(AVG(total_amount), 2) FROM Orders o JOIN Users u ON o.user_id = u.id GROUP BY country",
+        queryTemplate: "SELECT country, ROUND(AVG(order_total), 2) FROM Orders o JOIN Users u ON o.user_id = u.id GROUP BY country",
         hints: ["ROUND(AVG(...), 2)", "Serve JOIN Users"],
         explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "SELECT country ROUND(AVG(total_amount), 2) FROM Orders o JOIN Users u ON o.user_id = u.id GROUP BY country",
+        brokenCode: "SELECT country ROUND(AVG(order_total), 2) FROM Orders o JOIN Users u ON o.user_id = u.id GROUP BY country",
         debugHint: "Assicurati di avere GROUP BY e che tutte le colonne non aggregate siano nel raggruppamento."
       },
       {
@@ -3602,11 +3602,11 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Somma Totale Globale",
         descTemplate: "Un'unica riga con somma totale vendite e conteggio ordini globale (senza GROUP BY esplicito).",
-        queryTemplate: "SELECT SUM(total_amount), COUNT(*) FROM Orders",
+        queryTemplate: "SELECT SUM(order_total), COUNT(*) FROM Orders",
         hints: ["SELECT SUM..., COUNT..."],
         explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
         replacements: {},
-        brokenCode: "SELCET SUM(total_amount), COUNT(*) FROM Orders",
+        brokenCode: "SELCET SUM(order_total), COUNT(*) FROM Orders",
         debugHint: "Nessun GROUP BY."
       },
       {
