@@ -986,7 +986,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 <div className="relative z-10 flex flex-col items-center justify-center gap-4 w-full h-full">
                                     <div className="text-center">
                                         <p className="text-base text-slate-200 font-semibold">Trascina file qui</p>
-                                        <p className="text-xs text-slate-400 mt-0.5">CSV, JSON, Excel • Max 250MB</p>
+                                        <p className="text-xs text-slate-400 mt-0.5">CSV, JSON, Excel • Max 600MB</p>
                                     </div>
                                     
                                     <button

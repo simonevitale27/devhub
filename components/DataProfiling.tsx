@@ -19,6 +19,10 @@ interface ColumnProfile {
   mean?: number;
   median?: number;
   mode?: string;
+  stdDev?: number;
+  cv?: number;
+  p25?: number;
+  p75?: number;
   sample: string[];
 }
 
@@ -80,9 +84,33 @@ const DataProfiling: React.FC<DataProfilingProps> = ({ data, columns }) => {
         const nums = numericValues.map(v => Number(v)).sort((a, b) => a - b);
         profile.min = nums[0];
         profile.max = nums[nums.length - 1];
-        profile.mean = nums.reduce((a, b) => a + b, 0) / nums.length;
+        
+        const sum = nums.reduce((a, b) => a + b, 0);
+        const mean = sum / nums.length;
+        profile.mean = mean;
+        
         const mid = Math.floor(nums.length / 2);
         profile.median = nums.length % 2 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+
+        const getPercentile = (arr: number[], q: number) => {
+          const pos = (arr.length - 1) * q;
+          const base = Math.floor(pos);
+          const rest = pos - base;
+          if (arr[base + 1] !== undefined) {
+            return arr[base] + rest * (arr[base + 1] - arr[base]);
+          } else {
+            return arr[base];
+          }
+        };
+        
+        profile.p25 = getPercentile(nums, 0.25);
+        profile.p75 = getPercentile(nums, 0.75);
+
+        const variance = nums.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / nums.length;
+        const stdDev = Math.sqrt(variance);
+        profile.stdDev = stdDev;
+        
+        profile.cv = mean !== 0 ? (stdDev / Math.abs(mean)) * 100 : 0;
       }
 
       // Date-specific stats
@@ -139,11 +167,11 @@ const DataProfiling: React.FC<DataProfilingProps> = ({ data, columns }) => {
         <span className="text-xs text-slate-500">{profiles.length} colonne • {data.length} righe</span>
       </div>
       
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
+      <div className="overflow-x-auto custom-scrollbar pb-2">
+        <table className="w-full text-xs min-w-[1200px]">
           <thead>
             <tr className="bg-white/5 text-slate-400">
-              <th className="text-left px-3 py-2 font-semibold">Colonna</th>
+              <th className="text-left px-3 py-2 font-semibold sticky left-0 bg-[#0d0d0d] z-10">Colonna</th>
               <th className="text-left px-3 py-2 font-semibold">Tipo</th>
               <th className="text-right px-3 py-2 font-semibold">Valori</th>
               <th className="text-right px-3 py-2 font-semibold">Unici</th>
@@ -151,48 +179,77 @@ const DataProfiling: React.FC<DataProfilingProps> = ({ data, columns }) => {
               <th className="text-right px-3 py-2 font-semibold">Min</th>
               <th className="text-right px-3 py-2 font-semibold">Max</th>
               <th className="text-right px-3 py-2 font-semibold">Media</th>
+              <th className="text-right px-3 py-2 font-semibold">Mediana</th>
+              <th className="text-right px-3 py-2 font-semibold">Moda</th>
+              <th className="text-right px-3 py-2 font-semibold">StdDev</th>
+              <th className="text-right px-3 py-2 font-semibold">Var(%)</th>
+              <th className="text-right px-3 py-2 font-semibold">25°</th>
+              <th className="text-right px-3 py-2 font-semibold">75°</th>
               <th className="text-left px-3 py-2 font-semibold">Campione</th>
             </tr>
           </thead>
-        </table>
-        
-        {/* Scrollable Body */}
-        <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
-          <table className="w-full text-xs">
-            <tbody>
+          <tbody>
               {profiles.map((profile, i) => (
                 <tr key={profile.name} className={`border-b border-white/5 hover:bg-white/5 ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}>
-                  <td className="px-3 py-2.5 font-medium text-white w-[15%]">{profile.name}</td>
-                  <td className="px-3 py-2.5 w-[10%]">
-                    <div className="flex items-center gap-1.5">
+                  <td className="px-3 py-2.5 font-medium text-white sticky left-0 bg-[#0d0d0d] z-10">{profile.name}</td>
+                  <td className="px-3 py-2.5">
+                    <div className="flex items-center gap-1.5 whitespace-nowrap">
                       {getTypeIcon(profile.type)}
                       <span className="text-slate-300 capitalize">{profile.type}</span>
                     </div>
                   </td>
-                  <td className="px-3 py-2.5 text-right text-slate-300 font-mono w-[10%]">{profile.count.toLocaleString()}</td>
-                  <td className="px-3 py-2.5 text-right w-[10%]">
-                    <div className="flex items-center justify-end gap-1">
-                      <span className="text-slate-300 font-mono">{profile.uniqueCount.toLocaleString()}</span>
-                    </div>
+                  <td className="px-3 py-2.5 text-right text-slate-300 font-mono">{profile.count.toLocaleString()}</td>
+                  <td className="px-3 py-2.5 text-right">
+                    <span className="text-slate-300 font-mono">{profile.uniqueCount.toLocaleString()}</span>
                   </td>
-                  <td className="px-3 py-2.5 text-right w-[10%]">
+                  <td className="px-3 py-2.5 text-right">
                     <span className={`font-mono ${profile.nullPercent > 0 ? 'text-yellow-400' : 'text-slate-500'}`}>
                       {profile.nullPercent.toFixed(1)}%
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-right w-[10%]">
+                  <td className="px-3 py-2.5 text-right">
                     <span className="text-slate-300 font-mono">{formatNumber(profile.min as number)}</span>
                   </td>
-                  <td className="px-3 py-2.5 text-right w-[10%]">
+                  <td className="px-3 py-2.5 text-right">
                     <span className="text-slate-300 font-mono">{formatNumber(profile.max as number)}</span>
                   </td>
-                  <td className="px-3 py-2.5 text-right w-[10%]">
+                  <td className="px-3 py-2.5 text-right">
                     <span className="text-slate-300 font-mono">
                       {profile.type === 'numeric' ? formatNumber(profile.mean) : '-'}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-left w-[15%]">
-                     <div className="flex flex-wrap gap-1">
+                  <td className="px-3 py-2.5 text-right">
+                    <span className="text-slate-300 font-mono">
+                      {profile.type === 'numeric' ? formatNumber(profile.median) : '-'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 text-right">
+                    <span className="text-slate-300 font-mono truncate max-w-[80px] inline-block" title={profile.mode}>
+                      {profile.mode || '-'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 text-right">
+                    <span className="text-slate-300 font-mono">
+                      {profile.type === 'numeric' ? formatNumber(profile.stdDev) : '-'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 text-right">
+                    <span className="text-slate-300 font-mono">
+                      {profile.type === 'numeric' ? formatNumber(profile.cv) + '%' : '-'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 text-right">
+                    <span className="text-slate-300 font-mono">
+                      {profile.type === 'numeric' ? formatNumber(profile.p25) : '-'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 text-right">
+                    <span className="text-slate-300 font-mono">
+                      {profile.type === 'numeric' ? formatNumber(profile.p75) : '-'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 text-left">
+                     <div className="flex flex-wrap gap-1 min-w-[200px]">
                         {profile.sample.slice(0, 3).map((val, idx) => (
                           <span key={idx} className="inline-block px-1.5 py-0.5 rounded bg-white/5 text-[10px] text-slate-400 border border-white/5 truncate max-w-[80px]" title={val}>{val}</span>
                         ))}
@@ -204,7 +261,6 @@ const DataProfiling: React.FC<DataProfilingProps> = ({ data, columns }) => {
           </table>
         </div>
       </div>
-    </div>
   );
 };
 
