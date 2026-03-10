@@ -331,6 +331,36 @@ del _data
 };
 
 /**
+ * Scrive un file nel Virtual File System di Pyodide
+ */
+export const injectDataFrameFromCSV = async (
+  tableName: string,
+  fileName: string
+): Promise<void> => {
+  const pyodide = await initPyodide();
+  
+  // Assicurarsi che le dipendenze esistano
+  await loadPyodidePackages(['pandas']);
+  
+  // Creazione DataFrame via nativa di C
+  const pyCode = `
+import pandas as pd
+try:
+    df_${tableName} = pd.read_csv('/data/${fileName}', low_memory=False)
+except Exception as e:
+    raise Exception(f"Failed to read CSV from VFS: {str(e)}")
+`;
+  
+  try {
+    pyodide.runPython(pyCode);
+    console.log(`Injected DataFrame df_${tableName} from VFS file: /data/${fileName}`);
+  } catch (error: any) {
+    console.error(`Failed to inject DataFrame df_${tableName} from CSV:`, error);
+    throw new Error(`Errore nel caricamento nativo del DataFrame: ${error.message}`);
+  }
+};
+
+/**
  * Write a file to Pyodide's virtual filesystem at /data/<filename>.
  * This allows Python code to access uploaded files via standard paths,
  * e.g. pd.read_csv('/data/vendite.csv')

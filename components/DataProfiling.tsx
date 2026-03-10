@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { BarChart3, Hash, Type, Calendar, Percent, TrendingUp, TrendingDown, Circle } from 'lucide-react';
 
 interface DataProfilingProps {
@@ -27,11 +27,21 @@ interface ColumnProfile {
 }
 
 const DataProfiling: React.FC<DataProfilingProps> = ({ data, columns }) => {
+  const PROFILING_LIMIT = 10000;
+  const [analyzeAll, setAnalyzeAll] = useState(false);
+
+  const dataToAnalyze = useMemo(() => {
+    if (analyzeAll || !data || data.length <= PROFILING_LIMIT) {
+      return data || [];
+    }
+    return data.slice(0, PROFILING_LIMIT);
+  }, [data, analyzeAll]);
+
   const profiles = useMemo(() => {
-    if (!data || data.length === 0 || !columns || columns.length === 0) return [];
+    if (!dataToAnalyze || dataToAnalyze.length === 0 || !columns || columns.length === 0) return [];
 
     return columns.map(col => {
-      const values = data.map(row => row[col]);
+      const values = dataToAnalyze.map(row => row[col]);
       const nonNullValues = values.filter(v => v !== null && v !== undefined && v !== '');
       
       // Determine type
@@ -131,7 +141,7 @@ const DataProfiling: React.FC<DataProfilingProps> = ({ data, columns }) => {
 
       return profile;
     });
-  }, [data, columns]);
+  }, [dataToAnalyze, columns]);
 
   if (profiles.length === 0) {
     return (
@@ -164,7 +174,21 @@ const DataProfiling: React.FC<DataProfilingProps> = ({ data, columns }) => {
           <BarChart3 size={16} className="text-blue-400" />
           Data Profiling
         </h3>
-        <span className="text-xs text-slate-500">{profiles.length} colonne • {data.length} righe</span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-slate-500">
+            {profiles.length} colonne • {dataToAnalyze.length.toLocaleString('it-IT')} di {data.length.toLocaleString('it-IT')} righe analizzate
+          </span>
+          {!analyzeAll && data.length > PROFILING_LIMIT && (
+            <button
+              onClick={() => setAnalyzeAll(true)}
+              className="px-3 py-1.5 text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 rounded-lg transition-colors flex items-center gap-2 font-medium"
+              title="Calcola statistiche sull'intero dataset (potrebbe richiedere qualche secondo)"
+            >
+              <TrendingUp size={12} />
+              Carica tutto il set
+            </button>
+          )}
+        </div>
       </div>
       
       <div className="overflow-x-auto custom-scrollbar pb-2">

@@ -22,7 +22,7 @@ import EditorToggle from './EditorToggle';
 
 import { formatSQL } from '../utils/formatSQL';
 import { formatPythonCode, copyToClipboard } from '../utils/formatPython';
-import { initPyodide, isPyodideReady, injectDataFrame, runPythonForDataLab, writeFileToVFS } from '../services/pythonService';
+import { initPyodide, isPyodideReady, injectDataFrame, injectDataFrameFromCSV, runPythonForDataLab, writeFileToVFS } from '../services/pythonService';
 
 interface DataLabProps {
     onBack: () => void;
@@ -337,18 +337,26 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                 // Inject data into Pyodide as DataFrame (async, non-blocking)
                 if (isPyodideReady()) {
-                    injectDataFrame(tableName, data.headers, data.rows)
-                        .then(() => {
-                            setAvailableDataFrames(prev => [...new Set([...prev, `df_${tableName}`])]);
-                        })
-                        .catch(err => console.warn('DataFrame injection failed:', err));
-                    
-                    // Write raw file to VFS natively
-                    writeFileToVFS(file.name, rawBuffer)
-                        .then(path => {
-                            setVfsFilePaths(prev => ({ ...prev, [tableName]: path }));
-                        })
-                        .catch(err => console.warn('VFS write failed:', err));
+                    // Pre-write raw file to VFS natively
+                    const writePromise = rawBuffer 
+                        ? writeFileToVFS(file.name, rawBuffer)
+                        : Promise.resolve("");
+                        
+                    writePromise.then(path => {
+                        if (path) setVfsFilePaths(prev => ({ ...prev, [tableName]: path }));
+                        
+                        // If it's CSV and we have buffer, use fast pandas C-binding
+                        if (rawBuffer && file.name.toLowerCase().endsWith('.csv')) {
+                            return injectDataFrameFromCSV(tableName, file.name);
+                        } else {
+                            // Legacy path for JSON/Excel
+                            return injectDataFrame(tableName, data.headers, data.rows);
+                        }
+                    })
+                    .then(() => {
+                        setAvailableDataFrames(prev => [...new Set([...prev, `df_${tableName}`])]);
+                    })
+                    .catch(err => console.warn('DataFrame/VFS injection failed:', err));
                 }
                 
             } catch (err: any) {
@@ -452,37 +460,36 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 // Inject all current tables as DataFrames
                 for (const [name, tableData] of tables) {
                     try {
-                        await injectDataFrame(name, tableData.headers, tableData.rows);
-                        setAvailableDataFrames(prev => [...new Set([...prev, `df_${name}`])]);
-                    } catch (err) {
-                        console.warn(`Failed to inject ${name}:`, err);
-                    }
-                }
-
-                // Also write files to VFS (for pd.read_csv paths)
-                // Use raw ArrayBuffer natively if available to escape string parsing OOM crashes
-                for (const [name, tableData] of tables) {
-                    try {
-                        if (tableData.rawBuffer) {
+                        if (tableData.rawBuffer && tableData.fileName.toLowerCase().endsWith('.csv')) {
                             // FAST PATH: Write purely native binary buffer without escaping
                             const path = await writeFileToVFS(tableData.fileName, tableData.rawBuffer);
                             setVfsFilePaths(prev => ({ ...prev, [name]: path }));
+                            
+                            // Let python read directly from C/WASM bypass
+                            await injectDataFrameFromCSV(name, tableData.fileName);
+                            setAvailableDataFrames(prev => [...new Set([...prev, `df_${name}`])]);
                         } else {
                             // FALLBACK PATH: Reconstruct CSV-like content from table data
-                            const csvLines = [
-                                tableData.headers.join(','),
-                                ...tableData.rows.map(row => row.map((v: any) => {
-                                    const s = String(v ?? '');
-                                    return s.includes(',') || s.includes('"') || s.includes('\n') 
-                                        ? `"${s.replace(/"/g, '""')}"` : s;
-                                }).join(','))
-                            ];
-                            const csvContent = csvLines.join('\n');
-                            const path = await writeFileToVFS(tableData.fileName, csvContent);
-                            setVfsFilePaths(prev => ({ ...prev, [name]: path }));
+                            await injectDataFrame(name, tableData.headers, tableData.rows);
+                            setAvailableDataFrames(prev => [...new Set([...prev, `df_${name}`])]);
+                            
+                            // Only write to VFS if it's small enough (e.g. < 50,000 righe)
+                            if (tableData.rows.length <= 50000) {
+                                const csvLines = [
+                                    tableData.headers.join(','),
+                                    ...tableData.rows.map(row => row.map((v: any) => {
+                                        const s = String(v ?? '');
+                                        return s.includes(',') || s.includes('"') || s.includes('\n') 
+                                            ? `"${s.replace(/"/g, '""')}"` : s;
+                                    }).join(','))
+                                ];
+                                const csvContent = csvLines.join('\n');
+                                const path = await writeFileToVFS(tableData.fileName, csvContent);
+                                setVfsFilePaths(prev => ({ ...prev, [name]: path }));
+                            }
                         }
                     } catch (err) {
-                        console.warn(`VFS write failed for ${name}:`, err);
+                        console.warn(`Failed to inject/sync table ${name}:`, err);
                     }
                 }
             }
