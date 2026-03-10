@@ -45,6 +45,25 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange, onRun, tables 
           textareaRef.current.selectionStart = textareaRef.current.selectionEnd = result.newCursorPosition;
         }
       }, 0);
+      return;
+    }
+
+    // Standard Tab indentation (2 spaces) when no suggestion is active
+    if (e.key === 'Tab' && !ghostSuggestion) {
+      e.preventDefault();
+      const textarea = e.currentTarget as HTMLTextAreaElement;
+      const cursorPos = textarea.selectionStart;
+      const selEnd = textarea.selectionEnd;
+      
+      const newValue = value.substring(0, cursorPos) + "  " + value.substring(selEnd);
+      onChange(newValue);
+      
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.selectionStart = textareaRef.current.selectionEnd = cursorPos + 2;
+        }
+      }, 0);
+      return;
     }
   };
 

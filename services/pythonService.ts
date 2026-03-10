@@ -16,6 +16,7 @@ interface PyodideInterface {
   setStdout: (options: { batched: (output: string) => void }) => void;
   setStderr: (options: { batched: (output: string) => void }) => void;
   globals: any;
+  FS: any; // Virtual File System module
 }
 
 // Singleton Pyodide instance
@@ -336,24 +337,35 @@ del _data
  */
 export const writeFileToVFS = async (
   fileName: string,
-  content: string
+  content: string | ArrayBuffer | Uint8Array
 ): Promise<string> => {
   const pyodide = await initPyodide();
   
   const filePath = `/data/${fileName}`;
   
-  // Use Python to create directory and write file
-  const escaped = content.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+  // Create /data directory if it doesn't exist
+  try {
+    pyodide.FS.mkdir('/data');
+  } catch (e: any) {
+    if (e.code !== 'EEXIST') {
+      console.warn("Failed to create /data directory:", e);
+    }
+  }
   
-  pyodide.runPython(`
-import os
-os.makedirs('/data', exist_ok=True)
-with open('${filePath}', 'w') as _f:
-    _f.write('${escaped}')
-del _f
-`);
+  // Write file natively using Pyodide FS (ArrayBuffer/Uint8Array highly recommended for large files)
+  let bytes: Uint8Array;
+  if (typeof content === 'string') {
+    const encoder = new TextEncoder();
+    bytes = encoder.encode(content);
+  } else if (content instanceof ArrayBuffer) {
+    bytes = new Uint8Array(content);
+  } else {
+    bytes = content;
+  }
   
-  console.log(`Written file to VFS: ${filePath}`);
+  pyodide.FS.writeFile(filePath, bytes);
+  
+  console.log(`Written file to VFS natively: ${filePath} (${bytes.length} bytes)`);
   return filePath;
 };
 

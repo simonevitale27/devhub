@@ -318,6 +318,9 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 // Load to AlaSQL with custom table name
                 loadCsvToAlaSQL(data, tableName);
                 
+                // Leggi ArrayBuffer per pyodide VFS senza saturare memoria
+                const rawBuffer = await file.arrayBuffer();
+
                 // Create TableData object
                 const tableData: TableData = {
                     tableName,
@@ -325,7 +328,8 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                     rowCount: data.rowCount,
                     headers: data.headers,
                     rows: data.rows,
-                    columnTypes
+                    columnTypes,
+                    rawBuffer
                 };
                 
                 // Add to tables map
@@ -339,14 +343,12 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                         })
                         .catch(err => console.warn('DataFrame injection failed:', err));
                     
-                    // Write raw file to VFS for pd.read_csv() etc.
-                    file.text().then(rawContent => {
-                        writeFileToVFS(file.name, rawContent)
-                            .then(path => {
-                                setVfsFilePaths(prev => ({ ...prev, [tableName]: path }));
-                            })
-                            .catch(err => console.warn('VFS write failed:', err));
-                    });
+                    // Write raw file to VFS natively
+                    writeFileToVFS(file.name, rawBuffer)
+                        .then(path => {
+                            setVfsFilePaths(prev => ({ ...prev, [tableName]: path }));
+                        })
+                        .catch(err => console.warn('VFS write failed:', err));
                 }
                 
             } catch (err: any) {
@@ -458,21 +460,27 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 }
 
                 // Also write files to VFS (for pd.read_csv paths)
-                // Re-read from the stored tableData to reconstruct CSV content
+                // Use raw ArrayBuffer natively if available to escape string parsing OOM crashes
                 for (const [name, tableData] of tables) {
                     try {
-                        // Reconstruct CSV-like content from table data
-                        const csvLines = [
-                            tableData.headers.join(','),
-                            ...tableData.rows.map(row => row.map((v: any) => {
-                                const s = String(v ?? '');
-                                return s.includes(',') || s.includes('"') || s.includes('\n') 
-                                    ? `"${s.replace(/"/g, '""')}"` : s;
-                            }).join(','))
-                        ];
-                        const csvContent = csvLines.join('\n');
-                        const path = await writeFileToVFS(tableData.fileName, csvContent);
-                        setVfsFilePaths(prev => ({ ...prev, [name]: path }));
+                        if (tableData.rawBuffer) {
+                            // FAST PATH: Write purely native binary buffer without escaping
+                            const path = await writeFileToVFS(tableData.fileName, tableData.rawBuffer);
+                            setVfsFilePaths(prev => ({ ...prev, [name]: path }));
+                        } else {
+                            // FALLBACK PATH: Reconstruct CSV-like content from table data
+                            const csvLines = [
+                                tableData.headers.join(','),
+                                ...tableData.rows.map(row => row.map((v: any) => {
+                                    const s = String(v ?? '');
+                                    return s.includes(',') || s.includes('"') || s.includes('\n') 
+                                        ? `"${s.replace(/"/g, '""')}"` : s;
+                                }).join(','))
+                            ];
+                            const csvContent = csvLines.join('\n');
+                            const path = await writeFileToVFS(tableData.fileName, csvContent);
+                            setVfsFilePaths(prev => ({ ...prev, [name]: path }));
+                        }
                     } catch (err) {
                         console.warn(`VFS write failed for ${name}:`, err);
                     }
@@ -978,7 +986,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                 <div className="relative z-10 flex flex-col items-center justify-center gap-4 w-full h-full">
                                     <div className="text-center">
                                         <p className="text-base text-slate-200 font-semibold">Trascina file qui</p>
-                                        <p className="text-xs text-slate-400 mt-0.5">CSV, JSON, Excel • Max 10MB</p>
+                                        <p className="text-xs text-slate-400 mt-0.5">CSV, JSON, Excel • Max 250MB</p>
                                     </div>
                                     
                                     <button

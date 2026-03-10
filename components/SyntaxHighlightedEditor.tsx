@@ -877,6 +877,23 @@ const SyntaxHighlightedEditor = forwardRef<
           }, 0);
           return;
         }
+
+        // Standard Tab indentation (2 spaces) when no snippet matches
+        e.preventDefault();
+        const selEnd = textarea.selectionEnd;
+        const newValue =
+          value.substring(0, cursorPos) + "  " + value.substring(selEnd);
+        onChange(newValue);
+        setGhostSuggestion(null);
+
+        const newPos = cursorPos + 2;
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart =
+              textareaRef.current.selectionEnd = newPos;
+          }
+        }, 0);
+        return;
       }
 
       // Plain newline on Enter (no auto-indentation)

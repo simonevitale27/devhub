@@ -10,10 +10,10 @@ import { CsvData } from '../types';
  */
 export async function parseCsvFile(file: File): Promise<CsvData> {
     return new Promise((resolve, reject) => {
-        // Validate file size (max 10MB)
-        const maxSize = 10 * 1024 * 1024;
+        // Validate file size (max 250MB)
+        const maxSize = 250 * 1024 * 1024;
         if (file.size > maxSize) {
-            reject(new Error('Il file è troppo grande. Dimensione massima: 10MB'));
+            reject(new Error('Il file è troppo grande. Dimensione massima supportata: 250MB'));
             return;
         }
 

@@ -104,4 +104,5 @@ export interface CsvData {
   headers: string[];
   rows: any[][];
   rowCount: number;
+  rawBuffer?: ArrayBuffer;
 }
