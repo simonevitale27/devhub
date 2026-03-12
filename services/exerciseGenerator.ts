@@ -7601,13 +7601,13 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       },
       {
         titleTemplate: "Dipendenti Isolati",
-        descTemplate: "Dipendenti che non hanno manager (CEO) E non sono manager di nessuno.",
-        queryTemplate: "SELECT name FROM Employees WHERE manager_id IS NULL OR manager_id = 'NULL' OR id = 501",
-        hints: ["Per verificare i valori nulli usa IS NULL", "Non usare = NULL, non funziona in SQL"],
-        explanation: "Combinare JOIN con GROUP BY permette di aggregare dati provenienti da più tabelle correlate, come calcolare totali per utente dagli ordini.",
+        descTemplate: "Dipendenti che non hanno manager (CEO) e non sono manager di nessuno.",
+        queryTemplate: "SELECT name FROM Employees WHERE manager_id IS NULL AND id NOT IN (SELECT manager_id FROM Employees WHERE manager_id IS NOT NULL)",
+        hints: ["Filtra manager_id IS NULL per trovare il CEO", "Assicurati che il suo ID non sia presente tra i manager_id di altri dipendenti (NOT IN)"],
+        explanation: "Uniamo le due condizioni per trovare dipendenti senza superiori e senza subordinati diretti.",
         replacements: {},
-        brokenCode: "SELECT name FROM Employees WHERE manager_id IS NULL OR manager_id == 'NULL' OR id = 501",
-        debugHint: "Attento ai NULL nella subquery del NOT IN."
+        brokenCode: "SELECT name FROM Employees WHERE manager_id = NULL AND id NOT IN (SELECT manager_id FROM Employees)",
+        debugHint: "Attento a confrontare i NULL (usa IS NULL) e a gestire eventuali record NULL nella subquery con NOT IN."
       },
       {
         titleTemplate: "Gap Analysis",
@@ -7691,13 +7691,13 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       },
       {
         titleTemplate: "Reparto Produttivo",
-        descTemplate: "Dipartimenti dove tutti sono stati assunti dopo il 2020.",
-        queryTemplate: "SELECT department FROM Employees GROUP BY department HAVING COUNT(*) > 0",
-        hints: ["Raggruppa per dipartimento", "Controlla che la data MINIMA sia > 2020"],
-        explanation: "EXISTS verifica se la subquery correlata restituisce almeno una riga. È spesso più efficiente di IN per dataset grandi.",
+        descTemplate: "Dipartimenti dove TUTTI i membri sono stati assunti dopo l'inizio del 2021 ('2021-01-01').",
+        queryTemplate: "SELECT department FROM Employees GROUP BY department HAVING MIN(hire_date) >= '2021-01-01'",
+        hints: ["Raggruppa per dipartimento (GROUP BY)", "Se il valore MINIMO della data di assunzione (MIN(hire_date)) è dopo quella data, allora tutti lo sono"],
+        explanation: "Usando MIN(hire_date) in un HAVING ci assicura che persino il primo assunto di quel dipartimento rientri nel periodo specificato.",
         replacements: {},
-        brokenCode: "SELECT department FROM Employees GROUP department HAVING COUNT(*) > 0",
-        debugHint: "Se il minimo è > 2020, allora tutti sono > 2020."
+        brokenCode: "SELECT department FROM Employees GROUP department HAVING MIN(hire_date) == '2021-01-01'",
+        debugHint: "Manca la 'BY' nel GROUP BY, e l'operatore corretto è '>='."
       },
       {
         titleTemplate: "Elite Club",
@@ -7730,24 +7730,24 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         debugHint: "Correlazione p2.price > p1.price."
       },
       {
-        titleTemplate: "Acquisto Crociato",
-        descTemplate: "Utenti che hanno comprato Monitor ma NON Keyboard.",
-        queryTemplate: "SELECT id FROM Users LIMIT 5",
-        hints: ["IN lista Monitor", "NOT IN lista Keyboard"],
-        explanation: "Le subquery permettono di annidare una query dentro un'altra, creando filtri o calcoli basati su risultati intermedi.",
+        titleTemplate: "Acquisto Esclusivo",
+        descTemplate: "ID degli utenti che hanno comprato un 'Monitor 4K' ma NON hanno alcun ordine per una 'Keyboard'.",
+        queryTemplate: "SELECT id FROM Users WHERE id IN (SELECT user_id FROM Orders JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id WHERE name = 'Monitor 4K') AND id NOT IN (SELECT user_id FROM Orders JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id WHERE name = 'Keyboard')",
+        hints: ["Trova prima la lista degli user_id che hanno ordinato il Monitor 4K (usando IN)", "Interseca con la lista in negativo (NOT IN) degli user_id che hanno comprato la Keyboard"],
+        explanation: "La composizione di set logici tramite IN e NOT IN ti permette di individuare chi soddisfa determinati pattern di acquisto escludendone altri.",
         replacements: {},
-        brokenCode: "SELCET id FROM Users LIMIT 5",
-        debugHint: "Due subquery separate."
+        brokenCode: "SELECT id FROM Users WHERE id IN (SELECT user_id FROM Orders... WHERE name = 'Monitor 4K') AND id = (SELECT user_id FROM Orders... WHERE name = 'Keyboard')",
+        debugHint: "Usa due subquery separate e combinare IN con NOT IN."
       },
       {
-        titleTemplate: "Media Mobile (Sim)",
-        descTemplate: "Ordini che valgono più della media degli ordini del giorno precedente (Self Join Date).",
-        queryTemplate: "SELECT o1.id FROM Orders o1 JOIN Orders o2 ON o1.user_id = o2.user_id WHERE o1.id != o2.id AND o1.order_total > o2.order_total",
-        hints: ["Self join su data = data - 1", "Confronta total con AVG"],
-        explanation: "LIMIT restringe il numero di righe restituite al massimo specificato. Utile per campionamento, paginazione e top-N.",
+        titleTemplate: "Miglioramento Storico",
+        descTemplate: "Trova gli ID degli ordini in cui l'utente ha speso più della sua stessa spesa media storica globale (di quell'utente).",
+        queryTemplate: "SELECT id FROM Orders o1 WHERE order_total > (SELECT AVG(order_total) FROM Orders o2 WHERE o2.user_id = o1.user_id)",
+        hints: ["Per ogni ordine, usa una subquery correlata per calcolare la media (AVG) degli order_total per quello user_id", "Filtra per order_total maggiore della media calcolata"],
+        explanation: "Una subquery correlata calcola la media di spesa storicizzata e la confronta riga per riga con ogni singolo ordine della query esterna.",
         replacements: {},
-        brokenCode: "SELECT o1.id FROM Orders o1 JOIN Orders o2 ON o1.user_id = o2.user_id WHERE o1.id != o2.id AND o1.order_total < o2.order_total",
-        debugHint: "Join complessa sulle date."
+        brokenCode: "SELECT id FROM Orders o1 WHERE order_total > (SELECT AVG(order_total) FROM Orders o2 WHERE o2.id = o1.id)",
+        debugHint: "La media deve essere calcolata storicamente per lo stesso utente (user_id), non per lo stesso id dell'ordine."
       },
       {
         titleTemplate: "Prodotti 'Ponte'",
@@ -7780,14 +7780,14 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         debugHint: "Stesso order_id per entrambi i prodotti."
       },
       {
-        titleTemplate: "Salto di Qualità",
-        descTemplate: "Utenti il cui ultimo ordine è molto più alto (> 2x) del loro primo ordine (Subqueries Min/Max date).",
-        queryTemplate: "SELECT u.id FROM Users u JOIN Orders o_first ON u.id=o_first.user_id JOIN Orders o_last ON u.id=o_last.user_id WHERE o_first.id != o_last.id AND o_first.order_total < o_last.order_total",
-        hints: ["Join con primo ordine", "Join con ultimo ordine", "Confronta totali"],
-        explanation: "EXISTS verifica se la subquery correlata restituisce almeno una riga. È spesso più efficiente di IN per dataset grandi.",
+        titleTemplate: "Acquirenti Versatili",
+        descTemplate: "ID degli utenti che hanno registrato sia un ordine consistente (totale > 500) sia un ordine molto piccolo (totale < 50).",
+        queryTemplate: "SELECT id FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE user_id = Users.id AND order_total > 500) AND EXISTS (SELECT 1 FROM Orders WHERE user_id = Users.id AND order_total < 50)",
+        hints: ["Devono verificarsi due condizioni indipendenti", "Usa la logica combinando due condizioni EXISTS separate con AND"],
+        explanation: "Controllare più clausole EXISTS in serie permette di testare più scenari complessi sulla stessa entità radice, mantenendo la query performante e chiarissima.",
         replacements: {},
-        brokenCode: "SELECT u.id FROM Users u JOIN Orders o_first ON u.id=o_first.user_id JOIN Orders o_last ON u.id=o_last.user_id WERE o_first.id != o_last.id AND o_first.order_total < o_last.order_total",
-        debugHint: "Trova min e max date per user."
+        brokenCode: "SELECT id FROM Users WHERE EXISTS (SELECT 1 FROM Orders WHERE user_id = Users.id AND order_total > 500 AND order_total < 50)",
+        debugHint: "Un singolo ordine non può avere contemporaneamente avere totale > 500 e < 50! Ti servono due EXISTS."
       },
       {
         titleTemplate: "Stagionalità",
@@ -7820,14 +7820,14 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         debugHint: "Difficile: conta i 'minori o uguali'."
       },
       {
-        titleTemplate: "Tutti i Prodotti",
-        descTemplate: "Utenti che hanno comprato TUTTI i prodotti della categoria 'Accessories' (Division Relazionale).",
-        queryTemplate: "SELECT u.id FROM Users u LIMIT 5",
-        hints: ["Non esiste un prodotto Accessories che l'utente NON ha comprato", "Doppio NOT EXISTS"],
-        explanation: "Relational Division: l'utente ha coperto l'intero set.",
+        titleTemplate: "Innamorati Delle Categorie",
+        descTemplate: "Trova gli ID utente (user_id) che hanno acquistato TUTTI i prodotti univoci che esistono nella categoria 'Accessories'.",
+        queryTemplate: "SELECT user_id FROM Orders JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id WHERE Products.category = 'Accessories' GROUP BY user_id HAVING COUNT(DISTINCT Products.id) = (SELECT COUNT(*) FROM Products WHERE category = 'Accessories')",
+        hints: ["Esegui una divisione relazionale contando!", "Combina le tre tabelle (Ordini, Dettagli, Prodotti), raggruppa per user_id, e filtra con HAVING per matchare il COUNT(DISTINCT id) di quei prodotti acquistati nella categoria con il COUNT totale dei prodotti nella stessa categoria"],
+        explanation: "Conta il mismatching univoco: se il numero di prodotti unici diversi acquistati dall'utente per quella categoria corrisponde esattamente al totale, allora li ha acquistati tutti.",
         replacements: {},
-        brokenCode: "SELCET u.id FROM Users u LIMIT 5",
-        debugHint: "Logica molto avanzata: Users senza (Prodotti Accessories senza Ordini)."
+        brokenCode: "SELECT user_id FROM Orders ... HAVING COUNT(Products.id) = (SELECT COUNT(*) FROM Products WHERE category = 'Accessories')",
+        debugHint: "Senza DISTINCT, l'utente potrebbe aver comprato 5 volte lo stesso prodotto e ti scambierebbe quel risultato come target superato."
       },
       {
         titleTemplate: "Regioni Vuote",
@@ -7861,13 +7861,63 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       },
       {
         titleTemplate: "Full House",
-        descTemplate: "Ordini che contengono almeno un prodotto per OGNI categoria esistente (molto difficile).",
-        queryTemplate: "SELECT order_id FROM OrderItems oi JOIN Products p ON oi.product_id=p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) >= 2",
-        hints: ["Conta categorie nell'ordine", "Confronta con count totale categorie"],
-        explanation: "GROUP BY raggruppa le righe con lo stesso valore nella colonna specificata. COUNT conta quante righe appartengono a ciascun gruppo.",
+        descTemplate: "Gli order_id degli ordini che contengono al loro interno prodotti da TUTTE le categorie merceologiche esistenti nel catalogo.",
+        queryTemplate: "SELECT order_id FROM OrderItems oi JOIN Products p ON oi.product_id=p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) = (SELECT COUNT(DISTINCT category) FROM Products)",
+        hints: ["Raggruppa per order_id e conta in modo unito (COUNT DISTINCT) le categorie di quel calcolo", "Confrontalo (con un HAVING uguaglianza) rispetto alla query (SELECT COUNT(DISTINCT category) FROM Products) in una subquery"],
+        explanation: "Ancora un caso di divisione relazionale. Raggiungere l'insieme matematico esatto contando i rami raggruppabili (distinct count).",
         replacements: {},
-        brokenCode: "SELECT order_id DISTINCT FROM OrderItems oi JOIN Products p ON oi.product_id=p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) >= 2",
-        debugHint: "Subquery per il numero totale di categorie."
+        brokenCode: "SELECT order_id FROM OrderItems oi JOIN Products p ON oi.product_id=p.id GROUP BY order_id HAVING COUNT(DISTINCT p.category) = COUNT(DISTINCT category)",
+        debugHint: "Devi calcolare il conteggio generale usando una subquery completa indipendente (SELECT COUNT...)."
+      },
+      {
+        titleTemplate: "CTE - Sopra la Media",
+        descTemplate: "Utilizza una Common Table Expression (CTE) chiamata 'avg_price' per calcolare il prezzo medio, poi seleziona tutte le colonne dei prodotti che costano più di quella media.",
+        queryTemplate: "WITH avg_price AS (SELECT AVG(price) AS media FROM Products) SELECT * FROM Products WHERE price > (SELECT media FROM avg_price)",
+        hints: ["Prima definisci la CTE all'inizio: WITH avg_price AS (SELECT AVG(price) AS media FROM Products)", "Poi scrivi la tua SELECT normale che attinge (con una subquery o una Join) dal risultato calcolato nella CTE"],
+        explanation: "Le CTE (Common Table Expressions) rendono le query complesse molto più leggibili suddividendo la logica in passaggi gerarchici sequenziali isolati.",
+        replacements: {},
+        brokenCode: "WITH avg_price AS (SELECT AVG(price) AS media FROM Products) SELECT * FROM Products WHERE price > AVG(price)",
+        debugHint: "Usa la CTE (avg_price) all'interno di una subquery per confrontarla con il prezzo nella WHERE (SELECT media FROM avg_price)."
+      },
+      {
+        titleTemplate: "CTE - Top Performers",
+        descTemplate: "Utilizzando una CTE, calcola il fatturato totale (SUM(order_total)) generato da ogni 'user_id' e chiamala 'user_totals'. Ritorna gli 'user_id' e il loro 'totale' se maggiore di 1000.",
+        queryTemplate: "WITH user_totals AS (SELECT user_id, SUM(order_total) AS totale FROM Orders GROUP BY user_id) SELECT user_id, totale FROM user_totals WHERE totale > 1000",
+        hints: ["Crea una CTE 'user_totals' che raggruppa per user_id e calcola il fatturato as totale", "Nella query principale (che viene eseguita dopo), estrai i flag e limita con un normale WHERE (poiché totale a quel punto è considerata una colonna statica calcolata)"],
+        explanation: "La CTE prepara uno strato aggregato virtuale temporaneo, semplificando notevolmente i filtri e mascherando limitazioni del costrutto HAVING.",
+        replacements: {},
+        brokenCode: "WITH user_totals AS (SELECT user_id, SUM(order_total) AS totale FROM Orders GROUP BY user_id) SELECT user_id, totale FROM user_totals HAVING totale > 1000",
+        debugHint: "Quando interroghi la CTE nella query principale, usa semplicemente WHERE al posto di HAVING per i suoi risultati finali calcolati."
+      },
+      {
+        titleTemplate: "Classifica Assoluta (RANK)",
+        descTemplate: "Ritorna il nome e il prezzo di ogni prodotto, assegnando anche un rango (RANK()) basato sul prezzo in ordine decrescente (dal più caro al più economico). Usa l'alias 'posizione'.",
+        queryTemplate: "SELECT name, price, RANK() OVER (ORDER BY price DESC) AS posizione FROM Products",
+        hints: ["Usa la funzione Window RANK()", "La clausola statica OVER definisce la finestra: in questo caso vogliamo ordinare in blocco per prezzo decrescente (OVER (ORDER BY price DESC))"],
+        explanation: "Con RANK(), se dei prodotti hanno lo stesso prezzo, riceveranno lo stesso identico rango. E il rango logicamente successivo farà un 'salto' conteggiando la parità per un ordine scalato corretto.",
+        replacements: {},
+        brokenCode: "SELECT name, price, RANK() ORDER BY price DESC AS posizione FROM Products",
+        debugHint: "Manca la clausola OVER(), che è l'involucro obbligatorio in Sql per far funzionare correttamente una Window Function."
+      },
+      {
+        titleTemplate: "Classifica Di Categoria (DENSE_RANK)",
+        descTemplate: "Per ogni prodotto, restituisci nome, categoria, prezzo e il suo rango ALL'INTERNO della propria categoria, ordinato dal più costoso. Usa DENSE_RANK() as 'cat_rank'.",
+        queryTemplate: "SELECT name, category, price, DENSE_RANK() OVER (PARTITION BY category ORDER BY price DESC) AS cat_rank FROM Products",
+        hints: ["Inizia frazionando/partizionando i dati per logica semantica usando PARTITION BY category", "Dentro l'involucro OVER(), inserisci PARTITION BY per la semantica chiusa e ORDER BY per stabilire l'algoritmo di iterazione discendente del prezzo"],
+        explanation: "DENSE_RANK() a differenza di RANK, non lascia 'buchi' nei rank iterativi numerici in caso di valori pareggiati (es 1, 2, 2, 3 invece di 1, 2, 2, 4). La particella PARTITION BY resetta il contatore per ogni limitatore di categoria passatagli.",
+        replacements: {},
+        brokenCode: "SELECT name, category, price, DENSE_RANK() OVER (GROUP BY category ORDER BY price DESC) AS cat_rank FROM Products",
+        debugHint: "Nelle definizioni e istruzioni della funzioni finestra, i gruppi virtuali e dinamici si partizionano. La sintassi richiede PARTITION BY non confonderla con GROUP BY."
+      },
+      {
+        titleTemplate: "Generazione Costrutti (ROW_NUMBER)",
+        descTemplate: "Restituisci l'email dei dipendenti, numerando ciascuna riga progressivamente dalla data di assunzione meno recente (hire_date crescente). Usa ROW_NUMBER() as 'id_seq'.",
+        queryTemplate: "SELECT email, ROW_NUMBER() OVER (ORDER BY hire_date ASC) AS id_seq FROM Employees",
+        hints: ["La funzione pura ROW_NUMBER() assegna unicamente numeri seriali continui crescenti, ignorando del tutto i pareggi statistici", "Usa la finestra protetta OVER configurandola in modo che segua l'ordinamento cronologico crescente di hire_date"],
+        explanation: "ROW_NUMBER() numera inesorabilmente e stabilmente le righe analitiche mostrate 1, 2, 3... utile per impaginazioni fisiche fisse e stabili o per generare ID artificiali temporanei e numerici 'on the fly'.",
+        replacements: {},
+        brokenCode: "SELECT email, ROW_NUMBER() OVER (ORDER BY hire_date ASC) FROM Employees",
+        debugHint: "Ricorda di attribuire semantica al nome calcolato all'alias logico inserendo 'as id_seq'."
       }
     ],
   },
