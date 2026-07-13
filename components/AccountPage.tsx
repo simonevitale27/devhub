@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, User, Mail, Key, Trash2, Calendar, Shield, AlertTriangle, Check, X, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Page } from '../types';
-import { supabase } from '../services/supabaseClient';
+import { pb } from '../services/pocketbaseClient';
 import { getTotalStats } from '../services/progressService';
 
 interface AccountPageProps {
@@ -16,6 +16,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showNameForm, setShowNameForm] = useState(false);
   const [newName, setNewName] = useState(displayName || '');
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,17 +42,19 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) {
-        setMessage({ type: 'error', text: error.message });
-      } else {
-        setMessage({ type: 'success', text: 'Password aggiornata con successo!' });
-        setNewPassword('');
-        setConfirmPassword('');
-        setShowPasswordForm(false);
-      }
+      if (!user) throw new Error('Utente non autenticato');
+      await pb.collection('users').update(user.id, {
+        oldPassword: currentPassword,
+        password: newPassword,
+        passwordConfirm: confirmPassword,
+      });
+      setMessage({ type: 'success', text: 'Password aggiornata con successo!' });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowPasswordForm(false);
     } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Errore durante l\'aggiornamento' });
+      setMessage({ type: 'error', text: err?.response?.data?.oldPassword?.message || err?.message || 'Errore durante l\'aggiornamento' });
     } finally {
       setIsLoading(false);
     }
@@ -61,34 +64,19 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
   const handleDeleteAccount = async () => {
     setIsLoading(true);
     try {
-      // 1. Delete user progress (Row Level Security will handle this if configured, but good to be explicit)
-      if (user) {
-        await supabase.from('user_progress').delete().eq('user_id', user.id);
-      }
-      
-      // 2. Call RPC to delete the user from auth.users
-      // Note: This requires the 'delete_user' function to be created in Supabase
-      const { error } = await supabase.rpc('delete_user');
-      
-      if (error) {
-        console.error('RPC Error:', error);
-        throw new Error('Impossibile eliminare l\'utente. Hai eseguito lo script SQL su Supabase?');
-      }
+      if (!user) throw new Error('Utente non autenticato');
 
-      // 3. Sign out locally
+      // Delete the user record (cascadeDelete on user_progress.user removes their progress too)
+      await pb.collection('users').delete(user.id);
+
+      // Sign out locally
       await logout();
       onNavigate(Page.Landing);
-      
+
       setMessage({ type: 'success', text: 'Account eliminato con successo' });
     } catch (err: any) {
       console.error('Delete Error:', err);
-      // Fallback: if RPC fails, at least sign out
-      if (err.message.includes('script SQL')) {
-         setMessage({ type: 'error', text: err.message });
-      } else {
-         await logout();
-         onNavigate(Page.Landing);
-      }
+      setMessage({ type: 'error', text: err?.message || 'Impossibile eliminare l\'account' });
     } finally {
       setIsLoading(false);
     }
@@ -309,6 +297,17 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
             {showPasswordForm && (
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div>
+                  <label className="block text-sm text-slate-400 mb-2">Password attuale</label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    placeholder="Password attuale"
+                    required
+                  />
+                </div>
+                <div>
                   <label className="block text-sm text-slate-400 mb-2">Nuova password</label>
                   <input
                     type="password"
@@ -344,6 +343,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
                     type="button"
                     onClick={() => {
                       setShowPasswordForm(false);
+                      setCurrentPassword('');
                       setNewPassword('');
                       setConfirmPassword('');
                     }}

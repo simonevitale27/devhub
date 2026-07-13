@@ -22,6 +22,22 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': path.resolve(__dirname, '.'),
       }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Core React — cached long-term, rarely changes
+            'vendor-react': ['react', 'react-dom'],
+            // Charting & export libs — loaded only when needed
+            'vendor-charts': ['recharts', 'xlsx', 'jspdf', 'jspdf-autotable'],
+            // SQL engine — loaded only when SqlGym/DataLab open
+            'vendor-sql': ['alasql', 'sql-formatter'],
+            // PocketBase — auth & progress
+            'vendor-pocketbase': ['pocketbase'],
+          }
+        }
+      }
     }
   };
 });

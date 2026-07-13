@@ -71,7 +71,6 @@ export const initPyodide = async (): Promise<PyodideInterface> => {
       });
 
       pyodideInstance = pyodide;
-      console.log('Pyodide initialized successfully');
       return pyodide;
     } catch (error) {
       pyodideLoading = null;
@@ -105,7 +104,6 @@ export const loadPyodidePackages = async (packages: string[]): Promise<void> => 
   try {
     await pyodide.loadPackage(toLoad);
     toLoad.forEach(p => loadedPackages.add(p));
-    console.log(`Loaded packages: ${toLoad.join(', ')}`);
   } catch (error) {
     console.error('Failed to load packages:', error);
     throw error;
@@ -323,7 +321,6 @@ del _data
   
   try {
     pyodide.runPython(pyCode);
-    console.log(`Injected DataFrame df_${name} (${rows.length} rows, ${headers.length} cols)`);
   } catch (error: any) {
     console.error(`Failed to inject DataFrame df_${name}:`, error);
     throw new Error(`Errore nel caricamento dati come DataFrame: ${error.message}`);
@@ -353,7 +350,6 @@ except Exception as e:
   
   try {
     pyodide.runPython(pyCode);
-    console.log(`Injected DataFrame df_${tableName} from VFS file: /data/${fileName}`);
   } catch (error: any) {
     console.error(`Failed to inject DataFrame df_${tableName} from CSV:`, error);
     throw new Error(`Errore nel caricamento nativo del DataFrame: ${error.message}`);
@@ -395,7 +391,6 @@ export const writeFileToVFS = async (
   
   pyodide.FS.writeFile(filePath, bytes);
   
-  console.log(`Written file to VFS natively: ${filePath} (${bytes.length} bytes)`);
   return filePath;
 };
 

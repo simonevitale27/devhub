@@ -22,3 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test & generated data files
+test_*.csv
+*.json.bak
+quality_report.json
+validation_report.json
+template_report.json
+errors.json
+dev_server.log
+
+# Database dumps / storage exports (artefatti migrazione Supabase -> Coolify)
+*.backup.gz
+*.storage.zip
+
+# Env files (.env.local è già coperto da *.local)
+.env
+
+# Fablize session state (tool-local, non fa parte del progetto)
+.fablize/

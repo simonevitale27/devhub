@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Page } from '../types';
 import { Hexagon, ArrowRight, Mail, Lock, User, Chrome, LogIn } from 'lucide-react';
 import { signIn, signUp, signInWithGoogle, resetPassword } from '../services/authService';
-import { setCurrentUser, syncSupabaseToLocal } from '../services/progressService';
+import { setCurrentUser, syncBackendToLocal } from '../services/progressService';
 import { useAuth } from '../contexts/AuthContext';
 
 interface LandingPageProps {
@@ -40,7 +40,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             }
             if (user) {
                 setCurrentUser(user.id);
-                await syncSupabaseToLocal(); // Load cloud progress
+                await syncBackendToLocal(); // Load cloud progress
                 onNavigate(Page.Home);
             }
         } catch (err: any) {

@@ -6,11 +6,6 @@ import { Difficulty, QueryResult } from '../types';
 // ALASQL POLYFILLS
 // ==========================================
 
-// ==========================================
-// ALASQL POLYFILLS
-// ==========================================
-
-
 alasql.options.mysql = true;
 
 alasql.fn.MOD = (n: number, m: number) => n % m;
@@ -164,10 +159,6 @@ alasql.fn.FROM_UNIXTIME = (ts: number) => {
     return new Date(ts * 1000).toISOString().replace('T', ' ').split('.')[0];
 };
 
-alasql.options.mysql = true; // Enable some MySQL compatibility if possible
-
-
-
 // ==========================================
 // MOCK DATA GENERATORS
 // ==========================================
@@ -209,7 +200,6 @@ const getRandomDate = (startYear: number, endYear: number = 2024): string => {
 };
 
 export const initDatabase = (_difficulty: Difficulty) => {
-  console.log('🚀 initDatabase STARTING (Realistic Data)...');
   
   try {
     // 1. Drop old tables
@@ -226,9 +216,7 @@ export const initDatabase = (_difficulty: Difficulty) => {
         alasql('CREATE TABLE Orders (id INT PRIMARY KEY, user_id INT, order_date DATE, status VARCHAR, order_total DECIMAL)'); // Renamed total -> order_total
         alasql('CREATE TABLE OrderItems (id INT PRIMARY KEY, order_id INT, product_id INT, quantity INT, unit_price DECIMAL)');
         alasql('CREATE TABLE Employees (id INT PRIMARY KEY, name VARCHAR, email VARCHAR, department VARCHAR, hire_date DATE, manager_id INT, salary DECIMAL)');
-        console.log('✅ Tables created');
     } catch (e) {
-        console.error('❌ Error creating tables:', e);
     }
 
     // ==========================================
@@ -285,7 +273,6 @@ export const initDatabase = (_difficulty: Difficulty) => {
 
         console.log(`✅ Users inserted: ${usersData.length}`);
     } catch (e) {
-        console.error('❌ Error inserting Users:', e);
     }
     
     // --- PRODUCTS (50 rows + Specific Items) ---
@@ -390,7 +377,6 @@ export const initDatabase = (_difficulty: Difficulty) => {
 
         console.log(`✅ Products inserted: ${productsData.length}`);
     } catch (e) {
-        console.error('❌ Error inserting Products:', e);
     }
 
     // --- ORDERS (60 rows) ---
@@ -444,7 +430,6 @@ export const initDatabase = (_difficulty: Difficulty) => {
 
         console.log(`✅ Orders inserted: ${ordersData.length}`);
     } catch (e) {
-        console.error('❌ Error inserting Orders:', e);
     }
 
     // --- ORDER ITEMS (150 rows) ---
@@ -500,7 +485,6 @@ export const initDatabase = (_difficulty: Difficulty) => {
 
         console.log(`✅ OrderItems inserted: ${orderItemsData.length}`);
     } catch (e) {
-        console.error('❌ Error inserting OrderItems:', e);
     }
 
     // --- EMPLOYEES (15 rows) ---
@@ -535,12 +519,9 @@ export const initDatabase = (_difficulty: Difficulty) => {
 
         console.log(`✅ Employees inserted: ${employeesData.length}`);
     } catch (e) {
-        console.error('❌ Error inserting Employees:', e);
     }
 
-    console.log('🎉 initDatabase COMPLETE!');
   } catch (e) {
-    console.error('❌ initDatabase FAILED:', e);
   }
 };
 
@@ -587,6 +568,5 @@ export const translateSqlError = (errorMsg: string): string => {
 // =====================================================
 // AUTO-INIT
 // =====================================================
-console.log('📦 sqlService module loaded');
 initDatabase('Easy' as Difficulty);
 

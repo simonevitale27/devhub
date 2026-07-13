@@ -2,10 +2,10 @@
  * Progress Service
  * Tracks user exercise completions across Python and SQL Labs.
  * - Guest mode: Persists to LocalStorage (data lost on browser clear)
- * - Authenticated: Persists to Supabase (synced across devices)
+ * - Authenticated: Persists to PocketBase (synced across devices)
  */
 
-import { supabase, UserProgress } from './supabaseClient';
+import { pb, isPocketBaseAvailable, markPocketBaseUnavailable } from './pocketbaseClient';
 
 // Types
 export interface ExerciseCompletion {
@@ -93,20 +93,17 @@ function saveProgressLocal(data: ProgressData): void {
   }
 }
 
-// ==================== SUPABASE OPERATIONS ====================
+// ==================== POCKETBASE OPERATIONS ====================
 
-async function loadProgressSupabase(): Promise<ProgressData> {
-  if (!currentUserId) return { completions: [], streakDays: 0, lastActiveDate: '' };
+async function loadProgressPocketBase(): Promise<ProgressData> {
+  if (!currentUserId || !isPocketBaseAvailable()) return { completions: [], streakDays: 0, lastActiveDate: '' };
 
   try {
-    const { data, error } = await supabase
-      .from('user_progress')
-      .select('*')
-      .eq('user_id', currentUserId);
+    const rows = await pb.collection('user_progress').getFullList({
+      filter: pb.filter('user = {:userId}', { userId: currentUserId }),
+    });
 
-    if (error) throw error;
-
-    const completions: ExerciseCompletion[] = (data || []).map((row: UserProgress) => ({
+    const completions: ExerciseCompletion[] = rows.map((row: any) => ({
       lab: row.lab,
       topicId: row.topic_id,
       difficulty: row.difficulty,
@@ -138,38 +135,43 @@ async function loadProgressSupabase(): Promise<ProgressData> {
       lastActiveDate: dates[0] || ''
     };
   } catch (e) {
-    console.error('Failed to load progress from Supabase:', e);
+    markPocketBaseUnavailable();
     return { completions: [], streakDays: 0, lastActiveDate: '' };
   }
 }
 
-async function saveProgressSupabase(
+async function saveProgressPocketBase(
   lab: 'sql' | 'python',
   topicId: string,
   difficulty: 'easy' | 'medium' | 'hard',
   exerciseIndex: number,
   attempts: number
 ): Promise<void> {
-  if (!currentUserId) return;
+  if (!currentUserId || !isPocketBaseAvailable()) return;
 
   try {
-    const { error } = await supabase
-      .from('user_progress')
-      .upsert({
-        user_id: currentUserId,
-        lab,
-        topic_id: topicId,
-        difficulty,
-        exercise_index: exerciseIndex,
-        attempts,
-        completed_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,lab,topic_id,difficulty,exercise_index'
-      });
+    const filter = pb.filter(
+      'user = {:userId} && lab = {:lab} && topic_id = {:topicId} && difficulty = {:difficulty} && exercise_index = {:exerciseIndex}',
+      { userId: currentUserId, lab, topicId, difficulty, exerciseIndex }
+    );
+    const data = {
+      user: currentUserId,
+      lab,
+      topic_id: topicId,
+      difficulty,
+      exercise_index: exerciseIndex,
+      attempts,
+      completed_at: new Date().toISOString(),
+    };
 
-    if (error) throw error;
+    const existing = await pb.collection('user_progress').getFirstListItem(filter).catch(() => null);
+    if (existing) {
+      await pb.collection('user_progress').update(existing.id, data);
+    } else {
+      await pb.collection('user_progress').create(data);
+    }
   } catch (e) {
-    console.error('Failed to save progress to Supabase:', e);
+    markPocketBaseUnavailable();
   }
 }
 
@@ -178,14 +180,14 @@ async function saveProgressSupabase(
 // Load progress (from appropriate source)
 export function loadProgress(): ProgressData {
   // For sync operations, use local storage
-  // Supabase version is async, use loadProgressAsync for that
+  // PocketBase version is async, use loadProgressAsync for that
   return loadProgressLocal();
 }
 
 // Async version for authenticated users
 export async function loadProgressAsync(): Promise<ProgressData> {
   if (currentUserId) {
-    return await loadProgressSupabase();
+    return await loadProgressPocketBase();
   }
   return loadProgressLocal();
 }
@@ -241,9 +243,9 @@ export function recordCompletion(
   progress.lastActiveDate = today;
   saveProgressLocal(progress);
 
-  // If authenticated, also save to Supabase (fire and forget)
+  // If authenticated, also save to PocketBase (fire and forget)
   if (currentUserId) {
-    saveProgressSupabase(lab, topicId, difficulty, exerciseIndex, attempts);
+    saveProgressPocketBase(lab, topicId, difficulty, exerciseIndex, attempts);
   }
 }
 
@@ -379,27 +381,27 @@ export function getTotalStats(): {
 export async function clearProgress(): Promise<void> {
   localStorage.removeItem(STORAGE_KEY);
 
-  // Also clear from Supabase if authenticated
+  // Also clear from PocketBase if authenticated
   if (currentUserId) {
     try {
-      await supabase
-        .from('user_progress')
-        .delete()
-        .eq('user_id', currentUserId);
+      const rows = await pb.collection('user_progress').getFullList({
+        filter: pb.filter('user = {:userId}', { userId: currentUserId }),
+      });
+      await Promise.all(rows.map(row => pb.collection('user_progress').delete(row.id)));
     } catch (e) {
-      console.error('Failed to clear Supabase progress:', e);
+      console.error('Failed to clear PocketBase progress:', e);
     }
   }
 }
 
-// Sync local progress to Supabase (called after login)
-export async function syncLocalToSupabase(): Promise<void> {
+// Sync local progress to PocketBase (called after login)
+export async function syncLocalToBackend(): Promise<void> {
   if (!currentUserId) return;
 
   const localData = loadProgressLocal();
 
   for (const completion of localData.completions) {
-    await saveProgressSupabase(
+    await saveProgressPocketBase(
       completion.lab,
       completion.topicId,
       completion.difficulty,
@@ -409,17 +411,17 @@ export async function syncLocalToSupabase(): Promise<void> {
   }
 }
 
-// Load from Supabase to Local (called after login)
-export async function syncSupabaseToLocal(): Promise<void> {
+// Load from PocketBase to Local (called after login)
+export async function syncBackendToLocal(): Promise<void> {
   if (!currentUserId) return;
 
-  const supabaseData = await loadProgressSupabase();
+  const backendData = await loadProgressPocketBase();
   const localData = loadProgressLocal();
 
   // Merge: keep all unique completions from both sources
   const allCompletions = [...localData.completions];
 
-  for (const completion of supabaseData.completions) {
+  for (const completion of backendData.completions) {
     const exists = allCompletions.find(
       c => c.lab === completion.lab &&
            c.topicId === completion.topicId &&
@@ -434,9 +436,9 @@ export async function syncSupabaseToLocal(): Promise<void> {
 
   saveProgressLocal({
     completions: allCompletions,
-    streakDays: Math.max(localData.streakDays, supabaseData.streakDays),
-    lastActiveDate: localData.lastActiveDate > supabaseData.lastActiveDate
+    streakDays: Math.max(localData.streakDays, backendData.streakDays),
+    lastActiveDate: localData.lastActiveDate > backendData.lastActiveDate
       ? localData.lastActiveDate
-      : supabaseData.lastActiveDate
+      : backendData.lastActiveDate
   });
 }

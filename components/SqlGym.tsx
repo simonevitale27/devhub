@@ -176,11 +176,6 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
   };
   const difficultyColor = difficultyColors[difficulty];
 
-  // Initialize database immediately on mount to ensure tables exist
-  useEffect(() => {
-    initDatabase(difficulty);
-  }, []); // Run once on mount
-
   // Persist query history to localStorage
   useEffect(() => {
     try {
@@ -211,6 +206,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
     setIsDownloadMenuOpen(false);
   };

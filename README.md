@@ -164,10 +164,10 @@ Employees (id, name, department, hire_date, manager_id)
 
 | Categoria | Tecnologia |
 | --------- | ---------- |
-| Frontend | React + TypeScript |
+| Frontend | React 19 + TypeScript + Vite 6 |
 | Database locale | AlaSQL (tutto nel browser) |
-| Backend cloud | Supabase (solo per login e progressi) |
-| Python | Pyodide (Python in WebAssembly) |
+| Backend | Supabase (solo login e sync progressi — in migrazione verso Supabase self-hosted su Coolify/VPS) |
+| Python | Pyodide (Python in WebAssembly, caricato da CDN al primo uso) |
 | Grafici SQL | Recharts |
 | Grafici Python | Matplotlib (via Pyodide) |
 | PDF | jsPDF |
@@ -180,8 +180,11 @@ Employees (id, name, department, hire_date, manager_id)
 L'app usa un approccio ibrido:
 
 - **Velocità**: il database SQL degli esercizi vive nel browser, quindi le query sono istantanee
-- **Persistenza**: i progressi vengono salvati nel cloud con Supabase
+- **Persistenza**: i progressi sono sempre salvati in LocalStorage; se sei loggato vengono anche sincronizzati sul backend (merge automatico guest → account al login)
 - **Privacy**: i tuoi file CSV rimangono locali, non vengono mai inviati a server esterni
+- **Resilienza**: se il backend è irraggiungibile un circuit breaker disattiva le chiamate cloud e l'app continua a funzionare in locale (incluso il logout)
+
+Per lo stato di lavorazione corrente e i prossimi step vedi [HANDOFF.md](HANDOFF.md).
 
 ---
 
@@ -221,6 +224,17 @@ Per abilitare login e sync, crea `.env.local`:
 VITE_SUPABASE_URL=tua_url
 VITE_SUPABASE_ANON_KEY=tua_key
 ```
+
+Senza queste variabili l'app funziona in guest mode (progressi solo locali). Lo schema del backend è in `supabase_setup.sql`.
+
+---
+
+## Roadmap
+
+1. **Migrazione backend**: da Supabase Cloud a Supabase self-hosted su Coolify (VPS). Il client è già env-driven: la migrazione è uno swap di variabili d'ambiente. Dettagli operativi in [HANDOFF.md](HANDOFF.md).
+2. **Riscrittura esercizi**: rifattorizzare i generatori monolitici in moduli per argomento, migliorare qualità e progressione dei quesiti.
+3. **Nuova sezione DAX**: percorso di studio per la certificazione Power BI (PL-300) — misure, colonne calcolate, contesto di filtro, time intelligence — con quiz e validazione delle formule.
+4. **Tailwind build-time**: sostituire il CDN con la pipeline di build.
 
 ---
 

@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Hexagon, Lock, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
-import { supabase } from '../services/supabaseClient';
+import { pb } from '../services/pocketbaseClient';
 import { Page } from '../types';
 
 interface ResetPasswordPageProps {
   onNavigate: (page: Page) => void;
+}
+
+// PocketBase sends a reset link like /reset-password?token=... (see resetPasswordTemplate
+// on the users collection). The token itself proves the request is legitimate — no
+// active session is needed, unlike Supabase's magic-link-based recovery session.
+function getResetToken(): string | null {
+  return new URLSearchParams(window.location.search).get('token');
 }
 
 const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onNavigate }) => {
@@ -13,38 +20,16 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onNavigate }) => 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [isValidSession, setIsValidSession] = useState(false);
-  const [checkingSession, setCheckingSession] = useState(true);
-
-  // Check if we have a valid recovery session
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      // If there's a session and it came from a recovery flow
-      if (session) {
-        setIsValidSession(true);
-      }
-      setCheckingSession(false);
-    };
-
-    // Listen for auth events (recovery link will trigger SIGNED_IN or PASSWORD_RECOVERY)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setIsValidSession(true);
-        setCheckingSession(false);
-      }
-    });
-
-    checkSession();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  const [token] = useState<string | null>(getResetToken());
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!token) {
+      setError('Link non valido o scaduto');
+      return;
+    }
 
     if (password.length < 6) {
       setError('La password deve essere di almeno 6 caratteri');
@@ -59,37 +44,21 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onNavigate }) => 
     setIsLoading(true);
 
     try {
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: password
-      });
-
-      if (updateError) {
-        setError(updateError.message);
-      } else {
-        setSuccess(true);
-        // Redirect to home after 3 seconds
-        setTimeout(() => {
-          onNavigate(Page.Home);
-        }, 3000);
-      }
+      await pb.collection('users').confirmPasswordReset(token, password, confirmPassword);
+      setSuccess(true);
+      // Redirect to home after 3 seconds
+      setTimeout(() => {
+        onNavigate(Page.Home);
+      }, 3000);
     } catch (err: any) {
-      setError(err.message || 'Errore durante l\'aggiornamento della password');
+      setError(err?.response?.message || err.message || 'Errore durante l\'aggiornamento della password. Il link potrebbe essere scaduto.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Loading state
-  if (checkingSession) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  // Invalid session state
-  if (!isValidSession && !checkingSession) {
+  // Invalid/missing token state
+  if (!token) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center relative overflow-hidden">
         {/* Background Glow */}

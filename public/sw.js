@@ -21,24 +21,24 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch event - network first, falling back to cache
+// Fetch event - network first, falling back to cache (GET only)
 self.addEventListener("fetch", (event) => {
+  // Never intercept non-GET requests (Supabase auth/progress POSTs must hit the network directly)
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
         // Clone the response for caching
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          // Only cache GET requests
-          if (event.request.method === "GET") {
-            cache.put(event.request, responseClone);
-          }
+          cache.put(event.request, responseClone);
         });
         return response;
       })
-      .catch(() => {
-        // Fallback to cache if network fails
-        return caches.match(event.request);
-      })
+      .catch(() =>
+        // Fallback to cache if network fails; a clean network error otherwise
+        caches.match(event.request).then((cached) => cached || Response.error())
+      )
   );
 });

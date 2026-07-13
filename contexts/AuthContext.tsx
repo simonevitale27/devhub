@@ -1,10 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '@supabase/supabase-js';
-import { supabase } from '../services/supabaseClient';
-import { setCurrentUser, syncSupabaseToLocal } from '../services/progressService';
+import { pb, toAuthUser, AuthUser } from '../services/pocketbaseClient';
+import { setCurrentUser, syncBackendToLocal, syncLocalToBackend } from '../services/progressService';
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isGuest: boolean;
   isLoading: boolean;
   displayName: string | null;
@@ -52,7 +51,7 @@ class ErrorBoundary extends React.Component<{children: ReactNode}, {hasError: bo
           <pre className="bg-gray-900 p-4 rounded overflow-auto max-w-full text-xs">
             {this.state.error?.toString()}
           </pre>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="mt-6 px-4 py-2 bg-blue-600 rounded hover:bg-blue-500"
           >
@@ -67,94 +66,65 @@ class ErrorBoundary extends React.Component<{children: ReactNode}, {hasError: bo
 }
 
 export function AuthProvider({ children, onAuthChange }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(pb.authStore.record ? toAuthUser(pb.authStore.record) : null);
   const [isGuest, setIsGuest] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Debug logs
-  useEffect(() => {
-    console.log("AuthProvider mounted");
-    // Check if Supabase client is initialized
-    try {
-      console.log("Supabase URL defined:", !!supabase);
-    } catch (e) {
-      console.error("Error accessing Supabase client:", e);
-    }
-  }, []);
-
-  // Extract display name from user metadata
-  const getDisplayName = (user: User | null): string | null => {
+  const getDisplayName = (user: AuthUser | null): string | null => {
     if (!user) return null;
-    // Try different sources for name
-    return (
-      user.user_metadata?.full_name ||
-      user.user_metadata?.name ||
-      user.email?.split('@')[0] ||
-      null
-    );
+    return user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || null;
   };
 
-  // Extract avatar URL from user metadata
-  const getAvatarUrl = (user: User | null): string | null => {
+  const getAvatarUrl = (user: AuthUser | null): string | null => {
     if (!user) return null;
-    return (
-      user.user_metadata?.avatar_url ||
-      user.user_metadata?.picture ||
-      null
-    );
+    return user.user_metadata?.avatar_url || null;
   };
 
   useEffect(() => {
-    // Check initial session
+    // PocketBase restores the session from localStorage synchronously, so we only
+    // need to verify it's still valid against the server (token revoked/expired).
     const checkSession = async () => {
-      try {
-        console.log("Checking Supabase session...");
-        const { data, error } = await supabase.auth.getSession();
-        
-        if (error) {
-           console.error("Supabase session error:", error);
-           // Don't throw, just log
+      if (pb.authStore.isValid && pb.authStore.record) {
+        setUser(toAuthUser(pb.authStore.record));
+        setCurrentUser(pb.authStore.record.id);
+        try {
+          await pb.collection('users').authRefresh();
+        } catch {
+          // Token invalid/expired server-side — clear local state
+          pb.authStore.clear();
+          setUser(null);
+          setCurrentUser(null);
+          setIsLoading(false);
+          return;
         }
-
-        if (data?.session?.user) {
-          console.log("User found:", data.session.user.id);
-          setUser(data.session.user);
-          setCurrentUser(data.session.user.id);
-          await syncSupabaseToLocal();
-          onAuthChange?.(true);
-        } else {
-           console.log("No active session");
-        }
-      } catch (error) {
-        console.error('Error checking session:', error);
-      } finally {
-        setIsLoading(false);
+        syncLocalToBackend()
+          .then(() => syncBackendToLocal())
+          .catch(() => {});
+        onAuthChange?.(true);
       }
+      setIsLoading(false);
     };
 
     checkSession();
 
-    // Listen for auth changes (including OAuth redirects)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth event:', event);
-        
-        if (event === 'SIGNED_IN' && session?.user) {
-          setUser(session.user);
-          setIsGuest(false);
-          setCurrentUser(session.user.id);
-          await syncSupabaseToLocal();
-          onAuthChange?.(true);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setCurrentUser(null);
-          onAuthChange?.(false);
-        }
+    const removeListener = pb.authStore.onChange((_token, record) => {
+      if (record) {
+        setUser(toAuthUser(record));
+        setIsGuest(false);
+        setCurrentUser(record.id);
+        syncLocalToBackend()
+          .then(() => syncBackendToLocal())
+          .catch(() => {});
+        onAuthChange?.(true);
+      } else {
+        setUser(null);
+        setCurrentUser(null);
+        onAuthChange?.(false);
       }
-    );
+    });
 
     return () => {
-      subscription.unsubscribe();
+      removeListener();
     };
   }, [onAuthChange]);
 
@@ -165,7 +135,11 @@ export function AuthProvider({ children, onAuthChange }: AuthProviderProps) {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    try {
+      pb.authStore.clear();
+    } catch {
+      // Clear local state anyway so the user isn't stuck logged in
+    }
     setUser(null);
     setIsGuest(false);
     setCurrentUser(null);
@@ -173,12 +147,8 @@ export function AuthProvider({ children, onAuthChange }: AuthProviderProps) {
 
   const updateProfile = async (name: string) => {
     if (!user) return;
-    const { data, error } = await supabase.auth.updateUser({
-      data: { full_name: name, name: name }
-    });
-    
-    if (error) throw error;
-    if (data.user) setUser(data.user);
+    const record = await pb.collection('users').update(user.id, { name });
+    setUser(toAuthUser(record));
   };
 
   return (
