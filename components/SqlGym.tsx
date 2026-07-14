@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from "react";
 import {
   Play,
   ChevronRight,
@@ -38,12 +38,7 @@ import {
   Menu,
 } from "lucide-react";
 
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { downloadCSV, compareResults } from "../utils/sqlHelpers";
-import { generateUnifiedPDF } from "../utils/pdfExport";
-import QuickChart from "./QuickChart";
 import { formatSQL } from "../utils/formatSQL";
 import { TableInfo } from "../utils/ghostTextSuggestions";
 import { recordCompletion } from "../services/progressService";
@@ -68,11 +63,15 @@ import SchemaViewer from "./SchemaViewer";
 import SyntaxHighlightedEditor, { EditorHandle } from "./SyntaxHighlightedEditor";
 import ResultsTable from "./ResultsTable";
 import ResultStats from "./ResultStats";
-import SchemaERDiagram from "./SchemaERDiagram";
 import ResultDiff from "./ResultDiff";
 import ErrorBoundary from "./ErrorBoundary";
 import TableInspectorModal from "./TableInspectorModal";
 import UserBadge from "./UserBadge";
+
+// Heavy, rarely-used modals: kept out of the initial gym bundle. QuickChart pulls
+// recharts+jspdf; SchemaERDiagram pulls @xyflow/react. Loaded on demand.
+const QuickChart = lazy(() => import("./QuickChart"));
+const SchemaERDiagram = lazy(() => import("./SchemaERDiagram"));
 
 interface SqlGymProps {
   onBack: () => void;
@@ -212,11 +211,12 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
   };
 
   // Generate Excel Export
-  const generateExcel = () => {
+  const generateExcel = async () => {
     const dataToExport = Array.isArray(userResult) ? userResult : (userResult?.data || userResult);
     if (!dataToExport || !Array.isArray(dataToExport) || dataToExport.length === 0) return;
 
     try {
+      const XLSX = await import('xlsx');
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.json_to_sheet(dataToExport);
       
@@ -234,10 +234,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
   };
 
   // Generate PDF Export
-  const generatePDF = () => {
+  const generatePDF = async () => {
     const dataToExport = Array.isArray(userResult) ? userResult : (userResult?.data || userResult);
     if (!dataToExport || !Array.isArray(dataToExport) || dataToExport.length === 0) return;
 
+    const { generateUnifiedPDF } = await import('../utils/pdfExport');
     generateUnifiedPDF(dataToExport, `query_gym_result_${new Date().getTime()}.pdf`, 'SQL Gym Export');
     setIsDownloadMenuOpen(false);
   };
@@ -740,10 +741,12 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
       {showERDiagram && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-8 animate-in fade-in duration-200">
           <div className="relative z-50 w-full max-w-5xl max-h-[70vh] flex flex-col">
-            <SchemaERDiagram
-              schemas={DB_SCHEMAS}
-              onClose={() => setShowERDiagram(false)}
-            />
+            <Suspense fallback={null}>
+              <SchemaERDiagram
+                schemas={DB_SCHEMAS}
+                onClose={() => setShowERDiagram(false)}
+              />
+            </Suspense>
           </div>
         </div>
       )}
@@ -1539,18 +1542,22 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
       )}
 
       {showChartModal && userResult && (
-        <QuickChart
-          data={Array.isArray(userResult) ? userResult : (userResult.data || [])}
-          onClose={() => setShowChartModal(false)}
-        />
+        <Suspense fallback={null}>
+          <QuickChart
+            data={Array.isArray(userResult) ? userResult : (userResult.data || [])}
+            onClose={() => setShowChartModal(false)}
+          />
+        </Suspense>
       )}
 
       {/* ER Diagram Modal */}
       {showERDiagram && (
-        <SchemaERDiagram
-          schemas={DB_SCHEMAS}
-          onClose={() => setShowERDiagram(false)}
-        />
+        <Suspense fallback={null}>
+          <SchemaERDiagram
+            schemas={DB_SCHEMAS}
+            onClose={() => setShowERDiagram(false)}
+          />
+        </Suspense>
       )}
       </div>
     </div>
