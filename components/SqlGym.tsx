@@ -566,8 +566,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
 
   if (isLoading && !exercise) {
     return (
-      <div className="h-screen flex items-center justify-center bg-transparent text-slate-300">
-        Caricamento...
+      <div className="h-screen flex items-center justify-center bg-transparent">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+          <span className="text-slate-400 text-sm font-medium">Preparazione del laboratorio…</span>
+        </div>
       </div>
     );
   }
@@ -1185,12 +1188,15 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       </div>
                     ) : (
                       !userResult?.error && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700 select-none pointer-events-none">
-                          <div className="w-20 h-20 rounded-full bg-slate-800/30 flex items-center justify-center mb-4 border border-slate-800">
-                            <Layers size={32} className="opacity-30" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 select-none pointer-events-none px-6 text-center">
+                          <div className="w-20 h-20 rounded-full bg-slate-800/40 flex items-center justify-center mb-4 border border-slate-700">
+                            <Layers size={32} className="text-slate-500" />
                           </div>
-                          <span className="text-xs uppercase tracking-[0.2em] opacity-40 font-bold">
+                          <span className="text-xs uppercase tracking-[0.2em] font-bold text-slate-400">
                             Risultati Query
+                          </span>
+                          <span className="text-xs text-slate-500 mt-2 max-w-[220px]">
+                            Scrivi una query ed esegui per vedere i risultati qui.
                           </span>
                         </div>
                       )
@@ -1479,12 +1485,15 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                         </div>
                     ) : (
                       !userResult?.error && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700 select-none pointer-events-none">
-                          <div className="w-20 h-20 rounded-full bg-slate-800/30 flex items-center justify-center mb-4 border border-slate-800">
-                            <Layers size={32} className="opacity-30" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 select-none pointer-events-none px-6 text-center">
+                          <div className="w-20 h-20 rounded-full bg-slate-800/40 flex items-center justify-center mb-4 border border-slate-700">
+                            <Layers size={32} className="text-slate-500" />
                           </div>
-                          <span className="text-xs uppercase tracking-[0.2em] opacity-40 font-bold">
+                          <span className="text-xs uppercase tracking-[0.2em] font-bold text-slate-400">
                             Risultati Query
+                          </span>
+                          <span className="text-xs text-slate-500 mt-2 max-w-[220px]">
+                            Scrivi una query ed esegui per vedere i risultati qui.
                           </span>
                         </div>
                       )
