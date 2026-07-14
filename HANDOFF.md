@@ -1,88 +1,65 @@
 # HANDOFF — DevHub
 
-> Aggiornato: 2026-07-12 · Sessione: migrazione backend Supabase Cloud → PocketBase self-hosted su Coolify (completata)
+> Aggiornato: 2026-07-14 · Sessione: audit completo + Fase 0 stabilizzazione (deployata) + Fase 1 UI/perf (G001+G002 deployate). Prossimo: Fase 1 G003 design system + a11y, G004 redesign.
 > Regola: leggere questo file PRIMA di toccare codice. A fine sessione, aggiornarlo con la skill `handoff`.
 
 ## Cos'è
 
-Piattaforma di apprendimento SQL/Python/Data Analysis, tutta client-side (React 19 + Vite 6 + TypeScript, AlaSQL in-browser, Pyodide WASM). Il backend serve SOLO per auth e sync progressi; l'app funziona al 100% in guest mode senza backend. Deploy attuale: Vercel (devhub-gray.vercel.app). Docs interne: `ARCHITECTURE.md`, `DB_SCHEMA.md`, `DESIGN_SYSTEM.md`.
+Piattaforma di apprendimento SQL/Python/Data Analysis, tutta client-side (React 19 + Vite 6 + TypeScript, AlaSQL in-browser, Pyodide WASM in Web Worker). Backend PocketBase self-hosted su Coolify (solo auth + sync progressi; guest mode completo senza backend). Deploy Vercel (devhub-gray.vercel.app). Docs interne: `ARCHITECTURE.md`, `DB_SCHEMA.md`, `DESIGN_SYSTEM.md`.
 
-## Stato attuale (questa sessione: migrazione backend completata)
+## Backend PocketBase (attivo)
 
-Il progetto Supabase Cloud (`egbcmvknkehyoztmocbt`) era in pausa: il piano free permette solo 2 progetti attivi per org, già occupati da `ev-charge-garage` e `flo`. Deciso di migrare devhub a **PocketBase self-hosted su Coolify** (non Supabase self-hosted: lo stack completo — 10+ container, Kong/GoTrue/Realtime/Storage — era sovradimensionato per il bisogno reale, auth + una tabella, e il VPS ha poca RAM libera; PocketBase è già in uso su altre app dello stesso VPS).
+- URL API: `https://pocketbase-j6784mksa2l2i5a6eg5oolgd.49.12.96.95.sslip.io` (env `VITE_POCKETBASE_URL`, già su Vercel prod/preview/dev + `.env.local`).
+- Admin panel: `<URL>/_/` — credenziali in `~/.config/pocketbase/devhub.env` (chmod 600).
+- Collections: `users` (auth, regole default sicure `id = @request.auth.id`, campi extra `avatar_url`/`provider`), `user_progress` (regole `user = @request.auth.id`, indice UNIQUE su user+lab+topic_id+difficulty+exercise_index).
+- **Da fare a mano dall'utente** (non inseribili da Claude): Google OAuth (client id/secret in admin → users → OAuth2) e SMTP (già configurato dall'utente in questa sessione, verificare che il reset password arrivi end-to-end).
 
-**Nuovo backend**: `https://pocketbase-j6784mksa2l2i5a6eg5oolgd.49.12.96.95.sslip.io` (servizio Coolify `devhub-pocketbase`, uuid `j6784mksa2l2i5a6eg5oolgd`), HTTPS con Let's Encrypt via Traefik. Superuser admin: credenziali in `~/.config/pocketbase/devhub.env` (chmod 600).
+## Stato lavori (roadmap epic in 6 workstream, deciso ordine dipendenze)
 
-- `npx tsc --noEmit` ✅ pulito · `npm run build` ✅ ~4s
-- Test end-to-end reali nel browser (dev server porta 3100): signup, login, completamento esercizio SQL → salvataggio cloud verificato via API, logout, re-login con sync progressi (Analytics Dashboard), **logout con backend down** (container fermato via SSH durante sessione attiva → logout istantaneo, nessun blocco).
-- **NON testato**: login Google OAuth (nessuna credenziale configurata) e invio email reset-password (nessun SMTP configurato su PocketBase) — vedi "Passi manuali residui" sotto.
+### ✅ FATTO e DEPLOYATO in produzione
 
-### Cosa è cambiato nel codice
+**Fase 0 — Stabilizzazione critica** (commit `cd4caff`, live). Ogni fix verificato nel renderer reale:
+1. Freeze Python risolto → Pyodide in Web Worker terminabile (`public/pyodide.worker.js` + `services/pythonService.ts` riscritto come proxy). `while True: pass` → timeout + worker ucciso/ricreato, no freeze. Verificato anche in prod.
+2. Sync progressi → `saveProgressPocketBase` idempotente (400 unique = successo, non trippa il circuit breaker) + guard single-flight in `syncLocalToBackend`; streak backend allineato al locale. `services/progressService.ts`.
+3. Validazione SQL → `utils/sqlHelpers.ts::compareResults` ora multiset (cardinalità: DISTINCT) + order-sensitive quando la soluzione ha ORDER BY (param `orderMatters`, passato da SqlGym); precisione numerica a 4 decimali.
+4. Esercizi SQL impossibili → riscritti gli unici 3 blueprint non eseguibili su AlaSQL (RANK/DENSE_RANK via subquery correlata, CTE "Sopra la Media" in forma JOIN) in `services/exerciseGenerator.ts`. **Gate QA: 775/775 soluzioni eseguibili** (verificato in browser eseguendo ogni queryTemplate). NB: l'audit sovrastimava — molte funzioni date "rotte" erano già registrate come `alasql.fn` in `services/sqlService.ts`.
+5. Seaborn → caricato via micropip nel worker (non è in Pyodide 0.24.1). `PythonGym` LIBRARY_PACKAGES + worker `loadPackages` PIP_ONLY.
+6. Percentuali progressi → totali reali per topic (`SQL_TOPIC_TOTALS`/`PYTHON_TOPIC_TOTALS` esportati dai generatori, passati a `getTopicProgress`) invece del 60 fisso. Clamp a 100%.
+7. Service worker (`public/sw.js`) → non cache più le richieste cross-origin (API PocketBase, CDN).
 
-| File | Cambio |
-|---|---|
-| `services/pocketbaseClient.ts` | **Nuovo**, sostituisce `services/supabaseClient.ts` (rimosso). Client PocketBase env-first (`VITE_POCKETBASE_URL`), circuit breaker `isPocketBaseAvailable`/`markPocketBaseUnavailable`, tipo `AuthUser` che disaccoppia il resto dell'app da PocketBase. |
-| `services/authService.ts` | Riscritto su PocketBase SDK (`authWithPassword`, `authWithOAuth2`, `requestPasswordReset`). Stesse signature esportate di prima — nessun cambio nei call site in `LandingPage.tsx`. |
-| `contexts/AuthContext.tsx` | Sessione ripristinata **sincrona** da `pb.authStore` (localStorage) invece del vecchio race-vs-timeout-3s di Supabase — più semplice e più veloce. |
-| `services/progressService.ts` | `loadProgressSupabase`/`saveProgressSupabase` → `loadProgressPocketBase`/`saveProgressPocketBase` (query+create/update, PocketBase non ha upsert nativo). Funzioni esportate rinominate: `syncLocalToSupabase`→`syncLocalToBackend`, `syncSupabaseToLocal`→`syncBackendToLocal` (aggiornati tutti i call site). |
-| `components/AccountPage.tsx` | Cambio password ora richiede **password attuale** (PocketBase lo impone per il self-update, campo nuovo nel form). Eliminazione account: `pb.collection('users').delete()` invece della RPC Supabase `delete_user` (cascade delete su `user_progress` gestito dallo schema). |
-| `components/ResetPasswordPage.tsx` | Flusso a **token in query string** (`/reset-password?token=...`) invece di sessione da magic-link Supabase — vedi nota SMTP sotto. |
-| `package.json` | `@supabase/supabase-js` rimosso, `pocketbase` aggiunto. |
-| `vite.config.ts` | Chunk manuale `vendor-supabase` → `vendor-pocketbase`. |
-| Vercel (progetto `devhub`) | `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` rimosse, `VITE_POCKETBASE_URL` aggiunta (prod+preview+dev). |
-| `.env.local` | `VITE_POCKETBASE_URL` aggiunta per lo sviluppo locale. |
+**Fase 1 G001 — Tailwind build-time** (commit `f176b5a`, live): rimosso `cdn.tailwindcss.com`; `tailwind.config.js` + `postcss.config.js` + `index.css` (importato in `index.tsx`); config e `<style>` migrati da `index.html`. CSS compilato/purgato ~81KB. Verificato: 4 pagine identiche.
 
-### Schema PocketBase (collection `user_progress`)
+**Fase 1 G002 — Code-splitting gym SQL** (commit `8d7e386`, live): in `SqlGym.tsx` xlsx e pdfExport ora dynamic import negli handler; QuickChart e SchemaERDiagram ora `React.lazy`+Suspense; rimossi import morti jsPDF/autoTable. **Chunk SqlGym 232KB → 59KB (-75%)**; vendor-charts (1.27MB) ora on-demand. Verificato: QuickChart lazy renderizza.
 
-Equivalente a `supabase_setup.sql`: `user` (relation→users, cascadeDelete), `lab` (select sql/python), `topic_id` (text), `difficulty` (select easy/medium/hard), `exercise_index` (number), `attempts` (number), `completed_at` (date). API rules `user = @request.auth.id` su list/view/create/update/delete (equivalente RLS). Indice unique su `(user,lab,topic_id,difficulty,exercise_index)`.
+### ⏭️ DA FARE — Fase 1 restante (story di design, richiedono decisioni estetiche dell'utente)
 
-Collection `users` (built-in) estesa con 2 campi custom: `avatar_url` (url, per l'avatar Google) e `provider` (text, per distinguere account email vs google in `AccountPage`).
+**G003 — Design system + a11y baseline**. Parti oggettive (nessuna scelta estetica): focus-visible ring globale in `index.css` (l'app rimuove `outline-none` senza sostituto su bottoni-topic SqlGym/PythonGym/QuickChart); `@media (prefers-reduced-motion: reduce)` (zero gestione oggi, animazioni infinite float/spin-slow/pulse); touch target ≥44px sui controlli icona (logout UserBadge, frecce esercizio SqlGym, save/cancel username AccountPage). Parte con decisione: **unificare la scala neutra** — oggi Home/Landing/Gym usano `slate-*`, Account/Analytics usano `zinc-*` → scegliere UNA (chiedere all'utente) ed estrarre token condivisi (surface glass `bg-[#121212]/70 backdrop-blur-xl`, border, feedback success/error, radius) in `tailwind.config`. Modali senza focus-trap/Escape (il modale QuickChart non si chiude con Escape — confermato in questa sessione).
 
-**⚠️ Bug trovato e fixato durante il testing**: PocketBase tratta i campi number con `required: true` e valore `0` come "vuoti" (validation error), quindi `exercise_index: 0` (il primo esercizio di ogni topic) falliva silenziosamente il salvataggio — il circuit breaker si disattivava e nessun progresso veniva più salvato per il resto della sessione. Fix: `required: false` su `exercise_index`. Se in futuro si aggiungono altri campi numerici che possono valere 0, stesso problema.
+**G004 — Redesign `/ui-ux-pro-max`** su Landing/Home/SqlGym/PythonGym/Analytics, sopra il design system di G003. Da decidere con l'utente: direzione estetica e ambizione. Verificare ogni pagina nel renderer reale.
 
-### Dati storici
+### ⏭️ Fasi successive (non ancora pianificate in dettaglio)
 
-Il dump Supabase (`db_cluster-28-01-2026@03-39-55.backup.gz`) e lo storage export sono stati controllati: **entrambi vuoti** (nessun utente si era mai registrato/aveva sincronizzato progressi in cloud). Nessuna migrazione dati necessaria. I file dump/SQL Supabase in root sono ormai storici, si possono archiviare o eliminare quando si fa pulizia.
+- **Riscrittura contenuti esercizi SQL** (`/humanizer`): ~42% delle `explanation` sono boilerplate riciclato e spesso incollato sull'esercizio sbagliato; mismatch descrizione↔soluzione in vari Hard; hint non graduati; Case Easy/Medium hanno solo 10 blueprint (vs 30). Strategia consigliata: spacchettare il monolite `exerciseGenerator.ts` (7975 righe) in `services/exercises/sql/<topic>.ts` + barrel, poi riscrivere topic-per-topic con gate QA di eseguibilità già rodato in questa sessione.
+- **Sezione Python data-analysis** (pandas/matplotlib/seaborn): il topic Seaborn ora carica ma NON esistono esercizi che producono un grafico; il runner del Gym cattura solo stdout. Costruire sopra l'infra DataLab (runPythonForDataLab cattura già DataFrame JSON + PNG matplotlib). Vedi featureNotes dell'audit (dimensione python-section).
+- **Sezione DAX** (cert Power BI PL-300): nessun engine DAX in browser → validazione a quiz (MCQ) + confronto formula normalizzata. Prerequisiti abilitanti: `LabId` centrale (`'sql'|'python'|'dax'`, oggi hardcoded in ~7 punti), route-registry (App.tsx è uno switch manuale; enum `Page.AngularGym` morto da rimuovere), campo select `lab` su user_progress esteso a 'dax'.
+- **Sezione Admin**: nessun modello ruoli oggi. Servono su PocketBase users i campi `role` (select user/admin) e `blocked` (bool); authRule users `blocked = false` per il ban; collection `audit_log`; pagina `Page.Admin` con guard di ruolo. Ogni check lato client DEVE avere il gemello nelle API rules PocketBase.
 
-## Passi manuali residui (richiedono credenziali — non delegabili)
+## Debiti tecnici / note
 
-1. **Google OAuth**: creare credenziali su Google Cloud Console, redirect URI da aggiungere: `https://pocketbase-j6784mksa2l2i5a6eg5oolgd.49.12.96.95.sslip.io/api/oauth2-redirect`. Poi in PocketBase Admin UI (`<url>/_/`) → Collections → users → Options → OAuth2 → abilitare Google e incollare client id/secret. Il codice frontend (`signInWithGoogle` in `authService.ts`) è già pronto, non serve altro.
-2. **SMTP per email transazionali** (reset password, verifica email): PocketBase Admin UI → Settings → Mail. Senza questo, `resetPassword()` non invia nulla (la UI mostra comunque il messaggio di conferma, ma l'utente non riceve email). Il template email è già configurato per puntare a `https://devhub-gray.vercel.app/reset-password?token=...`.
-3. **Decommissioning Supabase Cloud**: il progetto `egbcmvknkehyoztmocbt` è in pausa, non serve più nulla — valutare se eliminarlo dalla dashboard Supabase per liberare eventualmente lo slot, oppure lasciarlo pausato.
-4. **Dominio custom per PocketBase** (opzionale): oggi gira su un dominio sslip.io generato automaticamente. Se si vuole un dominio proprio (es. `db-devhub.simo-lab.xyz`, wildcard DNS già attivo su Porkbun → 49.12.96.95), va editato a mano `docker-compose.yml` su `/data/coolify/services/j6784mksa2l2i5a6eg5oolgd/` sul VPS (l'API Coolify non espone un modo per cambiare l'FQDN dei one-click service — limite noto di Coolify v4) e poi `docker compose up -d`. Ricordarsi che un redeploy da UI Coolify potrebbe rigenerare il file e perdere l'edit manuale.
-
-## PROSSIMO STEP — Riscrittura esercizi + nuova sezione DAX (cert Power BI)
-
-Non ancora iniziato. L'utente vuole:
-1. **Riscrivere/potenziare gli esercizi esistenti.** Attenzione: `services/exerciseGenerator.ts` è 506KB/8k righe e `pythonExerciseGenerator.ts` 250KB/5.4k righe — mostri monolitici generati/patchati da script (i vari `scripts/fix_*.cjs` erano per questo). Per la riscrittura conviene ripensare il formato (es. esercizi come dati JSON/TS modulari per topic, non un file gigante) invece di patchare ancora.
-2. **Nuova sezione DAX** per studiare per la certificazione Power BI (presumibilmente PL-300). Non esiste ancora nulla: né tipi, né topic, né engine. Punti di aggancio:
-   - `types.ts`: enum `Page` e `TopicId`, tipo `Exercise`
-   - `App.tsx`: routing lazy per pagina
-   - `services/progressService.ts`: il campo `lab` è tipizzato `'sql' | 'python'` — va esteso (`'dax'`) sia nel TS sia nel campo select `lab` della collection `user_progress` su PocketBase (Admin UI o API, aggiungere il valore all'enum `values`)
-   - Non esiste un motore DAX in browser: le opzioni realistiche sono validazione su output atteso (esercizi a risposta chiusa/quiz + confronto testo formula normalizzato), non esecuzione reale.
-
-## Debiti tecnici noti (non bloccanti, in ordine di priorità)
-
-1. **Tailwind via CDN** (`cdn.tailwindcss.com` in `index.html`): non production-grade, dipendenza esterna, config inline. Migrare a Tailwind build-time — MA occhio alle classi dinamiche generate a runtime: farlo con calma durante la riscrittura esercizi, verificando visivamente ogni pagina.
-2. **Pyodide + Google Fonts da CDN**: la claim "tutto offline/nessun server" del README è parziale.
-3. **Chunk `vendor-charts` 1.27MB**: recharts+xlsx+jspdf insieme; splittare se pesa sul mobile.
-4. **`EXERCISES_PER_TOPIC = 60` hardcoded** in `progressService.ts`: se la riscrittura cambia i conteggi, i totali/percentuali di Analytics sbagliano.
-5. Risultati numerici mostrati con coda floating-point (es. `2221.6077999999998`) nella tabella risultati SQL: arrotondare in display.
-6. Commit history tutta "fix": da ora messaggi veri.
-7. Working tree non committato da sessioni precedenti (vedi `git status`) — include ora anche tutte le modifiche di questa migrazione, mai committate.
-
-## Suggested skills
-
-- `handoff` — rigenerare questo file a fine sessione
-- `verify` — dopo aver configurato Google OAuth/SMTP, per il giro end-to-end completo (incluso login Google e reset password reale)
-- `tdd` — per il nuovo modulo DAX (validatore esercizi è logica pura, perfetta da testare)
+- `vendor-charts` 1.27MB resta grosso ma ora è lazy; DataLab importa ancora xlsx/QuickChart staticamente (chunk lazy separato).
+- Pyodide 0.24.1 pinnato; al timeout-kill del worker lo stato VFS/DataFrame di DataLab si perde (accettabile dopo runaway).
+- Audit completo di questa sessione: report multi-agente con scoring (Stabilità ~55 pre-fix, Perf 48, UX/UI 62, Manutenibilità 45). Molti finding erano sovrastimati (testati in isolamento); i confermati sono stati fixati in Fase 0.
 
 ## Come avviare
 
 ```bash
 cd /Volumes/SSD/APPS/devhub
 npm install
-npm run dev   # porta 3000 (o launch config globale "devhub-dev" su 3100)
+npm run dev   # launch config globale "devhub-dev" su porta 3100
 ```
 
-Guest mode: nessuna env necessaria. Login: serve `VITE_POCKETBASE_URL` (già in `.env.local` e su Vercel; il client ha comunque un fallback hardcoded sullo stesso URL prod).
+Guest mode: nessuna env. Login: `VITE_POCKETBASE_URL` (già in `.env.local`).
+
+## Stato pianificazione fablize
+
+`.fablize/` contiene il piano Fase 1 (G001✅ G002✅ G003⏭️ G004⏭️). Per riprendere: `goals.py status` dalla root.
