@@ -609,7 +609,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
             <div className="relative group">
               <Search
                 size={14}
-                className={`absolute left-3 top-2.5 text-zinc-500 ${
+                className={`absolute left-3 top-2.5 text-slate-500 ${
                   isGymMode
                     ? "group-focus-within:text-blue-400"
                     : "group-focus-within:text-purple-400"

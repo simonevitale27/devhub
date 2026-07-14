@@ -94,6 +94,13 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // a11y: close the chart modal on Escape (previously it trapped keyboard users)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
   // Get all columns from data
   const columns = useMemo(() => {
     if (!data || data.length === 0) return [];

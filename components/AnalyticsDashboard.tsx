@@ -74,7 +74,7 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl p-5 flex flex-col">
+    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5 flex flex-col">
       <div className="flex items-center gap-3 mb-3">
         <div
           className="w-10 h-10 rounded-lg flex items-center justify-center"
@@ -82,11 +82,11 @@ function StatCard({
         >
           {icon}
         </div>
-        <span className="text-zinc-400 text-sm font-medium">{label}</span>
+        <span className="text-slate-400 text-sm font-medium">{label}</span>
       </div>
       <div className="text-3xl font-bold text-white">{value}</div>
       {subValue && (
-        <div className="text-xs text-zinc-500 mt-1">{subValue}</div>
+        <div className="text-xs text-slate-500 mt-1">{subValue}</div>
       )}
     </div>
   );
@@ -120,7 +120,7 @@ function ContributionHeatmap({ data }: { data: HeatmapDay[] }) {
   }
 
   const levelColors = [
-    'bg-zinc-800',
+    'bg-slate-800',
     'bg-emerald-900/60',
     'bg-emerald-700/70',
     'bg-emerald-500/80',
@@ -130,17 +130,17 @@ function ContributionHeatmap({ data }: { data: HeatmapDay[] }) {
   const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 
   return (
-    <div className="bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl p-5">
+    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
       <div className="flex items-center gap-2 mb-4">
         <Calendar size={18} className="text-emerald-400" />
         <h3 className="text-white font-semibold">Contribution Heatmap</h3>
-        <span className="text-zinc-500 text-sm ml-2">Ultimi 365 giorni</span>
+        <span className="text-slate-500 text-sm ml-2">Ultimi 365 giorni</span>
       </div>
 
       {/* Month labels */}
       <div className="flex gap-1 mb-2 ml-8 overflow-hidden">
         {months.map((m, i) => (
-          <span key={i} className="text-xs text-zinc-500 w-[52px] text-center">
+          <span key={i} className="text-xs text-slate-500 w-[52px] text-center">
             {m}
           </span>
         ))}
@@ -150,13 +150,13 @@ function ContributionHeatmap({ data }: { data: HeatmapDay[] }) {
       <div className="flex gap-1 overflow-x-auto pb-2">
         {/* Day labels */}
         <div className="flex flex-col gap-1 mr-1">
-          <span className="text-xs text-zinc-500 h-3">Dom</span>
-          <span className="text-xs text-zinc-500 h-3">Lun</span>
-          <span className="text-xs text-zinc-500 h-3">Mar</span>
-          <span className="text-xs text-zinc-500 h-3">Mer</span>
-          <span className="text-xs text-zinc-500 h-3">Gio</span>
-          <span className="text-xs text-zinc-500 h-3">Ven</span>
-          <span className="text-xs text-zinc-500 h-3">Sab</span>
+          <span className="text-xs text-slate-500 h-3">Dom</span>
+          <span className="text-xs text-slate-500 h-3">Lun</span>
+          <span className="text-xs text-slate-500 h-3">Mar</span>
+          <span className="text-xs text-slate-500 h-3">Mer</span>
+          <span className="text-xs text-slate-500 h-3">Gio</span>
+          <span className="text-xs text-slate-500 h-3">Ven</span>
+          <span className="text-xs text-slate-500 h-3">Sab</span>
         </div>
 
         {/* Weeks */}
@@ -177,11 +177,11 @@ function ContributionHeatmap({ data }: { data: HeatmapDay[] }) {
 
       {/* Legend */}
       <div className="flex items-center justify-end gap-2 mt-3">
-        <span className="text-xs text-zinc-500">Meno</span>
+        <span className="text-xs text-slate-500">Meno</span>
         {levelColors.map((color, i) => (
           <div key={i} className={`w-3 h-3 rounded-sm ${color}`} />
         ))}
-        <span className="text-xs text-zinc-500">Più</span>
+        <span className="text-xs text-slate-500">Più</span>
       </div>
     </div>
   );
@@ -203,11 +203,11 @@ function SkillRadar({
   }));
 
   return (
-    <div className="bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl p-5">
+    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
       <div className="flex items-center gap-2 mb-4">
         <Target size={18} className="text-purple-400" />
         <h3 className="text-white font-semibold">Skill Radar</h3>
-        <span className="text-zinc-500 text-sm ml-2">Python Topics</span>
+        <span className="text-slate-500 text-sm ml-2">Python Topics</span>
       </div>
 
       <div className="h-64">
@@ -268,7 +268,7 @@ function LabProgress({
   const colors = ['#10b981', '#3b82f6'];
 
   return (
-    <div className="bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl p-5">
+    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp size={18} className="text-blue-400" />
         <h3 className="text-white font-semibold">Progresso per Lab</h3>
@@ -311,13 +311,13 @@ function LabProgress({
       <div className="flex gap-4 mt-3">
         <div className="flex items-center gap-2">
           <Code size={16} className="text-emerald-400" />
-          <span className="text-zinc-400 text-sm">
+          <span className="text-slate-400 text-sm">
             Python: {pythonTotal}/{pythonMax}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <Database size={16} className="text-blue-400" />
-          <span className="text-zinc-400 text-sm">
+          <span className="text-slate-400 text-sm">
             SQL: {sqlTotal}/{sqlMax}
           </span>
         </div>
@@ -384,12 +384,12 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800">
+      <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-2">
           <div className="flex items-center gap-4">
             <button
               onClick={onBack}
-              className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition-colors"
+              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
             >
               <ArrowLeft size={20} />
             </button>
@@ -400,7 +400,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
                 <span className="hidden sm:inline">Analytics Dashboard</span>
                 <span className="sm:hidden">Analytics</span>
               </h1>
-              <p className="text-zinc-500 text-sm hidden md:block">
+              <p className="text-slate-500 text-sm hidden md:block">
                 Traccia i tuoi progressi e migliora le tue competenze
               </p>
             </div>
@@ -426,17 +426,17 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
       {/* Reset Confirmation Modal */}
       {showResetConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-6 max-w-md mx-4 shadow-2xl">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-md mx-4 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
                 <AlertTriangle size={20} className="text-red-400" />
               </div>
               <h3 className="text-lg font-semibold text-white">Conferma Reset</h3>
             </div>
-            <p className="text-zinc-400 mb-6">
+            <p className="text-slate-400 mb-6">
               Sei sicuro di voler resettare tutti i progressi? Questa azione cancellerà:
             </p>
-            <ul className="text-zinc-400 text-sm mb-6 space-y-1 list-disc list-inside">
+            <ul className="text-slate-400 text-sm mb-6 space-y-1 list-disc list-inside">
               <li>Tutti gli esercizi completati</li>
               <li>Lo streak attuale</li>
               <li>La heatmap dei contributi</li>
@@ -445,7 +445,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
             <div className="flex gap-3">
               <button
                 onClick={() => setShowResetConfirm(false)}
-                className="flex-1 px-4 py-2 rounded-lg bg-zinc-800 text-white hover:bg-zinc-700 transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg bg-slate-800 text-white hover:bg-slate-700 transition-colors"
               >
                 Annulla
               </button>
@@ -508,7 +508,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
         {/* Topic Details */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Python Topics */}
-          <div className="bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl p-5">
+          <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
               <Code size={18} className="text-emerald-400" />
               <h3 className="text-white font-semibold">Python Topics</h3>
@@ -516,16 +516,16 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
             <div className="space-y-3">
               {pythonProgress.map(topic => (
                 <div key={topic.topicId} className="flex items-center gap-3">
-                  <span className="text-zinc-400 text-sm w-24 truncate">
+                  <span className="text-slate-400 text-sm w-24 truncate">
                     {topic.topicName}
                   </span>
-                  <div className="flex-1 bg-zinc-800 rounded-full h-2 overflow-hidden">
+                  <div className="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
                     <div
                       className="h-full bg-emerald-500 rounded-full transition-all"
                       style={{ width: `${topic.percentage}%` }}
                     />
                   </div>
-                  <span className="text-zinc-500 text-xs w-12 text-right">
+                  <span className="text-slate-500 text-xs w-12 text-right">
                     {topic.completed}/{topic.total}
                   </span>
                 </div>
@@ -534,7 +534,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
           </div>
 
           {/* SQL Topics */}
-          <div className="bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl p-5">
+          <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
             <div className="flex items-center gap-2 mb-4">
               <Database size={18} className="text-blue-400" />
               <h3 className="text-white font-semibold">SQL Topics</h3>
@@ -542,16 +542,16 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
             <div className="space-y-3">
               {sqlProgress.map(topic => (
                 <div key={topic.topicId} className="flex items-center gap-3">
-                  <span className="text-zinc-400 text-sm w-24 truncate">
+                  <span className="text-slate-400 text-sm w-24 truncate">
                     {topic.topicName}
                   </span>
-                  <div className="flex-1 bg-zinc-800 rounded-full h-2 overflow-hidden">
+                  <div className="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
                     <div
                       className="h-full bg-blue-500 rounded-full transition-all"
                       style={{ width: `${topic.percentage}%` }}
                     />
                   </div>
-                  <span className="text-zinc-500 text-xs w-12 text-right">
+                  <span className="text-slate-500 text-xs w-12 text-right">
                     {topic.completed}/{topic.total}
                   </span>
                 </div>

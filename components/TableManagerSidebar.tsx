@@ -370,7 +370,7 @@ const TableManagerSidebar: React.FC<TableManagerSidebarProps> = ({
                                                                     {renderTypeIcon(tableData.columnTypes?.[header])}
                                                                 </div>
                                                                 
-                                                                <span className="text-xs text-zinc-300 group-hover/col:text-white font-mono truncate transition-colors font-medium">
+                                                                <span className="text-xs text-slate-300 group-hover/col:text-white font-mono truncate transition-colors font-medium">
                                                                     {header}
                                                                 </span>
                                                             </button>

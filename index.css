@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* a11y — keyboard focus ring. Many buttons ship `focus:outline-none` with no
+   replacement, making keyboard navigation invisible; this restores a visible
+   ring for keyboard users only (:focus-visible, not on mouse click). !important
+   is deliberate so it wins over the per-component outline-none. */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #3b82f6 !important; /* blue-500 */
+  outline-offset: 2px !important;
+  border-radius: 0.375rem;
+}
+
+/* a11y — respect reduced-motion. The app uses several infinite animations
+   (float, spin-slow, pulse) and scale transitions; honour the OS setting. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Global page chrome — migrated from the old inline <style> in index.html
    when Tailwind moved from the CDN to the build pipeline. */
 body {

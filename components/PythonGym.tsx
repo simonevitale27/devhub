@@ -765,7 +765,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             <div className="relative group">
               <Search
                 size={14}
-                className={`absolute left-3 top-2.5 text-zinc-500 ${
+                className={`absolute left-3 top-2.5 text-slate-500 ${
                   isGymMode
                     ? "group-focus-within:text-blue-400"
                     : "group-focus-within:text-purple-400"
@@ -944,7 +944,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
              </div>
            </header>
 
-          <div className="flex-1 flex flex-col overflow-y-auto relative bg-zinc-900/50 rounded-2xl border border-zinc-800/50">
+          <div className="flex-1 flex flex-col overflow-y-auto relative bg-slate-900/50 rounded-2xl border border-slate-800/50">
           {currentExercise ? (
             <>
               {/* Exercise Header */}
@@ -1171,7 +1171,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                 {!panelCollapsed && (
                   <div 
                     style={{ height: panelHeight }}
-                    className="border-t border-white/10 flex flex-col bg-zinc-900/90 backdrop-blur-md rounded-b-2xl"
+                    className="border-t border-white/10 flex flex-col bg-slate-900/90 backdrop-blur-md rounded-b-2xl"
                   >
                     {/* Resize Handle */}
                     <div 

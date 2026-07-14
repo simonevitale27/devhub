@@ -16,10 +16,10 @@ const AccountPage = lazy(() => import('./components/AccountPage'));
 
 // Shared loading fallback for lazy-loaded pages
 const PageLoader = () => (
-  <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+  <div className="min-h-screen bg-slate-950 flex items-center justify-center">
     <div className="flex flex-col items-center gap-4">
       <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-      <span className="text-zinc-400 text-sm font-medium">Caricamento...</span>
+      <span className="text-slate-400 text-sm font-medium">Caricamento...</span>
     </div>
   </div>
 );
@@ -49,7 +49,7 @@ function AppContent() {
     // Show loading while checking auth
     if (isLoading) {
       return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
       );
