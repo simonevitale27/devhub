@@ -1,6 +1,6 @@
 # HANDOFF — DevHub
 
-> Aggiornato: 2026-07-14 · Sessione: audit completo + Fase 0 stabilizzazione (deployata) + Fase 1 UI/perf (G001+G002 deployate). Prossimo: Fase 1 G003 design system + a11y, G004 redesign.
+> Aggiornato: 2026-07-14 · Sessione: audit + Fase 0 stabilizzazione (deployata) + Fase 1 G001 Tailwind/G002 code-split/G003 a11y+palette (tutte deployate) + G004 redesign avviato (pass 1 SQL Lab, deployato). Prossimo: continuare G004 redesign SQL Lab in sessione focalizzata.
 > Regola: leggere questo file PRIMA di toccare codice. A fine sessione, aggiornarlo con la skill `handoff`.
 
 ## Cos'è
@@ -31,11 +31,11 @@ Piattaforma di apprendimento SQL/Python/Data Analysis, tutta client-side (React 
 
 **Fase 1 G002 — Code-splitting gym SQL** (commit `8d7e386`, live): in `SqlGym.tsx` xlsx e pdfExport ora dynamic import negli handler; QuickChart e SchemaERDiagram ora `React.lazy`+Suspense; rimossi import morti jsPDF/autoTable. **Chunk SqlGym 232KB → 59KB (-75%)**; vendor-charts (1.27MB) ora on-demand. Verificato: QuickChart lazy renderizza.
 
-### ⏭️ DA FARE — Fase 1 restante (story di design, richiedono decisioni estetiche dell'utente)
+**Fase 1 G003 — a11y baseline + palette** (commit `cb2b5ee`, live): focus-visible ring globale in `index.css`; `@media prefers-reduced-motion`; **palette unificata a `slate`** (deciso con l'utente; `zinc-*`→`slate-*` in 7 file); Escape chiude il modale QuickChart. Verificato. RIMANDATO a G004: estrazione token condivisi in `tailwind.config`, touch-target 44px sui bottoni icona, focus-trap su tutti i modali.
 
-**G003 — Design system + a11y baseline**. Parti oggettive (nessuna scelta estetica): focus-visible ring globale in `index.css` (l'app rimuove `outline-none` senza sostituto su bottoni-topic SqlGym/PythonGym/QuickChart); `@media (prefers-reduced-motion: reduce)` (zero gestione oggi, animazioni infinite float/spin-slow/pulse); touch target ≥44px sui controlli icona (logout UserBadge, frecce esercizio SqlGym, save/cancel username AccountPage). Parte con decisione: **unificare la scala neutra** — oggi Home/Landing/Gym usano `slate-*`, Account/Analytics usano `zinc-*` → scegliere UNA (chiedere all'utente) ed estrarre token condivisi (surface glass `bg-[#121212]/70 backdrop-blur-xl`, border, feedback success/error, radius) in `tailwind.config`. Modali senza focus-trap/Escape (il modale QuickChart non si chiude con Escape — confermato in questa sessione).
+### ⏭️ IN CORSO — Fase 1 G004 redesign (direzione decisa: RAFFINARE l'identità attuale — dark+glass+accento blu; NON rivoluzionare. Sezione di partenza: SQL Lab)
 
-**G004 — Redesign `/ui-ux-pro-max`** su Landing/Home/SqlGym/PythonGym/Analytics, sopra il design system di G003. Da decidere con l'utente: direzione estetica e ambizione. Verificare ogni pagina nel renderer reale.
+**Pass 1 fatto** (commit `32d33ec`, live): SqlGym stato di caricamento con spinner coerente; stato vuoto risultati reso leggibile + hint. **Da continuare** (sessione focalizzata, iterare con l'utente che rivede): raffinare gerarchia/spaziature/stati/micro-interazioni di SqlGym (badge micro a basso contrasto, card Home con top assoluti hardcoded, touch-target frecce esercizio ~30px→44px), poi propagare a PythonGym/Home/Landing/Analytics. La skill `ui-ux-pro-max` è orientata React-Native ma i principi (a11y, spacing 4/8, gerarchia, stati, motion 150-300ms) valgono. Regola: NIENTE full-rewrite dei componenti da 1500+ righe; interventi mirati e verificati a vista.
 
 ### ⏭️ Fasi successive (non ancora pianificate in dettaglio)
 
