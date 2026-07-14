@@ -38,6 +38,8 @@ import {
 } from '../services/progressService';
 import { PYTHON_TOPICS } from '../pythonTypes';
 import { TopicId } from '../types';
+import { SQL_TOPIC_TOTALS } from '../services/exerciseGenerator';
+import { PYTHON_TOPIC_TOTALS } from '../services/pythonExerciseGenerator';
 
 // SQL Topics definition (matching types.ts TopicId enum)
 const SQL_TOPICS = [
@@ -344,7 +346,8 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
     () =>
       getTopicProgress(
         'python',
-        PYTHON_TOPICS.map(t => ({ id: t.id, name: t.label }))
+        PYTHON_TOPICS.map(t => ({ id: t.id, name: t.label })),
+        PYTHON_TOPIC_TOTALS
       ),
     [refreshKey]
   );
@@ -353,7 +356,8 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
     () =>
       getTopicProgress(
         'sql',
-        SQL_TOPICS.map(t => ({ id: t.id, name: t.name }))
+        SQL_TOPICS.map(t => ({ id: t.id, name: t.name })),
+        SQL_TOPIC_TOTALS
       ),
     [refreshKey]
   );

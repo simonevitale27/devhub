@@ -192,7 +192,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   // For library-dependent topics, load packages first
   const LIBRARY_PACKAGES: Record<string, string[]> = {
     [PythonTopicId.Pandas]: ['numpy', 'pandas'],
-    [PythonTopicId.Seaborn]: ['numpy', 'pandas', 'matplotlib'],
+    // seaborn must be loaded or every Seaborn exercise dies on `import seaborn`
+    [PythonTopicId.Seaborn]: ['numpy', 'pandas', 'matplotlib', 'seaborn'],
   };
 
   useEffect(() => {
@@ -257,11 +258,14 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
         setErrorOutput("");
         setActivePanel('output');
 
-        // Validate output
-        const isCorrect = validateOutput(
-          result.output,
-          currentExercise.expectedOutput
-        );
+        // Validate output. Some exercises have a non-deterministic result
+        // (datetime.now(), versions, os.environ) and ship expectedOutput=''.
+        // For those, any error-free run counts as correct instead of always failing.
+        const expected = currentExercise.expectedOutput ?? "";
+        const isCorrect =
+          expected.trim() === ""
+            ? true
+            : validateOutput(result.output, expected);
 
         // Track completion if correct
         if (isCorrect) {

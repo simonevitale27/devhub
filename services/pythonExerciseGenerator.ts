@@ -5363,4 +5363,20 @@ export const generatePythonExercises = (
   }));
 };
 
+// PythonGym shows up to this many exercises per difficulty (the count it passes).
+const PYTHON_SHOWN_PER_DIFFICULTY = 20;
+
+// Real number of distinct exercises available per Python topic (summed over
+// difficulties, capped at what the gym shows). Used by Analytics for correct
+// completion percentages instead of the old hardcoded 60.
+export const PYTHON_TOPIC_TOTALS: Record<string, number> = Object.fromEntries(
+  Object.entries(PYTHON_QUESTION_DATABASE).map(([topicId, byDifficulty]) => [
+    topicId,
+    Object.values(byDifficulty).reduce(
+      (sum, blueprints) => sum + Math.min((blueprints as any[]).length, PYTHON_SHOWN_PER_DIFFICULTY),
+      0
+    ),
+  ])
+);
+
 export { PYTHON_QUESTION_DATABASE };

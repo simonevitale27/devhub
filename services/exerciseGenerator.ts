@@ -7872,12 +7872,12 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "CTE - Sopra la Media",
         descTemplate: "Utilizza una Common Table Expression (CTE) chiamata 'avg_price' per calcolare il prezzo medio, poi seleziona tutte le colonne dei prodotti che costano più di quella media.",
-        queryTemplate: "WITH avg_price AS (SELECT AVG(price) AS media FROM Products) SELECT * FROM Products WHERE price > (SELECT media FROM avg_price)",
-        hints: ["Prima definisci la CTE all'inizio: WITH avg_price AS (SELECT AVG(price) AS media FROM Products)", "Poi scrivi la tua SELECT normale che attinge (con una subquery o una Join) dal risultato calcolato nella CTE"],
-        explanation: "Le CTE (Common Table Expressions) rendono le query complesse molto più leggibili suddividendo la logica in passaggi gerarchici sequenziali isolati.",
+        queryTemplate: "WITH avg_price AS (SELECT AVG(price) AS media FROM Products) SELECT p.* FROM Products p, avg_price WHERE p.price > avg_price.media",
+        hints: ["Definisci la CTE all'inizio: WITH avg_price AS (SELECT AVG(price) AS media FROM Products)", "Poi includi la CTE nella FROM insieme a Products (FROM Products p, avg_price) e filtra con WHERE p.price > avg_price.media"],
+        explanation: "Le CTE (Common Table Expressions) con WITH isolano un calcolo — qui il prezzo medio — e lo rendono riutilizzabile nella query principale mettendolo nella FROM come se fosse una tabella, mantenendo la logica leggibile.",
         replacements: {},
-        brokenCode: "WITH avg_price AS (SELECT AVG(price) AS media FROM Products) SELECT * FROM Products WHERE price > AVG(price)",
-        debugHint: "Usa la CTE (avg_price) all'interno di una subquery per confrontarla con il prezzo nella WHERE (SELECT media FROM avg_price)."
+        brokenCode: "WITH avg_price AS (SELECT AVG(price) AS media FROM Products) SELECT p.* FROM Products p WHERE p.price > avg_price.media",
+        debugHint: "Per usare la CTE devi includerla nella clausola FROM (FROM Products p, avg_price), altrimenti avg_price non è visibile nella WHERE."
       },
       {
         titleTemplate: "CTE - Top Performers",
@@ -7890,24 +7890,24 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         debugHint: "Quando interroghi la CTE nella query principale, usa semplicemente WHERE al posto di HAVING per i suoi risultati finali calcolati."
       },
       {
-        titleTemplate: "Classifica Assoluta (RANK)",
-        descTemplate: "Ritorna il nome e il prezzo di ogni prodotto, assegnando anche un rango (RANK()) basato sul prezzo in ordine decrescente (dal più caro al più economico). Usa l'alias 'posizione'.",
-        queryTemplate: "SELECT name, price, RANK() OVER (ORDER BY price DESC) AS posizione FROM Products",
-        hints: ["Usa la funzione Window RANK()", "La clausola statica OVER definisce la finestra: in questo caso vogliamo ordinare in blocco per prezzo decrescente (OVER (ORDER BY price DESC))"],
-        explanation: "Con RANK(), se dei prodotti hanno lo stesso prezzo, riceveranno lo stesso identico rango. E il rango logicamente successivo farà un 'salto' conteggiando la parità per un ordine scalato corretto.",
+        titleTemplate: "Classifica per Prezzo (Ranking)",
+        descTemplate: "Ritorna nome e prezzo di ogni prodotto con la sua posizione in classifica per prezzo decrescente (il più caro è 1). A parità di prezzo la posizione è la stessa. Usa l'alias 'posizione'.",
+        queryTemplate: "SELECT p1.name, p1.price, (SELECT COUNT(*) FROM Products p2 WHERE p2.price > p1.price) + 1 AS posizione FROM Products p1",
+        hints: ["La posizione di un prodotto è pari a quanti prodotti costano PIÙ di lui, più 1", "Usa una subquery correlata che conta le righe con p2.price > p1.price, dando due alias diversi (p1 e p2) alla stessa tabella"],
+        explanation: "Questo è il pattern portabile per assegnare un rango: per ogni riga conti quante righe la superano e aggiungi 1. A prezzi uguali la posizione coincide, con un salto dopo il gruppo (semantica di RANK). Nei database moderni lo stesso risultato si ottiene con la window function RANK() OVER (ORDER BY price DESC).",
         replacements: {},
-        brokenCode: "SELECT name, price, RANK() ORDER BY price DESC AS posizione FROM Products",
-        debugHint: "Manca la clausola OVER(), che è l'involucro obbligatorio in Sql per far funzionare correttamente una Window Function."
+        brokenCode: "SELECT p1.name, p1.price, (SELECT COUNT(*) FROM Products p2 WHERE p2.price > p1.price) AS posizione FROM Products p1",
+        debugHint: "Il conteggio dei prodotti più cari vale 0 per il prodotto più costoso: aggiungi + 1 al risultato della subquery perché la classifica parta da 1."
       },
       {
-        titleTemplate: "Classifica Di Categoria (DENSE_RANK)",
-        descTemplate: "Per ogni prodotto, restituisci nome, categoria, prezzo e il suo rango ALL'INTERNO della propria categoria, ordinato dal più costoso. Usa DENSE_RANK() as 'cat_rank'.",
-        queryTemplate: "SELECT name, category, price, DENSE_RANK() OVER (PARTITION BY category ORDER BY price DESC) AS cat_rank FROM Products",
-        hints: ["Inizia frazionando/partizionando i dati per logica semantica usando PARTITION BY category", "Dentro l'involucro OVER(), inserisci PARTITION BY per la semantica chiusa e ORDER BY per stabilire l'algoritmo di iterazione discendente del prezzo"],
-        explanation: "DENSE_RANK() a differenza di RANK, non lascia 'buchi' nei rank iterativi numerici in caso di valori pareggiati (es 1, 2, 2, 3 invece di 1, 2, 2, 4). La particella PARTITION BY resetta il contatore per ogni limitatore di categoria passatagli.",
+        titleTemplate: "Classifica per Categoria (Ranking Denso)",
+        descTemplate: "Per ogni prodotto restituisci nome, categoria, prezzo e la sua posizione DENTRO la propria categoria (prezzo decrescente). La classifica non deve avere buchi: a prezzi uguali stessa posizione, la successiva prosegue senza salti. Usa l'alias 'cat_rank'.",
+        queryTemplate: "SELECT p1.name, p1.category, p1.price, (SELECT COUNT(DISTINCT p2.price) FROM Products p2 WHERE p2.category = p1.category AND p2.price > p1.price) + 1 AS cat_rank FROM Products p1",
+        hints: ["Lavora dentro la stessa categoria: la subquery deve filtrare p2.category = p1.category", "Per non lasciare buchi conta i PREZZI DISTINTI più alti con COUNT(DISTINCT p2.price), non le righe; poi aggiungi 1"],
+        explanation: "Contando i prezzi DISTINTI superiori (invece delle righe) la numerazione non salta i valori in pareggio: 1, 2, 2, 3 anziché 1, 2, 2, 4. Il filtro sulla categoria 'partiziona' i dati. È l'equivalente portabile di DENSE_RANK() OVER (PARTITION BY category ORDER BY price DESC).",
         replacements: {},
-        brokenCode: "SELECT name, category, price, DENSE_RANK() OVER (GROUP BY category ORDER BY price DESC) AS cat_rank FROM Products",
-        debugHint: "Nelle definizioni e istruzioni della funzioni finestra, i gruppi virtuali e dinamici si partizionano. La sintassi richiede PARTITION BY non confonderla con GROUP BY."
+        brokenCode: "SELECT p1.name, p1.category, p1.price, (SELECT COUNT(DISTINCT p2.price) FROM Products p2 WHERE p2.price > p1.price) + 1 AS cat_rank FROM Products p1",
+        debugHint: "Senza il filtro p2.category = p1.category la classifica confronta l'intero catalogo invece della singola categoria: aggiungi la condizione sulla categoria dentro la subquery."
       },
       {
         titleTemplate: "Generazione Costrutti (ROW_NUMBER)",
@@ -7973,3 +7973,20 @@ export const generateExercises = (
     };
   });
 };
+
+// SqlGym calls generateExercises without a count, so it shows up to this many
+// exercises per difficulty. Keep in sync with the default of generateExercises.
+const SQL_SHOWN_PER_DIFFICULTY = 30;
+
+// Real number of distinct exercises available per topic (summed over the three
+// difficulties, capped at what the gym actually shows). Used by Analytics for
+// correct completion percentages instead of the old hardcoded 60.
+export const SQL_TOPIC_TOTALS: Record<string, number> = Object.fromEntries(
+  Object.entries(QUESTION_DATABASE).map(([topicId, byDifficulty]) => [
+    topicId,
+    Object.values(byDifficulty).reduce(
+      (sum, blueprints) => sum + Math.min(blueprints.length, SQL_SHOWN_PER_DIFFICULTY),
+      0
+    ),
+  ])
+);

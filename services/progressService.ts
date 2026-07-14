@@ -39,7 +39,9 @@ export interface TopicProgress {
 
 // Constants
 const STORAGE_KEY = 'devhub_progress';
-const EXERCISES_PER_TOPIC = 60; // 20 easy + 20 medium + 20 hard
+// Fallback only — used when the caller doesn't pass real per-topic totals.
+// Real totals come from the generators (SQL_TOPIC_TOTALS / PYTHON_TOPIC_TOTALS).
+const EXERCISES_PER_TOPIC_FALLBACK = 90; // ~30 per difficulty × 3
 
 // Current user ID (null = guest mode)
 let currentUserId: string | null = null;
@@ -112,20 +114,28 @@ async function loadProgressPocketBase(): Promise<ProgressData> {
       attempts: row.attempts
     }));
 
-    // Calculate streak from completions
+    // Calculate streak: consecutive days ending at the most recent activity,
+    // valid only if that activity is today OR yesterday — same rule as the local
+    // getStreak(), so backend and guest streaks stay consistent (previously the
+    // backend reset the streak to 0 whenever no exercise was done *today*).
     const dates = [...new Set(completions.map(c => c.completedAt.split('T')[0]))].sort().reverse();
     let streakDays = 0;
-    const today = getToday();
-
-    for (let i = 0; i < dates.length; i++) {
-      const expectedDate = new Date(today);
-      expectedDate.setDate(expectedDate.getDate() - i);
-      const expectedStr = expectedDate.toISOString().split('T')[0];
-
-      if (dates[i] === expectedStr) {
-        streakDays++;
-      } else {
-        break;
+    if (dates.length > 0) {
+      const DAY_MS = 1000 * 60 * 60 * 24;
+      const today = new Date(getToday());
+      const mostRecent = new Date(dates[0]);
+      const gapFromToday = Math.round((today.getTime() - mostRecent.getTime()) / DAY_MS);
+      if (gapFromToday <= 1) {
+        streakDays = 1;
+        for (let i = 1; i < dates.length; i++) {
+          const prev = new Date(dates[i - 1]);
+          const cur = new Date(dates[i]);
+          if (Math.round((prev.getTime() - cur.getTime()) / DAY_MS) === 1) {
+            streakDays++;
+          } else {
+            break;
+          }
+        }
       }
     }
 
@@ -168,10 +178,26 @@ async function saveProgressPocketBase(
     if (existing) {
       await pb.collection('user_progress').update(existing.id, data);
     } else {
-      await pb.collection('user_progress').create(data);
+      try {
+        await pb.collection('user_progress').create(data);
+      } catch (createErr: any) {
+        // A concurrent sync may have created the same row first; the UNIQUE index
+        // then rejects this create with a 400. That's not a failure — the progress
+        // is saved. Confirm the row exists and treat as success instead of tripping
+        // the circuit breaker (which would kill cloud sync for the whole session).
+        if (createErr?.status === 400) {
+          const now = await pb.collection('user_progress').getFirstListItem(filter).catch(() => null);
+          if (now) return;
+        }
+        throw createErr;
+      }
     }
-  } catch (e) {
-    markPocketBaseUnavailable();
+  } catch (e: any) {
+    // Only a genuine connectivity/server failure should disable cloud sync for the
+    // session. A 4xx (validation/permission) is request-specific, not an outage.
+    if (!e?.status || e.status >= 500) {
+      markPocketBaseUnavailable();
+    }
   }
 }
 
@@ -314,18 +340,23 @@ export function getHeatmapData(days: number = 365): HeatmapDay[] {
   return result;
 }
 
-// Get radar/progress data by topic for a specific lab
+// Get radar/progress data by topic for a specific lab.
+// `totalsByTopic` carries the REAL number of exercises available per topic
+// (from the generators). Without it we fall back to a rough constant — the old
+// behaviour used a fixed 60 for every topic, which over/under-stated progress.
 export function getTopicProgress(
   lab: 'sql' | 'python',
-  topics: Array<{ id: string; name: string }>
+  topics: Array<{ id: string; name: string }>,
+  totalsByTopic?: Record<string, number>
 ): TopicProgress[] {
   const completions = getCompletionsByLab(lab);
 
   return topics.map(topic => {
     const topicCompletions = completions.filter(c => c.topicId === topic.id);
     const completed = topicCompletions.length;
-    const total = EXERCISES_PER_TOPIC;
-    const percentage = Math.round((completed / total) * 100);
+    const total = totalsByTopic?.[topic.id] ?? EXERCISES_PER_TOPIC_FALLBACK;
+    // Clamp: stale local data could report more completions than the current total.
+    const percentage = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0;
 
     return {
       topicId: topic.id,
@@ -394,21 +425,32 @@ export async function clearProgress(): Promise<void> {
   }
 }
 
-// Sync local progress to PocketBase (called after login)
+// Sync local progress to PocketBase (called after login).
+// Single-flight: at login both checkSession and the authStore.onChange listener
+// fire this concurrently. Without a guard the two runs race on the same rows and
+// each benign UNIQUE-constraint rejection used to trip the circuit breaker.
+let _syncInFlight: Promise<void> | null = null;
 export async function syncLocalToBackend(): Promise<void> {
   if (!currentUserId) return;
+  if (_syncInFlight) return _syncInFlight;
 
-  const localData = loadProgressLocal();
+  const userAtStart = currentUserId;
+  _syncInFlight = (async () => {
+    const localData = loadProgressLocal();
+    for (const completion of localData.completions) {
+      // Bail out if the user logged out mid-sync.
+      if (currentUserId !== userAtStart) break;
+      await saveProgressPocketBase(
+        completion.lab,
+        completion.topicId,
+        completion.difficulty,
+        completion.exerciseIndex,
+        completion.attempts
+      );
+    }
+  })().finally(() => { _syncInFlight = null; });
 
-  for (const completion of localData.completions) {
-    await saveProgressPocketBase(
-      completion.lab,
-      completion.topicId,
-      completion.difficulty,
-      completion.exerciseIndex,
-      completion.attempts
-    );
-  }
+  return _syncInFlight;
 }
 
 // Load from PocketBase to Local (called after login)

@@ -405,11 +405,13 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
         setExpectedResult(sanitizedData);
 
         if (solutionRes.success) {
-          // Use enhanced compareResults for robust validation
+          // Use enhanced compareResults for robust validation. Order matters when
+          // the solution has ORDER BY (the whole point of sorting exercises).
           const userRows = Array.isArray(res.data) ? res.data : res.data ? [res.data] : [];
-          const diff = compareResults(userRows, sanitizedData);
-          
-          // Check if results match (ignoring row order and type differences)
+          const orderMatters = /\bORDER\s+BY\b/i.test(exercise.solutionQuery || '');
+          const diff = compareResults(userRows, sanitizedData, orderMatters);
+
+          // Check if results match (cardinality-aware; order-aware when required)
           const isCorrect = diff.missingRows.length === 0 && diff.extraRows.length === 0;
           
           const userRowCount = userRows.length;

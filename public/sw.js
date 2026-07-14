@@ -21,10 +21,16 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch event - network first, falling back to cache (GET only)
+// Fetch event - network first, falling back to cache (same-origin static GET only)
 self.addEventListener("fetch", (event) => {
-  // Never intercept non-GET requests (Supabase auth/progress POSTs must hit the network directly)
+  // Never intercept non-GET requests (auth/progress writes must hit the network directly)
   if (event.request.method !== "GET") return;
+
+  // Only cache same-origin app assets. Cross-origin GETs — PocketBase API
+  // (user_progress/records, user records), Pyodide/Tailwind CDNs, fonts — must
+  // never be cached: they carry per-user data or must always be fresh.
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith(
     fetch(event.request)

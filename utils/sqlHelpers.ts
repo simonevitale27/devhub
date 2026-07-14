@@ -86,8 +86,9 @@ const normalizeValue = (value: any): string => {
   // Convert numbers to string, handling decimals consistently
   if (typeof value === "number") {
     if (Number.isInteger(value)) return String(value);
-    // Round to 2 decimal places and strip trailing zeros
-    const fixed = value.toFixed(2);
+    // Round to 4 decimals (was 2, which collapsed distinct aggregates like
+    // 1.001 vs 1.004 into "1" and passed slightly-wrong AVG/division queries).
+    const fixed = value.toFixed(4);
     return fixed.replace(/\.?0+$/, "") || "0";
   }
   // Convert strings: trim and lowercase for case-insensitive comparison
@@ -96,22 +97,10 @@ const normalizeValue = (value: any): string => {
   if (str !== "" && !isNaN(Number(str))) {
     const num = Number(str);
     if (Number.isInteger(num)) return String(num);
-    const fixed = num.toFixed(2);
+    const fixed = num.toFixed(4);
     return fixed.replace(/\.?0+$/, "") || "0";
   }
   return str;
-};
-
-/**
- * Normalize a single row: convert all values to lowercase trimmed strings for consistent comparison
- * Handles null/undefined, booleans, numbers, and strings uniformly
- */
-const normalizeRow = (row: any): any => {
-  const normalized: any = {};
-  for (const key in row) {
-    normalized[key] = normalizeValue(row[key]);
-  }
-  return normalized;
 };
 
 /**
@@ -119,49 +108,6 @@ const normalizeRow = (row: any): any => {
  */
 const rowValuesArray = (row: any): string[] => {
   return Object.keys(row).map((k) => normalizeValue(row[k]));
-};
-
-/**
- * Sort rows deterministically based on all column values
- * Uses normalized string comparison for stability
- */
-const sortRows = (rows: any[]): any[] => {
-  if (rows.length === 0) return rows;
-
-  return [...rows].sort((a, b) => {
-    // Get all keys from both objects and sort them
-    const allKeys = Array.from(
-      new Set([...Object.keys(a), ...Object.keys(b)]),
-    ).sort();
-
-    // Compare all columns in sorted order
-    for (const key of allKeys) {
-      const valA = String(a[key] ?? "").toLowerCase();
-      const valB = String(b[key] ?? "").toLowerCase();
-
-      if (valA < valB) return -1;
-      if (valA > valB) return 1;
-    }
-    return 0;
-  });
-};
-
-/**
- * Sort rows by their positional values array (for positional comparison)
- */
-const sortRowsByValues = (rows: any[]): any[] => {
-  if (rows.length === 0) return rows;
-  return [...rows].sort((a, b) => {
-    const valsA = rowValuesArray(a);
-    const valsB = rowValuesArray(b);
-    for (let i = 0; i < Math.max(valsA.length, valsB.length); i++) {
-      const va = valsA[i] ?? "";
-      const vb = valsB[i] ?? "";
-      if (va < vb) return -1;
-      if (va > vb) return 1;
-    }
-    return 0;
-  });
 };
 
 /**
@@ -180,6 +126,7 @@ const sortRowsByValues = (rows: any[]): any[] => {
 export const compareResults = (
   userRows: any[],
   expectedRows: any[],
+  orderMatters: boolean = false,
 ): DiffResult => {
   const missingRows: any[] = [];
   const extraRows: any[] = [];
@@ -188,6 +135,55 @@ export const compareResults = (
   // Detect column differences
   let hasExtraColumns = false;
   let extraColumns: string[] = [];
+
+  const SEP = "";
+  // Canonical key for a row. `cols` = columns to key on (the expected columns, so
+  // extra user columns are ignored); when null, key on all values in column order.
+  const keyOf = (row: any, cols: string[] | null): string =>
+    (cols ? cols.map((c) => normalizeValue(row[c])) : rowValuesArray(row)).join(SEP);
+
+  // MULTISET diff — respects row cardinality, so DISTINCT vs non-DISTINCT (or any
+  // duplicate-count mismatch) is correctly caught. Previously .some() matching
+  // ignored counts and marked `SELECT DISTINCT` equal to a duplicated result.
+  const multisetDiff = (
+    userKeyed: { key: string; row: any }[],
+    expectedKeyed: { key: string; row: any }[],
+  ) => {
+    const avail = new Map<string, number>();
+    userKeyed.forEach(({ key }) => avail.set(key, (avail.get(key) || 0) + 1));
+    expectedKeyed.forEach(({ key, row }) => {
+      const c = avail.get(key) || 0;
+      if (c > 0) avail.set(key, c - 1);
+      else missingRows.push(row);
+    });
+    const expAvail = new Map<string, number>();
+    expectedKeyed.forEach(({ key }) => expAvail.set(key, (expAvail.get(key) || 0) + 1));
+    userKeyed.forEach(({ key, row }) => {
+      const c = expAvail.get(key) || 0;
+      if (c > 0) expAvail.set(key, c - 1);
+      else extraRows.push(row);
+    });
+  };
+
+  // ORDERED diff — positional comparison, used when the solution has ORDER BY so
+  // that a wrong/absent ORDER BY is actually caught (before, everything was sorted
+  // first, making the `sorting` topic impossible to fail).
+  // ponytail: rows tied on the ORDER BY key can legitimately differ in relative
+  // order; this flags that as a mismatch. Acceptable for teaching ORDER BY; upgrade
+  // to parsing the ORDER BY columns only if tie false-negatives become a problem.
+  const orderedDiff = (
+    userKeyed: { key: string; row: any }[],
+    expectedKeyed: { key: string; row: any }[],
+  ) => {
+    const n = Math.max(userKeyed.length, expectedKeyed.length);
+    for (let i = 0; i < n; i++) {
+      const u = userKeyed[i];
+      const e = expectedKeyed[i];
+      if (!e) { extraRows.push(u.row); continue; }
+      if (!u) { missingRows.push(e.row); continue; }
+      if (u.key !== e.key) { missingRows.push(e.row); extraRows.push(u.row); }
+    }
+  };
 
   if (userRows.length > 0 && expectedRows.length > 0) {
     const userCols = Object.keys(userRows[0]);
@@ -203,105 +199,38 @@ export const compareResults = (
     const sameColumnNames = matchingCols.length === expectedCols.length;
 
     // POSITIONAL COMPARISON FALLBACK:
-    // If column names are completely different but column count matches (or user has exact same count),
-    // compare by values at each position instead of by column name.
-    // This handles: `SELECT price / 2` (col "price / 2") vs `SELECT price * 0.5 AS HalfPrice` (col "HalfPrice")
+    // Column names differ but count matches (e.g. `SELECT price / 2` vs
+    // `SELECT price * 0.5 AS HalfPrice`) — compare by values in column order.
     if (!sameColumnNames && userCols.length === expectedCols.length) {
-      // Use positional comparison
-      const sortedUser = sortRowsByValues(userRows.map(normalizeRow));
-      const sortedExpected = sortRowsByValues(expectedRows.map(normalizeRow));
+      const userKeyed = userRows.map((row) => ({ key: keyOf(row, null), row }));
+      const expectedKeyed = expectedRows.map((row) => ({ key: keyOf(row, null), row }));
+      if (orderMatters) orderedDiff(userKeyed, expectedKeyed);
+      else multisetDiff(userKeyed, expectedKeyed);
 
-      // Compare row by row using values arrays
-      const findMatchByValues = (targetRow: any, searchSet: any[]): boolean => {
-        const targetVals = rowValuesArray(targetRow);
-        return searchSet.some((row) => {
-          const rowVals = rowValuesArray(row);
-          if (targetVals.length !== rowVals.length) return false;
-          return targetVals.every((v, i) => v === rowVals[i]);
-        });
-      };
-
-      sortedExpected.forEach((expectedRow) => {
-        if (!findMatchByValues(expectedRow, sortedUser)) {
-          missingRows.push(expectedRow);
-        }
-      });
-
-      sortedUser.forEach((userRow) => {
-        if (!findMatchByValues(userRow, sortedExpected)) {
-          extraRows.push(userRow);
-        }
-      });
-
-      // If positional match succeeded, don't report extra columns
+      // If values matched, don't report extra columns
       if (missingRows.length === 0 && extraRows.length === 0) {
         hasExtraColumns = false;
         extraColumns = [];
       }
 
-      return {
-        missingRows,
-        extraRows,
-        differentCells,
-        hasExtraColumns,
-        extraColumns,
-      };
+      return { missingRows, extraRows, differentCells, hasExtraColumns, extraColumns };
     }
+
+    // KEY-BASED COMPARISON (standard path): key only on the expected columns so
+    // extra user columns are ignored (still surfaced via hasExtraColumns).
+    const userKeyed = userRows.map((row) => ({ key: keyOf(row, expectedCols), row }));
+    const expectedKeyed = expectedRows.map((row) => ({ key: keyOf(row, expectedCols), row }));
+    if (orderMatters) orderedDiff(userKeyed, expectedKeyed);
+    else multisetDiff(userKeyed, expectedKeyed);
+
+    return { missingRows, extraRows, differentCells, hasExtraColumns, extraColumns };
   }
 
-  // KEY-BASED COMPARISON (standard path)
-  // Normalize and sort both result sets for accurate comparison
-  const normalizedUser = userRows.map(normalizeRow);
-  const normalizedExpected = expectedRows.map(normalizeRow);
+  // One (or both) sides empty: any rows present are a straight mismatch.
+  if (expectedRows.length > 0) missingRows.push(...expectedRows);
+  if (userRows.length > 0) extraRows.push(...userRows);
 
-  const sortedUser = sortRows(normalizedUser);
-  const sortedExpected = sortRows(normalizedExpected);
-
-  // Find missing rows (in expected but not in user)
-  sortedExpected.forEach((expectedRow) => {
-    // Only compare columns that exist in expected result
-    const expectedCols = Object.keys(expectedRow);
-
-    const found = sortedUser.some((userRow) => {
-      // Compare only the expected columns (ignore extra user columns)
-      return expectedCols.every((col) => {
-        const userVal = userRow[col];
-        const expectedVal = expectedRow[col];
-        return userVal === expectedVal;
-      });
-    });
-
-    if (!found) {
-      missingRows.push(expectedRow);
-    }
-  });
-
-  // Find extra rows (in user but not in expected)
-  sortedUser.forEach((userRow) => {
-    const expectedCols =
-      expectedRows.length > 0 ? Object.keys(expectedRows[0]) : [];
-
-    const found = sortedExpected.some((expectedRow) => {
-      // Compare only the expected columns (ignore extra user columns)
-      return expectedCols.every((col) => {
-        const userVal = userRow[col];
-        const expectedVal = expectedRow[col];
-        return userVal === expectedVal;
-      });
-    });
-
-    if (!found) {
-      extraRows.push(userRow);
-    }
-  });
-
-  return {
-    missingRows,
-    extraRows,
-    differentCells,
-    hasExtraColumns,
-    extraColumns,
-  };
+  return { missingRows, extraRows, differentCells, hasExtraColumns, extraColumns };
 };
 
 /**
