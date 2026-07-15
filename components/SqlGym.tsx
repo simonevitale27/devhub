@@ -683,8 +683,8 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                             key={i}
                             className={`text-[9px] font-mono uppercase px-1.5 py-0.5 rounded ${
                               isActive
-                                ? "bg-black/40 text-slate-300"
-                                : "bg-slate-800 text-slate-500"
+                                ? "bg-black/40 text-slate-200"
+                                : "bg-slate-800 text-slate-400"
                             }`}
                           >
                             {tag}
