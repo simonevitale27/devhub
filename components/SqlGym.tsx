@@ -862,7 +862,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               <button
                 onClick={handlePrevExercise}
                 disabled={currentExerciseIndex === 0}
-                className="py-2 px-1.5 text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-white/5 transition-colors"
+                className="flex items-center justify-center min-w-[40px] min-h-[40px] text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-white/5 transition-colors"
                 aria-label="Esercizio precedente"
               >
                 <ChevronLeft size={16} />
@@ -874,7 +874,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               <button
                 onClick={handleNextExercise}
                 disabled={currentExerciseIndex === exercises.length - 1}
-                className="py-2 px-1.5 text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-white/5 transition-colors"
+                className="flex items-center justify-center min-w-[40px] min-h-[40px] text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-white/5 transition-colors"
                 aria-label="Esercizio successivo"
               >
                 <ChevronRight size={16} />
