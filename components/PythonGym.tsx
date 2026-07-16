@@ -1029,14 +1029,11 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                       <button
                         onClick={handleRunCode}
                         disabled={isRunning || pyodideLoading || packagesLoading}
-                        className={`p-2 rounded-lg transition-all ${
-                          isRunning 
-                            ? "bg-amber-500/20 text-amber-400"
-                            : "text-slate-400 hover:bg-amber-500/20 hover:text-amber-400"
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        className="px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg bg-amber-500 text-white hover:bg-amber-400 shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                         title="Esegui (⌘+Enter)"
                       >
-                        {isRunning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
+                        {isRunning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} fill="currentColor" />}
+                        {isRunning ? "Esecuzione…" : "Esegui"}
                       </button>
                     </div>
                   </div>
