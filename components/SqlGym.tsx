@@ -1250,9 +1250,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       <button
                         onClick={handleFormatSQL}
                         disabled={!sqlCode.trim()}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
-                          "bg-gradient-to-b from-blue-500/30 to-blue-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(59,130,246,0.2)_inset] shadow-blue-500/10 text-blue-300"
-                        } disabled:opacity-40 disabled:cursor-not-allowed`}
+                        className="px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 disabled:opacity-40 disabled:cursor-not-allowed"
                         title="Formatta SQL"
                       >
                         <Sparkles size={14} />
