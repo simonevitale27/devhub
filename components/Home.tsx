@@ -55,7 +55,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                 />
                 <div className="flex items-center gap-2 md:gap-4">
                     <div className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md px-3 py-1 rounded-full ring-1 ring-white/20 shadow-lg">
-                        Beta v1.0
+                        Beta
                     </div>
                     <UserBadge onNavigate={onNavigate} />
                 </div>

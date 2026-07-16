@@ -4,6 +4,7 @@ import LandingPage from './components/LandingPage';
 import Home from './components/Home';
 import ResetPasswordPage from './components/ResetPasswordPage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { APP_VERSION } from './version';
 
 // Lazy-load heavy components — they are only mounted when the user navigates to them.
 // This eliminates the "all pages mounted at once" problem that was causing
@@ -100,7 +101,15 @@ function AppContent() {
     }
   };
 
-  return <>{renderPage()}</>;
+  return (
+    <>
+      {renderPage()}
+      {/* Global build stamp — top-right on every screen so old vs new builds are obvious */}
+      <div className="fixed top-1.5 right-2 z-[60] text-[10px] font-mono font-semibold tracking-wider text-slate-500/70 pointer-events-none select-none">
+        v{APP_VERSION}
+      </div>
+    </>
+  );
 }
 
 function App() {

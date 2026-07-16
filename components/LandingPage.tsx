@@ -4,6 +4,7 @@ import { Hexagon, ArrowRight, Mail, Lock, User, Chrome, LogIn } from 'lucide-rea
 import { signIn, signUp, signInWithGoogle, resetPassword } from '../services/authService';
 import { setCurrentUser, syncBackendToLocal } from '../services/progressService';
 import { useAuth } from '../contexts/AuthContext';
+import { APP_VERSION } from '../version';
 
 interface LandingPageProps {
     onNavigate: (page: Page) => void;
@@ -188,7 +189,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
                     {/* VERSION BADGE */}
                     <div className="mt-10 md:mt-16 text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">
-                        Beta v1.0
+                        Beta v{APP_VERSION}
                     </div>
                 </div>
             </div>
