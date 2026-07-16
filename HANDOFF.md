@@ -1,7 +1,8 @@
 # HANDOFF — DevHub
 
-> Aggiornato: 2026-07-14 · Sessione: audit + Fase 0 stabilizzazione (deployata) + Fase 1 G001 Tailwind/G002 code-split/G003 a11y+palette (tutte deployate) + G004 redesign avviato (pass 1 SQL Lab, deployato). Prossimo: continuare G004 redesign SQL Lab in sessione focalizzata.
+> Aggiornato: 2026-07-16 · Sessione: Fase 0 + Fase 1 G001/G002/G003 (deployate) + G004 redesign in corso. Aggiunto **badge versione app** (v1.x, single source in `version.ts`, stamp fisso in alto a dx su OGNI schermata) — usato come "old vs new build" tracker: **bumpare `APP_VERSION` a ogni passata visibile**. Passate redesign recenti: SQL Lab toolbar (Formatta→neutro, 1 solo primario blu) e Python Lab toolbar (Esegui→primario amber etichettato, prima era icona-fantasma). Build corrente: **v1.7**. Prossimo: continuare a propagare la gerarchia azioni / glass / spacing 4-8 a Home + Analytics (+ DataLab), poi rifinire densità sidebar SQL Lab.
 > Regola: leggere questo file PRIMA di toccare codice. A fine sessione, aggiornarlo con la skill `handoff`.
+> **Versioning UI**: la versione mostrata è in `version.ts` (`APP_VERSION`). Incrementarla ad ogni cambiamento visibile così l'utente distingue la build vecchia da quella nuova sul live (devhub-gray.vercel.app).
 
 ## Cos'è
 
@@ -35,7 +36,7 @@ Piattaforma di apprendimento SQL/Python/Data Analysis, tutta client-side (React 
 
 ### ⏭️ IN CORSO — Fase 1 G004 redesign (direzione decisa: RAFFINARE l'identità attuale — dark+glass+accento blu; NON rivoluzionare. Sezione di partenza: SQL Lab)
 
-**Pass 1 fatto** (commit `32d33ec`, live): SqlGym stato di caricamento con spinner coerente; stato vuoto risultati reso leggibile + hint. **Da continuare** (sessione focalizzata, iterare con l'utente che rivede): raffinare gerarchia/spaziature/stati/micro-interazioni di SqlGym (badge micro a basso contrasto, card Home con top assoluti hardcoded, touch-target frecce esercizio ~30px→44px), poi propagare a PythonGym/Home/Landing/Analytics. La skill `ui-ux-pro-max` è orientata React-Native ma i principi (a11y, spacing 4/8, gerarchia, stati, motion 150-300ms) valgono. Regola: NIENTE full-rewrite dei componenti da 1500+ righe; interventi mirati e verificati a vista.
+**Pass 1 fatto** (commit `32d33ec`, live): SqlGym spinner + stato vuoto leggibile. **Pass 2 (v1.6)**: SqlGym toolbar — `Formatta` era un secondo "primario" blu in conflitto con `Esegui`; ora è utility neutra, il blu marca UN solo primario. **Pass 3 (v1.7)**: PythonGym toolbar allineata a SqlGym — `Esegui` era icona-fantasma identica alle utility; ora è primario amber etichettato (identità Python = amber, SQL = blu; stessa *gerarchia*, colore diverso). Verificato: il codice gira e valida ("Corretto! 🎉"). **Da continuare** (iterare con l'utente che rivede): propagare gerarchia/glass/spacing a Home + Analytics (+ DataLab) per coerenza; poi rifinire densità/contrasto sidebar SQL Lab (chip keyword minuscole) e touch-target residui. La skill `ui-ux-pro-max` è orientata React-Native ma i principi (a11y, spacing 4/8, gerarchia, stati, motion 150-300ms) valgono. Regola: NIENTE full-rewrite dei componenti da 1500+ righe; interventi mirati e verificati a vista.
 
 ### ⏭️ Fasi successive (non ancora pianificate in dettaglio)
 
