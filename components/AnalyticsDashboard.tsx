@@ -389,9 +389,10 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
           <div className="flex items-center gap-4">
             <button
               onClick={onBack}
-              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
+              className="h-[38px] w-[38px] md:h-[42px] md:w-[42px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+              aria-label="Torna alla home"
             >
-              <ArrowLeft size={20} />
+              <ArrowLeft size={18} />
             </button>
             <div>
               <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
