@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page } from '../types';
-import { Database, Code2, Hexagon, Terminal, TrendingUp } from 'lucide-react';
+import { Database, Code2, Hexagon, Terminal, TrendingUp, BarChart3 } from 'lucide-react';
 import UserBadge from './UserBadge';
 
 interface HomeProps {
@@ -71,7 +71,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 w-full max-w-6xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-8 w-full max-w-4xl">
 
                     {/* SQL GYM CARD */}
                     <button
@@ -115,6 +115,21 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                         <h2 className="absolute top-[5rem] md:top-[8.5rem] left-0 right-0 text-xl md:text-3xl font-bold text-white tracking-tight font-outfit group-hover:text-emerald-300 transition-colors">DataLab</h2>
                         <p className="absolute top-[6.5rem] md:top-[11rem] left-0 right-0 px-4 md:px-8 text-slate-300 text-xs md:text-base font-medium leading-relaxed group-hover:text-slate-100 transition-colors">
                             Analizza dati con SQL e Python, crea grafici ed esporta.
+                        </p>
+                    </button>
+
+                    {/* DAX LAB CARD */}
+                    <button
+                        onClick={() => onNavigate(Page.DaxGym)}
+                        className="group relative h-44 md:h-72 bg-gradient-to-br from-yellow-950/50 to-slate-900/50 backdrop-blur-xl rounded-3xl transition-all duration-500 text-center hover:scale-105 shadow-2xl shadow-yellow-900/30 hover:shadow-yellow-500/30 ring-1 ring-yellow-500/20 hover:ring-yellow-400/40 overflow-hidden"
+                    >
+                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="absolute top-4 md:top-10 left-1/2 -translate-x-1/2 w-12 h-12 md:w-16 md:h-16 bg-yellow-500/20 rounded-2xl flex items-center justify-center text-yellow-400 group-hover:scale-110 transition-transform duration-500 ring-1 ring-yellow-500/30">
+                            <BarChart3 size={30} strokeWidth={1.5} />
+                        </div>
+                        <h2 className="absolute top-[5rem] md:top-[8.5rem] left-0 right-0 text-xl md:text-3xl font-bold text-white tracking-tight font-outfit group-hover:text-yellow-300 transition-colors">DAX Lab</h2>
+                        <p className="absolute top-[6.5rem] md:top-[11rem] left-0 right-0 px-4 md:px-8 text-slate-300 text-xs md:text-base font-medium leading-relaxed group-hover:text-slate-100 transition-colors">
+                            Power BI PL-300: filter context, CALCULATE e time intelligence.
                         </p>
                     </button>
 

@@ -23,7 +23,7 @@ export enum Page {
   SqlGym = 'sql_gym',
   DataLab = 'data_lab',
   PythonGym = 'python_gym',
-  AngularGym = 'angular_gym',
+  DaxGym = 'dax_gym',
   Analytics = 'analytics',
   Account = 'account',
   ResetPassword = 'reset_password'

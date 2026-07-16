@@ -12,6 +12,7 @@ import { APP_VERSION } from './version';
 const SqlGym = lazy(() => import('./components/SqlGym'));
 const DataLab = lazy(() => import('./components/DataLab'));
 const PythonGym = lazy(() => import('./components/PythonGym'));
+const DaxGym = lazy(() => import('./components/DaxGym'));
 const AnalyticsDashboard = lazy(() => import('./components/AnalyticsDashboard'));
 const AccountPage = lazy(() => import('./components/AccountPage'));
 
@@ -82,6 +83,12 @@ function AppContent() {
         return (
           <Suspense fallback={<PageLoader />}>
             <PythonGym onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />
+          </Suspense>
+        );
+      case Page.DaxGym:
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <DaxGym onBack={() => setCurrentPage(Page.Home)} onNavigate={setCurrentPage} />
           </Suspense>
         );
       case Page.Analytics:
