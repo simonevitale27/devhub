@@ -10,7 +10,12 @@
 > - SQL, limiti motore AlaSQL scoperti: `MIN(hire_date)` restituisce undefined (riscritto con SUM condizionale); `IN(subquery) AND NOT IN(subquery)` restituisce [] (riscritto con `NOT EXISTS`). **Tenerne conto scrivendo nuovi esercizi.**
 > - SQL: Orders/OrderItems sono generati **a random** → vari esercizi Hard non avevano risposta e, con result set vuoto, QUALSIASI query sbagliata veniva promossa. Ora ci sono righe-risposta deterministiche seedate in `sqlService.ts` (ordine full-house, dipendente isolato, reparto post-2021, compratore Laptop, Monitor-4K-senza-Keyboard, all-Accessories).
 >
-> **NON fatto (bloccato)**: `/humanizer` sulle ~444 `explanation` Python troppo brevi (<60 char). Il workflow multi-agente è fallito per **limite token di sessione** (12/17 agent falliti, output persi con la wipe della scratchpad). Le explanation ora si VEDONO, quindi riscriverle ha valore reale: è il primo lavoro da riprendere. Coverage sottile da riempire: `conditions/Medium`=7, `collections`=3/3/3, seaborn/libraries.
+> **NON fatto (bloccato)**: `/humanizer`. Il workflow multi-agente è fallito per **limite token di sessione** (12/17 agent falliti, output persi con la wipe della scratchpad). Da riprendere a limiti resettati.
+>
+> **PRIORITÀ humanizer = SQL, non Python** (misurato in v2.1, ora che le explanation si VEDONO):
+> - **SQL (775)**: **543 esercizi (70%) riciclano solo 52 testi** di explanation (una spiegazione di WHERE ripetuta 46 volte); **91 explanation citano una keyword che la loro query non usa** (es. "Filtro Combinato 1" spiega LIKE ma la query non ha LIKE) → sono proprio SBAGLIATE; **343 esercizi hanno <2 hint**; 123 explanation <60 char. Corretto solo `Nomi Utenti` (spiegava SELECT * su una query a colonna singola).
+> - **Python (527)**: 0 duplicati, 0 esercizi con <2 hint. Le explanation sono uniche, solo **corte** (444 sotto i 60 char). Qualità molto migliore del SQL.
+> Quindi: prima passata humanizer su SQL (dedup + mismatch keyword + hint mancanti), poi Python (espandere le corte). Coverage sottile da riempire: `conditions/Medium`=7, `collections`=3/3/3, seaborn/libraries.
 > **Versioning UI**: la versione mostrata è in `version.ts` (`APP_VERSION`). Incrementarla ad ogni cambiamento visibile così l'utente distingue la build vecchia da quella nuova sul live (devhub-gray.vercel.app).
 
 ## Cos'è
