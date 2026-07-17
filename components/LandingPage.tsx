@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Page } from '../types';
-import { Hexagon, ArrowRight, Mail, Lock, User, Chrome, LogIn } from 'lucide-react';
+import { Hexagon, ArrowRight, Mail, Lock, User, Chrome, LogIn, Database, Terminal, BarChart3, Code2, Sparkles } from 'lucide-react';
 import { signIn, signUp, signInWithGoogle, resetPassword } from '../services/authService';
 import { setCurrentUser, syncBackendToLocal } from '../services/progressService';
 import { useAuth } from '../contexts/AuthContext';
@@ -119,79 +119,78 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     // Landing View
     if (authMode === 'landing') {
         return (
-            <div className="min-h-screen bg-transparent text-slate-200 font-sans flex flex-col items-center justify-center relative overflow-hidden selection:bg-blue-500 selection:text-white">
-                
-                {/* BACKGROUND HEXAGONS */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <Hexagon 
-                        size={600} 
-                        className="absolute -top-40 -left-40 text-slate-800/30 animate-pulse" 
-                        strokeWidth={0.3} 
-                    />
-                    <Hexagon 
-                        size={400} 
-                        className="absolute -bottom-20 -right-20 text-blue-900/20" 
-                        strokeWidth={0.5} 
-                    />
-                </div>
+            <div className="min-h-dvh bg-transparent text-slate-200 font-sans flex flex-col relative overflow-hidden selection:bg-blue-500 selection:text-white">
 
-                {/* AMBIENT GLOW */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none"></div>
+                {/* Single refined accent, high up so the hero sits in its light */}
+                <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[720px] bg-blue-600/10 rounded-full blur-[160px]"></div>
 
-                {/* CONTENT */}
-                <div className="relative z-10 flex flex-col items-center text-center px-4 md:px-6">
-                    
-                    {/* LOGO */}
-                    <div className="relative mb-8">
-                        <Hexagon size={80} className="text-blue-600 fill-blue-600/10" strokeWidth={1.5} />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse shadow-lg shadow-blue-500/50"></div>
+                {/* Top bar: brand mark + build */}
+                <header className="relative z-10 flex items-center justify-between px-5 md:px-10 py-5">
+                    <div className="flex items-center gap-2.5">
+                        <div className="relative flex items-center justify-center">
+                            <Hexagon size={22} className="text-blue-500 fill-blue-500/10" strokeWidth={2} />
+                            <span className="absolute w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
                         </div>
+                        <span className="font-syne font-bold text-lg tracking-tight text-white">Dev<span className="text-blue-500">Hub</span></span>
+                    </div>
+                    <span className="text-[10px] font-mono font-semibold tracking-[0.2em] text-slate-500">v{APP_VERSION}</span>
+                </header>
+
+                {/* Hero */}
+                <main className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-5 pb-20 -mt-6">
+
+                    <div className="animate-rise inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-xs font-medium text-slate-300 mb-9 backdrop-blur-sm">
+                        <Sparkles size={13} className="text-blue-400" /> Impara facendo, non guardando
                     </div>
 
-                    {/* TITLE */}
-                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mb-4 select-none">
+                    <h1 className="animate-rise delay-1 text-display text-[clamp(3.5rem,12vw,7rem)] text-white mb-6 select-none">
                         DEV<span className="text-blue-500">HUB</span>
                     </h1>
 
-                    {/* TAGLINE */}
-                    <p className="text-base md:text-xl text-slate-400 max-w-md mb-8 md:mb-10 leading-relaxed">
-                        Il tuo spazio di pratica per SQL, dati e sviluppo.
+                    <p className="animate-rise delay-2 text-base md:text-xl text-slate-400 max-w-xl leading-relaxed mb-9">
+                        Allena SQL, Python e DAX in un editor dal vivo. Esercizi reali, correzione immediata, zero configurazione.
                     </p>
 
-                    {/* GUEST ACCESS - PRIMARY */}
-                    <button
-                        onClick={handleGuestAccess}
-                        className="group relative px-8 md:px-10 py-3.5 md:py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-base md:text-lg rounded-full transition-all duration-300 shadow-2xl shadow-blue-600/30 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 flex items-center gap-3 mb-6"
-                    >
-                        Prova come Ospite
-                        <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
-
-                    {/* AUTH BUTTONS */}
-                    <div className="flex items-center gap-4 text-sm">
-                        <button
-                            onClick={() => setAuthMode('login')}
-                            className="text-slate-400 hover:text-white transition-colors flex items-center gap-2"
-                        >
-                            <LogIn size={16} />
-                            Accedi
-                        </button>
-                        <span className="text-slate-600">|</span>
-                        <button
-                            onClick={() => setAuthMode('register')}
-                            className="text-slate-400 hover:text-white transition-colors flex items-center gap-2"
-                        >
-                            <User size={16} />
-                            Registrati
-                        </button>
+                    {/* Lab chips — signal what you actually practise here */}
+                    <div className="animate-rise delay-2 flex flex-wrap items-center justify-center gap-2.5 mb-11">
+                        {[
+                            { Icon: Database, label: 'SQL', cls: 'text-blue-300 ring-blue-500/25 bg-blue-500/[0.06]' },
+                            { Icon: Terminal, label: 'Python', cls: 'text-amber-300 ring-amber-500/25 bg-amber-500/[0.06]' },
+                            { Icon: BarChart3, label: 'DAX', cls: 'text-yellow-300 ring-yellow-500/25 bg-yellow-500/[0.06]' },
+                            { Icon: Code2, label: 'Data Lab', cls: 'text-emerald-300 ring-emerald-500/25 bg-emerald-500/[0.06]' },
+                        ].map(({ Icon, label, cls }) => (
+                            <span key={label} className={`inline-flex items-center gap-1.5 rounded-full ring-1 px-3 py-1.5 text-xs font-semibold ${cls}`}>
+                                <Icon size={13} /> {label}
+                            </span>
+                        ))}
                     </div>
 
-                    {/* VERSION BADGE */}
-                    <div className="mt-10 md:mt-16 text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">
-                        Beta v{APP_VERSION}
+                    <div className="animate-rise delay-3 flex flex-col items-center gap-6">
+                        <button
+                            onClick={handleGuestAccess}
+                            className="group relative px-9 md:px-11 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-base md:text-lg rounded-full transition-all duration-300 shadow-[0_10px_40px_-8px_rgba(37,99,235,0.5)] hover:shadow-[0_14px_48px_-8px_rgba(59,130,246,0.6)] hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-3"
+                        >
+                            Prova come Ospite
+                            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
+
+                        <div className="flex items-center gap-4 text-sm">
+                            <button
+                                onClick={() => setAuthMode('login')}
+                                className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 py-1"
+                            >
+                                <LogIn size={16} /> Accedi
+                            </button>
+                            <span className="text-slate-700">·</span>
+                            <button
+                                onClick={() => setAuthMode('register')}
+                                className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 py-1"
+                            >
+                                <User size={16} /> Registrati
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </main>
             </div>
         );
     }
