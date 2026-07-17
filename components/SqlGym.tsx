@@ -32,7 +32,6 @@ import {
   FileSpreadsheet,
   ChevronDown,
   BarChart3,
-  Bot,
   History,
   Bug,
   Menu,
@@ -103,7 +102,6 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [showHint, setShowHint] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
-  const [showErrorExplanation, setShowErrorExplanation] = useState(false);
   const [showStatsModal, setShowStatsModal] = useState(false); // New state for stats modal
   const [isDbReady, setIsDbReady] = useState(false);
   const [showDbPanel, setShowDbPanel] = useState(false);
@@ -249,7 +247,6 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
     setUserResult(null);
     setValidation(null);
     setShowHint(false);
-    setShowErrorExplanation(false);
     setSqlCode("");
     setShowSolution(false);
     setShowStatsModal(false); // Close stats modal on new content load
@@ -298,7 +295,6 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
     setExpectedResult([]);
     setValidation(null);
     setShowHint(false);
-    setShowErrorExplanation(false);
     setSqlCode("");
     setShowSolution(false);
     setShowStatsModal(false); // Close stats modal on reset
@@ -357,7 +353,6 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
     setUserResult(null);
     setValidation(null);
     setExpectedResult([]);
-    setShowErrorExplanation(false);
     setShowStatsModal(false); // Close stats modal on new run
     setExecutionTime(null);
 
