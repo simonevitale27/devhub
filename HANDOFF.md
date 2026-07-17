@@ -2,6 +2,15 @@
 
 > Aggiornato: 2026-07-16 · Sessione: Fase 0 + Fase 1 G001/G002/G003 (deployate) + G004 redesign + **nuova sezione DAX Lab**. Aggiunto **badge versione app** (v1.x, single source in `version.ts`, stamp fisso in alto a dx su OGNI schermata) — "old vs new build" tracker: **bumpare `APP_VERSION` a ogni passata visibile**. Build corrente: **v1.9**. Passate: v1.6 SQL toolbar (Formatta→neutro), v1.7 Python toolbar (Esegui→primario amber), v1.8 propagazione (Analytics back button glass; Home/DataLab/AccountPage erano già coerenti), **v1.9 DAX Lab** (nuovo lab PL-300). Prossimo: (1) humanizer sugli esercizi Python (474 blueprint già esistenti, testi spesso templatici) + riempire topic sottili; (2) più esercizi DAX (ora 23 starter); (3) pass /impeccable geometrie SQL/Python/DAX.
 > Regola: leggere questo file PRIMA di toccare codice. A fine sessione, aggiornarlo con la skill `handoff`.
+>
+> **v2.0 — QA gate + bug reali (fatto)**. Due gate riproducibili, entrambi verdi: Python 527 soluzioni eseguite con `python3` (519 ok / 0 mismatch / 0 error / 8 expectedOutput vuoto by design) e SQL 775 soluzioni eseguite su AlaSQL vero (0 failure / 0 debug-finti / 0 soluzioni a 0 righe). Bug trovati **eseguendo**, non leggendo:
+> - `explanation` era scritta per TUTTI (527 Python + 775 SQL) ma **non renderizzata in nessuno dei due lab**: contenuto morto. Ora mostrata con la soluzione. PythonGym mostrava solo `hints[0]` → ora tutti.
+> - Python: `Len stringa` aveva expectedOutput 34 ma `len()` = 33 (la risposta GIUSTA era bocciata). 8 hint che rivelavano la soluzione letterale. 2 `brokenCode` con placeholder `'...'`.
+> - SQL: `manager_id INT` faceva coercizione NULL→NaN → **ogni `WHERE manager_id IS NULL` era rotta**. Colonna ora untyped.
+> - SQL, limiti motore AlaSQL scoperti: `MIN(hire_date)` restituisce undefined (riscritto con SUM condizionale); `IN(subquery) AND NOT IN(subquery)` restituisce [] (riscritto con `NOT EXISTS`). **Tenerne conto scrivendo nuovi esercizi.**
+> - SQL: Orders/OrderItems sono generati **a random** → vari esercizi Hard non avevano risposta e, con result set vuoto, QUALSIASI query sbagliata veniva promossa. Ora ci sono righe-risposta deterministiche seedate in `sqlService.ts` (ordine full-house, dipendente isolato, reparto post-2021, compratore Laptop, Monitor-4K-senza-Keyboard, all-Accessories).
+>
+> **NON fatto (bloccato)**: `/humanizer` sulle ~444 `explanation` Python troppo brevi (<60 char). Il workflow multi-agente è fallito per **limite token di sessione** (12/17 agent falliti, output persi con la wipe della scratchpad). Le explanation ora si VEDONO, quindi riscriverle ha valore reale: è il primo lavoro da riprendere. Coverage sottile da riempire: `conditions/Medium`=7, `collections`=3/3/3, seaborn/libraries.
 > **Versioning UI**: la versione mostrata è in `version.ts` (`APP_VERSION`). Incrementarla ad ogni cambiamento visibile così l'utente distingue la build vecchia da quella nuova sul live (devhub-gray.vercel.app).
 
 ## Cos'è
