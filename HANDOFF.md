@@ -12,6 +12,8 @@
 >
 > **NON fatto (bloccato)**: `/humanizer`. Il workflow multi-agente è fallito per **limite token di sessione** (12/17 agent falliti, output persi con la wipe della scratchpad). Da riprendere a limiti resettati.
 >
+> **v2.2 — humanizer SQL: passata di CORRETTEZZA fatta inline e deployata.** 95 explanation riscritte (tutti i 91 keyword-mismatch), 346 esercizi con hint graduati (<2-hint ora = 0), 7 esercizi ridisegnati perché rotti (colonne fantasma zip_code/role/description, query/titolo in conflitto). Gate rifatti: 775/775 eseguibili, 0 zero-row, tsc pulito, walk browser di OGNI sezione ok. Il file exerciseGenerator.ts è stato RIGENERATO dal DB (formattazione JSON): i futuri edit vanno fatti sui dati, non aspettarsi la formattazione originale. **Resta (Tier B, bloccato dai limiti subagent)**: dedup stilistico di ~454 explanation SQL condivise-ma-corrette; 444 explanation Python corte; nuovi esercizi topic sottili (conditions/Medium=7, collections=3/3/3, seaborn, pandas Hard, SQL case Easy/Medium).
+>
 > **PRIORITÀ humanizer = SQL, non Python** (misurato in v2.1, ora che le explanation si VEDONO):
 > - **SQL (775)**: **543 esercizi (70%) riciclano solo 52 testi** di explanation (una spiegazione di WHERE ripetuta 46 volte); **91 explanation citano una keyword che la loro query non usa** (es. "Filtro Combinato 1" spiega LIKE ma la query non ha LIKE) → sono proprio SBAGLIATE; **343 esercizi hanno <2 hint**; 123 explanation <60 char. Corretto solo `Nomi Utenti` (spiegava SELECT * su una query a colonna singola).
 > - **Python (527)**: 0 duplicati, 0 esercizi con <2 hint. Le explanation sono uniche, solo **corte** (444 sotto i 60 char). Qualità molto migliore del SQL.
