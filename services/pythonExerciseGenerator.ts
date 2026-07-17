@@ -49,7 +49,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         starterCode: "",
         solutionCode: "print(7 * 6)",
         expectedOutput: "42",
-        hints: ["L'operatore di moltiplicazione è *", "Puoi fare print(7 * 6) direttamente"],
+        hints: ["In Python la moltiplicazione non si scrive con la x.", "Non serve una variabile: puoi calcolare direttamente dentro print()."],
         explanation: "L'asterisco * è l'operatore di moltiplicazione in Python.",
         brokenCode: "print(7 x 6)",
         debugHint: "In Python la moltiplicazione usa * non x."
@@ -170,7 +170,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         starterCode: "x = 15\n",
         solutionCode: "x = 15\nprint(-x)",
         expectedOutput: "-15",
-        hints: ["Usa il segno meno davanti alla variabile", "print(-x)"],
+        hints: ["Il meno unario si mette davanti al nome della variabile.", "Il valore di x non cambia: stai solo stampando il suo opposto."],
         explanation: "L'operatore unario - inverte il segno del numero.",
         brokenCode: "x = 15\nprint(negative(x))",
         debugHint: "Non esiste una funzione negative(), usa il segno meno."
@@ -236,7 +236,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         starterCode: "# Assegna a, b = ...\n",
         solutionCode: "a, b = 1, 2\nprint(a + b)",
         expectedOutput: "3",
-        hints: ["a, b = 1, 2 usa la virgola", "Poi print(a+b)"],
+        hints: ["Python assegna più variabili in una riga separandole con la virgola.", "Una volta assegnate, sommale come faresti con due variabili normali."],
         explanation: "Python permette di assegnare più variabili contemporaneamente con le virgole.",
         brokenCode: "a = 1, b = 2\nprint(a + b)",
         debugHint: "Sintassi errata. Usa: a, b = 1, 2"
@@ -708,7 +708,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         starterCode: "nome = 'Python'\n",
         solutionCode: "nome = 'Python'\nprint(nome)",
         expectedOutput: "Python",
-        hints: ["Passa la variabile a print() senza virgolette", "print(nome) non print('nome')"],
+        hints: ["Con le virgolette stamperesti il testo letterale, non il contenuto.", "Passa il nome della variabile a print() così com'è, senza apici."],
         explanation: "Passando una variabile a print(), stampi il suo valore.",
         brokenCode: "nome = 'Python'\nprint('nome')",
         debugHint: "Stai stampando la stringa 'nome', non la variabile!"
@@ -752,7 +752,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         starterCode: "",
         solutionCode: "print(5 + 3)",
         expectedOutput: "8",
-        hints: ["Puoi mettere il calcolo dentro print()", "print(5 + 3)"],
+        hints: ["Python valuta l'espressione prima di passarla a print().", "Non serve salvare il risultato in una variabile intermedia."],
         explanation: "print() valuta l'espressione e stampa il risultato.",
         brokenCode: "print '5 + 3'",
         debugHint: "In Python 3 servono le parentesi per print()."
@@ -763,7 +763,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         starterCode: "",
         solutionCode: "print('')",
         expectedOutput: "",
-        hints: ["Stringa vuota è ''", "print('') stampa una riga vuota"],
+        hints: ["Una stringa vuota è una coppia di apici senza niente in mezzo.", "print() di una stringa vuota produce comunque il ritorno a capo."],
         explanation: "Stampare '' produce solo un newline.",
         brokenCode: "print()",
         debugHint: "print() va bene, ma print('') è più esplicito per stringa vuota."
@@ -785,7 +785,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         starterCode: "",
         solutionCode: "print(-5)",
         expectedOutput: "-5",
-        hints: ["Metti il meno davanti al 5", "print(-5)"],
+        hints: ["Il segno meno fa parte del valore, non è un'operazione separata.", "Puoi passare il numero negativo direttamente a print()."],
         explanation: "I numeri negativi si indicano col segno meno.",
         brokenCode: "print(5-)",
         debugHint: "Il segno meno va prima del numero."
@@ -1006,11 +1006,11 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         descTemplate: "Stampa la lunghezza di 'Supercalifragilistichespiralidoso'.",
         starterCode: "parola = 'Supercalifragilistichespiralidoso'\n",
         solutionCode: "parola = 'Supercalifragilistichespiralidoso'\nprint(len(parola))",
-        expectedOutput: "34",
-        hints: ["Usa len()", "len(parola)"],
-        explanation: "len() conta i caratteri di una stringa.",
-        brokenCode: "parola = '...'\nprint(parola.size())",
-        debugHint: "Le stringhe non hanno .size(), usa len()."
+        expectedOutput: "33",
+        hints: ["La funzione che misura una stringa è integrata in Python, non è un metodo della stringa.", "Passa la variabile dentro len() e stampa il risultato."],
+        explanation: "len() restituisce il numero di caratteri di una stringa. Non è un metodo che chiami sulla stringa, ma una funzione a cui passi la stringa: len(parola), non parola.len().",
+        brokenCode: "parola = 'Supercalifragilistichespiralidoso'\nprint(parola.size())",
+        debugHint: "Le stringhe in Python non hanno un metodo .size(). La lunghezza si chiede con len()."
       },
       {
         titleTemplate: "Simula Input",
@@ -1053,7 +1053,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         expectedOutput: "Sono felice today",
         hints: [".replace(old, new)", "Crea una nuova stringa"],
         explanation: ".replace() sostituisce tutte le occorrenze della sottostringa.",
-        brokenCode: "frase = '...'\nfrase.replace('triste', 'felice')\nprint(frase)",
+        brokenCode: "frase = 'Sono triste today'\nfrase.replace('triste', 'felice')\nprint(frase)",
         debugHint: "Le stringhe sono immutabili! Devi stampare il risultato o riassegnarlo."
       },
       {
@@ -1286,7 +1286,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         expectedOutput: "Il Signore Degli Anelli",
         hints: ["Maiuscola ogni parola", "Usa .title()"],
         explanation: ".title() alza la prima lettera e abbassa le altre.",
-        brokenCode: "s = '...'\nprint(s.capitalize())",
+        brokenCode: "s = 'il signore degli anelli'\nprint(s.capitalize())",
         debugHint: "capitalize() agisce solo sulla prima parola della frase."
       },
       {
@@ -2279,7 +2279,7 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         starterCode: "n = 5\n",
         solutionCode: "n = 5\nwhile n > 0:\n    print(n)\n    n -= 2",
         expectedOutput: "5\n3\n1",
-        hints: ["n -= 2 decrementa", "Condizione n > 0"],
+        hints: ["Serve un decremento dentro il ciclo, altrimenti la condizione non diventa mai falsa.", "Ragiona su quando il ciclo deve fermarsi: che valore ha n all'ultima iterazione utile?"],
         explanation: "While con step diverso da 1.",
         brokenCode: "n = 5\nwhile n > 0:\n    print(n)\n    n - 2",
         debugHint: "n - 2 non modifica n. Usa n -= 2 o ciclo infinito."

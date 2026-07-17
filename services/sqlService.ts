@@ -215,7 +215,10 @@ export const initDatabase = (_difficulty: Difficulty) => {
         alasql('CREATE TABLE Products (id INT PRIMARY KEY, name VARCHAR, category VARCHAR, price DECIMAL, stock INT)');
         alasql('CREATE TABLE Orders (id INT PRIMARY KEY, user_id INT, order_date DATE, status VARCHAR, order_total DECIMAL)'); // Renamed total -> order_total
         alasql('CREATE TABLE OrderItems (id INT PRIMARY KEY, order_id INT, product_id INT, quantity INT, unit_price DECIMAL)');
-        alasql('CREATE TABLE Employees (id INT PRIMARY KEY, name VARCHAR, email VARCHAR, department VARCHAR, hire_date DATE, manager_id INT, salary DECIMAL)');
+        // manager_id is intentionally UNTYPED: AlaSQL coerces NULL to NaN in an INT
+        // column, which silently breaks every "WHERE manager_id IS NULL" query (the
+        // CEO / top-level employee case). Untyped keeps IS NULL, joins and NOT IN working.
+        alasql('CREATE TABLE Employees (id INT PRIMARY KEY, name VARCHAR, email VARCHAR, department VARCHAR, hire_date DATE, manager_id, salary DECIMAL)');
     } catch (e) {
     }
 
@@ -426,6 +429,19 @@ export const initDatabase = (_difficulty: Difficulty) => {
             ordersData.push({ id: 9200 + index, user_id: 105, order_date: '2023-05-01', status: 'Delivered', order_total: 10 });
         });
 
+        // --- Deterministic answers for the advanced/Hard exercises -------------------
+        // Orders/OrderItems are generated at random, so the patterns these exercises look
+        // for are not guaranteed to exist on any given load. When they don't, the official
+        // solution returns 0 rows, and since validation compares result sets an empty
+        // expected result makes ANY wrong query (e.g. WHERE 1=0) grade as "correct".
+        // Seeding the answers explicitly gives each exercise a real, stable solution.
+        ordersData.push({ id: 9400, user_id: 105, order_date: '2023-07-01', status: 'Delivered', order_total: 1500.00 }); // Full House
+        ordersData.push({ id: 9401, user_id: 104, order_date: '2023-07-02', status: 'Delivered', order_total: 2500.00 }); // Acquirenti Versatili: sopra 500
+        ordersData.push({ id: 9402, user_id: 104, order_date: '2023-07-03', status: 'Delivered', order_total: 25.00 });   // Acquirenti Versatili: sotto 50
+        ordersData.push({ id: 9403, user_id: 106, order_date: '2023-07-04', status: 'Delivered', order_total: 700.00 });  // Acquisto Esclusivo
+        ordersData.push({ id: 9404, user_id: 105, order_date: '2023-07-05', status: 'Delivered', order_total: 800.00 });  // Innamorati Delle Categorie
+        ordersData.push({ id: 9405, user_id: 107, order_date: '2023-07-06', status: 'Delivered', order_total: 50.00 });   // Gap Analysis: compra Laptop, mai una Cover
+
         ordersData.forEach(r => alasql(`INSERT INTO Orders VALUES (${r.id}, ${r.user_id}, '${r.order_date}', '${r.status.replace(/'/g, "''")}', ${r.order_total})`));
 
         console.log(`✅ Orders inserted: ${ordersData.length}`);
@@ -481,6 +497,27 @@ export const initDatabase = (_difficulty: Difficulty) => {
             orderItemsData.push({ id: 9200 + index, order_id: 9200 + index, product_id: 9200 + index, quantity: 1, unit_price: 10 });
         });
 
+        // Companion items for the deterministic orders seeded above. Built from the
+        // products actually generated this run, so they hold whatever the random
+        // catalogue turned out to be.
+        let gItemId = 9400;
+        // Full House: order 9400 holds one product from every distinct category.
+        [...new Set(productsData.map((p: any) => p.category))].forEach((cat) => {
+            const p = productsData.find((pp: any) => pp.category === cat);
+            if (p) orderItemsData.push({ id: gItemId++, order_id: 9400, product_id: p.id, quantity: 1, unit_price: p.price });
+        });
+        // Innamorati: user 105 buys every single Accessories product, in order 9404.
+        productsData.filter((p: any) => p.category === 'Accessories').forEach((p: any) => {
+            orderItemsData.push({ id: gItemId++, order_id: 9404, product_id: p.id, quantity: 1, unit_price: p.price });
+        });
+        // Acquisto Esclusivo: user 106 buys a Monitor 4K and never a Keyboard.
+        const monitor4k = productsData.find((p: any) => p.name === 'Monitor 4K');
+        if (monitor4k) orderItemsData.push({ id: gItemId++, order_id: 9403, product_id: monitor4k.id, quantity: 1, unit_price: monitor4k.price });
+        // Gap Analysis: user 107 buys a Laptop and never a Cover. The curated 'Laptop'
+        // product otherwise appears in no order at all, leaving that exercise unanswerable.
+        const laptop = productsData.find((p: any) => p.name === 'Laptop');
+        if (laptop) orderItemsData.push({ id: gItemId++, order_id: 9405, product_id: laptop.id, quantity: 1, unit_price: laptop.price });
+
         orderItemsData.forEach(r => alasql(`INSERT INTO OrderItems VALUES (${r.id}, ${r.order_id}, ${r.product_id}, ${r.quantity}, ${r.unit_price})`));
 
         console.log(`✅ OrderItems inserted: ${orderItemsData.length}`);
@@ -510,6 +547,13 @@ export const initDatabase = (_difficulty: Difficulty) => {
         
         employeesData.push({ id: 501, name: 'Underpaid Manager', department: 'Sales', hire_date: '2022-01-01', manager_id: null, salary: 1000 });
         employeesData.push({ id: 502, name: 'Rich Employee', department: 'Sales', hire_date: '2022-01-01', manager_id: 501, salary: 5000 });
+        // Lone contributor: no manager AND manages nobody. Without her the "Dipendenti
+        // Isolati" exercise has no possible answer (ids 1 and 501 both manage people).
+        employeesData.push({ id: 503, name: 'Nina Greco', department: 'Legal', hire_date: '2023-06-01', manager_id: null, salary: 68000 });
+        // A department founded after 2021, so every member is a recent hire. Without it
+        // "Reparto Produttivo" can never match (every other dept has pre-2021 hires).
+        employeesData.push({ id: 504, name: 'Davide Neri', department: 'Data', hire_date: '2022-03-15', manager_id: 3, salary: 72000 });
+        employeesData.push({ id: 505, name: 'Elisa Costa', department: 'Data', hire_date: '2023-09-01', manager_id: 504, salary: 66000 });
         
         employeesData.forEach(r => {
              const email = `${r.name.split(' ')[0].toLowerCase()}.${r.name.split(' ')[1] ? r.name.split(' ')[1].toLowerCase() : ''}@techstore.com`;

@@ -1046,19 +1046,30 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                       }`}
                     >
                       {showHint && !showSolution && currentExercise.hints && (
-                        <div className="text-amber-300 text-sm">
-                          <span className="font-semibold">
-                            💡 Suggerimento:{" "}
-                          </span>
-                          {currentExercise.hints[0]}
+                        <div className="text-sm">
+                          <strong className="text-amber-400 text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
+                            <Lightbulb size={14} /> Suggerimento
+                          </strong>
+                          <ul className="list-disc list-inside space-y-1 text-amber-200 marker:text-amber-500/50">
+                            {currentExercise.hints.map((h, i) => (
+                              <li key={i}>{h}</li>
+                            ))}
+                          </ul>
                         </div>
                       )}
                       {showSolution && (
-                        <div className="text-emerald-300 text-sm">
-                          <span className="font-semibold">✅ Soluzione: </span>
-                          <pre className="mt-2 p-2 bg-black/30 rounded text-xs overflow-x-auto">
+                        <div className="text-sm">
+                          <strong className="text-emerald-400 text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
+                            <Eye size={14} /> Soluzione
+                          </strong>
+                          <pre className="mt-2 p-2 bg-black/30 rounded text-xs overflow-x-auto text-emerald-200">
                             {currentExercise.solutionCode}
                           </pre>
+                          {currentExercise.explanation && (
+                            <p className="text-slate-300 mt-3 leading-relaxed">
+                              {currentExercise.explanation}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>

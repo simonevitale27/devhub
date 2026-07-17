@@ -975,6 +975,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       <code className="font-mono text-purple-200 block bg-black/30 p-3 rounded border border-purple-500/20 select-all">
                         {exercise?.solutionQuery}
                       </code>
+                      {exercise?.explanation && (
+                        <p className="text-slate-300 mt-3 leading-relaxed">
+                          {exercise.explanation}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>

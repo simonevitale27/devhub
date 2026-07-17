@@ -7692,9 +7692,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Reparto Produttivo",
         descTemplate: "Dipartimenti dove TUTTI i membri sono stati assunti dopo l'inizio del 2021 ('2021-01-01').",
-        queryTemplate: "SELECT department FROM Employees GROUP BY department HAVING MIN(hire_date) >= '2021-01-01'",
-        hints: ["Raggruppa per dipartimento (GROUP BY)", "Se il valore MINIMO della data di assunzione (MIN(hire_date)) è dopo quella data, allora tutti lo sono"],
-        explanation: "Usando MIN(hire_date) in un HAVING ci assicura che persino il primo assunto di quel dipartimento rientri nel periodo specificato.",
+        queryTemplate: "SELECT department FROM Employees GROUP BY department HAVING COUNT(*) = SUM(CASE WHEN hire_date >= '2021-01-01' THEN 1 ELSE 0 END)",
+        hints: ["Raggruppa per dipartimento e ragiona per conteggi: quanti membri ha il reparto e quanti di questi sono assunzioni recenti?", "Se il numero di assunti dopo la data coincide con il totale dei membri, allora non c'è nessun veterano nel gruppo. Un SUM con CASE dentro l'HAVING ti dà quel conteggio condizionale."],
+        explanation: "Il confronto tra COUNT(*) e la somma condizionale dice che ogni membro rispetta la condizione: se anche uno solo fosse stato assunto prima, la somma sarebbe più bassa del totale e il reparto verrebbe escluso. Nota che qui non si usa MIN(hire_date): il motore SQL del browser non aggrega le date come farebbe Postgres, quindi il conteggio condizionale è la via affidabile.",
         replacements: {},
         brokenCode: "SELECT department FROM Employees GROUP department HAVING MIN(hire_date) == '2021-01-01'",
         debugHint: "Manca la 'BY' nel GROUP BY, e l'operatore corretto è '>='."
@@ -7732,9 +7732,9 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
       {
         titleTemplate: "Acquisto Esclusivo",
         descTemplate: "ID degli utenti che hanno comprato un 'Monitor 4K' ma NON hanno alcun ordine per una 'Keyboard'.",
-        queryTemplate: "SELECT id FROM Users WHERE id IN (SELECT user_id FROM Orders JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id WHERE name = 'Monitor 4K') AND id NOT IN (SELECT user_id FROM Orders JOIN OrderItems ON Orders.id = OrderItems.order_id JOIN Products ON OrderItems.product_id = Products.id WHERE name = 'Keyboard')",
-        hints: ["Trova prima la lista degli user_id che hanno ordinato il Monitor 4K (usando IN)", "Interseca con la lista in negativo (NOT IN) degli user_id che hanno comprato la Keyboard"],
-        explanation: "La composizione di set logici tramite IN e NOT IN ti permette di individuare chi soddisfa determinati pattern di acquisto escludendone altri.",
+        queryTemplate: "SELECT id FROM Users u WHERE EXISTS (SELECT 1 FROM Orders o JOIN OrderItems oi ON o.id = oi.order_id JOIN Products p ON oi.product_id = p.id WHERE o.user_id = u.id AND p.name = 'Monitor 4K') AND NOT EXISTS (SELECT 1 FROM Orders o2 JOIN OrderItems oi2 ON o2.id = oi2.order_id JOIN Products p2 ON oi2.product_id = p2.id WHERE o2.user_id = u.id AND p2.name = 'Keyboard')",
+        hints: ["Ti servono due condizioni sullo stesso utente: una che deve esistere e una che non deve esistere.", "Correla le sottoquery all'utente esterno (o.user_id = u.id) e usa EXISTS per la presenza del Monitor, NOT EXISTS per l'assenza della Keyboard."],
+        explanation: "EXISTS si ferma appena trova una riga che soddisfa la condizione per quell'utente, NOT EXISTS richiede che non ne esista nessuna. Le due sottoquery sono correlate: il legame o.user_id = u.id le àncora all'utente della riga esterna. Qui EXISTS è preferibile a IN e NOT IN anche perché il motore SQL del browser non combina bene una IN e una NOT IN su sottoquery nella stessa WHERE.",
         replacements: {},
         brokenCode: "SELECT id FROM Users WHERE id IN (SELECT user_id FROM Orders... WHERE name = 'Monitor 4K') AND id = (SELECT user_id FROM Orders... WHERE name = 'Keyboard')",
         debugHint: "Usa due subquery separate e combinare IN con NOT IN."
