@@ -49,6 +49,9 @@ export interface PythonExercise {
   explanation: string;
   brokenCode?: string; // For Debug Mode: code with error
   debugHint?: string; // For Debug Mode: hint about error
+  // Stable index of the blueprint in its topic/difficulty pool (pre-shuffle).
+  // Progress is keyed on this so completion survives reshuffles and restarts.
+  poolIndex: number;
 }
 
 // Result from running Python code

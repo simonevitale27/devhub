@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronUp,
   RotateCcw,
+  Shuffle,
   Lightbulb,
   Eye,
   ArrowLeft,
@@ -87,6 +88,10 @@ interface PythonGymProps {
 
 type PracticeMode = "solve" | "debug";
 
+// How many exercises are shown at once. The pool per difficulty is larger, so
+// shuffling / reopening swaps some out and re-randomises the order.
+const PYTHON_SHOWN_PER_SET = 12;
+
 const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   // State
   const [selectedTopic, setSelectedTopic] = useState<PythonTopicId>(
@@ -98,6 +103,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   const [practiceMode, setPracticeMode] = useState<PracticeMode>("solve");
   const [exercises, setExercises] = useState<PythonExercise[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  // Bumping this re-draws a fresh random subset from the (larger) pool.
+  const [shuffleNonce, setShuffleNonce] = useState(0);
   const [userCode, setUserCode] = useState("");
   const [output, setOutput] = useState<string>("");
   const [isRunning, setIsRunning] = useState(false);
@@ -211,16 +218,18 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
         }
       }
 
+      // Show only a subset of the pool. Shuffle / restart draws a fresh subset,
+      // swapping some exercises in and out and re-randomising the order.
       const newExercises = generatePythonExercises(
         selectedTopic,
         selectedDifficulty,
-        20
+        PYTHON_SHOWN_PER_SET
       );
       setExercises(newExercises);
       setCurrentExerciseIndex(0);
     };
     loadExercises();
-  }, [selectedTopic, selectedDifficulty]);
+  }, [selectedTopic, selectedDifficulty, shuffleNonce]);
 
   // Update user code when exercise changes
   useEffect(() => {
@@ -273,7 +282,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             'python',
             selectedTopic,
             selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard',
-            currentExerciseIndex,
+            currentExercise.poolIndex,
             1 // attempts (simplificato per ora)
           );
         }
@@ -559,6 +568,9 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
       setCurrentExerciseIndex((prev) => prev - 1);
     }
   };
+
+  // Draw a fresh random subset from the pool and reshuffle order.
+  const handleShuffle = () => setShuffleNonce((n) => n + 1);
 
   const handleReset = () => {
     if (currentExercise) {
@@ -929,8 +941,16 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             </div>
             </div>
              
-             {/* ROW 2: Analytics + UserBadge */}
+             {/* ROW 2: Shuffle + Analytics + UserBadge */}
              <div className="flex items-center gap-1.5 md:gap-2">
+               <button
+                 onClick={handleShuffle}
+                 title="Mescola esercizi"
+                 className="h-9 py-2 px-3 text-slate-300 hover:text-white rounded-lg bg-[#121212]/70 hover:bg-white/10 backdrop-blur-xl shadow-lg shadow-black/20 transition-all flex items-center gap-2 group"
+               >
+                 <Shuffle size={16} className="group-active:rotate-180 transition-transform duration-500" />
+                 <span className="text-xs font-bold hidden sm:inline">Mescola</span>
+               </button>
                {onNavigate && (
                  <button
                    onClick={() => onNavigate(Page.Analytics)}

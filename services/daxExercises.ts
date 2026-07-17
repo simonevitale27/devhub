@@ -361,6 +361,277 @@ export const DAX_EXERCISES: DaxExercise[] = [
     explanation: "Una variabile cattura il suo valore nel contesto in cui viene definita e non cambia più. Anche se la usi dentro un CALCULATE che modifica i filtri, resta il valore congelato. È un punto d'esame classico e una fonte frequente di bug.",
     reference: 'VAR Totale = SUM(Vendite[Importo]) RETURN CALCULATE(Totale, ALL(Prodotti))  // Totale resta quello iniziale',
   },
+
+  // ==================== BATCH 2: più esercizi, molti "scrivi la misura" ====================
+
+  // --- Aggregazioni ---
+  {
+    id: 'dax-agg-e3', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Easy, kind: 'formula',
+    title: 'Quantità totale venduta',
+    scenario: "Scrivi una misura che sommi tutte le quantità vendute.",
+    starter: 'Quantita totale = ',
+    accepted: ['SUM(Vendite[Quantita])', 'Quantita totale = SUM(Vendite[Quantita])'],
+    hints: ["La colonna da sommare è Quantita, nella tabella Vendite.", "Una sola funzione di aggregazione su una colonna."],
+    explanation: "SUM somma i valori numerici di una colonna. Qui accumula le quantità di tutte le righe di vendita nel contesto di filtro corrente.",
+    reference: 'Quantita totale = SUM(Vendite[Quantita])',
+  },
+  {
+    id: 'dax-agg-e4', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Easy, kind: 'formula',
+    title: 'Prodotti diversi venduti',
+    scenario: "Scrivi una misura che conti quanti prodotti DIVERSI sono stati venduti almeno una volta.",
+    starter: 'Prodotti venduti = ',
+    accepted: ['DISTINCTCOUNT(Vendite[ProdottoID])', 'Prodotti venduti = DISTINCTCOUNT(Vendite[ProdottoID])'],
+    hints: ["Ti servono i valori unici, non tutte le righe.", "La funzione conta i valori distinti di una colonna."],
+    explanation: "DISTINCTCOUNT conta i valori unici di ProdottoID nelle vendite: un prodotto comprato dieci volte conta una volta sola.",
+    reference: 'Prodotti venduti = DISTINCTCOUNT(Vendite[ProdottoID])',
+  },
+  {
+    id: 'dax-agg-m3', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Medium, kind: 'formula',
+    title: 'Scontrino medio',
+    scenario: "Vuoi l'importo medio per ordine distinto: fatturato totale diviso numero di ordini. Nel nostro modello un ordine è una riga di Vendite, quindi usa il conteggio delle righe. Scrivi la misura con DIVIDE.",
+    starter: 'Scontrino medio = ',
+    accepted: [
+      'DIVIDE(SUM(Vendite[Importo]), COUNTROWS(Vendite))',
+      'Scontrino medio = DIVIDE(SUM(Vendite[Importo]), COUNTROWS(Vendite))',
+    ],
+    hints: ["Numeratore: la somma degli importi. Denominatore: quante righe di vendita.", "DIVIDE protegge dal denominatore zero meglio dell'operatore /."],
+    explanation: "DIVIDE fa la divisione restituendo vuoto (non un errore) quando il denominatore è zero. Qui rapporta il fatturato al numero di righe di vendita.",
+    reference: 'Scontrino medio = DIVIDE(SUM(Vendite[Importo]), COUNTROWS(Vendite))',
+  },
+  {
+    id: 'dax-agg-h2', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Hard, kind: 'formula',
+    title: 'Prezzo medio effettivo',
+    scenario: "Scrivi la misura del prezzo medio effettivo: fatturato totale diviso quantità totale (il prezzo medio per pezzo, non per riga).",
+    starter: 'Prezzo medio = ',
+    accepted: [
+      'DIVIDE(SUM(Vendite[Importo]), SUM(Vendite[Quantita]))',
+      'Prezzo medio = DIVIDE(SUM(Vendite[Importo]), SUM(Vendite[Quantita]))',
+    ],
+    hints: ["Non è AVERAGE di una colonna: è un rapporto tra due somme.", "Importo totale sopra, quantità totale sotto."],
+    explanation: "Il rapporto tra la somma degli importi e la somma delle quantità dà il prezzo medio per unità venduta, che pesa ogni riga per la sua quantità. AVERAGE(Importo) darebbe invece la media per riga, un numero diverso.",
+    reference: 'Prezzo medio = DIVIDE(SUM(Vendite[Importo]), SUM(Vendite[Quantita]))',
+  },
+
+  // --- Logica ---
+  {
+    id: 'dax-log-e2', topicId: DaxTopicId.Logical, difficulty: Difficulty.Easy, kind: 'formula',
+    title: 'Margine in perdita',
+    scenario: "In una colonna calcolata su Prodotti vuoi l'etichetta 'In perdita' se il costo supera 100, altrimenti 'OK'. Scrivi la colonna con IF.",
+    starter: 'Allerta costo = ',
+    accepted: [
+      'IF(Prodotti[Costo] > 100, "In perdita", "OK")',
+      'Allerta costo = IF(Prodotti[Costo] > 100, "In perdita", "OK")',
+    ],
+    hints: ["IF vuole test, valore-se-vero, valore-se-falso.", "Il confronto è sulla colonna Costo di Prodotti."],
+    explanation: "IF valuta la condizione riga per riga e restituisce la seconda espressione se vera, la terza se falsa. Senza il terzo argomento, le righe sotto soglia resterebbero vuote.",
+    reference: 'Allerta costo = IF(Prodotti[Costo] > 100, "In perdita", "OK")',
+  },
+  {
+    id: 'dax-log-m2', topicId: DaxTopicId.Logical, difficulty: Difficulty.Medium, kind: 'mcq',
+    title: 'IF annidati o SWITCH',
+    scenario: "Devi assegnare una fascia in base al Segmento del cliente: 'Gold' e 'Platinum' danno priorità 'Alta', tutto il resto 'Normale'. Qual è la forma più leggibile?",
+    options: [
+      'Priorita = IF(Clienti[Segmento] = "Gold" || Clienti[Segmento] = "Platinum", "Alta", "Normale")',
+      'Priorita = SWITCH(Clienti[Segmento], "Gold" || "Platinum", "Alta", "Normale")',
+      'Priorita = IF(Clienti[Segmento] = "Gold", "Alta")',
+      'Priorita = SWITCH("Alta", "Gold", "Platinum")',
+    ],
+    correctIndex: 0,
+    hints: ["Due valori portano allo stesso esito: puoi unirli con l'OR (||).", "SWITCH confronta con un valore per caso, non con un'espressione OR."],
+    explanation: "Con due valori diversi che danno lo stesso risultato, un IF con la condizione OR (||) è chiaro e corretto. La forma SWITCH con \"Gold\" || \"Platinum\" non funziona: SWITCH confronta il segmento con un singolo valore per caso.",
+    reference: 'Priorita = IF(Clienti[Segmento] = "Gold" || Clienti[Segmento] = "Platinum", "Alta", "Normale")',
+  },
+  {
+    id: 'dax-log-h2', topicId: DaxTopicId.Logical, difficulty: Difficulty.Hard, kind: 'formula',
+    title: 'Semaforo fatturato',
+    scenario: "Scrivi una misura che, in base al fatturato totale, restituisca 'Rosso' sotto 1000, 'Giallo' fino a 5000, 'Verde' oltre. Usa SWITCH(TRUE(), ...).",
+    starter: 'Semaforo = ',
+    accepted: [
+      'SWITCH(TRUE(), SUM(Vendite[Importo]) < 1000, "Rosso", SUM(Vendite[Importo]) < 5000, "Giallo", "Verde")',
+      'Semaforo = SWITCH(TRUE(), SUM(Vendite[Importo]) < 1000, "Rosso", SUM(Vendite[Importo]) < 5000, "Giallo", "Verde")',
+      'SWITCH(TRUE(), [Fatturato] < 1000, "Rosso", [Fatturato] < 5000, "Giallo", "Verde")',
+      'Semaforo = SWITCH(TRUE(), [Fatturato] < 1000, "Rosso", [Fatturato] < 5000, "Giallo", "Verde")',
+    ],
+    hints: ["SWITCH confronta per uguaglianza: mettendo TRUE() ogni caso diventa una condizione.", "I casi si valutano in ordine: prima la soglia più bassa."],
+    explanation: "SWITCH(TRUE(), condizione1, risultato1, ...) sceglie il primo caso la cui condizione è vera. È il modo idiomatico per gestire intervalli, dove IF annidati sarebbero più difficili da leggere.",
+    reference: 'Semaforo = SWITCH(TRUE(), [Fatturato] < 1000, "Rosso", [Fatturato] < 5000, "Giallo", "Verde")',
+  },
+
+  // --- CALCULATE & Filtri ---
+  {
+    id: 'dax-calc-e2', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Easy, kind: 'formula',
+    title: 'Fatturato di una città',
+    scenario: "Scrivi una misura col fatturato dei soli clienti di Milano, indipendentemente dai filtri di pagina. Usa CALCULATE.",
+    starter: 'Fatturato Milano = ',
+    accepted: [
+      'CALCULATE(SUM(Vendite[Importo]), Clienti[Citta] = "Milano")',
+      'Fatturato Milano = CALCULATE(SUM(Vendite[Importo]), Clienti[Citta] = "Milano")',
+    ],
+    hints: ["CALCULATE prende l'espressione e poi i filtri da applicare.", "Il filtro è sulla colonna Citta della tabella Clienti."],
+    explanation: "CALCULATE valuta l'aggregazione applicando il filtro passato come argomento. La relazione Clienti-Vendite propaga il filtro di città alle righe di vendita.",
+    reference: 'Fatturato Milano = CALCULATE(SUM(Vendite[Importo]), Clienti[Citta] = "Milano")',
+  },
+  {
+    id: 'dax-calc-m2', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Medium, kind: 'mcq',
+    title: 'A cosa serve ALL dentro CALCULATE',
+    scenario: "In una misura % sul totale scrivi CALCULATE(SUM(Vendite[Importo]), ALL(Prodotti)) al denominatore. Cosa fa ALL(Prodotti) qui?",
+    options: [
+      'Ordina i prodotti alfabeticamente',
+      'Rimuove i filtri sulla tabella Prodotti, così il denominatore resta il totale generale',
+      'Seleziona solo il primo prodotto',
+      'Conta i prodotti distinti',
+    ],
+    correctIndex: 1,
+    hints: ["ALL è un modificatore del contesto di filtro.", "Serve per avere un totale che NON segue la selezione di riga."],
+    explanation: "ALL(Prodotti) rimuove qualunque filtro sulla tabella Prodotti dentro quel CALCULATE, così il denominatore rimane il fatturato di tutti i prodotti mentre il numeratore segue la riga corrente. È il cuore del calcolo delle percentuali sul totale.",
+    reference: 'Quota % = DIVIDE([Fatturato], CALCULATE([Fatturato], ALL(Prodotti)))',
+  },
+  {
+    id: 'dax-calc-h2', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Hard, kind: 'formula',
+    title: 'Fatturato premium sopra soglia',
+    scenario: "Scrivi il fatturato delle sole righe con importo superiore a 500. La condizione è su una colonna dei fatti, quindi usa FILTER dentro CALCULATE.",
+    starter: 'Fatturato big = ',
+    accepted: [
+      'CALCULATE(SUM(Vendite[Importo]), FILTER(Vendite, Vendite[Importo] > 500))',
+      'Fatturato big = CALCULATE(SUM(Vendite[Importo]), FILTER(Vendite, Vendite[Importo] > 500))',
+    ],
+    hints: ["FILTER restituisce la tabella filtrata che CALCULATE userà come contesto.", "Itera Vendite tenendo le righe con importo maggiore di 500."],
+    explanation: "FILTER(Vendite, Vendite[Importo] > 500) costruisce la tabella delle sole righe volute, e CALCULATE somma gli importi in quel contesto. È la forma esplicita da preferire quando filtri una colonna della tabella di fatti.",
+    reference: 'Fatturato big = CALCULATE(SUM(Vendite[Importo]), FILTER(Vendite, Vendite[Importo] > 500))',
+  },
+
+  // --- Iteratori ---
+  {
+    id: 'dax-iter-e2', topicId: DaxTopicId.Iterators, difficulty: Difficulty.Easy, kind: 'formula',
+    title: 'Valore riga per riga',
+    scenario: "Nel modello non esiste una colonna 'valore' pronta. Scrivi una misura che sommi, riga per riga, Quantita per Importo usando un iteratore.",
+    starter: 'Valore = ',
+    accepted: [
+      'SUMX(Vendite, Vendite[Quantita] * Vendite[Importo])',
+      'Valore = SUMX(Vendite, Vendite[Quantita] * Vendite[Importo])',
+    ],
+    hints: ["Il valore va calcolato per ogni riga prima di sommare: serve un iteratore.", "SUMX(tabella, espressione) valuta l'espressione riga per riga."],
+    explanation: "SUMX scorre Vendite, calcola Quantita per Importo su ogni riga e somma i risultati. SUM non basta perché il prodotto tra le due colonne non esiste come colonna pronta.",
+    reference: 'Valore = SUMX(Vendite, Vendite[Quantita] * Vendite[Importo])',
+  },
+  {
+    id: 'dax-iter-h2', topicId: DaxTopicId.Iterators, difficulty: Difficulty.Hard, kind: 'mcq',
+    title: 'AVERAGEX vs AVERAGE',
+    scenario: "Vuoi la media del valore (Quantita per Importo) per riga di vendita. Quale misura è corretta?",
+    options: [
+      'Media valore = AVERAGE(Vendite[Importo] * Vendite[Quantita])',
+      'Media valore = AVERAGEX(Vendite, Vendite[Quantita] * Vendite[Importo])',
+      'Media valore = AVERAGE(Vendite[Quantita])',
+      'Media valore = SUMX(Vendite, Vendite[Quantita]) / 2',
+    ],
+    correctIndex: 1,
+    hints: ["AVERAGE lavora su una colonna esistente, non su un'espressione.", "La X segnala l'iteratore che valuta l'espressione riga per riga."],
+    explanation: "AVERAGEX itera la tabella, valuta l'espressione per ogni riga e ne fa la media. AVERAGE accetta solo una colonna già esistente, quindi non può calcolare la media di Quantita per Importo.",
+    reference: 'Media valore = AVERAGEX(Vendite, Vendite[Quantita] * Vendite[Importo])',
+  },
+
+  // --- Relazioni ---
+  {
+    id: 'dax-rel-e2', topicId: DaxTopicId.Relationships, difficulty: Difficulty.Easy, kind: 'formula',
+    title: 'Città del cliente nei fatti',
+    scenario: "In una colonna calcolata su Vendite vuoi la città del cliente, che vive in Clienti. La relazione esiste. Scrivi la colonna.",
+    starter: 'Citta cliente = ',
+    accepted: [
+      'RELATED(Clienti[Citta])',
+      'Citta cliente = RELATED(Clienti[Citta])',
+    ],
+    hints: ["Vai dal lato molti (Vendite) al lato uno (Clienti).", "In quella direzione si usa RELATED, che riporta un valore singolo."],
+    explanation: "RELATED segue la relazione dal lato molti al lato uno e porta un valore singolo: qui la città del cliente collegato a ogni riga di vendita.",
+    reference: 'Citta cliente = RELATED(Clienti[Citta])',
+  },
+  {
+    id: 'dax-rel-m2', topicId: DaxTopicId.Relationships, difficulty: Difficulty.Medium, kind: 'formula',
+    title: 'Ordini per cliente',
+    scenario: "In una colonna calcolata su Clienti vuoi contare quante righe di Vendite ha ciascun cliente. Vai dal lato uno al lato molti. Scrivi la colonna.",
+    starter: 'Numero ordini = ',
+    accepted: [
+      'COUNTROWS(RELATEDTABLE(Vendite))',
+      'Numero ordini = COUNTROWS(RELATEDTABLE(Vendite))',
+    ],
+    hints: ["Dal lato uno al lato molti serve RELATEDTABLE, che restituisce una tabella.", "Poi conta quelle righe con COUNTROWS."],
+    explanation: "RELATEDTABLE restituisce le righe di Vendite collegate al cliente corrente; COUNTROWS le conta. COUNTROWS(Vendite) da solo conterebbe l'intera tabella ignorando la relazione.",
+    reference: 'Numero ordini = COUNTROWS(RELATEDTABLE(Vendite))',
+  },
+
+  // --- Time Intelligence ---
+  {
+    id: 'dax-time-e2', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Easy, kind: 'mcq',
+    title: 'Cosa serve alla time intelligence',
+    scenario: "Le funzioni come TOTALYTD o SAMEPERIODLASTYEAR non funzionano nel tuo report. Qual è il prerequisito più comune che manca?",
+    options: [
+      'Una misura chiamata esattamente Data',
+      'Una tabella calendario continua, marcata come tabella data e collegata ai fatti',
+      'Ordinare le vendite per data',
+      'Trasformare gli importi in testo',
+    ],
+    correctIndex: 1,
+    hints: ["Pensa da dove prendono le date queste funzioni.", "Serve una dimensione data dedicata, senza buchi."],
+    explanation: "La time intelligence ha bisogno di una tabella calendario continua (senza date mancanti), marcata come tabella data e in relazione con i fatti. Senza, le funzioni di periodo non hanno un asse temporale affidabile su cui lavorare.",
+    reference: "Marca Calendario come tabella data e collegala a Vendite[Data].",
+  },
+  {
+    id: 'dax-time-m2', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Medium, kind: 'formula',
+    title: 'Crescita anno su anno (valore)',
+    scenario: "Scrivi la differenza in valore tra il fatturato corrente e quello dello stesso periodo dell'anno scorso. Puoi usare la misura [Fatturato] per l'anno corrente.",
+    starter: 'Delta AA = ',
+    accepted: [
+      '[Fatturato] - CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data]))',
+      'Delta AA = [Fatturato] - CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data]))',
+      'SUM(Vendite[Importo]) - CALCULATE(SUM(Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data]))',
+    ],
+    hints: ["Fatturato di ora meno fatturato dell'anno scorso.", "SAMEPERIODLASTYEAR dentro CALCULATE sposta il contesto di un anno indietro."],
+    explanation: "SAMEPERIODLASTYEAR sposta le date di un anno indietro; dentro CALCULATE ricalcola il fatturato su quel periodo. La differenza con il fatturato attuale è la crescita in valore.",
+    reference: 'Delta AA = [Fatturato] - CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data]))',
+  },
+  {
+    id: 'dax-time-h2', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Hard, kind: 'formula',
+    title: 'Crescita % anno su anno',
+    scenario: "Scrivi la variazione percentuale del fatturato rispetto all'anno scorso, protetta dalla divisione per zero. Usa VAR per leggibilità.",
+    starter: 'Crescita % AA = ',
+    accepted: [
+      'VAR Ora = [Fatturato] VAR Prima = CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
+      'Crescita % AA = VAR Ora = [Fatturato] VAR Prima = CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
+    ],
+    hints: ["Dichiara due variabili: fatturato attuale e dell'anno prima.", "RETURN chiude con DIVIDE(Ora - Prima, Prima)."],
+    explanation: "Le VAR calcolano una volta il fatturato attuale e quello dell'anno scorso; RETURN restituisce la variazione relativa con DIVIDE, che evita l'errore quando l'anno prima vale zero.",
+    reference: 'Crescita % AA = VAR Ora = [Fatturato] VAR Prima = CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
+  },
+
+  // --- Variabili ---
+  {
+    id: 'dax-var-e2', topicId: DaxTopicId.Variables, difficulty: Difficulty.Easy, kind: 'mcq',
+    title: 'Dove va RETURN',
+    scenario: "In una misura con VAR, dove deve stare la parola RETURN?",
+    options: [
+      'Prima di tutte le VAR',
+      'Dopo aver dichiarato le VAR, per restituire il risultato finale',
+      'Dentro ogni VAR',
+      'RETURN non serve con le VAR',
+    ],
+    correctIndex: 1,
+    hints: ["Le variabili si dichiarano, poi si usa il risultato.", "C'è un solo RETURN per misura."],
+    explanation: "La struttura è: una o più VAR, poi un singolo RETURN che usa quelle variabili per produrre il valore della misura. RETURN chiude sempre la definizione, dopo le dichiarazioni.",
+    reference: 'Esempio = VAR X = SUM(Vendite[Importo]) RETURN X * 1.1',
+  },
+  {
+    id: 'dax-var-m2', topicId: DaxTopicId.Variables, difficulty: Difficulty.Medium, kind: 'formula',
+    title: 'Etichetta con variabile',
+    scenario: "Scrivi una misura che calcoli il fatturato in una VAR e restituisca 'Sopra soglia' se supera 10000, altrimenti 'Sotto soglia'.",
+    starter: 'Stato fatturato = ',
+    accepted: [
+      'VAR F = SUM(Vendite[Importo]) RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
+      'Stato fatturato = VAR F = SUM(Vendite[Importo]) RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
+      'VAR F = [Fatturato] RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
+    ],
+    hints: ["Metti il fatturato in una VAR, poi usalo nell'IF dentro RETURN.", "Così calcoli il fatturato una volta sola."],
+    explanation: "La variabile cattura il fatturato una volta e lo riusa nell'IF: più leggibile e senza ricalcolare la stessa aggregazione due volte. RETURN restituisce l'etichetta scelta.",
+    reference: 'Stato fatturato = VAR F = SUM(Vendite[Importo]) RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
+  },
 ];
 
 // Totals per topic (across difficulties), computed from the data so they never drift.

@@ -5342,13 +5342,14 @@ export const generatePythonExercises = (
     return [];
   }
 
-  // Shuffle and take requested count
-  const shuffled = shuffleArray(difficultyBlueprints);
-  const selected = shuffled.slice(0, Math.min(count, shuffled.length));
+  // Tag each blueprint with its STABLE pool position before shuffling, so the
+  // shown subset can be a random draw from a larger pool while completion stays
+  // keyed on the blueprint (survives shuffle + app restart).
+  const indexed = difficultyBlueprints.map((blueprint, poolIndex) => ({ blueprint, poolIndex }));
+  const selected = shuffleArray(indexed).slice(0, Math.min(count, indexed.length));
 
-  // Convert blueprints to exercises
-  return selected.map((blueprint, index) => ({
-    id: `${topicId}-${difficulty}-${index}-${Date.now()}`,
+  return selected.map(({ blueprint, poolIndex }) => ({
+    id: `${topicId}-${difficulty}-${poolIndex}`,
     topicId,
     difficulty,
     title: blueprint.titleTemplate,
@@ -5359,21 +5360,20 @@ export const generatePythonExercises = (
     hints: blueprint.hints,
     explanation: blueprint.explanation,
     brokenCode: blueprint.brokenCode,
-    debugHint: blueprint.debugHint
+    debugHint: blueprint.debugHint,
+    poolIndex,
   }));
 };
 
-// PythonGym shows up to this many exercises per difficulty (the count it passes).
-const PYTHON_SHOWN_PER_DIFFICULTY = 20;
-
-// Real number of distinct exercises available per Python topic (summed over
-// difficulties, capped at what the gym shows). Used by Analytics for correct
-// completion percentages instead of the old hardcoded 60.
+// PythonGym shows only a subset of each pool at a time (see PYTHON_SHOWN_PER_SET
+// in PythonGym), and shuffle / restart draws a fresh subset. Progress is keyed
+// on the stable poolIndex, so totals must reflect the FULL pool: that is how
+// many distinct exercises you can eventually complete across reshuffles.
 export const PYTHON_TOPIC_TOTALS: Record<string, number> = Object.fromEntries(
   Object.entries(PYTHON_QUESTION_DATABASE).map(([topicId, byDifficulty]) => [
     topicId,
     Object.values(byDifficulty).reduce(
-      (sum, blueprints) => sum + Math.min((blueprints as any[]).length, PYTHON_SHOWN_PER_DIFFICULTY),
+      (sum, blueprints) => sum + (blueprints as any[]).length,
       0
     ),
   ])

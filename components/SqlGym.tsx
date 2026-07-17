@@ -428,7 +428,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               'sql',
               currentTopicId,
               difficulty.toLowerCase() as 'easy' | 'medium' | 'hard',
-              currentExerciseIndex,
+              exercise.poolIndex,
               1
             );
 

@@ -10276,10 +10276,12 @@ export const generateExercises = (
   const blueprints = topicData[difficulty] || [];
   if (blueprints.length === 0) return [];
 
-  // Shuffle and pick
-  const selectedBlueprints = shuffleArray(blueprints).slice(0, count);
+  // Tag each blueprint with its STABLE position in the pool before shuffling,
+  // so completion can be keyed on it and survive reshuffles / app restarts.
+  const indexed = blueprints.map((bp, poolIndex) => ({ bp, poolIndex }));
+  const selectedBlueprints = shuffleArray(indexed).slice(0, count);
 
-  return selectedBlueprints.map((bp, index) => {
+  return selectedBlueprints.map(({ bp, poolIndex }) => {
     let title = bp.titleTemplate;
     let description = bp.descTemplate;
     let query = bp.queryTemplate;
@@ -10301,7 +10303,7 @@ export const generateExercises = (
     }
 
     return {
-      id: `${topicId}-${difficulty}-${index}-${Date.now()}`,
+      id: `${topicId}-${difficulty}-${poolIndex}`,
       topicId,
       difficulty,
       title,
@@ -10310,7 +10312,8 @@ export const generateExercises = (
       solutionQuery: query,
       hints: bp.hints,
       explanation,
-      debugHint
+      debugHint,
+      poolIndex,
     };
   });
 };

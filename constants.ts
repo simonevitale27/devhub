@@ -332,7 +332,8 @@ export const generateCopyCodeSnippets = (difficulty: Difficulty): Exercise[] => 
         brokenCode: brokenData.code,
         debugHint: brokenData.hint,
         hints: [],
-        explanation: ''
+        explanation: '',
+        poolIndex: i
       });
     });
   } else if (difficulty === Difficulty.Medium) {
@@ -382,7 +383,8 @@ export const generateCopyCodeSnippets = (difficulty: Difficulty): Exercise[] => 
         brokenCode: brokenData.code,
         debugHint: brokenData.hint,
         hints: [],
-        explanation: ''
+        explanation: '',
+        poolIndex: i
       });
     });
   } else if (difficulty === Difficulty.Hard) {
@@ -432,7 +434,8 @@ export const generateCopyCodeSnippets = (difficulty: Difficulty): Exercise[] => 
         brokenCode: brokenData.code,
         debugHint: brokenData.hint,
         hints: [],
-        explanation: ''
+        explanation: '',
+        poolIndex: i
       });
     });
   }

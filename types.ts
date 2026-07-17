@@ -58,6 +58,10 @@ export interface Exercise {
   debugHint?: string;  // For Debug Mode: hint about the error
   hints: string[];
   explanation: string;
+  // Stable index of the blueprint in its topic/difficulty pool (pre-shuffle).
+  // Progress is keyed on this, NOT on the shuffled display position, so a given
+  // exercise keeps its completion mark across reshuffles and app restarts.
+  poolIndex: number;
 }
 
 export interface Topic {

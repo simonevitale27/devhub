@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Page, Difficulty } from '../types';
 import {
   Home as HomeIcon, Menu, ChevronLeft, ChevronRight, Lightbulb, Unlock, Lock,
-  TrendingUp, Check, X, BarChart3, Play, Database,
+  TrendingUp, Check, X, BarChart3, Play, Database, Shuffle,
 } from 'lucide-react';
 import UserBadge from './UserBadge';
 import {
@@ -16,6 +16,9 @@ interface DaxGymProps {
 }
 
 const COMPLETED_KEY = 'dax_completed_v1';
+
+// Exercises shown at once. The pool is larger, so shuffle / reopen swaps some.
+const DAX_SHOWN_PER_SET = 8;
 
 function loadCompleted(): Set<string> {
   try {
@@ -37,11 +40,22 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
   const [showSolution, setShowSolution] = useState(false);
   const [completed, setCompleted] = useState<Set<string>>(() => loadCompleted());
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  // Bumping this re-draws a fresh random subset from the (larger) pool.
+  const [shuffleNonce, setShuffleNonce] = useState(0);
 
   const exercises = useMemo<DaxExercise[]>(() => {
     const byDiff = getDaxExercises(difficulty);
-    return topic === 'all' ? byDiff : byDiff.filter((e) => e.topicId === topic);
-  }, [difficulty, topic]);
+    const pool = topic === 'all' ? byDiff : byDiff.filter((e) => e.topicId === topic);
+    // Show only a subset; shuffle / reopen swaps some out and reshuffles order.
+    // (shuffleNonce is a dependency so the button re-draws.)
+    void shuffleNonce;
+    const shuffled = [...pool];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, DAX_SHOWN_PER_SET);
+  }, [difficulty, topic, shuffleNonce]);
 
   const exercise = exercises[index];
 
@@ -184,6 +198,14 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setShuffleNonce((n) => n + 1); setIndex(0); }}
+              title="Mescola esercizi"
+              className="h-9 flex items-center gap-2 py-2 px-3 text-slate-300 hover:text-white rounded-lg bg-[#121212]/70 hover:bg-white/10 backdrop-blur-xl shadow-lg shadow-black/20 transition-all group"
+            >
+              <Shuffle size={16} className="group-active:rotate-180 transition-transform duration-500" />
+              <span className="text-xs font-bold hidden sm:inline">Mescola</span>
+            </button>
             {onNavigate && (
               <button
                 onClick={() => onNavigate(Page.Analytics)}
