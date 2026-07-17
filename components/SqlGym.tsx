@@ -67,6 +67,7 @@ import ResultDiff from "./ResultDiff";
 import ErrorBoundary from "./ErrorBoundary";
 import TableInspectorModal from "./TableInspectorModal";
 import UserBadge from "./UserBadge";
+import AiExplainButton from "./AiExplainButton";
 
 // Heavy, rarely-used modals: kept out of the initial gym bundle. QuickChart pulls
 // recharts+jspdf; SchemaERDiagram pulls @xyflow/react. Loaded on demand.
@@ -1140,22 +1141,17 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                         <AlertTriangle size={14} className="shrink-0 mt-0.5" />
                         {userResult.error}
                       </div>
-                      <button
-                        onClick={() =>
-                          setShowErrorExplanation(!showErrorExplanation)
-                        }
-                        className="text-xs font-bold flex items-center gap-1.5 text-white bg-red-600/80 hover:bg-red-500 px-3 py-1.5 rounded-md transition-colors shadow-lg shadow-red-900/20"
-                      >
-                        <Bot size={14} /> Spiega Errore con AI
-                      </button>
-                      {showErrorExplanation && (
-                        <div className="mt-3 p-4 bg-red-950/20 rounded-lg border border-red-800/50 text-red-200 text-sm leading-relaxed animate-in fade-in shadow-xl">
-                          <div className="text-xs font-bold uppercase tracking-wider text-red-500 mb-1">
-                            Diagnosi:
-                          </div>
-                          {explainSqlError(userResult.error, sqlCode)}
-                        </div>
-                      )}
+                      <AiExplainButton
+                        accent="from-blue-500/25 to-blue-600/5 text-blue-100 border-blue-400/30"
+                        getInput={() => ({
+                          lab: 'SQL',
+                          title: exercise?.title || '',
+                          description: exercise?.description || '',
+                          expected: exercise?.solutionQuery || '',
+                          userAnswer: sqlCode,
+                          error: `${userResult.error}\n(Diagnosi locale: ${explainSqlError(userResult.error, sqlCode)})`,
+                        })}
+                      />
                     </div>
                   )}
 
@@ -1356,7 +1352,23 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                         )}{" "}
                         {validation.message}
                       </div>
-                      
+
+                      {!validation.isCorrect && exercise && (
+                        <div className="px-3">
+                          <AiExplainButton
+                            accent="from-blue-500/25 to-blue-600/5 text-blue-100 border-blue-400/30"
+                            getInput={() => ({
+                              lab: 'SQL',
+                              title: exercise.title,
+                              description: exercise.description,
+                              expected: exercise.solutionQuery,
+                              userAnswer: sqlCode,
+                              error: validation.message,
+                            })}
+                          />
+                        </div>
+                      )}
+
                       {/* Yellow warning banner for extra columns */}
                       {validation.warningLevel === 'yellow' && validation.warningMessage && (
                         <div className="p-3 border-b border-amber-800/50 bg-amber-900/20 text-amber-300 flex items-start gap-2 text-xs shrink-0 animate-in slide-in-from-top-2">
@@ -1374,22 +1386,17 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                         <AlertTriangle size={14} className="shrink-0 mt-0.5" />
                         {userResult.error}
                       </div>
-                      <button
-                        onClick={() =>
-                          setShowErrorExplanation(!showErrorExplanation)
-                        }
-                        className="text-xs font-bold flex items-center gap-1.5 text-white bg-red-600/80 hover:bg-red-500 px-3 py-1.5 rounded-md transition-colors shadow-lg shadow-red-900/20"
-                      >
-                        <Bot size={14} /> Spiega Errore con AI
-                      </button>
-                      {showErrorExplanation && (
-                        <div className="mt-3 p-4 bg-red-950/20 rounded-lg border border-red-800/50 text-red-200 text-sm leading-relaxed animate-in fade-in shadow-xl">
-                          <div className="text-xs font-bold uppercase tracking-wider text-red-500 mb-1">
-                            Diagnosi:
-                          </div>
-                          {explainSqlError(userResult.error, sqlCode)}
-                        </div>
-                      )}
+                      <AiExplainButton
+                        accent="from-blue-500/25 to-blue-600/5 text-blue-100 border-blue-400/30"
+                        getInput={() => ({
+                          lab: 'SQL',
+                          title: exercise?.title || '',
+                          description: exercise?.description || '',
+                          expected: exercise?.solutionQuery || '',
+                          userAnswer: sqlCode,
+                          error: `${userResult.error}\n(Diagnosi locale: ${explainSqlError(userResult.error, sqlCode)})`,
+                        })}
+                      />
                     </div>
                   )}
                   <div className="flex-1 overflow-hidden relative bg-[#121212]/70 backdrop-blur-xl rounded-2xl flex flex-col shadow-lg">

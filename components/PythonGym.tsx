@@ -45,6 +45,7 @@ import {
   PythonValidationResult,
 } from "../pythonTypes";
 import { generatePythonExercises } from "../services/pythonExerciseGenerator";
+import AiExplainButton from "./AiExplainButton";
 import {
   runPython,
   initPyodide,
@@ -1293,6 +1294,21 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                             )}
                             {validationResult.message}
                           </div>
+                          {!validationResult.isCorrect && currentExercise && (
+                            <div className="mt-3">
+                              <AiExplainButton
+                                accent="from-amber-500/25 to-amber-600/5 text-amber-100 border-amber-400/30"
+                                getInput={() => ({
+                                  lab: 'Python',
+                                  title: currentExercise.title,
+                                  description: currentExercise.description,
+                                  expected: currentExercise.solutionCode,
+                                  userAnswer: userCode,
+                                  error: errorOutput || `Output ottenuto: ${validationResult.userOutput}`,
+                                })}
+                              />
+                            </div>
+                          )}
                         </div>
                       )}
 

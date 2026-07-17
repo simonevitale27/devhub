@@ -9,6 +9,7 @@ import {
   DAX_TOPICS, DAX_EXERCISES, DAX_MODEL_NOTE, DAX_TOPIC_TOTALS, getDaxExercises,
 } from '../services/daxExercises';
 import { DaxExercise, DaxTopicId, checkDaxFormula } from '../daxTypes';
+import AiExplainButton from './AiExplainButton';
 
 interface DaxGymProps {
   onBack: () => void;
@@ -342,6 +343,22 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
                 </span>
               )}
             </div>
+
+            {/* AI error explainer (shown after a wrong answer) */}
+            {result === 'wrong' && (
+              <AiExplainButton
+                accent="from-yellow-500/25 to-yellow-600/5 text-yellow-100 border-yellow-400/30"
+                getInput={() => ({
+                  lab: 'DAX (Power BI)',
+                  title: exercise.title,
+                  description: exercise.scenario,
+                  expected: exercise.reference,
+                  userAnswer: exercise.kind === 'mcq'
+                    ? (choice !== null ? exercise.options[choice] : '(nessuna opzione)')
+                    : formula,
+                })}
+              />
+            )}
 
             {/* Hint */}
             {showHint && (
