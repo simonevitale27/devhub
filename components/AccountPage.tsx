@@ -95,7 +95,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
   // If guest, show limited info
   if (isGuest) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white p-6">
+      <div className="min-h-screen bg-transparent text-white p-6">
         <div className="max-w-2xl mx-auto">
           <button
             onClick={onBack}
@@ -142,7 +142,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 md:p-6 pb-32 relative overflow-y-auto font-sans">
+    <div className="min-h-screen bg-transparent text-white p-4 md:p-6 pb-32 relative overflow-y-auto font-sans">
         
       {/* Background Gradients */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">

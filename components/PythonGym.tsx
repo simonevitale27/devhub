@@ -747,7 +747,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   }, [selectedTopic, filteredTopics]);
 
   return (
-    <div className="flex h-screen bg-black text-slate-200 font-sans overflow-hidden">
+    <div className="flex h-screen bg-transparent text-slate-200 font-sans overflow-hidden">
 
       <div className="flex flex-1 gap-5">
 

@@ -116,7 +116,7 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
   const difficulties = Object.values(Difficulty);
 
   return (
-    <div className="h-screen flex bg-black text-slate-200 font-sans overflow-hidden">
+    <div className="h-screen flex bg-transparent text-slate-200 font-sans overflow-hidden">
       {/* Ambient glow */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
 

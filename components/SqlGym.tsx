@@ -577,7 +577,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
 
   return (
     <div
-      className={`flex h-screen bg-black text-slate-200 font-sans overflow-hidden ${selectionClass} selection:text-white`}
+      className={`flex h-screen bg-transparent text-slate-200 font-sans overflow-hidden ${selectionClass} selection:text-white`}
     >
       <div className="flex flex-1 gap-5">
       {/* MOBILE SIDEBAR OVERLAY */}

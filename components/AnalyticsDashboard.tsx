@@ -376,7 +376,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
   }, [stats.bestTopic]);
 
   return (
-    <div className="h-screen overflow-y-auto bg-black text-white relative">
+    <div className="h-screen overflow-y-auto bg-transparent text-white relative">
       {/* Background Gradients */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }}></div>
