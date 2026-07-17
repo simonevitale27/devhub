@@ -155,8 +155,8 @@ export const QUESTION_DATABASE: Record<string, Record<string, ExerciseBlueprint[
         titleTemplate: "Nomi Utenti",
         descTemplate: "Seleziona solo la colonna 'name' dalla tabella Users.",
         queryTemplate: "SELECT name FROM Users",
-        hints: ["Specifica il nome della colonna dopo SELECT"],
-        explanation: "SELECT * seleziona tutte le colonne della tabella. In produzione è meglio specificare le colonne necessarie per performance e chiarezza.",
+        hints: ["Dopo SELECT non sei obbligato a mettere l'asterisco: puoi elencare le colonne che ti servono.", "Ti serve una sola colonna, quindi il risultato avrà una sola intestazione."],
+        explanation: "Elencando i nomi delle colonne dopo SELECT chiedi al database solo quei dati. Il risultato ha una colonna sola invece di tutte quelle della tabella. È anche l'abitudine giusta fuori dagli esercizi: leggere solo le colonne che servi riduce il lavoro del database e rende esplicito cosa ti aspetti.",
         replacements: {},
         brokenCode: "SELECT Users FROM name",
         debugHint: "Prima le colonne, poi la tabella."
