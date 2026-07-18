@@ -976,8 +976,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                     } md:relative md:flex md:w-1/5 flex flex-col gap-4 pb-6 md:min-w-[250px] h-full bg-black md:bg-transparent`}>
                         
                         {/* UPLOAD AREA (20% height) */}
-                        <div className="h-[20%] bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex-shrink-0">
-                            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                        <div className="h-[20%] bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-4 elev-1 relative overflow-hidden flex-shrink-0">
                             
                             <div
                                 onDrop={handleDrop}
@@ -1036,10 +1035,9 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                         {/* TOP: SQL EDITOR / PYTHON PANEL (Resizable) */}
                         <div 
-                            className="bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-4 shadow-lg shadow-black/20 relative overflow-hidden flex flex-col min-h-[200px]"
+                            className="bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-4 elev-1 relative overflow-hidden flex flex-col min-h-[200px]"
                             style={{ height: editorHeight }}
                         >
-                            <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
                             
                             {/* Persistent Header */}
                             <div className="flex items-center justify-between mb-3 flex-shrink-0">
@@ -1061,7 +1059,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 setSqlQuery(formatted);
                                             }
                                         }}
-                                        className="w-32 px-3 py-1 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-black/20 active:scale-95"
+                                        className="w-32 px-3 py-1 bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] text-slate-300 text-xs rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-black/20 active:scale-95"
                                         title="Formatta codice"
                                     >
                                         <Code2 size={12} />
@@ -1115,7 +1113,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     <div className="flex items-center gap-2 mt-2">
                                         {/* Python History Bar */}
                                         {pythonHistory.length > 0 ? (
-                                            <div className="flex-1 min-w-0 bg-[#121212]/70 backdrop-blur-md rounded-lg p-1.5 flex items-center gap-2 overflow-hidden border border-white/5 shadow-inner">
+                                            <div className="flex-1 min-w-0 bg-white/[0.04] ring-1 ring-white/10 rounded-xl p-1.5 flex items-center gap-2 overflow-hidden border border-white/5 shadow-inner">
                                                 <div className="flex items-center gap-2 pl-2 pr-3 border-r border-white/10 shrink-0">
                                                     <HistoryIcon size={12} className="text-slate-400" />
                                                     <button 
@@ -1156,7 +1154,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                             className={`h-[34px] px-4 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shrink-0 ${
                                                 isPythonExecuting
                                                     ? 'bg-[#0a0a0a]/80 text-slate-400 shadow-black/20'
-                                                    : 'bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 active:bg-purple-500/20 active:text-purple-300 active:shadow-[0_0_15px_rgba(168,85,247,0.3)_inset] active:shadow-purple-500/20 active:scale-95'
+                                                    : 'bg-white/[0.04] ring-1 ring-white/10 text-slate-300 hover:bg-white/[0.08] hover:text-slate-200 shadow-black/20 active:bg-purple-500/20 active:text-purple-300 active:shadow-[0_0_15px_rgba(168,85,247,0.3)_inset] active:shadow-purple-500/20 active:scale-95'
                                             }`}
                                         >
                                             {isPythonExecuting ? (
@@ -1194,7 +1192,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                     <div className="flex items-center gap-2 mt-2">
                                         {/* History Bar (Compact) */}
                                         {queryHistory.length > 0 ? (
-                                            <div className="flex-1 min-w-0 bg-[#121212]/70 backdrop-blur-md rounded-lg p-1.5 flex items-center gap-2 overflow-hidden border border-white/5 shadow-inner">
+                                            <div className="flex-1 min-w-0 bg-white/[0.04] ring-1 ring-white/10 rounded-xl p-1.5 flex items-center gap-2 overflow-hidden border border-white/5 shadow-inner">
                                                 <div className="flex items-center gap-2 pl-2 pr-3 border-r border-white/10 shrink-0">
                                                     <HistoryIcon size={12} className="text-slate-400" />
                                                     <button 
@@ -1227,7 +1225,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                             className={`h-[34px] px-4 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shrink-0 ${
                                                 isExecuting
                                                     ? 'bg-[#0a0a0a]/80 text-slate-400 shadow-black/20'
-                                                    : 'bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 active:bg-emerald-500/20 active:text-emerald-300 active:shadow-[0_0_15px_rgba(16,185,129,0.3)_inset] active:shadow-emerald-500/20 active:scale-95'
+                                                    : 'bg-white/[0.04] ring-1 ring-white/10 text-slate-300 hover:bg-white/[0.08] hover:text-slate-200 shadow-black/20 active:bg-emerald-500/20 active:text-emerald-300 active:shadow-[0_0_15px_rgba(16,185,129,0.3)_inset] active:shadow-emerald-500/20 active:scale-95'
                                             }`}
                                         >
                                             {isExecuting ? (
@@ -1293,8 +1291,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                             {/* PYTHON UNIFIED RESULT (Text + Image) */}
                             {showPythonPanel && (pythonOutput || pythonImage) && !pythonTableResult && (
-                                <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+                                <div className="flex-1 bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl elev-1 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
                                     
                                     <div className="px-6 py-3 border-b border-white/5 flex-shrink-0 flex justify-between items-center">
                                         <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
@@ -1416,8 +1413,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                             {/* PYTHON TABLE RESULT */}
                             {showPythonPanel && pythonTableResult && pythonTableResult.length > 0 && (
-                                <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+                                <div className="flex-1 bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl elev-1 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
                                     <div className="px-6 py-3 border-b border-white/5 flex-shrink-0">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
@@ -1488,8 +1484,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                             {/* QUERY RESULTS */}
                             {queryResult && queryResult.length > 0 && (
-                                <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-slate-500 shadow-[0_0_10px_rgba(100,116,139,0.5)]"></div>
+                                <div className="flex-1 bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl elev-1 animate-in slide-in-from-bottom-4 relative overflow-hidden flex flex-col">
                                     
                                     {/* Results Header */}
                                     <div className="px-6 py-4 border-b border-white/5 flex-shrink-0">
@@ -1509,7 +1504,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                         setSortConfig(null);
                                                         setError(null);
                                                     }}
-                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-red-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    className="px-3 py-1.5 bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-red-300 shadow-lg shadow-black/20 active:scale-95"
                                                     title="Reset risultati e query"
                                                 >
                                                     <X size={12} />
@@ -1524,7 +1519,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                             setShowHealthModal(true);
                                                         }
                                                     }}
-                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95 whitespace-nowrap"
+                                                    className="px-3 py-1.5 bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95 whitespace-nowrap"
                                                     title="Analisi Qualità Dati"
                                                 >
                                                     <Activity size={12} />
@@ -1532,7 +1527,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 </button>
                                                 <button
                                                     onClick={() => setShowSaveModal(true)}
-                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    className="px-3 py-1.5 bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-emerald-300 shadow-lg shadow-black/20 active:scale-95"
                                                     title="Salva come nuova tabella"
                                                 >
                                                     <FileSpreadsheet size={12} />
@@ -1541,7 +1536,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 <div className="relative">
                                                     <button
                                                         onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
-                                                        className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-blue-300 shadow-lg shadow-black/20 active:scale-95"
+                                                        className="px-3 py-1.5 bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-blue-300 shadow-lg shadow-black/20 active:scale-95"
                                                         title="Scarica risultati"
                                                     >
                                                         <FileDown size={12} />
@@ -1580,7 +1575,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 </div>
                                                 <button
                                                     onClick={() => setShowStatsModal(true)}
-                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-purple-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    className="px-3 py-1.5 bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-purple-300 shadow-lg shadow-black/20 active:scale-95"
                                                     title="Visualizza statistiche dettagliate"
                                                 >
                                                     <BarChart3 size={12} />
@@ -1588,7 +1583,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 </button>
                                                 <button
                                                     onClick={() => setShowChartModal(true)}
-                                                    className="px-3 py-1.5 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-orange-300 shadow-lg shadow-black/20 active:scale-95"
+                                                    className="px-3 py-1.5 bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] text-slate-300 text-xs rounded-lg transition-all duration-300 flex items-center gap-2 hover:text-orange-300 shadow-lg shadow-black/20 active:scale-95"
                                                     title="Crea grafico dai risultati"
                                                 >
                                                     <TrendingUp size={12} />
@@ -1759,7 +1754,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
 
                             {/* Empty state quando non ci sono risultati */}
                             {!queryResult && !error && !pythonOutput && !pythonError && !pythonTableResult && !pythonImage && (
-                                <div className="flex-1 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 flex items-center justify-center">
+                                <div className="flex-1 bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl elev-1 flex items-center justify-center">
                                     <div className="text-center text-slate-600">
                                         <TrendingUp size={48} className="mx-auto mb-4 opacity-30" />
                                         <p className="text-sm font-bold uppercase tracking-wider">Nessun risultato</p>

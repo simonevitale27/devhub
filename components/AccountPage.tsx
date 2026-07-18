@@ -99,13 +99,13 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
         <div className="max-w-2xl mx-auto">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-400 hover:text-white mb-8 transition-colors"
+            className="h-10 inline-flex items-center gap-2 px-3.5 rounded-xl bg-white/[0.04] ring-1 ring-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] mb-8 transition-all text-sm font-semibold"
           >
             <ArrowLeft size={20} />
             Torna indietro
           </button>
 
-          <div className="bg-slate-900/50 rounded-2xl p-8 border border-slate-800">
+          <div className="bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-6 md:p-8 elev-1">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center">
                 <User size={32} className="text-amber-400" />
@@ -154,14 +154,14 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
         {/* Back Button */}
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-slate-400 hover:text-white mb-8 transition-colors"
+          className="h-10 inline-flex items-center gap-2 px-3.5 rounded-xl bg-white/[0.04] ring-1 ring-white/10 text-slate-300 hover:text-white hover:bg-white/[0.08] mb-8 transition-all text-sm font-semibold"
         >
           <ArrowLeft size={20} />
           Torna indietro
         </button>
 
         {/* Profile Header */}
-        <div className="bg-slate-900/50 rounded-2xl p-4 md:p-8 border border-slate-800 mb-6">
+        <div className="bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-5 md:p-8 elev-1 mb-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center">
               <User size={32} className="text-blue-400" />
@@ -172,9 +172,9 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
             </div>
           </div>
 
-          {/* User Info Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-slate-800/50 rounded-xl p-4">
+          {/* User info — hairline grid instead of cards nested inside a card */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/[0.06] rounded-xl ring-1 ring-white/[0.07] overflow-hidden">
+            <div className="bg-[#0a0d16] p-4">
               <div className="flex items-center gap-3 text-slate-400 mb-2">
                 <Mail size={18} />
                 <span className="text-sm">Email</span>
@@ -182,7 +182,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
               <p className="text-white font-medium truncate">{user?.email}</p>
             </div>
 
-            <div className="bg-slate-800/50 rounded-xl p-4">
+            <div className="bg-[#0a0d16] p-4">
               <div className="flex items-center gap-3 text-slate-400 mb-2">
                 <Calendar size={18} />
                 <span className="text-sm">Membro dal</span>
@@ -191,7 +191,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
             </div>
 
             {/* Username Edit Card */}
-            <div className={`bg-slate-800/50 rounded-xl p-4 transition-all ${showNameForm ? 'ring-2 ring-blue-500/50' : ''}`}>
+            <div className={`bg-[#0a0d16] p-4 transition-all ${showNameForm ? 'ring-2 ring-blue-500/50' : ''}`}>
               <div className="flex items-center justify-between mb-2">
                  <div className="flex items-center gap-3 text-slate-400">
                     <User size={18} />
@@ -230,13 +230,13 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
                         type="text" 
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
-                        className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-sm focus:outline-none focus:border-blue-500"
+                        className="flex-1 h-10 bg-white/[0.04] ring-1 ring-white/10 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                         placeholder="Nome utente"
                     />
-                    <button type="submit" disabled={isLoading} className="bg-blue-600 p-1.5 rounded-lg hover:bg-blue-500 disabled:opacity-50">
+                    <button type="submit" disabled={isLoading} className="h-10 w-10 grid place-items-center bg-blue-600 rounded-xl hover:bg-blue-500 disabled:opacity-50 shrink-0">
                         <Check size={14} />
                     </button>
-                     <button type="button" onClick={() => setShowNameForm(false)} className="bg-slate-700 p-1.5 rounded-lg hover:bg-slate-600">
+                     <button type="button" onClick={() => setShowNameForm(false)} className="h-10 w-10 grid place-items-center bg-white/[0.06] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.1] shrink-0">
                         <X size={14} />
                     </button>
                 </form>
@@ -245,7 +245,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
               )}
             </div>
 
-            <div className="bg-slate-800/50 rounded-xl p-4">
+            <div className="bg-[#0a0d16] p-4">
               <div className="flex items-center gap-3 text-slate-400 mb-2">
                 <Shield size={18} />
                 <span className="text-sm">Provider</span>
@@ -255,7 +255,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
               </p>
             </div>
 
-            <div className="bg-slate-800/50 rounded-xl p-4">
+            <div className="bg-[#0a0d16] p-4">
               <div className="flex items-center gap-3 text-slate-400 mb-2">
                 <Check size={18} />
                 <span className="text-sm">Esercizi completati</span>
@@ -278,7 +278,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
 
         {/* Password Change Section */}
         {user?.app_metadata?.provider !== 'google' && (
-          <div className="bg-slate-900/50 rounded-2xl p-6 border border-slate-800 mb-6">
+          <div className="bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-6 elev-1 mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <Key size={20} className="text-slate-400" />
@@ -302,7 +302,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full h-12 px-4 bg-white/[0.04] ring-1 ring-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
                     placeholder="Password attuale"
                     required
                   />
@@ -313,7 +313,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full h-12 px-4 bg-white/[0.04] ring-1 ring-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
                     placeholder="Minimo 6 caratteri"
                     required
                     minLength={6}
@@ -325,7 +325,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full h-12 px-4 bg-white/[0.04] ring-1 ring-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
                     placeholder="Ripeti la password"
                     required
                   />
