@@ -16,7 +16,6 @@ export default {
         sans: ["Inter", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
         outfit: ["Outfit", "sans-serif"],
-        syne: ["Syne", "sans-serif"],
         chewy: ["Chewy", "cursive"],
         marker: ["Permanent Marker", "cursive"],
       },

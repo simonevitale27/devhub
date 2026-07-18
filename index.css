@@ -66,13 +66,14 @@ body::before {
   -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
 }
 
-/* Fluid display type scale for hero headings. clamp() keeps it responsive
-   without a breakpoint zoo; the ceiling stays under ~6rem per design guidance. */
+/* Display type for hero headings. Was Syne 800 — an *extended* grotesque, so it
+   read wide and stretched at large sizes. Inter is narrower and, tightened to
+   -0.04em at weight 700, gives the modern/minimal look without a second webfont. */
 .text-display {
-  font-family: "Syne", "Outfit", sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 0.95;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
   text-wrap: balance;
 }
 

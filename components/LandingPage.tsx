@@ -4,7 +4,6 @@ import { Hexagon, ArrowRight, Mail, Lock, User, Chrome, LogIn, Database, Termina
 import { signIn, signUp, signInWithGoogle, resetPassword } from '../services/authService';
 import { setCurrentUser, syncBackendToLocal } from '../services/progressService';
 import { useAuth } from '../contexts/AuthContext';
-import { APP_VERSION } from '../version';
 
 interface LandingPageProps {
     onNavigate: (page: Page) => void;
@@ -124,16 +123,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 {/* Single refined accent, high up so the hero sits in its light */}
                 <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[720px] bg-blue-600/10 rounded-full blur-[160px]"></div>
 
-                {/* Top bar: brand mark + build */}
-                <header className="relative z-10 flex items-center justify-between px-5 md:px-10 py-5">
+                {/* Top bar: brand mark (version stamp is global, in App.tsx) */}
+                <header className="relative z-10 flex items-center px-5 md:px-10 py-5">
                     <div className="flex items-center gap-2.5">
                         <div className="relative flex items-center justify-center">
                             <Hexagon size={22} className="text-blue-500 fill-blue-500/10" strokeWidth={2} />
                             <span className="absolute w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
                         </div>
-                        <span className="font-syne font-bold text-lg tracking-tight text-white">Dev<span className="text-blue-500">Hub</span></span>
+                        <span className="font-bold text-lg tracking-[-0.03em] text-white">Dev<span className="text-blue-500">Hub</span></span>
                     </div>
-                    <span className="text-[10px] font-mono font-semibold tracking-[0.2em] text-slate-500">v{APP_VERSION}</span>
                 </header>
 
                 {/* Hero */}

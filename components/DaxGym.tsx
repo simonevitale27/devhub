@@ -131,7 +131,7 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
       >
         <div className="px-5 pt-5 pb-3 flex items-center gap-2">
           <BarChart3 size={22} className="text-yellow-400" />
-          <span className="font-syne font-bold tracking-tight text-lg text-white">DAX <span className="text-yellow-400">LAB</span></span>
+          <span className="font-bold tracking-[-0.03em] text-lg text-white">DAX <span className="text-yellow-400">LAB</span></span>
         </div>
         <nav className="flex-1 overflow-y-auto px-3 pb-6 space-y-1">
           <button

@@ -62,7 +62,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                         <Hexagon size={26} className="text-blue-500 fill-blue-500/10" strokeWidth={2.25} />
                         <span className="absolute w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
                     </div>
-                    <span className="font-syne font-bold text-lg tracking-tight text-white">Dev<span className="text-blue-500">Hub</span></span>
+                    <span className="font-bold text-lg tracking-[-0.03em] text-white">Dev<span className="text-blue-500">Hub</span></span>
                 </div>
                 <div className="flex items-center gap-2 md:gap-3">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] bg-white/[0.04] px-3 py-1.5 rounded-full ring-1 ring-white/10">

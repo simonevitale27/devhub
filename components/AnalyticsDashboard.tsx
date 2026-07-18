@@ -404,7 +404,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
               <ArrowLeft size={18} />
             </button>
             <div className="min-w-0">
-              <h1 className="font-syne font-bold text-lg md:text-xl tracking-tight text-white flex items-center gap-2">
+              <h1 className="font-bold text-lg md:text-xl tracking-[-0.03em] text-white flex items-center gap-2">
                 <TrendingUp size={19} className="text-emerald-400 shrink-0" />
                 <span className="truncate">Analytics</span>
               </h1>
@@ -435,7 +435,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
               <div className="w-10 h-10 rounded-xl bg-red-500/15 ring-1 ring-red-500/25 grid place-items-center">
                 <AlertTriangle size={20} className="text-red-400" />
               </div>
-              <h3 className="font-syne text-lg font-bold text-white">Conferma reset</h3>
+              <h3 className="text-lg font-bold tracking-[-0.02em] text-white">Conferma reset</h3>
             </div>
             <p className="text-slate-400 mb-6">
               Sei sicuro di voler resettare tutti i progressi? Questa azione cancellerà:

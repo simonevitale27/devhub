@@ -768,7 +768,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             >
               <ArrowLeft size={18} />
             </button>
-            <div className="font-syne font-bold tracking-tight text-lg flex items-center gap-2 select-none">
+            <div className="font-bold tracking-[-0.03em] text-lg flex items-center gap-2 select-none">
               <span className="text-white">PYTHON</span>
               <span className={textActive}>LAB</span>
             </div>
