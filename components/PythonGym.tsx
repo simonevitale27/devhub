@@ -768,7 +768,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             >
               <ArrowLeft size={18} />
             </button>
-            <div className="font-black tracking-tighter text-lg flex items-center gap-2 select-none">
+            <div className="font-syne font-bold tracking-tight text-lg flex items-center gap-2 select-none">
               <span className="text-white">PYTHON</span>
               <span className={textActive}>LAB</span>
             </div>
@@ -971,7 +971,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
               {/* Exercise Header */}
               <div className="p-4 border-b border-white/10 bg-white/5">
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <h2 className="font-outfit text-xl md:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
                     {practiceMode === "debug" && (
                       <Bug className="text-red-400" size={20} />
                     )}

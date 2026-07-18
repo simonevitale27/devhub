@@ -131,7 +131,7 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
       >
         <div className="px-5 pt-5 pb-3 flex items-center gap-2">
           <BarChart3 size={22} className="text-yellow-400" />
-          <span className="font-black tracking-tight text-lg text-white">DAX <span className="text-yellow-400">LAB</span></span>
+          <span className="font-syne font-bold tracking-tight text-lg text-white">DAX <span className="text-yellow-400">LAB</span></span>
         </div>
         <nav className="flex-1 overflow-y-auto px-3 pb-6 space-y-1">
           <button
@@ -267,7 +267,7 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
 
             {/* Exercise card */}
             <div className="bg-[#121212]/70 backdrop-blur-xl rounded-2xl px-6 py-5 shrink-0">
-              <h2 className="text-xl text-white font-bold mb-2 leading-tight">{exercise.title}</h2>
+              <h2 className="font-outfit text-xl md:text-2xl text-white font-bold tracking-tight mb-2 leading-tight">{exercise.title}</h2>
               <p className="text-slate-200 text-sm leading-relaxed">{exercise.scenario}</p>
             </div>
 

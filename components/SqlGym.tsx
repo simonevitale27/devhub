@@ -598,7 +598,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
             >
               <HomeIcon size={18} />
             </button>
-            <div className="font-black tracking-tighter text-lg flex items-center gap-2 select-none">
+            <div className="font-syne font-bold tracking-tight text-lg flex items-center gap-2 select-none">
               <span className="text-white">SQL</span>
               <span className={textActive}>LAB</span>
             </div>
@@ -931,7 +931,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                   )}
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-xl text-white font-bold mb-2 leading-tight">
+                  <h2 className="font-outfit text-xl md:text-2xl text-white font-bold tracking-tight mb-2 leading-tight">
                     {exercise?.title}
                   </h2>
                   <p className="text-slate-200 text-sm leading-relaxed max-w-4xl">
@@ -994,7 +994,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider mb-3">
                         <Bug size={14} /> Modalità Debug
                       </div>
-                      <h3 className="text-xl font-bold text-white mb-2 leading-tight">
+                      <h3 className="font-outfit text-xl md:text-2xl font-bold text-white tracking-tight mb-2 leading-tight">
                         {exercise?.title}
                       </h3>
                       <p className="text-slate-200 text-sm leading-relaxed">
