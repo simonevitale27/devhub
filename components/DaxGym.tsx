@@ -171,14 +171,14 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={onBack}
-              className="h-[38px] w-[38px] md:h-[42px] md:w-[42px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+              className="h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
               aria-label="Torna alla home"
             >
               <HomeIcon size={18} />
             </button>
             <button
               onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-              className="md:hidden h-[38px] w-[38px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+              className="md:hidden h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
               aria-label="Argomenti"
             >
               <Menu size={18} />
@@ -202,7 +202,7 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
             <button
               onClick={() => { setShuffleNonce((n) => n + 1); setIndex(0); }}
               title="Mescola esercizi"
-              className="h-9 flex items-center gap-2 py-2 px-3 text-slate-300 hover:text-white rounded-lg bg-[#121212]/70 hover:bg-white/10 backdrop-blur-xl shadow-lg shadow-black/20 transition-all group"
+              className="h-10 flex items-center gap-2 py-2 px-3 text-slate-300 hover:text-white rounded-xl bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] transition-all group"
             >
               <Shuffle size={16} className="group-active:rotate-180 transition-transform duration-500" />
               <span className="text-xs font-bold hidden sm:inline">Mescola</span>
@@ -210,7 +210,7 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
             {onNavigate && (
               <button
                 onClick={() => onNavigate(Page.Analytics)}
-                className="h-9 hidden sm:flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all"
+                className="h-10 hidden sm:flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all"
               >
                 <TrendingUp size={16} />
                 <span className="text-xs font-bold">Analytics</span>
@@ -315,19 +315,19 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={check}
-                className="px-5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg bg-yellow-500 text-black hover:bg-yellow-400 shadow-yellow-500/20"
+                className="h-10 px-5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg bg-yellow-500 text-black hover:bg-yellow-400 shadow-yellow-500/20"
               >
                 <Play size={14} fill="currentColor" /> Verifica
               </button>
               <button
                 onClick={() => setShowHint((v) => !v)}
-                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showHint ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/20' : 'bg-[#121212]/70 text-slate-300 hover:bg-white/5'}`}
+                className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showHint ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/20' : 'bg-[#121212]/70 text-slate-300 hover:bg-white/5'}`}
               >
                 <Lightbulb size={14} className={showHint ? 'fill-amber-300' : ''} /> Suggerimento
               </button>
               <button
                 onClick={() => setShowSolution((v) => !v)}
-                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showSolution ? 'bg-purple-500/20 text-purple-300 ring-1 ring-purple-500/20' : 'bg-[#121212]/70 text-slate-300 hover:bg-white/5'}`}
+                className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showSolution ? 'bg-purple-500/20 text-purple-300 ring-1 ring-purple-500/20' : 'bg-[#121212]/70 text-slate-300 hover:bg-white/5'}`}
               >
                 {showSolution ? <Unlock size={14} /> : <Lock size={14} />} Soluzione
               </button>

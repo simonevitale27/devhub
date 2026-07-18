@@ -876,7 +876,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                {/* Mobile Sidebar Toggle */}
                <button
                  onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                 className="md:hidden h-[38px] w-[38px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+                 className="md:hidden h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
                  aria-label="Menu argomenti"
                >
                  <Menu size={18} />
@@ -947,7 +947,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                <button
                  onClick={handleShuffle}
                  title="Mescola esercizi"
-                 className="h-9 py-2 px-3 text-slate-300 hover:text-white rounded-lg bg-[#121212]/70 hover:bg-white/10 backdrop-blur-xl shadow-lg shadow-black/20 transition-all flex items-center gap-2 group"
+                 className="h-10 py-2 px-3 text-slate-300 hover:text-white rounded-xl bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] transition-all flex items-center gap-2 group"
                >
                  <Shuffle size={16} className="group-active:rotate-180 transition-transform duration-500" />
                  <span className="text-xs font-bold hidden sm:inline">Mescola</span>
@@ -955,7 +955,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                {onNavigate && (
                  <button
                    onClick={() => onNavigate(Page.Analytics)}
-                   className="h-9 flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
+                   className="h-10 flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
                  >
                    <TrendingUp size={16} />
                    <span className="text-xs font-bold hidden sm:inline">Analytics</span>
@@ -1050,7 +1050,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                       <button
                         onClick={handleRunCode}
                         disabled={isRunning || pyodideLoading || packagesLoading}
-                        className="px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg bg-amber-500 text-white hover:bg-amber-400 shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                        className="h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg bg-amber-500 text-white hover:bg-amber-400 shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                         title="Esegui (⌘+Enter)"
                       >
                         {isRunning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} fill="currentColor" />}

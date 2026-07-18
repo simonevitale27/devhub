@@ -943,13 +943,13 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 {/* Header */}
                 <div className="h-14 md:h-16 flex items-center justify-between mt-2 md:mt-4 mb-1 z-10 shrink-0">
                     <div className="flex items-center gap-2 md:gap-4">
-                        <button onClick={onBack} className="h-[38px] w-[38px] md:h-[42px] md:w-[42px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95">
+                        <button onClick={onBack} className="h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95">
                             <Home size={18} />
                         </button>
                         {/* Mobile Sidebar Toggle */}
                         <button
                             onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                            className="md:hidden h-[38px] w-[38px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+                            className="md:hidden h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
                             aria-label="Gestione tabelle"
                         >
                             <Menu size={18} />

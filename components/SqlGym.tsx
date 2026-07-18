@@ -770,7 +770,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
             {!isGymMode && (
               <button
                 onClick={onBack}
-                className="h-[38px] w-[38px] md:h-[42px] md:w-[42px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+                className="h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
                 aria-label="Torna alla home"
               >
                 <HomeIcon size={18} />
@@ -781,7 +781,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
             {isGymMode && (
               <button
                 onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                className="md:hidden h-[38px] w-[38px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+                className="md:hidden h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
                 aria-label="Menu argomenti"
               >
                 <Menu size={18} />
@@ -882,7 +882,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               <button
                 onClick={handleShuffle}
                 title="Cambia esercizio"
-                className="h-9 py-2 px-3 text-slate-300 hover:text-white rounded-lg bg-[#121212]/70 hover:bg-white/10 backdrop-blur-xl shadow-lg shadow-black/20 transition-all flex items-center gap-2 group"
+                className="h-10 py-2 px-3 text-slate-300 hover:text-white rounded-xl bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] transition-all flex items-center gap-2 group"
               >
                 <Shuffle
                   size={16}
@@ -898,7 +898,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               {onNavigate && (
               <button
                   onClick={() => onNavigate(Page.Analytics)}
-                  className="h-9 flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
+                  className="h-10 flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
                 >
                   <TrendingUp size={16} />
                   <span className="text-xs font-bold hidden sm:inline">Analytics</span>
@@ -1018,7 +1018,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                        {/* Hint Button */}
                        <button
                         onClick={() => setShowHint(!showHint)}
-                        className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
+                        className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showHint
                             ? "bg-gradient-to-b from-amber-500/30 to-amber-600/5 backdrop-blur-xl border border-white/5 shadow-[0_0_15px_rgba(245,158,11,0.2)_inset] shadow-amber-500/10 text-amber-300"
                             : "bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
@@ -1034,7 +1034,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       {/* Solution Button */}
                       <button
                         onClick={() => setShowSolution(!showSolution)}
-                        className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
+                        className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showSolution
                             ? "bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/10 text-purple-300"
                             : "bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
@@ -1052,7 +1052,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       <button
                         onClick={handleRun}
                         disabled={!isDbReady}
-                        className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-lg ${
+                        className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-lg ${
                           !isDbReady
                             ? "bg-[#0a0a0a]/80 text-slate-400 cursor-not-allowed shadow-black/20"
                             : "bg-purple-600 text-white hover:opacity-90 backdrop-blur-xl shadow-purple-600/20"
@@ -1209,7 +1209,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       {/* Hint Button */}
                       <button
                         onClick={() => setShowHint(!showHint)}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
+                        className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showHint
                             ? "bg-gradient-to-b from-amber-500/30 to-amber-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(245,158,11,0.2)_inset] shadow-amber-500/10 text-amber-300"
                             : "bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
@@ -1225,7 +1225,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       {/* Solution Button */}
                       <button
                         onClick={() => setShowSolution(!showSolution)}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
+                        className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showSolution
                             ? "bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/10 text-purple-300"
                             : "bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
@@ -1246,7 +1246,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       <button
                         onClick={handleFormatSQL}
                         disabled={!sqlCode.trim()}
-                        className="px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 disabled:opacity-40 disabled:cursor-not-allowed"
                         title="Formatta SQL"
                       >
                         <Sparkles size={14} />
@@ -1259,7 +1259,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       <button
                         onClick={handleRun}
                         disabled={!isDbReady}
-                        className={`px-5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg ${
+                        className={`h-10 px-5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg ${
                           !isDbReady
                             ? "bg-[#0a0a0a]/80 text-slate-400 cursor-not-allowed shadow-black/20"
                             : `${bgActive} text-white hover:opacity-90 backdrop-blur-xl ${shadowActive}`
@@ -1272,7 +1272,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       {/* Reset Button */}
                       <button
                         onClick={handleResetInput}
-                        className="px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-md shadow-black/20 active:bg-red-500/20 active:text-red-300 active:shadow-red-500/20"
+                        className="h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-md shadow-black/20 active:bg-red-500/20 active:text-red-300 active:shadow-red-500/20"
                       >
                         <RotateCcw size={14} />
                         Reset
