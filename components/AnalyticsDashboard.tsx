@@ -59,8 +59,10 @@ interface AnalyticsDashboardProps {
   onNavigate?: (page: Page) => void;
 }
 
-// Stat Card Component
-function StatCard({
+// One cell of the summary strip. Deliberately NOT its own card: the four
+// metrics live inside a single panel separated by hairlines, instead of four
+// identical floating tiles (the stat-tile template reads as boilerplate).
+function StatItem({
   icon,
   label,
   value,
@@ -74,19 +76,24 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5 flex flex-col">
-      <div className="flex items-center gap-3 mb-3">
-        <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: `${color}20`, color }}
+    <div className="bg-[#0a0d16] px-5 py-5 md:px-6 md:py-6">
+      <div className="flex items-center gap-2.5 mb-3">
+        <span
+          className="grid place-items-center w-8 h-8 rounded-lg shrink-0"
+          style={{ backgroundColor: `${color}1a`, color }}
         >
           {icon}
-        </div>
-        <span className="text-slate-400 text-sm font-medium">{label}</span>
+        </span>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">
+          {label}
+        </span>
       </div>
-      <div className="text-3xl font-bold text-white">{value}</div>
+      {/* tabular-nums so the figures don't reflow as they change */}
+      <div className="text-2xl md:text-[28px] font-bold text-white tabular-nums leading-none truncate">
+        {value}
+      </div>
       {subValue && (
-        <div className="text-xs text-slate-500 mt-1">{subValue}</div>
+        <div className="text-xs text-slate-500 mt-2 leading-relaxed">{subValue}</div>
       )}
     </div>
   );
@@ -130,7 +137,7 @@ function ContributionHeatmap({ data }: { data: HeatmapDay[] }) {
   const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 
   return (
-    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
+    <div className="bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-5 md:p-6 elev-1">
       <div className="flex items-center gap-2 mb-4">
         <Calendar size={18} className="text-emerald-400" />
         <h3 className="text-white font-semibold">Contribution Heatmap</h3>
@@ -203,7 +210,7 @@ function SkillRadar({
   }));
 
   return (
-    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
+    <div className="bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-5 md:p-6 elev-1">
       <div className="flex items-center gap-2 mb-4">
         <Target size={18} className="text-purple-400" />
         <h3 className="text-white font-semibold">Skill Radar</h3>
@@ -268,7 +275,7 @@ function LabProgress({
   const colors = ['#10b981', '#3b82f6'];
 
   return (
-    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
+    <div className="bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-5 md:p-6 elev-1">
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp size={18} className="text-blue-400" />
         <h3 className="text-white font-semibold">Progresso per Lab</h3>
@@ -384,41 +391,37 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-4">
+      {/* Header — every control is the same 40px tall with the same rounded-xl
+          geometry, so the row reads as one system instead of mixed pills. */}
+      <header className="sticky top-0 z-50 bg-[#05070e]/80 backdrop-blur-xl border-b border-white/[0.06]">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3.5 min-w-0">
             <button
               onClick={onBack}
-              className="h-[38px] w-[38px] md:h-[42px] md:w-[42px] flex items-center justify-center text-slate-300 hover:text-white bg-[#121212]/70 backdrop-blur-xl rounded-xl shadow-lg shadow-black/20 hover:bg-white/5 transition-all active:scale-95"
+              className="h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
               aria-label="Torna alla home"
             >
               <ArrowLeft size={18} />
             </button>
-            <div>
-              <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
-                <TrendingUp size={20} className="text-emerald-400 md:hidden" />
-                <TrendingUp size={24} className="text-emerald-400 hidden md:block" />
-                <span className="hidden sm:inline">Analytics Dashboard</span>
-                <span className="sm:hidden">Analytics</span>
+            <div className="min-w-0">
+              <h1 className="font-syne font-bold text-lg md:text-xl tracking-tight text-white flex items-center gap-2">
+                <TrendingUp size={19} className="text-emerald-400 shrink-0" />
+                <span className="truncate">Analytics</span>
               </h1>
-              <p className="text-slate-500 text-sm hidden md:block">
+              <p className="text-slate-500 text-xs md:text-sm hidden md:block mt-0.5">
                 Traccia i tuoi progressi e migliora le tue competenze
               </p>
             </div>
           </div>
 
-          {/* Actions Group */}
-          <div className="flex items-center gap-2 md:gap-3">
-            {/* Reset Button */}
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setShowResetConfirm(true)}
-              className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 backdrop-blur-md px-3 py-1.5 h-9 rounded-full ring-1 ring-red-500/20 hover:ring-red-500/40 transition-all text-red-300 text-sm font-medium"
+              className="h-10 flex items-center gap-2 px-3.5 rounded-xl bg-red-500/[0.08] hover:bg-red-500/[0.16] ring-1 ring-red-500/20 hover:ring-red-500/40 transition-all text-red-300 text-sm font-semibold"
             >
-              <RotateCcw size={14} />
+              <RotateCcw size={15} />
               <span className="hidden sm:inline">Reset</span>
             </button>
-
-            {/* User Badge */}
             <UserBadge onNavigate={onNavigate} />
           </div>
         </div>
@@ -427,12 +430,12 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
       {/* Reset Confirmation Modal */}
       {showResetConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-md mx-4 shadow-2xl">
+          <div className="bg-[#0a0d16] ring-1 ring-white/10 rounded-2xl p-6 max-w-md mx-4 elev-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-red-500/15 ring-1 ring-red-500/25 grid place-items-center">
                 <AlertTriangle size={20} className="text-red-400" />
               </div>
-              <h3 className="text-lg font-semibold text-white">Conferma Reset</h3>
+              <h3 className="font-syne text-lg font-bold text-white">Conferma reset</h3>
             </div>
             <p className="text-slate-400 mb-6">
               Sei sicuro di voler resettare tutti i progressi? Questa azione cancellerà:
@@ -446,15 +449,15 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
             <div className="flex gap-3">
               <button
                 onClick={() => setShowResetConfirm(false)}
-                className="flex-1 px-4 py-2 rounded-lg bg-slate-800 text-white hover:bg-slate-700 transition-colors"
+                className="flex-1 h-11 rounded-xl bg-white/[0.06] ring-1 ring-white/10 text-white font-semibold text-sm hover:bg-white/[0.1] transition-colors"
               >
                 Annulla
               </button>
               <button
                 onClick={handleReset}
-                className="flex-1 px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
+                className="flex-1 h-11 rounded-xl bg-red-600 text-white font-semibold text-sm hover:bg-red-500 transition-colors elev-1"
               >
-                Resetta Tutto
+                Resetta tutto
               </button>
             </div>
           </div>
@@ -464,31 +467,33 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-16">
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatCard
-            icon={<Target size={20} />}
-            label="Esercizi Completati"
+        {/* Summary strip — one panel, hairline dividers via gap-px over a tinted
+            background, so the four metrics read as one considered block. */}
+        <div className="mb-8 grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl ring-1 ring-white/[0.07] elev-1 overflow-hidden">
+          <StatItem
+            icon={<Target size={18} />}
+            label="Completati"
             value={stats.totalCompleted}
-            subValue={`Python: ${stats.pythonCompleted} | SQL: ${stats.sqlCompleted}`}
+            subValue={`Python ${stats.pythonCompleted} · SQL ${stats.sqlCompleted}`}
             color="#10b981"
           />
-          <StatCard
-            icon={<Flame size={20} />}
-            label="Streak Attuale"
+          <StatItem
+            icon={<Flame size={18} />}
+            label="Streak"
             value={`${streak} giorni`}
-            subValue="Continua così! 🔥"
+            subValue="Giorni consecutivi di pratica"
             color="#f59e0b"
           />
-          <StatCard
-            icon={<TrendingUp size={20} />}
-            label="Media Tentativi"
+          <StatItem
+            icon={<TrendingUp size={18} />}
+            label="Media tentativi"
             value={stats.averageAttempts || 'N/A'}
             subValue="Per esercizio completato"
             color="#3b82f6"
           />
-          <StatCard
-            icon={<Award size={20} />}
-            label="Topic Migliore"
+          <StatItem
+            icon={<Award size={18} />}
+            label="Topic migliore"
             value={bestTopicName}
             subValue="Più esercizi completati"
             color="#8b5cf6"
@@ -509,7 +514,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
         {/* Topic Details */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Python Topics */}
-          <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
+          <div className="bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-5 md:p-6 elev-1">
             <div className="flex items-center gap-2 mb-4">
               <Code size={18} className="text-emerald-400" />
               <h3 className="text-white font-semibold">Python Topics</h3>
@@ -535,7 +540,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
           </div>
 
           {/* SQL Topics */}
-          <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-5">
+          <div className="bg-white/[0.02] ring-1 ring-white/[0.07] rounded-2xl p-5 md:p-6 elev-1">
             <div className="flex items-center gap-2 mb-4">
               <Database size={18} className="text-blue-400" />
               <h3 className="text-white font-semibold">SQL Topics</h3>
