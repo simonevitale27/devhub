@@ -1582,6 +1582,72 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
     ],
     [Difficulty.Medium]: [
       {
+        titleTemplate: "Operatore not",
+        descTemplate: "Se la lista è vuota stampa 'Vuota', usando not.",
+        starterCode: "lista = []\n",
+        solutionCode: "lista = []\nif not lista:\n    print('Vuota')",
+        expectedOutput: "Vuota",
+        hints: ["Una lista vuota vale False in un test", "not inverte il valore di verità"],
+        explanation: "In un contesto booleano una collezione vuota vale False, quindi not lista è True. È più idiomatico di confrontare la lunghezza con zero.",
+        brokenCode: "lista = []\nif not lista == True:\n    print('Vuota')",
+        debugHint: "Confrontare con True complica inutilmente: basta if not lista."
+      },
+      {
+        titleTemplate: "Condizione a catena",
+        descTemplate: "Verifica se il voto è compreso fra 6 e 8 inclusi.",
+        starterCode: "voto = 7\n",
+        solutionCode: "voto = 7\nif 6 <= voto <= 8:\n    print('Nella fascia')",
+        expectedOutput: "Nella fascia",
+        hints: ["Python permette di concatenare i confronti", "Non serve ripetere la variabile con and"],
+        explanation: "Python consente 6 <= voto <= 8 come un matematico lo scriverebbe, ed equivale a voto >= 6 and voto <= 8 ma valuta la variabile una volta sola.",
+        brokenCode: "voto = 7\nif 6 <= voto and <= 8:\n    print('Nella fascia')",
+        debugHint: "SyntaxError: dopo and serve un'espressione completa, non solo <= 8."
+      },
+      {
+        titleTemplate: "Operatore ternario",
+        descTemplate: "Assegna 'Pari' o 'Dispari' in una sola riga e stampa il risultato.",
+        starterCode: "n = 4\n",
+        solutionCode: "n = 4\nesito = 'Pari' if n % 2 == 0 else 'Dispari'\nprint(esito)",
+        expectedOutput: "Pari",
+        hints: ["La forma è valore_se_vero if condizione else valore_se_falso", "La condizione sta in mezzo"],
+        explanation: "L'espressione condizionale restituisce un valore, quindi si può assegnare direttamente. L'ordine è diverso dall'if classico: prima il risultato positivo, poi la condizione.",
+        brokenCode: "n = 4\nesito = if n % 2 == 0: 'Pari' else: 'Dispari'\nprint(esito)",
+        debugHint: "SyntaxError: l'if a blocchi non si può assegnare, serve la forma a espressione."
+      },
+      {
+        titleTemplate: "Condizione su una stringa",
+        descTemplate: "Se la stringa inizia per 'ciao' stampa 'Saluto'.",
+        starterCode: "testo = 'ciao mondo'\n",
+        solutionCode: "testo = 'ciao mondo'\nif testo.startswith('ciao'):\n    print('Saluto')",
+        expectedOutput: "Saluto",
+        hints: ["startswith restituisce un booleano", "Distingue maiuscole e minuscole"],
+        explanation: "startswith verifica il prefisso e restituisce True o False, quindi si usa direttamente come condizione. Per ignorare le maiuscole si applica prima lower().",
+        brokenCode: "testo = 'ciao mondo'\nif testo[0:4] == 'Ciao':\n    print('Saluto')",
+        debugHint: "Il confronto distingue le maiuscole: 'ciao' non è uguale a 'Ciao'."
+      },
+      {
+        titleTemplate: "Valutazione pigra con and",
+        descTemplate: "Evita la divisione per zero usando l'ordine delle condizioni.",
+        starterCode: "d = 0\n",
+        solutionCode: "d = 0\nif d != 0 and 10 / d > 1:\n    print('Grande')\nelse:\n    print('Salta')",
+        expectedOutput: "Salta",
+        hints: ["and si ferma appena la prima parte è falsa", "L'ordine dei controlli è quello che protegge"],
+        explanation: "Python valuta and da sinistra a destra e si ferma non appena il risultato è deciso: essendo d uguale a zero, la divisione non viene mai eseguita. Invertire i due termini causerebbe un errore.",
+        brokenCode: "d = 0\nif 10 / d > 1 and d != 0:\n    print('Grande')\nelse:\n    print('Salta')",
+        debugHint: "ZeroDivisionError: la divisione viene valutata prima del controllo che dovrebbe proteggerla."
+      },
+      {
+        titleTemplate: "match case",
+        descTemplate: "Usa match per stampare la descrizione del codice 2.",
+        starterCode: "codice = 2\n",
+        solutionCode: "codice = 2\nmatch codice:\n    case 1:\n        print('Uno')\n    case 2:\n        print('Due')\n    case _:\n        print('Altro')",
+        expectedOutput: "Due",
+        hints: ["match confronta il valore con i case in ordine", "Il caso underscore è il default"],
+        explanation: "match confronta il valore con ogni case fino a trovarne uno compatibile; case _ funziona da default. Disponibile da Python 3.10, è più leggibile di una catena lunga di elif.",
+        brokenCode: "codice = 2\nmatch codice:\n    case 1:\n        print('Uno')\n    case 2:\n        print('Due')\n    default:\n        print('Altro')",
+        debugHint: "In Python il caso di default si scrive case _, non default."
+      },
+      {
         titleTemplate: "If-elif-else",
         descTemplate: "Classifica un voto: <6 'Insufficiente', 6-7 'Sufficiente', >7 'Buono'.",
         starterCode: "voto = 7\n",
@@ -2437,8 +2503,8 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
         expectedOutput: "No",
         hints: ["else su while funziona come su for", "Solo se no break"],
         explanation: "While supporta il blocco else.",
-        brokenCode: "while i < 3:\n    ...\nprint('No')",
-        debugHint: "Così stampa 'No' sempre, anche se trovi 5."
+        brokenCode: "i = 0\nwhile i < 3:\n    if i == 5: break\n    i += 1\nprint('No')",
+        debugHint: "Il print è fuori dal ciclo, quindi stampa 'No' comunque. Agganciato a un blocco else del while, stamperebbe solo quando il ciclo finisce senza break."
       },
       {
         titleTemplate: "Cycle Logic",
@@ -5215,6 +5281,72 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
   [PythonTopicId.Collections]: {
     [Difficulty.Easy]: [
       {
+        titleTemplate: "Lunghezza di ogni collezione",
+        descTemplate: "Stampa quanti elementi contiene ciascuna collezione.",
+        starterCode: "lista = [1, 2, 3]\ntupla = (1, 2)\ninsieme = {1, 2, 3, 4}\n",
+        solutionCode: "lista = [1, 2, 3]\ntupla = (1, 2)\ninsieme = {1, 2, 3, 4}\nprint(len(lista))\nprint(len(tupla))\nprint(len(insieme))",
+        expectedOutput: "3\n2\n4",
+        hints: ["len() funziona su tutte le collezioni", "Restituisce un numero, non una lista"],
+        explanation: "len() conta gli elementi di qualunque collezione: lista, tupla, set o dizionario. Sui dizionari conta le chiavi.",
+        brokenCode: "lista = [1, 2, 3]\nprint(lista.len())",
+        debugHint: "len è una funzione incorporata, non un metodo: si scrive len(lista)."
+      },
+      {
+        titleTemplate: "I duplicati nei set",
+        descTemplate: "Crea un set da una lista con doppioni e stampa quanti elementi restano.",
+        starterCode: "numeri = [1, 2, 2, 3, 3, 3]\n",
+        solutionCode: "numeri = [1, 2, 2, 3, 3, 3]\nunici = set(numeri)\nprint(len(unici))",
+        expectedOutput: "3",
+        hints: ["Il set non ammette valori ripetuti", "Convertire una lista in set elimina i doppioni"],
+        explanation: "Un set tiene ogni valore una volta sola: dalla lista di sei elementi restano i tre valori distinti 1, 2 e 3.",
+        brokenCode: "numeri = [1, 2, 2, 3, 3, 3]\nprint(len(numeri))",
+        debugHint: "Così conti la lista originale con i doppioni: prima convertila in set."
+      },
+      {
+        titleTemplate: "Collezione ordinata o no",
+        descTemplate: "Stampa il primo elemento di una lista e di una tupla, che mantengono l'ordine.",
+        starterCode: "lista = ['a', 'b', 'c']\ntupla = ('x', 'y')\n",
+        solutionCode: "lista = ['a', 'b', 'c']\ntupla = ('x', 'y')\nprint(lista[0])\nprint(tupla[0])",
+        expectedOutput: "a\nx",
+        hints: ["Liste e tuple sono indicizzate", "L'indice parte da zero"],
+        explanation: "Liste e tuple conservano l'ordine di inserimento, quindi si possono indicizzare. I set no: non hanno un ordine garantito e non accettano lista[0].",
+        brokenCode: "insieme = {'a', 'b', 'c'}\nprint(insieme[0])",
+        debugHint: "TypeError: i set non sono indicizzabili perché non hanno un ordine."
+      },
+      {
+        titleTemplate: "Appartenenza con in",
+        descTemplate: "Verifica se il valore 3 è presente nella lista e stampa il risultato.",
+        starterCode: "numeri = [1, 2, 3, 4]\n",
+        solutionCode: "numeri = [1, 2, 3, 4]\nprint(3 in numeri)",
+        expectedOutput: "True",
+        hints: ["L'operatore in verifica l'appartenenza", "Restituisce True o False"],
+        explanation: "L'operatore in funziona su tutte le collezioni e restituisce un booleano. Su set e dizionari è molto più veloce che su una lista, perché non deve scorrere gli elementi.",
+        brokenCode: "numeri = [1, 2, 3, 4]\nprint(numeri.contains(3))",
+        debugHint: "Le liste non hanno un metodo contains: si usa l'operatore in."
+      },
+      {
+        titleTemplate: "Chiavi di un dizionario",
+        descTemplate: "Stampa l'elenco delle chiavi del dizionario come lista.",
+        starterCode: "prezzi = {'mela': 2, 'pera': 3}\n",
+        solutionCode: "prezzi = {'mela': 2, 'pera': 3}\nprint(list(prezzi.keys()))",
+        expectedOutput: "['mela', 'pera']",
+        hints: ["keys() restituisce una vista, non una lista", "Convertila con list()"],
+        explanation: "keys() restituisce un oggetto vista che riflette il dizionario in tempo reale. Per stamparlo come lista va convertito con list().",
+        brokenCode: "prezzi = {'mela': 2, 'pera': 3}\nprint(prezzi.keys[0])",
+        debugHint: "keys è un metodo, va chiamato: prezzi.keys(). E la vista non è indicizzabile."
+      },
+      {
+        titleTemplate: "Svuotare una collezione",
+        descTemplate: "Svuota la lista con clear() e stampa il risultato.",
+        starterCode: "lista = [1, 2, 3]\n",
+        solutionCode: "lista = [1, 2, 3]\nlista.clear()\nprint(lista)",
+        expectedOutput: "[]",
+        hints: ["clear() svuota sul posto", "Non restituisce nulla, modifica la lista"],
+        explanation: "clear() rimuove tutti gli elementi modificando la lista esistente. Assegnare il risultato a una variabile darebbe None, perché il metodo non restituisce la lista.",
+        brokenCode: "lista = [1, 2, 3]\nlista = lista.clear()\nprint(lista)",
+        debugHint: "clear() restituisce None: assegnandolo perdi la lista e stampi None."
+      },
+      {
         titleTemplate: "Tipi di collezioni",
         descTemplate: "Stampa il tipo di ogni collezione.",
         starterCode: "lista = [1, 2, 3]\ntupla = (1, 2, 3)\nset_example = {1, 2, 3}\ndict_example = {'a': 1}\n",
@@ -5250,6 +5382,72 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
     ],
     [Difficulty.Medium]: [
       {
+        titleTemplate: "Da dizionario a lista di coppie",
+        descTemplate: "Stampa le coppie chiave-valore del dizionario come lista di tuple.",
+        starterCode: "prezzi = {'mela': 2, 'pera': 3}\n",
+        solutionCode: "prezzi = {'mela': 2, 'pera': 3}\nprint(list(prezzi.items()))",
+        expectedOutput: "[('mela', 2), ('pera', 3)]",
+        hints: ["items() dà chiave e valore insieme", "Ogni coppia è una tupla"],
+        explanation: "items() restituisce una vista di tuple (chiave, valore). È la forma che si usa per iterare su un dizionario quando servono entrambi.",
+        brokenCode: "prezzi = {'mela': 2, 'pera': 3}\nprint(list(prezzi.values(), prezzi.keys()))",
+        debugHint: "Non serve combinare values e keys a mano: items() fa già questo."
+      },
+      {
+        titleTemplate: "Copia superficiale",
+        descTemplate: "Copia la lista con copy(), modifica la copia e stampa l'originale.",
+        starterCode: "originale = [1, 2, 3]\n",
+        solutionCode: "originale = [1, 2, 3]\ncopia = originale.copy()\ncopia.append(4)\nprint(originale)",
+        expectedOutput: "[1, 2, 3]",
+        hints: ["copy() crea una nuova lista", "Con l'assegnazione semplice le due variabili puntano allo stesso oggetto"],
+        explanation: "copy() crea una lista nuova, quindi modificare la copia lascia intatto l'originale. Scrivere copia = originale creerebbe solo un secondo nome per la stessa lista.",
+        brokenCode: "originale = [1, 2, 3]\ncopia = originale\ncopia.append(4)\nprint(originale)",
+        debugHint: "Senza copy() le due variabili sono la stessa lista, quindi anche l'originale cambia."
+      },
+      {
+        titleTemplate: "Set: differenza",
+        descTemplate: "Stampa ordinati gli elementi presenti in a ma non in b.",
+        starterCode: "a = {1, 2, 3, 4}\nb = {3, 4, 5}\n",
+        solutionCode: "a = {1, 2, 3, 4}\nb = {3, 4, 5}\nprint(sorted(a - b))",
+        expectedOutput: "[1, 2]",
+        hints: ["L'operatore meno fa la differenza fra set", "sorted() rende l'output stabile"],
+        explanation: "a - b tiene gli elementi di a assenti da b. sorted() serve perché i set non hanno un ordine garantito e senza di esso la stampa non sarebbe riproducibile.",
+        brokenCode: "a = {1, 2, 3, 4}\nb = {3, 4, 5}\nprint(sorted(b - a))",
+        debugHint: "b - a dà quel che c'è in b e non in a: la differenza non è commutativa."
+      },
+      {
+        titleTemplate: "Contare con un dizionario",
+        descTemplate: "Conta le occorrenze di ogni lettera e stampa il dizionario.",
+        starterCode: "lettere = ['a', 'b', 'a']\n",
+        solutionCode: "lettere = ['a', 'b', 'a']\nconteggio = {}\nfor l in lettere:\n    conteggio[l] = conteggio.get(l, 0) + 1\nprint(conteggio)",
+        expectedOutput: "{'a': 2, 'b': 1}",
+        hints: ["get(chiave, default) evita il KeyError", "Il default serve alla prima occorrenza"],
+        explanation: "get restituisce il valore della chiave oppure il default se manca, quindi la prima volta parte da zero e non serve inizializzare le chiavi in anticipo.",
+        brokenCode: "lettere = ['a', 'b', 'a']\nconteggio = {}\nfor l in lettere:\n    conteggio[l] += 1\nprint(conteggio)",
+        debugHint: "KeyError: la chiave non esiste ancora la prima volta. Usa get con un default."
+      },
+      {
+        titleTemplate: "Annidare le collezioni",
+        descTemplate: "Stampa il secondo voto dello studente 'Anna'.",
+        starterCode: "voti = {'Anna': [8, 9], 'Luca': [6]}\n",
+        solutionCode: "voti = {'Anna': [8, 9], 'Luca': [6]}\nprint(voti['Anna'][1])",
+        expectedOutput: "9",
+        hints: ["Prima accedi alla chiave, poi all'indice", "Le due parentesi si leggono da sinistra a destra"],
+        explanation: "voti['Anna'] restituisce la lista [8, 9], e su quella si applica l'indice 1 per il secondo elemento. Le collezioni si annidano liberamente.",
+        brokenCode: "voti = {'Anna': [8, 9], 'Luca': [6]}\nprint(voti[1]['Anna'])",
+        debugHint: "L'ordine è invertito: la chiave del dizionario viene prima dell'indice della lista."
+      },
+      {
+        titleTemplate: "Comprensione di lista filtrata",
+        descTemplate: "Costruisci con una comprensione la lista dei soli numeri pari.",
+        starterCode: "numeri = [1, 2, 3, 4, 5, 6]\n",
+        solutionCode: "numeri = [1, 2, 3, 4, 5, 6]\npari = [n for n in numeri if n % 2 == 0]\nprint(pari)",
+        expectedOutput: "[2, 4, 6]",
+        hints: ["La sintassi è [espressione for elemento in iterabile if condizione]", "L'if va in fondo"],
+        explanation: "La comprensione costruisce la lista in un'unica espressione: scorre i numeri e tiene solo quelli che soddisfano la condizione. Equivale a un ciclo con append, ma più compatta.",
+        brokenCode: "numeri = [1, 2, 3, 4, 5, 6]\npari = [n if n % 2 == 0 for n in numeri]\nprint(pari)",
+        debugHint: "SyntaxError: per filtrare, l'if va dopo il for, non prima."
+      },
+      {
         titleTemplate: "Quando usare cosa",
         descTemplate: "Crea un esempio dove un set è migliore di una lista.",
         starterCode: "lista_duplicati = [1, 2, 2, 3, 3, 3, 4]\n",
@@ -5284,6 +5482,72 @@ const PYTHON_QUESTION_DATABASE: Record<string, Record<string, PythonExerciseBlue
       }
     ],
     [Difficulty.Hard]: [
+      {
+        titleTemplate: "NamedTuple",
+        descTemplate: "Crea una namedtuple Punto con x e y e stampa la coordinata x.",
+        starterCode: "from collections import namedtuple\n",
+        solutionCode: "from collections import namedtuple\nPunto = namedtuple('Punto', ['x', 'y'])\np = Punto(3, 5)\nprint(p.x)",
+        expectedOutput: "3",
+        hints: ["namedtuple(nome, elenco_campi) crea una classe", "Poi si accede ai campi per nome"],
+        explanation: "namedtuple crea una tupla i cui elementi hanno anche un nome, quindi p.x è più leggibile di p[0] pur restando immutabile e leggera come una tupla.",
+        brokenCode: "from collections import namedtuple\nPunto = namedtuple('Punto', ['x', 'y'])\np = Punto(3, 5)\np.x = 10\nprint(p.x)",
+        debugHint: "Una namedtuple resta immutabile: non si possono riassegnare i campi."
+      },
+      {
+        titleTemplate: "OrderedDict e confronto",
+        descTemplate: "Verifica se due OrderedDict con ordine diverso sono uguali.",
+        starterCode: "from collections import OrderedDict\n",
+        solutionCode: "from collections import OrderedDict\na = OrderedDict([('x', 1), ('y', 2)])\nb = OrderedDict([('y', 2), ('x', 1)])\nprint(a == b)",
+        expectedOutput: "False",
+        hints: ["OrderedDict considera anche l'ordine nel confronto", "Un dict normale invece no"],
+        explanation: "Due OrderedDict con le stesse coppie ma ordine diverso non sono uguali, perché il confronto tiene conto della sequenza. Con dict normali lo stesso confronto darebbe True.",
+        brokenCode: "from collections import OrderedDict\na = OrderedDict([('x', 1), ('y', 2)])\nb = OrderedDict([('y', 2), ('x', 1)])\nprint(a is b)",
+        debugHint: "is confronta l'identità degli oggetti, non il contenuto: sarà sempre False."
+      },
+      {
+        titleTemplate: "Counter: i più comuni",
+        descTemplate: "Stampa la coppia più frequente usando most_common.",
+        starterCode: "from collections import Counter\nvoti = ['a', 'b', 'a', 'c', 'a', 'b']\n",
+        solutionCode: "from collections import Counter\nvoti = ['a', 'b', 'a', 'c', 'a', 'b']\nc = Counter(voti)\nprint(c.most_common(1))",
+        expectedOutput: "[('a', 3)]",
+        hints: ["most_common(n) dà le n coppie più frequenti", "Restituisce una lista di tuple"],
+        explanation: "most_common ordina per conteggio decrescente e restituisce una lista di tuple (valore, occorrenze). Con l'argomento 1 si ottiene solo la più frequente, comunque dentro una lista.",
+        brokenCode: "from collections import Counter\nvoti = ['a', 'b', 'a', 'c', 'a', 'b']\nc = Counter(voti)\nprint(c.most_common(1)[0][0], c.most_common()[0])",
+        debugHint: "Attento a quanti livelli di indice usi: most_common(1) è già una lista di una tupla."
+      },
+      {
+        titleTemplate: "ChainMap",
+        descTemplate: "Unisci due dizionari con ChainMap e stampa il valore che vince.",
+        starterCode: "from collections import ChainMap\nutente = {'tema': 'scuro'}\ndefault = {'tema': 'chiaro', 'lingua': 'it'}\n",
+        solutionCode: "from collections import ChainMap\nutente = {'tema': 'scuro'}\ndefault = {'tema': 'chiaro', 'lingua': 'it'}\nconfig = ChainMap(utente, default)\nprint(config['tema'])",
+        expectedOutput: "scuro",
+        hints: ["ChainMap cerca nell'ordine in cui passi i dizionari", "Il primo che contiene la chiave vince"],
+        explanation: "ChainMap concatena più dizionari senza copiarli: la ricerca procede in ordine e si ferma al primo che ha la chiave. È il pattern classico per sovrascrivere dei default con le preferenze utente.",
+        brokenCode: "from collections import ChainMap\nutente = {'tema': 'scuro'}\ndefault = {'tema': 'chiaro', 'lingua': 'it'}\nconfig = ChainMap(default, utente)\nprint(config['tema'])",
+        debugHint: "L'ordine è invertito: così vincono i default e le preferenze utente vengono ignorate."
+      },
+      {
+        titleTemplate: "Deque con lunghezza massima",
+        descTemplate: "Crea un deque che tiene solo gli ultimi 3 elementi inseriti.",
+        starterCode: "from collections import deque\n",
+        solutionCode: "from collections import deque\nd = deque(maxlen=3)\nfor n in [1, 2, 3, 4]:\n    d.append(n)\nprint(list(d))",
+        expectedOutput: "[2, 3, 4]",
+        hints: ["maxlen limita la dimensione", "Quando è pieno, aggiungere in coda scarta dalla testa"],
+        explanation: "Con maxlen il deque si comporta come una finestra scorrevole: inserendo il quarto elemento il primo esce automaticamente. Utile per tenere gli ultimi N eventi senza gestire la potatura a mano.",
+        brokenCode: "from collections import deque\nd = deque([], 3)\nfor n in [1, 2, 3, 4]:\n    d.appendleft(n)\nprint(list(d))",
+        debugHint: "Con appendleft la finestra scorre dall'altro lato e l'ordine risulta invertito."
+      },
+      {
+        titleTemplate: "Dizionario ordinato per valore",
+        descTemplate: "Stampa le coppie ordinate per valore decrescente.",
+        starterCode: "punteggi = {'a': 2, 'b': 5, 'c': 3}\n",
+        solutionCode: "punteggi = {'a': 2, 'b': 5, 'c': 3}\nordinati = sorted(punteggi.items(), key=lambda x: x[1], reverse=True)\nprint(ordinati)",
+        expectedOutput: "[('b', 5), ('c', 3), ('a', 2)]",
+        hints: ["sorted lavora sulle coppie di items()", "key sceglie su cosa ordinare"],
+        explanation: "items() dà le coppie, key=lambda x: x[1] dice di ordinare sul valore invece che sulla chiave, e reverse=True inverte l'ordine. Il risultato è una lista di tuple, non un dizionario.",
+        brokenCode: "punteggi = {'a': 2, 'b': 5, 'c': 3}\nordinati = sorted(punteggi, key=lambda x: x[1], reverse=True)\nprint(ordinati)",
+        debugHint: "Iterando il dizionario ottieni le chiavi, quindi x[1] prende la seconda lettera della chiave."
+      },
       {
         titleTemplate: "Counter",
         descTemplate: "Usa Counter per contare occorrenze.",
