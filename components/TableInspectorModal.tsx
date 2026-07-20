@@ -79,7 +79,8 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
           <button
             onClick={onClose}
             className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-            aria-label="Chiudi"
+            title="Chiudi"
+              aria-label="Chiudi"
           >
             <X size={20} />
           </button>
@@ -103,7 +104,8 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
               <button
                 onClick={() => setSearchTerm('')}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
-                aria-label="Cancella ricerca"
+                title="Cancella ricerca"
+              aria-label="Cancella ricerca"
               >
                 <X size={16} />
               </button>
@@ -118,7 +120,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
               Righe {startIndex + 1}-{endIndex} di {filteredRows.toLocaleString()}
             </div>
             <div className="flex items-center gap-2">
-              <button
+              <button title="Pagina precedente" aria-label="Pagina precedente"
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
                 className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -128,7 +130,7 @@ const TableInspectorModal: React.FC<TableInspectorModalProps> = ({
               <span className="px-3 text-xs text-slate-300">
                 {currentPage} / {totalPages}
               </span>
-              <button
+              <button title="Pagina successiva" aria-label="Pagina successiva"
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
                 className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"

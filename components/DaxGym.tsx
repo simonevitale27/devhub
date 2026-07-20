@@ -290,19 +290,19 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
 
             {/* Action row: one primary (Verifica) + neutral utilities */}
             <div className="flex items-center gap-2 flex-wrap">
-              <button
+              <button title="Controlla la tua risposta"
                 onClick={check}
                 className="h-10 px-5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg bg-yellow-500 text-black hover:bg-yellow-400 shadow-yellow-500/20"
               >
                 <Play size={14} fill="currentColor" /> Verifica
               </button>
-              <button
+              <button title="Un indizio per volta, senza svelare la soluzione"
                 onClick={() => setShowHint((v) => !v)}
                 className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showHint ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/20' : 'bg-[#101219]/85 text-slate-300 hover:bg-white/5'}`}
               >
                 <Lightbulb size={14} className={showHint ? 'fill-amber-300' : ''} /> Suggerimento
               </button>
-              <button
+              <button title="Mostra la misura corretta e la spiegazione"
                 onClick={() => setShowSolution((v) => !v)}
                 className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showSolution ? 'bg-purple-500/20 text-purple-300 ring-1 ring-purple-500/20' : 'bg-[#101219]/85 text-slate-300 hover:bg-white/5'}`}
               >

@@ -689,7 +689,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
           </div>
 
           <div className="p-4 space-y-2">
-            <button
+            <button title="Sfoglia le tabelle del database"
               onClick={() => setShowDbPanel(!showDbPanel)}
               className="w-full flex items-center justify-between px-4 py-2 bg-[#101219]/85 backdrop-blur-xl hover:bg-white/5 rounded-xl text-sm text-slate-300 hover:text-white transition-all active:scale-95 shadow-md shadow-black/20"
             >
@@ -787,7 +787,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                     : "left-[calc(50%+0px)] translate-x-0 bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/20"
                 }`}
               ></div>
-              <button
+              <button title="Gym: scrivi la query da zero"
                 onClick={() => setPracticeMode(PracticeMode.Solve)}
                 className={`relative z-10 flex-1 h-8 text-[11px] font-black tracking-wider px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase ${
                   isGymMode
@@ -797,7 +797,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               >
                 <Dumbbell size={14} strokeWidth={2.5} /> GYM
               </button>
-              <button
+              <button title="Debug: trova e correggi la query rotta"
                 onClick={() => setPracticeMode(PracticeMode.Type)}
                 className={`relative z-10 flex-1 h-8 text-[11px] font-black tracking-wider px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase ${
                   !isGymMode
@@ -964,7 +964,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                     {/* Control Bar - Grouped Buttons */}
                     <div className="flex items-center gap-2">
                        {/* Hint Button */}
-                       <button
+                       <button title="Un indizio per volta, senza svelare la soluzione"
                         onClick={() => setShowHint(!showHint)}
                         className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showHint
@@ -980,7 +980,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       </button>
 
                       {/* Solution Button */}
-                      <button
+                      <button title="Mostra la query corretta e la spiegazione"
                         onClick={() => setShowSolution(!showSolution)}
                         className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showSolution
@@ -1155,7 +1155,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                   <div className="flex items-center justify-between p-3 bg-[#101219]/85 backdrop-blur-xl rounded-2xl relative z-20 shadow-lg shadow-black/20">
                     <div className="flex items-center gap-2">
                       {/* Hint Button */}
-                      <button
+                      <button title="Un indizio per volta, senza svelare la soluzione"
                         onClick={() => setShowHint(!showHint)}
                         className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showHint
@@ -1171,7 +1171,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       </button>
 
                       {/* Solution Button */}
-                      <button
+                      <button title="Mostra la query corretta e la spiegazione"
                         onClick={() => setShowSolution(!showSolution)}
                         className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showSolution
@@ -1480,7 +1480,8 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               <button
                 onClick={() => setShowStatsModal(false)}
                 className="p-2 text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                aria-label="Chiudi"
+                title="Chiudi"
+              aria-label="Chiudi"
               >
                 <X size={20} />
               </button>

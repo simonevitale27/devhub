@@ -55,7 +55,8 @@ const AiExplainButton: React.FC<AiExplainButtonProps> = ({
           <button
             onClick={() => setOpen(false)}
             className="absolute top-2 right-2 p-1 text-violet-300/70 hover:text-white rounded"
-            aria-label="Chiudi"
+            title="Chiudi"
+              aria-label="Chiudi"
           >
             <X size={14} />
           </button>

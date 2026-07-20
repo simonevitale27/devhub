@@ -399,6 +399,7 @@ export default function AnalyticsDashboard({ onBack, onNavigate }: AnalyticsDash
             <button
               onClick={onBack}
               className="h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
+              title="Torna alla home"
               aria-label="Torna alla home"
             >
               <ArrowLeft size={18} />

@@ -687,7 +687,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
                                 </span>
                             </div>
                             {/* Edit Icon */}
-                            <button
+                            <button title="Rinomina questa etichetta" aria-label="Rinomina questa etichetta"
                                 className="p-0.5 text-slate-500 hover:text-white hover:bg-white/10 rounded transition-colors opacity-0 group-hover:opacity-100"
                                 onClick={(e) => {
                                     e.preventDefault();
@@ -809,7 +809,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
                                 </div>
 
                                 {/* Edit Button */}
-                                <button 
+                                <button title="Rinomina questo valore" aria-label="Rinomina questo valore" 
                                     className="p-1 text-slate-500 hover:text-white hover:bg-white/10 rounded transition-colors opacity-0 group-hover/item:opacity-100"
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -894,7 +894,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
               )}
             </div>
 
-            <button
+            <button title="Chiudi" aria-label="Chiudi"
               onClick={onClose}
               className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
             >
@@ -1031,7 +1031,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Opzioni Torta</label>
                   <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
                       <span className="text-sm text-slate-300">Mostra Etichette</span>
-                      <button 
+                      <button title="Mostra le etichette sulle fette" aria-label="Mostra le etichette sulle fette" 
                           onClick={() => setShowPieLabels(!showPieLabels)}
                           className={`w-10 h-5 rounded-full relative transition-colors ${showPieLabels ? 'bg-blue-500' : 'bg-slate-700'}`}
                       >
@@ -1059,7 +1059,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
                   <label className="text-[10px] text-slate-500 block mb-1">Posizione</label>
                   <div className="flex gap-1">
                     {/* Word-style alignment icons */}
-                    <button
+                    <button title="Allinea il titolo a sinistra" aria-label="Allinea il titolo a sinistra"
                       onClick={() => setTitleAlign('left')}
                       className={`flex-1 py-2 rounded border transition-colors flex items-center justify-center ${titleAlign === 'left' ? 'bg-blue-500 border-blue-500' : 'border-white/10 hover:bg-white/5'}`}
                     >
@@ -1069,7 +1069,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
                         <rect x="0" y="8" width="12" height="2" rx="1" fill={titleAlign === 'left' ? 'white' : '#64748b'}/>
                       </svg>
                     </button>
-                    <button
+                    <button title="Allinea il titolo al centro" aria-label="Allinea il titolo al centro"
                       onClick={() => setTitleAlign('center')}
                       className={`flex-1 py-2 rounded border transition-colors flex items-center justify-center ${titleAlign === 'center' ? 'bg-blue-500 border-blue-500' : 'border-white/10 hover:bg-white/5'}`}
                     >
@@ -1079,7 +1079,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
                         <rect x="1" y="8" width="12" height="2" rx="1" fill={titleAlign === 'center' ? 'white' : '#64748b'}/>
                       </svg>
                     </button>
-                    <button
+                    <button title="Allinea il titolo a destra" aria-label="Allinea il titolo a destra"
                       onClick={() => setTitleAlign('right')}
                       className={`flex-1 py-2 rounded border transition-colors flex items-center justify-center ${titleAlign === 'right' ? 'bg-blue-500 border-blue-500' : 'border-white/10 hover:bg-white/5'}`}
                     >
@@ -1132,7 +1132,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
               {/* Data Table Toggle */}
               <div className="flex items-center justify-between bg-white/5 p-2.5 rounded-lg border border-white/5">
                 <span className="text-xs text-slate-300">Mostra Tabella Dati</span>
-                <button 
+                <button title="Mostra la tabella dei dati sotto il grafico" aria-label="Mostra la tabella dei dati sotto il grafico" 
                   onClick={() => setShowDataTable(!showDataTable)}
                   className={`w-9 h-5 rounded-full relative transition-colors ${showDataTable ? 'bg-blue-500' : 'bg-slate-700'}`}
                 >
@@ -1144,7 +1144,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
               {(chartType === 'line' || chartType === 'area') && (
                 <div className="flex items-center justify-between bg-white/5 p-2.5 rounded-lg border border-white/5">
                   <span className="text-xs text-slate-300">Linea di Tendenza</span>
-                  <button 
+                  <button title="Mostra la linea di tendenza" aria-label="Mostra la linea di tendenza" 
                     onClick={() => setShowTrendline(!showTrendline)}
                     className={`w-9 h-5 rounded-full relative transition-colors ${showTrendline ? 'bg-blue-500' : 'bg-slate-700'}`}
                   >
@@ -1157,7 +1157,7 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
               {chartType !== 'pie' && (
                 <div className="flex items-center justify-between bg-white/5 p-2.5 rounded-lg border border-white/5">
                   <span className="text-xs text-slate-300">Mostra Media</span>
-                  <button 
+                  <button title="Mostra la linea della media" aria-label="Mostra la linea della media" 
                     onClick={() => setShowMeanLine(!showMeanLine)}
                     className={`w-9 h-5 rounded-full relative transition-colors ${showMeanLine ? 'bg-blue-500' : 'bg-slate-700'}`}
                   >
@@ -1234,10 +1234,10 @@ const QuickChart: React.FC<QuickChartProps> = ({ data, onClose }) => {
                       className="bg-black/50 border border-white/10 rounded px-2 py-1 text-xs text-white w-40 focus:outline-none focus:border-blue-500 transition-colors"
                       placeholder="Scrivi nota..."
                     />
-                    <button onClick={handleAddAnnotation} className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 text-emerald-400 transition-colors">
+                    <button title="Conferma annotazione" aria-label="Conferma annotazione" onClick={handleAddAnnotation} className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 text-emerald-400 transition-colors">
                         <Check size={14} />
                     </button>
-                    <button onClick={() => setNewAnnotation(null)} className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 text-slate-400 hover:text-red-400 transition-colors">
+                    <button title="Annulla annotazione" aria-label="Annulla annotazione" onClick={() => setNewAnnotation(null)} className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 text-slate-400 hover:text-red-400 transition-colors">
                         <X size={14} />
                     </button>
                   </div>

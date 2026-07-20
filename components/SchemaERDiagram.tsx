@@ -57,7 +57,8 @@ const SchemaERDiagram: React.FC<SchemaERDiagramProps> = ({ schemas, onClose }) =
           <button
             onClick={onClose}
             className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-            aria-label="Chiudi"
+            title="Chiudi"
+              aria-label="Chiudi"
           >
             <X size={24} />
           </button>

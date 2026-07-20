@@ -943,14 +943,15 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                 {/* Header */}
                 <div className="h-14 md:h-16 flex items-center justify-between mt-2 md:mt-4 mb-1 z-10 shrink-0">
                     <div className="flex items-center gap-2 md:gap-4">
-                        <button onClick={onBack} className="h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95">
+                        <button title="Torna alla home" aria-label="Torna alla home" onClick={onBack} className="h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95">
                             <Home size={18} />
                         </button>
                         {/* Mobile Sidebar Toggle */}
                         <button
                             onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
                             className="md:hidden h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
-                            aria-label="Gestione tabelle"
+                            title="Gestione tabelle"
+              aria-label="Gestione tabelle"
                         >
                             <Menu size={18} />
                         </button>
@@ -1263,7 +1264,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         <div className="text-sm font-bold text-red-400 mb-1">Errore</div>
                                         <div className="text-sm text-slate-200">{error}</div>
                                     </div>
-                                    <button
+                                    <button title="Chiudi il messaggio di errore" aria-label="Chiudi il messaggio di errore"
                                         onClick={() => setError(null)}
                                         className="p-1 text-slate-400 hover:text-white rounded transition-colors"
                                     >
@@ -1280,7 +1281,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         <div className="text-sm font-bold text-red-400 mb-1">Errore Python</div>
                                         <pre className="text-sm text-slate-200 whitespace-pre-wrap font-mono">{pythonError}</pre>
                                     </div>
-                                    <button
+                                    <button title="Chiudi il messaggio di errore" aria-label="Chiudi il messaggio di errore"
                                         onClick={() => setPythonError(null)}
                                         className="p-1 text-slate-400 hover:text-white rounded transition-colors"
                                     >
@@ -1670,7 +1671,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                             <>
                                                                 {/* Sorting */}
                                                                 <div className="p-3 border-b border-white/5 flex gap-2">
-                                                                    <button
+                                                                    <button title="Ordina in modo crescente" aria-label="Ordina in modo crescente"
                                                                         onClick={() => handleSort(activeFilterColumn, 'asc')}
                                                                         className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs transition-colors ${
                                                                             sortConfig?.key === activeFilterColumn && sortConfig.direction === 'asc'
@@ -1680,7 +1681,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                                     >
                                                                         <ArrowDownAZ size={14} /> A-Z
                                                                     </button>
-                                                                    <button
+                                                                    <button title="Ordina in modo decrescente" aria-label="Ordina in modo decrescente"
                                                                         onClick={() => handleSort(activeFilterColumn, 'desc')}
                                                                         className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs transition-colors ${
                                                                             sortConfig?.key === activeFilterColumn && sortConfig.direction === 'desc'
@@ -1804,7 +1805,8 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                             <button
                                 onClick={() => setShowStatsModal(false)}
                                 className="p-2 text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                                aria-label="Chiudi"
+                                title="Chiudi"
+              aria-label="Chiudi"
                             >
                                 <X size={20} />
                             </button>

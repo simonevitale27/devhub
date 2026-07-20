@@ -98,7 +98,7 @@ const HealthReportModal: React.FC<HealthReportModalProps> = ({
                                 <p className="text-xs text-slate-400 font-mono">{tableName}</p>
                             </div>
                         </div>
-                        <button
+                        <button title="Chiudi" aria-label="Chiudi"
                             onClick={onClose}
                             className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                         >

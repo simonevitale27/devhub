@@ -233,10 +233,10 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
                         className="flex-1 h-10 bg-white/[0.04] ring-1 ring-white/10 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                         placeholder="Nome utente"
                     />
-                    <button type="submit" disabled={isLoading} className="h-10 w-10 grid place-items-center bg-blue-600 rounded-xl hover:bg-blue-500 disabled:opacity-50 shrink-0">
+                    <button title="Salva username" aria-label="Salva username" type="submit" disabled={isLoading} className="h-10 w-10 grid place-items-center bg-blue-600 rounded-xl hover:bg-blue-500 disabled:opacity-50 shrink-0">
                         <Check size={14} />
                     </button>
-                     <button type="button" onClick={() => setShowNameForm(false)} className="h-10 w-10 grid place-items-center bg-white/[0.06] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.1] shrink-0">
+                     <button title="Annulla" aria-label="Annulla" type="button" onClick={() => setShowNameForm(false)} className="h-10 w-10 grid place-items-center bg-white/[0.06] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.1] shrink-0">
                         <X size={14} />
                     </button>
                 </form>
@@ -339,7 +339,7 @@ export default function AccountPage({ onBack, onNavigate }: AccountPageProps) {
                     {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
                     Salva
                   </button>
-                  <button
+                  <button title="Annulla" aria-label="Annulla"
                     type="button"
                     onClick={() => {
                       setShowPasswordForm(false);

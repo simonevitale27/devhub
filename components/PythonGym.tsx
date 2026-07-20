@@ -888,7 +888,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                     : "left-[calc(50%+0px)] translate-x-0 bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/20"
                 }`}
               ></div>
-              <button
+              <button title="Solve: scrivi il codice da zero"
                 onClick={() => setPracticeMode("solve")}
                 className={`relative z-10 flex-1 h-8 text-[11px] font-black tracking-wider px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase min-w-[100px] ${
                   isGymMode
@@ -898,7 +898,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
               >
                 <Dumbbell size={14} strokeWidth={2.5} /> SOLVE
               </button>
-              <button
+              <button title="Debug: trova e correggi il codice rotto"
                 onClick={() => setPracticeMode("debug")}
                 className={`relative z-10 flex-1 h-8 text-[11px] font-black tracking-wider px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase min-w-[100px] ${
                   !isGymMode
