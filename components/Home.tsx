@@ -49,11 +49,13 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     return (
         <div className="min-h-dvh bg-transparent text-slate-200 font-sans flex flex-col relative overflow-y-auto overflow-x-hidden">
 
-            {/* Signature hexagon, kept but dialled right down so it reads as a watermark */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] overflow-hidden">
-                <Hexagon size={820} className="text-slate-400 animate-spin-slow origin-center" strokeWidth={0.5} />
+            {/* Signature hexagon as a static watermark. The slow spin made a
+                faint edge crawl across the cards, which read as an artifact
+                rather than as decoration, so the rotation is gone. */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.022] overflow-hidden">
+                <Hexagon size={820} className="text-slate-400 origin-center" strokeWidth={0.5} />
             </div>
-            <div className="absolute top-24 left-1/2 -translate-x-1/2 w-[620px] h-[620px] bg-blue-500/[0.07] rounded-full blur-[140px] pointer-events-none"></div>
+            <div className="absolute top-24 left-1/2 -translate-x-1/2 w-[620px] h-[620px] bg-blue-500/[0.04] rounded-full blur-[140px] pointer-events-none"></div>
 
             {/* Navbar */}
             <nav className="h-20 px-5 md:px-12 flex items-center justify-between relative z-20 shrink-0">

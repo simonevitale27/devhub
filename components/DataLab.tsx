@@ -1078,7 +1078,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                         className={`w-32 px-3 py-1 rounded-lg text-xs transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-black/20 active:scale-95 ${
                                             copiedCode
                                                 ? 'bg-emerald-500/20 text-emerald-300'
-                                                : 'bg-[#121212]/70 backdrop-blur-xl hover:bg-white/10 text-slate-300'
+                                                : 'bg-[#101219]/85 backdrop-blur-xl hover:bg-white/10 text-slate-300'
                                         }`}
                                         title={showPythonPanel ? "Copia codice Python" : "Copia query SQL"}
                                     >
@@ -1591,7 +1591,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
                                                 </button>
                                                 <button
                                                     onClick={() => setShowDataProfiling(!showDataProfiling)}
-                                                    className={`px-3 py-1.5 backdrop-blur-xl text-xs rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg shadow-black/20 active:scale-95 ${showDataProfiling ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-[#121212]/70 hover:bg-white/10 text-slate-300 hover:text-blue-300'}`}
+                                                    className={`px-3 py-1.5 backdrop-blur-xl text-xs rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg shadow-black/20 active:scale-95 ${showDataProfiling ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-[#101219]/85 hover:bg-white/10 text-slate-300 hover:text-blue-300'}`}
                                                     title="Analisi profilo dati"
                                                 >
                                                     <BarChart3 size={12} />
@@ -1792,7 +1792,7 @@ const DataLab: React.FC<DataLabProps> = ({ onBack }) => {
             {/* Stats Modal */}
             {showStatsModal && queryResult && queryResult.length > 0 && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-[#121212]/70 backdrop-blur-xl rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col m-4 overflow-hidden">
+                    <div className="bg-[#101219]/85 backdrop-blur-xl rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col m-4 overflow-hidden">
                         <div className="flex items-center justify-between p-6 bg-gradient-to-b from-[#0a0a0a]/80 to-transparent backdrop-blur-sm">
                             <div className="flex items-center gap-2">
                                 <BarChart3 size={18} className="text-purple-400" />

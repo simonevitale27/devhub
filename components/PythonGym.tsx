@@ -57,6 +57,7 @@ import { recordCompletion } from "../services/progressService";
 import AutocompleteDropdown, { AutocompleteItem } from "./AutocompleteDropdown";
 import { PYTHON_KEYWORDS, PYTHON_BUILTINS, PYTHON_SNIPPETS } from "../utils/pythonConstants";
 import UserBadge from "./UserBadge";
+import { ExerciseNav, HomeButton, ShuffleButton, AnalyticsButton } from "./GymControls";
 
 // Indent rainbow colors
 const INDENT_COLORS = [
@@ -759,15 +760,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
         {/* LEFT SIDEBAR - GLASS STYLE */}
         <aside className={`${
           mobileSidebarOpen ? 'fixed inset-y-0 left-0 z-50' : 'hidden'
-        } md:relative md:flex w-64 bg-[#121212]/70 backdrop-blur-xl md:rounded-3xl flex flex-col shrink-0 md:z-20 md:h-[calc(100vh-3.25rem)] md:mt-7 md:ml-6 h-full`}>
-          <div className="h-16 flex items-center px-4 gap-2">
-            <button
-              onClick={onBack}
-              className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
-              aria-label="Torna alla home"
-            >
-              <ArrowLeft size={18} />
-            </button>
+        } md:relative md:flex w-64 bg-[#101219]/85 backdrop-blur-xl md:rounded-3xl flex flex-col shrink-0 md:z-20 md:h-[calc(100vh-3.25rem)] md:mt-7 md:ml-6 h-full`}>
+          <div className="h-16 flex items-center px-5 gap-2">
             <div className="font-bold tracking-[-0.03em] text-lg flex items-center gap-2 select-none">
               <span className="text-white">PYTHON</span>
               <span className={textActive}>LAB</span>
@@ -869,30 +863,34 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
 
         {/* MAIN AREA - HEADER WITH SLIDING PILLS */}
         <main className="flex-1 flex flex-col min-w-0 h-full md:h-[calc(100vh-3.25rem)] md:mt-7 px-3 md:pr-6 md:pl-1">
+          {/* Row 1 is h-16 so the pills line up with "PYTHON LAB" in the
+              sidebar; every control is h-10. See components/GymControls. */}
           <header className="flex flex-col gap-2 mb-2 z-10 shrink-0">
-             {/* ROW 1: Mode + Difficulty pills */}
-             <div className="flex items-center gap-1.5 md:gap-2">
+             {/* ROW 1: Home + Mode + Difficulty pills */}
+             <div className="flex items-center gap-1.5 md:gap-2 md:h-16">
+               <HomeButton onClick={onBack} />
 
                {/* Mobile Sidebar Toggle */}
                <button
                  onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                 title="Menu argomenti"
                  className="md:hidden h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
                  aria-label="Menu argomenti"
                >
                  <Menu size={18} />
                </button>
                {/* SLIDING PILL FOR MODE */}
-               <div className="relative flex bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
+               <div className="relative flex h-10 bg-[#101219]/85 backdrop-blur-xl rounded-xl p-1 shadow-lg shadow-black/20">
               <div
-                className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] rounded-lg shadow-lg transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg shadow-lg transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${
                   isGymMode
-                    ? "left-1.5 bg-gradient-to-b from-blue-500/30 to-blue-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(59,130,246,0.2)_inset] shadow-blue-500/20"
+                    ? "left-1 bg-gradient-to-b from-blue-500/30 to-blue-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(59,130,246,0.2)_inset] shadow-blue-500/20"
                     : "left-[calc(50%+0px)] translate-x-0 bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/20"
                 }`}
               ></div>
               <button
                 onClick={() => setPracticeMode("solve")}
-                className={`relative z-10 flex-1 text-[11px] font-black tracking-wider py-2 px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase min-w-[100px] ${
+                className={`relative z-10 flex-1 h-8 text-[11px] font-black tracking-wider px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase min-w-[100px] ${
                   isGymMode
                     ? "text-white text-shadow-sm"
                     : "text-slate-400 hover:text-slate-200"
@@ -902,7 +900,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
               </button>
               <button
                 onClick={() => setPracticeMode("debug")}
-                className={`relative z-10 flex-1 text-[11px] font-black tracking-wider py-2 px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase min-w-[100px] ${
+                className={`relative z-10 flex-1 h-8 text-[11px] font-black tracking-wider px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase min-w-[100px] ${
                   !isGymMode
                     ? "text-white text-shadow-sm"
                     : "text-slate-400 hover:text-slate-200"
@@ -916,11 +914,11 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-1 hidden md:block"></div>
 
             {/* SLIDING PILL FOR DIFFICULTY */}
-            <div className="relative flex bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
+            <div className="relative flex h-10 bg-[#101219]/85 backdrop-blur-xl rounded-xl p-1 shadow-lg shadow-black/20">
               <div
-                className={`absolute top-1.5 bottom-1.5 rounded-lg shadow-lg transition-all duration-300 ease-out ${
+                className={`absolute top-1 bottom-1 rounded-lg shadow-lg transition-all duration-300 ease-out ${
                   selectedDifficulty === Difficulty.Easy
-                    ? "left-1.5 w-[calc(33.333%-0.5rem)] bg-gradient-to-b from-green-500/30 to-green-600/5 border border-white/15 shadow-[0_0_15px_rgba(34,197,94,0.2)_inset] shadow-green-600/20"
+                    ? "left-1 w-[calc(33.333%-0.375rem)] bg-gradient-to-b from-green-500/30 to-green-600/5 border border-white/15 shadow-[0_0_15px_rgba(34,197,94,0.2)_inset] shadow-green-600/20"
                     : selectedDifficulty === Difficulty.Medium
                     ? "left-[calc(33.333%+0.16rem)] w-[calc(33.333%-0.5rem)] bg-gradient-to-b from-orange-500/30 to-orange-600/5 border border-white/15 shadow-[0_0_15px_rgba(249,115,22,0.2)_inset] shadow-orange-600/20"
                     : "left-[66.666%] w-[calc(33.333%-0.4rem)] bg-gradient-to-b from-red-500/30 to-red-600/5 border border-white/15 shadow-[0_0_15px_rgba(239,68,68,0.2)_inset] shadow-red-600/20"
@@ -930,7 +928,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                 <button
                   key={d}
                   onClick={() => setSelectedDifficulty(d)}
-                  className={`relative z-10 px-4 py-2 text-xs font-bold rounded-lg transition-colors min-w-[70px] ${
+                  title={`Difficoltà ${d}`}
+                  className={`relative z-10 h-8 px-4 text-xs font-bold rounded-lg transition-colors min-w-[70px] ${
                     selectedDifficulty === d
                       ? "text-white"
                       : "text-slate-400 hover:text-slate-200"
@@ -942,26 +941,21 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
             </div>
             </div>
              
-             {/* ROW 2: Shuffle + Analytics + UserBadge */}
+             {/* ROW 2: Counter (left) + tools (right), same as SQL Lab */}
              <div className="flex items-center gap-1.5 md:gap-2">
-               <button
-                 onClick={handleShuffle}
-                 title="Mescola esercizi"
-                 className="h-10 py-2 px-3 text-slate-300 hover:text-white rounded-xl bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] transition-all flex items-center gap-2 group"
-               >
-                 <Shuffle size={16} className="group-active:rotate-180 transition-transform duration-500" />
-                 <span className="text-xs font-bold hidden sm:inline">Mescola</span>
-               </button>
-               {onNavigate && (
-                 <button
-                   onClick={() => onNavigate(Page.Analytics)}
-                   className="h-10 flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
-                 >
-                   <TrendingUp size={16} />
-                   <span className="text-xs font-bold hidden sm:inline">Analytics</span>
-                 </button>
-               )}
-               <UserBadge onNavigate={onNavigate} />
+               <ExerciseNav
+                 index={currentExerciseIndex}
+                 total={exercises.length}
+                 onPrev={handlePrevExercise}
+                 onNext={handleNextExercise}
+                 accentText={textActive}
+               />
+
+               <div className="ml-auto flex items-center gap-2">
+                 <ShuffleButton onClick={handleShuffle} />
+                 {onNavigate && <AnalyticsButton onClick={() => onNavigate(Page.Analytics)} />}
+                 <UserBadge onNavigate={onNavigate} />
+               </div>
              </div>
            </header>
 
@@ -977,25 +971,6 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                     )}
                     {currentExercise.title}
                   </h2>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handlePrevExercise}
-                      disabled={currentExerciseIndex === 0}
-                      className="p-2 rounded-lg bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-                    <span className="text-sm text-slate-400 min-w-[60px] text-center">
-                      {currentExerciseIndex + 1} / {exercises.length}
-                    </span>
-                    <button
-                      onClick={handleNextExercise}
-                      disabled={currentExerciseIndex === exercises.length - 1}
-                      className="p-2 rounded-lg bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                    >
-                      <ChevronRight size={20} />
-                    </button>
-                  </div>
                 </div>
                 <p className="text-slate-300 text-sm">
                   {currentExercise.description}

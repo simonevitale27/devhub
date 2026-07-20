@@ -5,6 +5,7 @@ import {
   TrendingUp, Check, X, BarChart3, Play, Database, Shuffle,
 } from 'lucide-react';
 import UserBadge from './UserBadge';
+import { ExerciseNav, HomeButton, ShuffleButton, AnalyticsButton } from './GymControls';
 import {
   DAX_TOPICS, DAX_EXERCISES, DAX_MODEL_NOTE, DAX_TOPIC_TOTALS, getDaxExercises,
 } from '../services/daxExercises';
@@ -118,7 +119,7 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
   return (
     <div className="h-screen flex bg-transparent text-slate-200 font-sans overflow-hidden">
       {/* Ambient glow */}
-      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-yellow-500/[0.045] rounded-full blur-[130px] pointer-events-none z-0" />
 
       {/* Mobile sidebar overlay */}
       {mobileSidebarOpen && (
@@ -127,9 +128,11 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
 
       {/* SIDEBAR */}
       <aside
-        className={`${mobileSidebarOpen ? 'fixed inset-y-0 left-0 z-50 w-72' : 'hidden'} md:relative md:flex md:w-[270px] flex-col shrink-0 bg-[#0c0c0c] md:bg-transparent border-r border-white/5 h-full`}
+        className={`${mobileSidebarOpen ? 'fixed inset-y-0 left-0 z-50 w-72' : 'hidden'} md:relative md:flex md:w-[270px] flex-col shrink-0 bg-[#0c0c0c] md:bg-transparent border-r border-white/5 h-full md:pt-7`}
       >
-        <div className="px-5 pt-5 pb-3 flex items-center gap-2">
+        {/* h-16 title row, same as the SQL/Python sidebars, so it lines up with
+            the toolbar's first row across all three labs. */}
+        <div className="h-16 flex items-center px-5 gap-2 shrink-0">
           <BarChart3 size={22} className="text-yellow-400" />
           <span className="font-bold tracking-[-0.03em] text-lg text-white">DAX <span className="text-yellow-400">LAB</span></span>
         </div>
@@ -167,17 +170,14 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
       {/* MAIN */}
       <main className="flex-1 flex flex-col min-w-0 px-3 md:px-6 h-full relative z-10">
         {/* Header */}
-        <header className="flex items-center justify-between gap-2 mt-2 md:mt-4 mb-3 shrink-0">
+        <header className="flex flex-col gap-2 mt-2 md:mt-7 mb-3 shrink-0">
+          {/* ROW 1: Home + difficulty, h-16 to line up with "DAX LAB" */}
+          <div className="flex items-center gap-2 md:h-16">
           <div className="flex items-center gap-2">
-            <button
-              onClick={onBack}
-              className="h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
-              aria-label="Torna alla home"
-            >
-              <HomeIcon size={18} />
-            </button>
+            <HomeButton onClick={onBack} />
             <button
               onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+              title="Argomenti"
               className="md:hidden h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
               aria-label="Argomenti"
             >
@@ -185,12 +185,13 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
             </button>
 
             {/* Difficulty selector */}
-            <div className="flex bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
+            <div className="flex h-10 bg-[#101219]/85 backdrop-blur-xl rounded-xl p-1 shadow-lg shadow-black/20">
               {difficulties.map((d) => (
                 <button
                   key={d}
                   onClick={() => { setDifficulty(d); setIndex(0); }}
-                  className={`px-3 md:px-4 py-1.5 text-xs font-bold rounded-lg transition-colors min-w-[64px] ${difficulty === d ? 'bg-yellow-500/20 text-yellow-300 ring-1 ring-yellow-500/30' : 'text-slate-400 hover:text-slate-200'}`}
+                  title={`Difficoltà ${d}`}
+                  className={`h-8 px-3 md:px-4 text-xs font-bold rounded-lg transition-colors min-w-[64px] ${difficulty === d ? 'bg-yellow-500/20 text-yellow-300 ring-1 ring-yellow-500/30' : 'text-slate-400 hover:text-slate-200'}`}
                 >
                   {d}
                 </button>
@@ -198,30 +199,27 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
             </div>
           </div>
 
+          </div>
+
+          {/* ROW 2: Counter (left) + tools (right), same as SQL Lab */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => { setShuffleNonce((n) => n + 1); setIndex(0); }}
-              title="Mescola esercizi"
-              className="h-10 flex items-center gap-2 py-2 px-3 text-slate-300 hover:text-white rounded-xl bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] transition-all group"
-            >
-              <Shuffle size={16} className="group-active:rotate-180 transition-transform duration-500" />
-              <span className="text-xs font-bold hidden sm:inline">Mescola</span>
-            </button>
-            {onNavigate && (
-              <button
-                onClick={() => onNavigate(Page.Analytics)}
-                className="h-10 hidden sm:flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all"
-              >
-                <TrendingUp size={16} />
-                <span className="text-xs font-bold">Analytics</span>
-              </button>
-            )}
-            <UserBadge onNavigate={onNavigate} />
+            <ExerciseNav
+              index={index}
+              total={exercises.length}
+              onPrev={() => go(-1)}
+              onNext={() => go(1)}
+              accentText="text-yellow-300"
+            />
+            <div className="ml-auto flex items-center gap-2">
+              <ShuffleButton onClick={() => { setShuffleNonce((n) => n + 1); setIndex(0); }} />
+              {onNavigate && <AnalyticsButton onClick={() => onNavigate(Page.Analytics)} />}
+              <UserBadge onNavigate={onNavigate} />
+            </div>
           </div>
         </header>
 
         {/* Model note */}
-        <div className="flex items-start gap-2 text-[11px] text-slate-400 bg-[#121212]/50 backdrop-blur-xl rounded-xl px-4 py-2.5 mb-3 shrink-0">
+        <div className="flex items-start gap-2 text-[11px] text-slate-400 bg-[#101219]/75 backdrop-blur-xl rounded-xl px-4 py-2.5 mb-3 shrink-0">
           <Database size={14} className="text-yellow-400/70 shrink-0 mt-0.5" />
           <span className="leading-relaxed">{DAX_MODEL_NOTE}</span>
         </div>
@@ -232,29 +230,8 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
           </div>
         ) : (
           <div className="flex-1 flex flex-col overflow-y-auto pb-6 gap-3">
-            {/* Counter row */}
+            {/* Status chips (navigation lives in the header toolbar) */}
             <div className="flex items-center gap-2 shrink-0">
-              <div className="flex items-center bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
-                <button
-                  onClick={() => go(-1)}
-                  disabled={index === 0}
-                  className="flex items-center justify-center min-w-[40px] min-h-[40px] text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-white/5 transition-colors"
-                  aria-label="Precedente"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <div className="px-3 min-w-[4rem] text-center font-mono text-xs font-bold text-slate-300">
-                  <span className="text-yellow-300">{index + 1}</span> <span className="text-slate-500">/</span> {exercises.length}
-                </div>
-                <button
-                  onClick={() => go(1)}
-                  disabled={index === exercises.length - 1}
-                  className="flex items-center justify-center min-w-[40px] min-h-[40px] text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-white/5 transition-colors"
-                  aria-label="Successivo"
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
               {completed.has(exercise.id) && (
                 <span className="flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 rounded-lg px-2.5 py-1.5 ring-1 ring-emerald-500/20">
                   <Check size={14} /> Fatto
@@ -266,7 +243,7 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
             </div>
 
             {/* Exercise card */}
-            <div className="bg-[#121212]/70 backdrop-blur-xl rounded-2xl px-6 py-5 shrink-0">
+            <div className="bg-[#101219]/85 backdrop-blur-xl rounded-2xl px-6 py-5 shrink-0">
               <h2 className="font-outfit text-xl md:text-2xl text-white font-bold tracking-tight mb-2 leading-tight">{exercise.title}</h2>
               <p className="text-slate-200 text-sm leading-relaxed">{exercise.scenario}</p>
             </div>
@@ -278,7 +255,7 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
                   const isChosen = choice === i;
                   const isRight = i === exercise.correctIndex;
                   const showState = result !== 'idle';
-                  let cls = 'bg-[#121212]/70 hover:bg-white/5 ring-1 ring-white/5 text-slate-200';
+                  let cls = 'bg-[#101219]/85 hover:bg-white/5 ring-1 ring-white/5 text-slate-200';
                   if (showState && isRight) cls = 'bg-emerald-500/15 ring-1 ring-emerald-500/40 text-emerald-200';
                   else if (showState && isChosen && !isRight) cls = 'bg-red-500/15 ring-1 ring-red-500/40 text-red-200';
                   else if (isChosen) cls = 'bg-yellow-500/15 ring-1 ring-yellow-500/40 text-yellow-100';
@@ -321,13 +298,13 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
               </button>
               <button
                 onClick={() => setShowHint((v) => !v)}
-                className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showHint ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/20' : 'bg-[#121212]/70 text-slate-300 hover:bg-white/5'}`}
+                className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showHint ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/20' : 'bg-[#101219]/85 text-slate-300 hover:bg-white/5'}`}
               >
                 <Lightbulb size={14} className={showHint ? 'fill-amber-300' : ''} /> Suggerimento
               </button>
               <button
                 onClick={() => setShowSolution((v) => !v)}
-                className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showSolution ? 'bg-purple-500/20 text-purple-300 ring-1 ring-purple-500/20' : 'bg-[#121212]/70 text-slate-300 hover:bg-white/5'}`}
+                className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showSolution ? 'bg-purple-500/20 text-purple-300 ring-1 ring-purple-500/20' : 'bg-[#101219]/85 text-slate-300 hover:bg-white/5'}`}
               >
                 {showSolution ? <Unlock size={14} /> : <Lock size={14} />} Soluzione
               </button>

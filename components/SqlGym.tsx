@@ -66,6 +66,7 @@ import ResultDiff from "./ResultDiff";
 import ErrorBoundary from "./ErrorBoundary";
 import TableInspectorModal from "./TableInspectorModal";
 import UserBadge from "./UserBadge";
+import { ExerciseNav, HomeButton, ShuffleButton, AnalyticsButton } from "./GymControls";
 import AiExplainButton from "./AiExplainButton";
 
 // Heavy, rarely-used modals: kept out of the initial gym bundle. QuickChart pulls
@@ -589,15 +590,8 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
       {isGymMode && (
         <aside className={`${
           mobileSidebarOpen ? 'fixed inset-y-0 left-0 z-50' : 'hidden'
-        } md:relative md:flex w-64 bg-[#121212]/70 backdrop-blur-xl md:rounded-3xl flex flex-col shrink-0 md:z-20 md:h-[calc(100vh-3.25rem)] md:mt-7 md:ml-6 h-full`}>
-          <div className="h-16 flex items-center px-4 gap-2">
-            <button
-              onClick={onBack}
-              className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
-              aria-label="Torna alla home"
-            >
-              <HomeIcon size={18} />
-            </button>
+        } md:relative md:flex w-64 bg-[#101219]/85 backdrop-blur-xl md:rounded-3xl flex flex-col shrink-0 md:z-20 md:h-[calc(100vh-3.25rem)] md:mt-7 md:ml-6 h-full`}>
+          <div className="h-16 flex items-center px-5 gap-2">
             <div className="font-bold tracking-[-0.03em] text-lg flex items-center gap-2 select-none">
               <span className="text-white">SQL</span>
               <span className={textActive}>LAB</span>
@@ -697,7 +691,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
           <div className="p-4 space-y-2">
             <button
               onClick={() => setShowDbPanel(!showDbPanel)}
-              className="w-full flex items-center justify-between px-4 py-2 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/5 rounded-xl text-sm text-slate-300 hover:text-white transition-all active:scale-95 shadow-md shadow-black/20"
+              className="w-full flex items-center justify-between px-4 py-2 bg-[#101219]/85 backdrop-blur-xl hover:bg-white/5 rounded-xl text-sm text-slate-300 hover:text-white transition-all active:scale-95 shadow-md shadow-black/20"
             >
               <span className="flex items-center gap-2">
                 <Database size={16} /> Database
@@ -711,7 +705,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
             </button>
             <button
               onClick={() => setShowERDiagram(true)}
-              className="w-full flex items-center justify-between px-4 py-2 bg-[#121212]/70 backdrop-blur-xl hover:bg-white/5 rounded-xl text-sm text-slate-300 hover:text-white transition-all active:scale-95 shadow-md shadow-black/20"
+              className="w-full flex items-center justify-between px-4 py-2 bg-[#101219]/85 backdrop-blur-xl hover:bg-white/5 rounded-xl text-sm text-slate-300 hover:text-white transition-all active:scale-95 shadow-md shadow-black/20"
             >
               <span className="flex items-center gap-2">
                 <GitBranch size={16} /> Mostra Schema DB
@@ -726,7 +720,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
 
       {/* DB PANEL */}
       {isGymMode && showDbPanel && (
-        <div className="hidden md:flex w-80 bg-[#121212]/70 backdrop-blur-xl rounded-2xl shrink-0 flex-col z-30 h-[calc(100vh-3.25rem)] mt-7 mb-3 animate-in slide-in-from-left duration-200">
+        <div className="hidden md:flex w-80 bg-[#101219]/85 backdrop-blur-xl rounded-2xl shrink-0 flex-col z-30 h-[calc(100vh-3.25rem)] mt-7 mb-3 animate-in slide-in-from-left duration-200">
           <div className="p-4 font-bold text-sm flex items-center gap-2 text-slate-200">
             <Layers size={16} className={textActive} /> Schema Database
           </div>
@@ -764,23 +758,19 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
         key={practiceMode} // Trigger animation on mode change
         className={`flex-1 flex flex-col min-w-0 animate-in slide-in-from-${isGymMode ? 'left' : 'right'}-10 fade-in duration-500 ease-out h-full px-3 md:pr-6 ${!isGymMode ? 'md:pl-6' : ''}`}
       >
-        <header className="flex flex-col gap-2 mt-2 md:mt-4 mb-1 z-10 shrink-0">
+        {/* Header. Row 1 is h-16 and starts at the same md:mt-7 as the sidebar,
+            so the mode/difficulty pills line up with the "SQL LAB" title next to
+            them. Every control inside is h-10 — see components/GymControls. */}
+        <header className="flex flex-col gap-2 mt-2 md:mt-7 mb-1 z-10 shrink-0">
           {/* ROW 1: Mode + Difficulty */}
-          <div className="flex items-center gap-1.5 md:gap-2">
-            {!isGymMode && (
-              <button
-                onClick={onBack}
-                className="h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
-                aria-label="Torna alla home"
-              >
-                <HomeIcon size={18} />
-              </button>
-            )}
+          <div className="flex items-center gap-1.5 md:gap-2 md:h-16">
+            <HomeButton onClick={onBack} />
 
             {/* Mobile Sidebar Toggle */}
             {isGymMode && (
               <button
                 onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                title="Menu argomenti"
                 className="md:hidden h-10 w-10 shrink-0 grid place-items-center text-slate-300 hover:text-white bg-white/[0.04] ring-1 ring-white/10 rounded-xl hover:bg-white/[0.08] transition-all active:scale-95"
                 aria-label="Menu argomenti"
               >
@@ -789,17 +779,17 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
             )}
 
             {/* SLIDING PILL FOR MODE */}
-            <div className="relative flex bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
+            <div className="relative flex h-10 bg-[#101219]/85 backdrop-blur-xl rounded-xl p-1 shadow-lg shadow-black/20">
               <div
-                className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] rounded-lg shadow-lg transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg shadow-lg transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${
                   isGymMode
-                    ? "left-1.5 bg-gradient-to-b from-blue-500/30 to-blue-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(59,130,246,0.2)_inset] shadow-blue-500/20"
+                    ? "left-1 bg-gradient-to-b from-blue-500/30 to-blue-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(59,130,246,0.2)_inset] shadow-blue-500/20"
                     : "left-[calc(50%+0px)] translate-x-0 bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/20"
                 }`}
               ></div>
               <button
                 onClick={() => setPracticeMode(PracticeMode.Solve)}
-                className={`relative z-10 flex-1 text-[11px] font-black tracking-wider py-2 px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase ${
+                className={`relative z-10 flex-1 h-8 text-[11px] font-black tracking-wider px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase ${
                   isGymMode
                     ? "text-white text-shadow-sm"
                     : "text-slate-400 hover:text-slate-200"
@@ -809,7 +799,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               </button>
               <button
                 onClick={() => setPracticeMode(PracticeMode.Type)}
-                className={`relative z-10 flex-1 text-[11px] font-black tracking-wider py-2 px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase ${
+                className={`relative z-10 flex-1 h-8 text-[11px] font-black tracking-wider px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2 uppercase ${
                   !isGymMode
                     ? "text-white text-shadow-sm"
                     : "text-slate-400 hover:text-slate-200"
@@ -823,11 +813,11 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
             <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-1"></div>
 
             {/* SLIDING PILL FOR DIFFICULTY - NOW COLORED */}
-            <div className="relative flex bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
+            <div className="relative flex h-10 bg-[#101219]/85 backdrop-blur-xl rounded-xl p-1 shadow-lg shadow-black/20">
               <div
-                className={`absolute top-1.5 bottom-1.5 rounded-lg shadow-lg transition-all duration-300 ease-out ${
+                className={`absolute top-1 bottom-1 rounded-lg shadow-lg transition-all duration-300 ease-out ${
                   difficulty === Difficulty.Easy
-                    ? "left-1.5 w-[calc(33.333%-0.5rem)] bg-gradient-to-b from-green-500/30 to-green-600/5 border border-white/15 shadow-[0_0_15px_rgba(34,197,94,0.2)_inset] shadow-green-600/20"
+                    ? "left-1 w-[calc(33.333%-0.375rem)] bg-gradient-to-b from-green-500/30 to-green-600/5 border border-white/15 shadow-[0_0_15px_rgba(34,197,94,0.2)_inset] shadow-green-600/20"
                     : difficulty === Difficulty.Medium
                     ? "left-[calc(33.333%+0.25rem)] w-[calc(33.333%-0.5rem)] bg-gradient-to-b from-orange-500/30 to-orange-600/5 border border-white/15 shadow-[0_0_15px_rgba(249,115,22,0.2)_inset] shadow-orange-600/20"
                     : "left-[66.666%] w-[calc(33.333%-0.375rem)] bg-gradient-to-b from-red-500/30 to-red-600/5 border border-white/15 shadow-[0_0_15px_rgba(239,68,68,0.2)_inset] shadow-red-600/20"
@@ -837,7 +827,8 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                 <button
                   key={d}
                   onClick={() => setDifficulty(d)}
-                  className={`relative z-10 px-4 py-2 text-xs font-bold rounded-lg transition-colors min-w-[70px] ${
+                  title={`Difficoltà ${d}`}
+                  className={`relative z-10 h-8 px-4 text-xs font-bold rounded-lg transition-colors min-w-[70px] ${
                     difficulty === d
                       ? "text-white"
                       : "text-slate-400 hover:text-slate-200"
@@ -850,62 +841,19 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
 
           </div>
 
-          {/* ROW 2: Counter + Shuffle + Analytics + UserBadge */}
+          {/* ROW 2: Counter (left) + tools (right) */}
           <div className="flex items-center gap-1.5 md:gap-2">
+            <ExerciseNav
+              index={currentExerciseIndex}
+              total={exercises.length}
+              onPrev={handlePrevExercise}
+              onNext={handleNextExercise}
+              accentText={textActive}
+            />
 
-            {/* EXERCISE COUNTER */}
-            <div className="flex items-center bg-[#121212]/70 backdrop-blur-xl rounded-xl p-1.5 shadow-lg shadow-black/20">
-              <button
-                onClick={handlePrevExercise}
-                disabled={currentExerciseIndex === 0}
-                className="flex items-center justify-center min-w-[40px] min-h-[40px] text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-white/5 transition-colors"
-                aria-label="Esercizio precedente"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <div className="px-3 min-w-[4rem] text-center font-mono text-xs font-bold text-slate-300">
-                <span className={textActive}>{currentExerciseIndex + 1}</span>{" "}
-                <span className="text-slate-500">/</span> {exercises.length}
-              </div>
-              <button
-                onClick={handleNextExercise}
-                disabled={currentExerciseIndex === exercises.length - 1}
-                className="flex items-center justify-center min-w-[40px] min-h-[40px] text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-white/5 transition-colors"
-                aria-label="Esercizio successivo"
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-
-            {/* SHUFFLE BUTTON */}
             <div className="ml-auto flex items-center gap-2">
-              <button
-                onClick={handleShuffle}
-                title="Cambia esercizio"
-                className="h-10 py-2 px-3 text-slate-300 hover:text-white rounded-xl bg-white/[0.04] ring-1 ring-white/10 hover:bg-white/[0.08] transition-all flex items-center gap-2 group"
-              >
-                <Shuffle
-                  size={16}
-                  className="group-active:rotate-180 transition-transform duration-500"
-                />
-                <span className="text-xs font-bold hidden sm:inline">Shuffle</span>
-              </button>
-            </div>
-
-            {/* Analytics + User Badge Group */}
-            <div className="flex items-center gap-2">
-              {/* ANALYTICS BUTTON */}
-              {onNavigate && (
-              <button
-                  onClick={() => onNavigate(Page.Analytics)}
-                  className="h-10 flex items-center gap-2 py-2 px-3 text-purple-300 hover:text-white rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
-                >
-                  <TrendingUp size={16} />
-                  <span className="text-xs font-bold hidden sm:inline">Analytics</span>
-                </button>
-              )}
-
-              {/* User Badge */}
+              <ShuffleButton onClick={handleShuffle} />
+              {onNavigate && <AnalyticsButton onClick={() => onNavigate(Page.Analytics)} />}
               <UserBadge onNavigate={onNavigate} />
             </div>
           </div>
@@ -914,7 +862,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
         {/* CONTENT */}
         <div className="flex-1 flex flex-col overflow-y-auto relative">
           {isGymMode && exercise && (
-            <div className="bg-[#121212]/70 backdrop-blur-xl rounded-2xl px-6 py-4 shrink-0 relative overflow-hidden mb-3">
+            <div className="bg-[#101219]/85 backdrop-blur-xl rounded-2xl px-6 py-4 shrink-0 relative overflow-hidden mb-3">
               <div
                 className={`absolute top-0 left-0 w-1 h-full ${bgActive} shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-colors duration-500`}
               ></div>
@@ -989,7 +937,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               // DEBUG MODE SPLIT
               <>
                 <div className="min-w-0 flex flex-col gap-4 min-h-0 overflow-x-hidden">
-                  <div className="bg-[#121212]/70 backdrop-blur-xl rounded-2xl p-6 shrink-0">
+                  <div className="bg-[#101219]/85 backdrop-blur-xl rounded-2xl p-6 shrink-0">
                     <div className="mb-4">
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider mb-3">
                         <Bug size={14} /> Modalità Debug
@@ -1021,7 +969,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                         className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showHint
                             ? "bg-gradient-to-b from-amber-500/30 to-amber-600/5 backdrop-blur-xl border border-white/5 shadow-[0_0_15px_rgba(245,158,11,0.2)_inset] shadow-amber-500/10 text-amber-300"
-                            : "bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
+                            : "bg-[#101219]/85 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
                         }`}
                       >
                         <Lightbulb
@@ -1037,7 +985,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                         className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showSolution
                             ? "bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/10 text-purple-300"
-                            : "bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
+                            : "bg-[#101219]/85 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
                         }`}
                       >
                         {showSolution ? (
@@ -1151,7 +1099,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                   )}
 
                   {/* Results Table */}
-                  <div className="flex-1 overflow-hidden relative bg-[#121212]/70 backdrop-blur-xl rounded-2xl flex flex-col shadow-lg">
+                  <div className="flex-1 overflow-hidden relative bg-[#101219]/85 backdrop-blur-xl rounded-2xl flex flex-col shadow-lg">
                     {userResult?.success ? (
                       <div className="flex-1 overflow-hidden flex flex-col">
                         <div className="p-2 bg-[#0a0a0a]/60 text-xs font-bold text-slate-300 flex items-center justify-between shrink-0 rounded-t-2xl border-b border-white/15">
@@ -1204,7 +1152,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
               // GYM MODE SPLIT
               <>
                 <div className="min-w-0 flex flex-col relative gap-4 overflow-x-hidden">
-                  <div className="flex items-center justify-between p-3 bg-[#121212]/70 backdrop-blur-xl rounded-2xl relative z-20 shadow-lg shadow-black/20">
+                  <div className="flex items-center justify-between p-3 bg-[#101219]/85 backdrop-blur-xl rounded-2xl relative z-20 shadow-lg shadow-black/20">
                     <div className="flex items-center gap-2">
                       {/* Hint Button */}
                       <button
@@ -1212,7 +1160,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                         className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showHint
                             ? "bg-gradient-to-b from-amber-500/30 to-amber-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(245,158,11,0.2)_inset] shadow-amber-500/10 text-amber-300"
-                            : "bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
+                            : "bg-[#101219]/85 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
                         }`}
                       >
                         <Lightbulb
@@ -1228,7 +1176,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                         className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md ${
                           showSolution
                             ? "bg-gradient-to-b from-purple-500/30 to-purple-600/5 backdrop-blur-xl border border-white/15 shadow-[0_0_15px_rgba(168,85,247,0.2)_inset] shadow-purple-500/10 text-purple-300"
-                            : "bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
+                            : "bg-[#101219]/85 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20"
                         }`}
                       >
                         {showSolution ? (
@@ -1246,7 +1194,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       <button
                         onClick={handleFormatSQL}
                         disabled={!sqlCode.trim()}
-                        className="h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-md bg-[#101219]/85 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-black/20 disabled:opacity-40 disabled:cursor-not-allowed"
                         title="Formatta SQL"
                       >
                         <Sparkles size={14} />
@@ -1272,7 +1220,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       {/* Reset Button */}
                       <button
                         onClick={handleResetInput}
-                        className="h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 bg-[#121212]/70 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-md shadow-black/20 active:bg-red-500/20 active:text-red-300 active:shadow-red-500/20"
+                        className="h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 bg-[#101219]/85 backdrop-blur-xl text-slate-300 hover:bg-white/5 hover:text-slate-200 shadow-md shadow-black/20 active:bg-red-500/20 active:text-red-300 active:shadow-red-500/20"
                       >
                         <RotateCcw size={14} />
                         Reset
@@ -1294,7 +1242,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
 
                     {/* Query History */}
                     {queryHistory.length > 0 && (
-                      <div className="bg-[#121212]/70 backdrop-blur-md rounded-xl p-3 mt-4 overflow-hidden w-full shrink-0">
+                      <div className="bg-[#101219]/85 backdrop-blur-md rounded-xl p-3 mt-4 overflow-hidden w-full shrink-0">
                         <div className="flex items-center justify-between mb-2.5">
                           <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider">
                             <History size={14} />
@@ -1314,7 +1262,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                             <button
                               key={idx}
                               onClick={() => setSqlCode(query)}
-                              className="shrink-0 max-w-[280px] text-xs text-left bg-[#121212]/70 backdrop-blur-xl hover:bg-white/5 text-slate-300 hover:text-slate-200 rounded-lg px-3 py-2 transition-all truncate font-mono shadow-md shadow-black/20"
+                              className="shrink-0 max-w-[280px] text-xs text-left bg-[#101219]/85 backdrop-blur-xl hover:bg-white/5 text-slate-300 hover:text-slate-200 rounded-lg px-3 py-2 transition-all truncate font-mono shadow-md shadow-black/20"
                               title={query}
                             >
                               {query.length > 60
@@ -1394,7 +1342,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
                       />
                     </div>
                   )}
-                  <div className="flex-1 overflow-hidden relative bg-[#121212]/70 backdrop-blur-xl rounded-2xl flex flex-col shadow-lg">
+                  <div className="flex-1 overflow-hidden relative bg-[#101219]/85 backdrop-blur-xl rounded-2xl flex flex-col shadow-lg">
                     {/* BUG FIX 1: Always show results table for valid SQL, regardless of validation */}
                     {userResult?.success ? (
                       // Show results table whenever query executed successfully (even if results don't match expected)
@@ -1514,7 +1462,7 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
       {/* Stats Modal */}
       {showStatsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#121212]/70 backdrop-blur-xl rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col m-4 overflow-hidden">
+          <div className="bg-[#101219]/85 backdrop-blur-xl rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col m-4 overflow-hidden">
             <div className="flex items-center justify-between p-6 bg-gradient-to-b from-[#0a0a0a]/80 to-transparent backdrop-blur-sm">
               <div className="flex items-center gap-2">
                 <TrendingUp size={18} className="text-blue-400" />
