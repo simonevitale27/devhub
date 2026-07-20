@@ -9,14 +9,25 @@ import { Difficulty } from './types';
 // Relationships: Vendite[ProdottoID]->Prodotti, Vendite[ClienteID]->Clienti,
 //                Vendite[Data]->Calendario[Data].
 
+// Topics follow the PL-300 "Skills measured as of April 20, 2026" outline,
+// specifically "Model the data (25-30%) > Create model calculations by using
+// DAX" plus the DAX-adjacent bullets from the modelling, security and
+// visualisation domains (RLS filter expressions, visual calculations).
 export enum DaxTopicId {
   Aggregations = 'aggregations',       // SUM, AVERAGE, COUNTROWS, DISTINCTCOUNT
   Logical = 'logical',                 // IF, SWITCH
   Calculate = 'calculate',             // CALCULATE, filter context, ALL, FILTER
   Iterators = 'iterators',             // SUMX, AVERAGEX, RANKX
-  Relationships = 'relationships',     // RELATED, USERELATIONSHIP
+  Relationships = 'relationships',     // RELATED, USERELATIONSHIP, CROSSFILTER
   TimeIntelligence = 'time',           // TOTALYTD, SAMEPERIODLASTYEAR, DATEADD
   Variables = 'variables',             // VAR / RETURN
+  Statistical = 'statistical',         // MEDIAN, PERCENTILE, STDEV, RANKX, TOPN
+  SemiAdditive = 'semiadditive',       // LASTDATE, CLOSINGBALANCE*, OPENINGBALANCE*
+  TableFunctions = 'tablefunctions',   // SUMMARIZE, ADDCOLUMNS, CALENDAR, UNION
+  Modeling = 'modeling',               // measure vs calc column vs calc table, cardinality
+  VisualCalc = 'visualcalc',           // RUNNINGSUM, MOVINGAVERAGE, calculation groups
+  Security = 'security',               // RLS filter expressions, USERPRINCIPALNAME
+  Optimization = 'optimization',       // performance, DIVIDE, KEEPFILTERS, granularity
 }
 
 export type DaxExerciseKind = 'mcq' | 'formula';
