@@ -193,7 +193,12 @@ _input_queue = ${inputQueue}
 _input_index = 0
 
 def _mock_input(prompt=""):
+    # CPython writes the prompt to stdout with no trailing newline; mirror that
+    # exactly, otherwise the expected output recorded against real python3 would
+    # never match what the browser produces.
     global _input_index
+    if prompt:
+        print(prompt, end="")
     if _input_index < len(_input_queue):
         result = _input_queue[_input_index]
         _input_index += 1

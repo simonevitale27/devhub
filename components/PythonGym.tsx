@@ -31,6 +31,8 @@ import {
   Dumbbell,
   SearchCode,
   TrendingUp,
+  Gamepad2,
+  Brain,
   Table as TableIcon,
   BarChart3,
   Package,
@@ -48,6 +50,7 @@ import { generatePythonExercises } from "../services/pythonExerciseGenerator";
 import AiExplainButton from "./AiExplainButton";
 import {
   runPython,
+  runPythonWithInput,
   initPyodide,
   isPyodideReady,
   validateOutput,
@@ -81,6 +84,9 @@ const TOPIC_ICONS: Record<PythonTopicId, React.ReactNode> = {
   [PythonTopicId.Pandas]: <TableIcon size={18} />,
   [PythonTopicId.Seaborn]: <BarChart3 size={18} />,
   [PythonTopicId.Libraries]: <Package size={18} />,
+  [PythonTopicId.Games]: <Gamepad2 size={18} />,
+  [PythonTopicId.Forecasting]: <TrendingUp size={18} />,
+  [PythonTopicId.DeepLearning]: <Brain size={18} />,
 };
 
 interface PythonGymProps {
@@ -203,6 +209,10 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
     [PythonTopicId.Pandas]: ['numpy', 'pandas'],
     // seaborn must be loaded or every Seaborn exercise dies on `import seaborn`
     [PythonTopicId.Seaborn]: ['numpy', 'pandas', 'matplotlib', 'seaborn'],
+    // Forecasting mixes plain lists with pandas Series; Deep Learning is all
+    // NumPy. Without these the very first `import numpy` throws.
+    [PythonTopicId.Forecasting]: ['numpy', 'pandas'],
+    [PythonTopicId.DeepLearning]: ['numpy'],
   };
 
   useEffect(() => {
@@ -262,7 +272,11 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
     setPanelCollapsed(false); // Show panel when running
 
     try {
-      const result = await runPython(userCode, 5000);
+      // Exercises that call input() (the game topic) ship a scripted answer
+      // queue; without it Pyodide raises EOFError on the first prompt.
+      const result = currentExercise.mockInputs?.length
+        ? await runPythonWithInput(userCode, currentExercise.mockInputs, 5000)
+        : await runPython(userCode, 5000);
 
       if (result.success) {
         setOutput(result.output);

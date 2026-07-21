@@ -59,7 +59,10 @@ for (const topic of PYTHON_TOPICS) {
 
       let out = '';
       try {
-        out = execFileSync('python3', [f], { stdio: 'pipe', timeout: 10000, input: '' }).toString();
+        // Feed the scripted answers on stdin, exactly as the browser feeds them
+        // to the mocked input(). Same bytes in, same stdout expected.
+        const stdin = (ex.mockInputs ?? []).map((v) => v + '\n').join('');
+        out = execFileSync('python3', [f], { stdio: 'pipe', timeout: 10000, input: stdin }).toString();
         ran++;
       } catch (e: any) {
         fails.push(`${at}: solution raised\n     ${String(e.stderr || e.message).trim().split('\n').pop()}`);

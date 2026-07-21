@@ -16,6 +16,9 @@ export enum PythonTopicId {
   Pandas = "pandas",
   Seaborn = "seaborn",
   Libraries = "libraries",
+  Games = "games",
+  Forecasting = "forecasting",
+  DeepLearning = "deeplearning",
 }
 
 // Python Topic metadata
@@ -49,6 +52,9 @@ export interface PythonExercise {
   explanation: string;
   brokenCode?: string; // For Debug Mode: code with error
   debugHint?: string; // For Debug Mode: hint about error
+  // Scripted answers fed to input(), in order, for interactive exercises (games).
+  // Without this an exercise calling input() raises EOFError in the browser.
+  mockInputs?: string[];
   // Stable index of the blueprint in its topic/difficulty pool (pre-shuffle).
   // Progress is keyed on this so completion survives reshuffles and restarts.
   poolIndex: number;
@@ -82,6 +88,7 @@ export interface PythonExerciseBlueprint {
   explanation: string;
   brokenCode?: string;
   debugHint?: string;
+  mockInputs?: string[];
 }
 
 // Topics configuration
@@ -155,7 +162,25 @@ export const PYTHON_TOPICS: PythonTopic[] = [
   {
     id: PythonTopicId.Libraries,
     label: "Librerie",
-    subtitle: "dotenv, sqlalchemy, pymysql",
-    description: "Librerie per database e configurazione",
+    subtitle: "os, json, re, itertools",
+    description: "Libreria standard: file, date, regex, funzionale",
+  },
+  {
+    id: PythonTopicId.Games,
+    label: "Giochi",
+    subtitle: "random, input(), cicli",
+    description: "Mini-giochi che crescono di versione: dai dadi a carta-forbici-sasso",
+  },
+  {
+    id: PythonTopicId.Forecasting,
+    label: "Forecasting",
+    subtitle: "naive, media mobile, MAE",
+    description: "Previsione di serie storiche e misura dell'errore",
+  },
+  {
+    id: PythonTopicId.DeepLearning,
+    label: "Deep Learning",
+    subtitle: "tensori, gradienti, training",
+    description: "Le basi che stanno sotto PyTorch, costruite a mano con NumPy",
   },
 ];
