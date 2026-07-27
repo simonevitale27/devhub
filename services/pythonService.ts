@@ -187,9 +187,7 @@ export const runPythonWithInput = async (
   inputs: string[],
   timeout: number = 5000
 ): Promise<PythonResult> => {
-  const inputQueue = JSON.stringify(inputs);
-  const wrappedCode = `
-_input_queue = ${inputQueue}
+  const preamble = `_input_queue = ${JSON.stringify(inputs)}
 _input_index = 0
 
 def _mock_input(prompt=""):
@@ -207,26 +205,56 @@ def _mock_input(prompt=""):
 
 import builtins
 builtins.input = _mock_input
-
-${code}
 `;
-  return runPython(wrappedCode, timeout);
+  // The preamble shifts every line of the user's code down, so a traceback would
+  // blame "line 21" for a mistake on line 1. Count the offset and subtract it
+  // again below, otherwise the line numbers actively mislead the learner.
+  const offset = preamble.split('\n').length;
+  const result = await runPython(`${preamble}\n${code}`, timeout);
+  if (result.error) {
+    result.error = result.error.replace(
+      /(File "<exec>", line )(\d+)/g,
+      (_m, head, n) => `${head}${Math.max(1, Number(n) - offset)}`
+    );
+  }
+  return result;
 };
 
 /**
- * Format Python error for display.
+ * Turn a raw Pyodide traceback into something a learner can act on.
+ *
+ * Pyodide prefixes every traceback with frames from its own machinery
+ * (/lib/python311.zip/_pyodide/_base.py). They are noise nobody can act on, and
+ * they push the one line that matters off the visible area. This keeps the
+ * user's own frames and the final "SomeError: message".
  */
 export const formatPythonError = (error: string): string => {
   const lines = error.split('\n');
-  const errorLines: string[] = [];
-  let foundError = false;
+  const kept: string[] = [];
+  let droppingFrame = false;
+
   for (const line of lines) {
-    if (line.includes('Error:') || line.includes('Exception:') || foundError) {
-      foundError = true;
-      errorLines.push(line);
+    const isInternalFrame =
+      /File "\/lib\/python[\d.]*\.zip/.test(line) || line.includes('_pyodide/_base.py');
+    if (isInternalFrame) {
+      droppingFrame = true; // also drop this frame's source + caret lines
+      continue;
     }
+    // Continuation lines of a dropped frame are indented and are not themselves
+    // a new "File ..." header.
+    if (droppingFrame && /^\s/.test(line) && !line.includes('File "')) continue;
+    droppingFrame = false;
+    kept.push(line);
   }
-  return errorLines.length > 0 ? errorLines.join('\n') : error;
+
+  const cleaned = kept
+    .join('\n')
+    // "<exec>" is an implementation detail; say where it actually is.
+    .replace(/File "<exec>", line (\d+), in <module>/g, 'Riga $1')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  return cleaned || error;
 };
 
 /**

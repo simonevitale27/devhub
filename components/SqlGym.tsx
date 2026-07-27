@@ -313,18 +313,19 @@ const SqlGym: React.FC<SqlGymProps> = ({ onBack, onNavigate }) => {
     loadContent();
   };
 
+  // Clamp INSIDE the updater. The guard used to read `currentExerciseIndex`
+  // (captured, therefore stale) while the update incremented `prev`, so a burst
+  // of rapid clicks all saw the same pre-batch index and ran past the last
+  // exercise, leaving the pane empty. Same fix as PythonGym; DaxGym already did
+  // it this way.
   const handleNextExercise = () => {
-    if (currentExerciseIndex < exercises.length - 1) {
-      setCurrentExerciseIndex((prev) => prev + 1);
-      handleResetInput();
-    }
+    setCurrentExerciseIndex((prev) => Math.min(prev + 1, exercises.length - 1));
+    handleResetInput();
   };
 
   const handlePrevExercise = () => {
-    if (currentExerciseIndex > 0) {
-      setCurrentExerciseIndex((prev) => prev - 1);
-      handleResetInput();
-    }
+    setCurrentExerciseIndex((prev) => Math.max(prev - 1, 0));
+    handleResetInput();
   };
 
   const handleRun = useCallback((codeOrEvent?: string | React.MouseEvent) => {

@@ -16,6 +16,7 @@ import {
   Code2,
   Bug,
   Loader2,
+  AlertCircle,
   Hash,
   Type,
   GitBranch,
@@ -55,6 +56,7 @@ import {
   isPyodideReady,
   validateOutput,
   loadPyodidePackages,
+  formatPythonError,
 } from "../services/pythonService";
 import { recordCompletion } from "../services/progressService";
 import AutocompleteDropdown, { AutocompleteItem } from "./AutocompleteDropdown";
@@ -263,13 +265,24 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
 
   // Run Python code
   const handleRunCode = useCallback(async () => {
-    if (!isPyodideReady() || !currentExercise) return;
+    if (!currentExercise || isRunning) return;
 
     setIsRunning(true);
     setOutput("");
     setErrorOutput("");
     setValidationResult(null);
     setPanelCollapsed(false); // Show panel when running
+
+    // Do NOT bail out when the worker is not ready. pythonService tears the
+    // worker down after a timeout (terminateAndReset), so `ready` goes false
+    // while the page stays open. The old guard was `if (!isPyodideReady())
+    // return`, which meant one infinite loop left Esegui permanently dead:
+    // clicking it produced no output, no error, nothing at all, until a reload.
+    // runPython/runPythonWithInput both await initPyodide(), so they rebuild the
+    // worker on demand; that first rebuild costs a few seconds, hence the notice.
+    if (!isPyodideReady()) {
+      setOutput("Riavvio dell'ambiente Python…");
+    }
 
     try {
       // Exercises that call input() (the game topic) ship a scripted answer
@@ -312,7 +325,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
         });
       } else {
         setOutput("");
-        setErrorOutput(result.error || "Errore sconosciuto");
+        setErrorOutput(formatPythonError(result.error || "Errore sconosciuto"));
         setActivePanel('errors');
         setValidationResult({
           isCorrect: false,
@@ -323,7 +336,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
       }
     } catch (error: any) {
       setOutput("");
-      setErrorOutput(error.message);
+      setErrorOutput(formatPythonError(error.message));
       setActivePanel('errors');
       setValidationResult({
         isCorrect: false,
@@ -334,7 +347,22 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
     } finally {
       setIsRunning(false);
     }
-  }, [userCode, currentExercise]);
+  }, [userCode, currentExercise, isRunning, selectedTopic, selectedDifficulty]);
+
+  // Cmd/Ctrl + Enter runs the code from anywhere in the lab, not only while the
+  // caret sits in the editor. It lives on the window (and not in the textarea's
+  // onKeyDown) so there is exactly one place that owns the shortcut — two
+  // handlers would both fire and run the code twice.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        handleRunCode();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handleRunCode]);
 
   // Update current line on cursor move
   const updateCurrentLine = useCallback(() => {
@@ -429,12 +457,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   // Handle keyboard shortcuts with Tab, auto-indent, snippets, autocomplete
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Execute on Cmd/Ctrl + Enter
-      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-        e.preventDefault();
-        handleRunCode();
-        return;
-      }
+      // Cmd/Ctrl + Enter is handled by the window-level listener above, so it is
+      // deliberately absent here: having both would run the code twice.
 
       // Toggle comment on Cmd+Shift+7 (Italian keyboard /)
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === '7' || e.key === '/' || e.code === 'Digit7')) {
@@ -573,16 +597,17 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
 
 
   // Navigation
+  // Clamp INSIDE the updater. The old version tested `currentExerciseIndex`
+  // (captured, therefore stale) and then incremented `prev`, so a burst of rapid
+  // clicks all saw the same pre-batch index and sailed past the end: the counter
+  // read "9 / 8" and the pane showed "Nessun esercizio disponibile" until you
+  // changed topic. Same pattern as DaxGym's go().
   const handleNextExercise = () => {
-    if (currentExerciseIndex < exercises.length - 1) {
-      setCurrentExerciseIndex((prev) => prev + 1);
-    }
+    setCurrentExerciseIndex((prev) => Math.min(prev + 1, exercises.length - 1));
   };
 
   const handlePrevExercise = () => {
-    if (currentExerciseIndex > 0) {
-      setCurrentExerciseIndex((prev) => prev - 1);
-    }
+    setCurrentExerciseIndex((prev) => Math.max(prev - 1, 0));
   };
 
   // Draw a fresh random subset from the pool and reshuffle order.
@@ -997,6 +1022,36 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                 )}
               </div>
 
+              {/* Runtime status. pyodideLoading / packagesLoading / pyodideError
+                  were all tracked but never rendered: on a first visit the Esegui
+                  button sat greyed out for ~10s with no explanation, and a failed
+                  load showed nothing at all. One strip covers the three states. */}
+              {(pyodideLoading || packagesLoading || pyodideError) && (
+                <div
+                  className={`flex items-center gap-2 px-4 py-2 text-xs border-b ${
+                    pyodideError
+                      ? 'bg-red-950/40 border-red-500/20 text-red-300'
+                      : 'bg-amber-950/30 border-amber-500/20 text-amber-300'
+                  }`}
+                >
+                  {pyodideError ? (
+                    <>
+                      <AlertCircle size={14} className="shrink-0" />
+                      <span>Python non disponibile: {pyodideError}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Loader2 size={14} className="animate-spin shrink-0" />
+                      <span>
+                        {packagesLoading
+                          ? 'Caricamento librerie per questo argomento…'
+                          : 'Avvio dell’ambiente Python… (solo alla prima apertura)'}
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+
               {/* Editor and Output - Vertical Layout */}
               <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Code Editor */}
@@ -1044,6 +1099,13 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                       >
                         {isRunning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} fill="currentColor" />}
                         {isRunning ? "Esecuzione…" : "Esegui"}
+                        {/* The shortcut existed but was invisible, so nobody knew
+                            it was there. SQL Lab shows the same hint on hover. */}
+                        {!isRunning && (
+                          <kbd className="hidden md:inline font-mono text-[10px] font-semibold text-white/70 bg-black/20 rounded px-1.5 py-0.5 ml-0.5">
+                            ⌘↵
+                          </kbd>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -1051,7 +1113,9 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                   {/* Hint/Solution Panel */}
                   {(showHint || showSolution) && (
                     <div
-                      className={`px-4 py-3 border-b border-white/10 ${
+                      // Scrollable: long explanations were clipped by the output
+                      // panel below, so the last lines were simply unreadable.
+                      className={`px-4 py-3 border-b border-white/10 max-h-[45%] overflow-y-auto custom-scrollbar shrink-0 ${
                         showSolution ? "bg-emerald-950/30" : "bg-amber-950/30"
                       }`}
                     >
