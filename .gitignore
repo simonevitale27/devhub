@@ -41,3 +41,7 @@ dev_server.log
 
 # Fablize session state (tool-local, non fa parte del progetto)
 .fablize/
+
+# Pyodide self-hosted: ~78 MB di binari, ricreati da scripts/fetch-pyodide.mjs
+# a ogni build (prebuild). Fuori dal repo per non appesantire ogni clone.
+public/pyodide/

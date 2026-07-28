@@ -27,18 +27,26 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
   // Only cache same-origin app assets. Cross-origin GETs — PocketBase API
-  // (user_progress/records, user records), Pyodide/Tailwind CDNs, fonts — must
-  // never be cached: they carry per-user data or must always be fresh.
+  // (user_progress/records, user records), fonts — must never be cached: they
+  // carry per-user data o devono restare fresche.
+  // Nota: Pyodide non e' piu' fra questi. Ora e' servito dal nostro dominio
+  // (/pyodide/), quindi ricade nel ramo cacheabile: era proprio l'esclusione
+  // cross-origin a rendere il service worker inutile quando il CDN era bloccato.
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Clone the response for caching
+        // Clone the response for caching. Con Pyodide self-hosted qui passano
+        // anche ~79 MB di wasm e wheel: e' un vantaggio (Python resta usabile
+        // offline dopo il primo caricamento), ma se la quota di storage si
+        // esaurisce cache.put viene rifiutata. Senza catch sarebbe un rejection
+        // non gestito a ogni richiesta; la pagina funziona comunque, perche' la
+        // risposta di rete viene restituita a prescindere dalla cache.
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
+          cache.put(event.request, responseClone).catch(() => {});
         });
         return response;
       })

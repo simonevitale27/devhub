@@ -6,8 +6,14 @@
 // Protocol: main posts { id, type, payload }; worker replies
 // { id, ok, result } or { id, ok:false, error }.
 
-const PYODIDE_CDN = 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/';
-importScripts(PYODIDE_CDN + 'pyodide.js');
+// Pyodide e' servito dal dominio dell'app (public/pyodide, popolato da
+// scripts/fetch-pyodide.mjs), non piu' da cdn.jsdelivr.net: una rete che filtra
+// i CDN pubblici impediva del tutto l'avvio dell'ambiente Python, e il service
+// worker non poteva rimediare perche' ignora le richieste cross-origin.
+// URL assoluto sulla radice del sito: il worker vive in /pyodide.worker.js, ma
+// l'app puo' essere aperta da una sottopagina.
+const PYODIDE_BASE = new URL('/pyodide/', self.location.origin).href;
+importScripts(PYODIDE_BASE + 'pyodide.js');
 
 let pyodide = null;
 let stdoutBuf = '';
@@ -15,7 +21,7 @@ let stderrBuf = '';
 
 async function ensurePyodide() {
   if (pyodide) return pyodide;
-  pyodide = await self.loadPyodide({ indexURL: PYODIDE_CDN });
+  pyodide = await self.loadPyodide({ indexURL: PYODIDE_BASE });
   pyodide.setStdout({ batched: (s) => { stdoutBuf += s; } });
   pyodide.setStderr({ batched: (s) => { stderrBuf += s; } });
   return pyodide;
@@ -165,16 +171,20 @@ self.onmessage = async (e) => {
 
     switch (type) {
       case 'loadPackages': {
-        // Some packages (e.g. seaborn) are not in Pyodide's built-in repository and
-        // must come from PyPI via micropip; the rest use the fast native loadPackage.
+        // seaborn non e' nella distribuzione Pyodide e va installato con micropip.
+        // La wheel e' servita da noi invece che da PyPI: era l'ultimo host esterno
+        // rimasto, quindi l'ultimo punto in cui una rete filtrante poteva rompere
+        // gli esercizi Seaborn.
         const PIP_ONLY = ['seaborn'];
+        const PIP_WHEELS = { seaborn: PYODIDE_BASE + 'seaborn-0.13.2-py3-none-any.whl' };
         const pkgs = payload.packages || [];
         const native = pkgs.filter((p) => !PIP_ONLY.includes(p));
         const pip = pkgs.filter((p) => PIP_ONLY.includes(p));
         if (native.length) await py.loadPackage(native);
         if (pip.length) {
           await py.loadPackage('micropip');
-          await py.runPythonAsync(`import micropip\nawait micropip.install(${JSON.stringify(pip)})`);
+          const urls = pip.map((n) => PIP_WHEELS[n] ?? n);
+          await py.runPythonAsync(`import micropip\nawait micropip.install(${JSON.stringify(urls)})`);
         }
         reply(id, {});
         break;
