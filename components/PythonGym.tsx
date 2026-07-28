@@ -1,15 +1,11 @@
-import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import {
   Play,
-  ChevronRight,
-  ChevronLeft,
-  ChevronDown,
   ChevronUp,
   RotateCcw,
   Shuffle,
   Lightbulb,
   Eye,
-  ArrowLeft,
   CheckCircle2,
   XCircle,
   Terminal,
@@ -18,7 +14,6 @@ import {
   Loader2,
   AlertCircle,
   Hash,
-  Type,
   GitBranch,
   Repeat,
   List,
@@ -27,10 +22,8 @@ import {
   Book,
   AlertTriangle,
   Minus,
-  Home as HomeIcon,
   Search,
   Dumbbell,
-  SearchCode,
   TrendingUp,
   Gamepad2,
   Brain,
@@ -102,6 +95,153 @@ type PracticeMode = "solve" | "debug";
 // shuffling / reopening swaps some out and re-randomises the order.
 const PYTHON_SHOWN_PER_SET = 12;
 
+// Pacchetti Pyodide richiesti per argomento. Vive a livello di modulo: e' una
+// tabella costante, ricrearla a ogni render la rendeva anche una dipendenza
+// instabile per l'effect che la legge.
+const LIBRARY_PACKAGES: Record<string, string[]> = {
+  [PythonTopicId.Pandas]: ['numpy', 'pandas'],
+  // seaborn deve essere caricato o ogni esercizio Seaborn muore su `import seaborn`
+  [PythonTopicId.Seaborn]: ['numpy', 'pandas', 'matplotlib', 'seaborn'],
+  // Forecasting mescola liste semplici e Series pandas; Deep Learning e' tutto
+  // NumPy. Senza questi il primo `import numpy` fallisce.
+  [PythonTopicId.Forecasting]: ['numpy', 'pandas'],
+  [PythonTopicId.DeepLearning]: ['numpy'],
+};
+
+
+// Simple syntax highlighting for Python using token placeholders
+const highlightPython = (code: string): string => {
+  // First escape HTML
+  let processed = code
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  const tokens: Array<{ placeholder: string; html: string }> = [];
+  let tokenCounter = 0;
+
+  // Helper to create unique placeholder
+  const createToken = (html: string): string => {
+    const placeholder = `__TOKEN_${tokenCounter++}__`;
+    tokens.push({ placeholder, html });
+    return placeholder;
+  };
+
+  // Process line by line for comments
+  const lines = processed.split("\n");
+  processed = lines
+    .map((line) => {
+      // Comments first (protect entire rest of line)
+      if (line.includes("#")) {
+        const hashIndex = line.indexOf("#");
+        const beforeComment = line.substring(0, hashIndex);
+        const comment = line.substring(hashIndex);
+        return (
+          beforeComment +
+          createToken(`<span class="text-slate-500">${comment}</span>`)
+        );
+      }
+      return line;
+    })
+    .join("\n");
+
+  // Strings (protect from other replacements)
+  processed = processed.replace(/('[^']*'|"[^"]*")/g, (match) => {
+    if (match.includes("__TOKEN_")) return match;
+    return createToken(`<span class="text-emerald-400">${match}</span>`);
+  });
+
+  // Keywords
+  const keywords = [
+    "def",
+    "class",
+    "if",
+    "elif",
+    "else",
+    "for",
+    "while",
+    "return",
+    "import",
+    "from",
+    "as",
+    "in",
+    "not",
+    "and",
+    "or",
+    "True",
+    "False",
+    "None",
+    "break",
+    "continue",
+    "pass",
+    "try",
+    "except",
+    "finally",
+    "with",
+    "lambda",
+    "yield",
+  ];
+  keywords.forEach((kw) => {
+    const regex = new RegExp(`\\b(${kw})\\b`, "g");
+    processed = processed.replace(regex, (match) => {
+      if (match.includes("__TOKEN_")) return match;
+      return createToken(
+        `<span class="text-purple-400 font-semibold">${match}</span>`
+      );
+    });
+  });
+
+  // Built-in functions (only when followed by parenthesis)
+  const builtins = [
+    "print",
+    "input",
+    "len",
+    "range",
+    "int",
+    "float",
+    "str",
+    "list",
+    "dict",
+    "set",
+    "tuple",
+    "type",
+    "abs",
+    "min",
+    "max",
+    "sum",
+    "sorted",
+    "enumerate",
+    "zip",
+    "map",
+    "filter",
+    "any",
+    "all",
+    "pow",
+    "round",
+    "bool",
+  ];
+  builtins.forEach((fn) => {
+    const regex = new RegExp(`\\b(${fn})(?=\\()`, "g");
+    processed = processed.replace(regex, (match) => {
+      if (match.includes("__TOKEN_")) return match;
+      return createToken(`<span class="text-amber-400">${match}</span>`);
+    });
+  });
+
+  // Numbers
+  processed = processed.replace(/\b(\d+\.?\d*)\b/g, (match) => {
+    if (match.includes("__TOKEN_")) return match;
+    return createToken(`<span class="text-cyan-400">${match}</span>`);
+  });
+
+  // Replace all tokens with actual HTML
+  tokens.forEach(({ placeholder, html }) => {
+    processed = processed.replace(placeholder, html);
+  });
+
+  return processed;
+};
+
 const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   // State
   const [selectedTopic, setSelectedTopic] = useState<PythonTopicId>(
@@ -128,8 +268,6 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   const [autocompletePosition, setAutocompletePosition] = useState({ top: 0, left: 0 });
   const [selectedAutocompleteIndex, setSelectedAutocompleteIndex] = useState(0);
   
-  // Syntax error detection
-  const [syntaxErrors, setSyntaxErrors] = useState<Array<{line: number; message: string}>>([]);
   const [showHint, setShowHint] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [validationResult, setValidationResult] =
@@ -146,7 +284,6 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   const [panelCollapsed, setPanelCollapsed] = useState(false);
   const [panelHeight, setPanelHeight] = useState(200);
   const [errorOutput, setErrorOutput] = useState<string>("");
-  const [isDraggingPanel, setIsDraggingPanel] = useState(false);
 
   // Animation Refs & State
   const itemsRef = useRef<{ [key: string]: HTMLButtonElement | null }>({});
@@ -155,34 +292,17 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
 
   const isGymMode = practiceMode === "solve";
   
-  // Dynamic Theme Colors
-  const themeColor = isGymMode ? "blue" : "purple";
-  const bgActive = isGymMode ? "bg-blue-600" : "bg-purple-600";
+  // Accento del lab: l'unico di questi valori che la UI legge davvero.
   const textActive = isGymMode ? "text-blue-300" : "text-purple-300";
-  const borderActive = isGymMode ? "border-blue-400" : "border-purple-400";
-  const shadowActive = isGymMode ? "shadow-blue-600/20" : "shadow-purple-600/20";
 
-  // Difficulty Colors
-  const difficultyColors = {
-    [Difficulty.Easy]: {
-      bg: "bg-green-600",
-      text: "text-green-400",
-      border: "border-green-500",
-      shadow: "shadow-green-600/20",
-    },
-    [Difficulty.Medium]: {
-      bg: "bg-orange-600",
-      text: "text-orange-400",
-      border: "border-orange-500",
-      shadow: "shadow-orange-600/20",
-    },
-    [Difficulty.Hard]: {
-      bg: "bg-red-600",
-      text: "text-red-400",
-      border: "border-red-500",
-      shadow: "shadow-red-600/20",
-    },
-  };
+  // L'evidenziazione dipende SOLO dal codice, ma il componente si ri-renderizza
+  // anche solo spostando il cursore (currentLineNumber) o all'arrivo dell'output:
+  // senza memo ogni riga veniva ri-tokenizzata (una decina di regex) a ogni
+  // render, non solo quando il codice cambia davvero.
+  const codeLines = useMemo(
+    () => userCode.split('\n').map((text) => ({ text, html: highlightPython(text) || '&nbsp;' })),
+    [userCode]
+  );
 
   // Current exercise
   const currentExercise = exercises[currentExerciseIndex];
@@ -204,18 +324,6 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
     };
     loadPyodide();
   }, []);
-
-  // Load exercises when topic/difficulty changes
-  // For library-dependent topics, load packages first
-  const LIBRARY_PACKAGES: Record<string, string[]> = {
-    [PythonTopicId.Pandas]: ['numpy', 'pandas'],
-    // seaborn must be loaded or every Seaborn exercise dies on `import seaborn`
-    [PythonTopicId.Seaborn]: ['numpy', 'pandas', 'matplotlib', 'seaborn'],
-    // Forecasting mixes plain lists with pandas Series; Deep Learning is all
-    // NumPy. Without these the very first `import numpy` throws.
-    [PythonTopicId.Forecasting]: ['numpy', 'pandas'],
-    [PythonTopicId.DeepLearning]: ['numpy'],
-  };
 
   useEffect(() => {
     const loadExercises = async () => {
@@ -245,23 +353,28 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
     loadExercises();
   }, [selectedTopic, selectedDifficulty, shuffleNonce]);
 
-  // Update user code when exercise changes
-  useEffect(() => {
-    if (currentExercise) {
-      if (practiceMode === "solve") {
-        setUserCode(currentExercise.starterCode);
-      } else {
-        setUserCode(currentExercise.brokenCode || currentExercise.starterCode);
-      }
-      setOutput("");
-      setErrorOutput("");
-      setActivePanel('output');
-      setSyntaxErrors([]);
-      setShowHint(false);
-      setShowSolution(false);
-      setValidationResult(null);
-    }
+  // Carica l'esercizio nell'editor e riporta il pannello allo stato iniziale.
+  // Erano due blocchi identici (l'effect al cambio esercizio e handleReset): otto
+  // istruzioni ripetute che differivano solo nell'ordine di due setState,
+  // irrilevante per React. Una divergenza fra i due sarebbe passata inosservata.
+  const loadExerciseIntoEditor = useCallback(() => {
+    if (!currentExercise) return;
+    setUserCode(
+      practiceMode === "solve"
+        ? currentExercise.starterCode
+        : currentExercise.brokenCode || currentExercise.starterCode
+    );
+    setOutput("");
+    setErrorOutput("");
+    setActivePanel('output');
+    setShowHint(false);
+    setShowSolution(false);
+    setValidationResult(null);
   }, [currentExercise, practiceMode]);
+
+  useEffect(() => {
+    loadExerciseIntoEditor();
+  }, [loadExerciseIntoEditor]);
 
   // Run Python code
   const handleRunCode = useCallback(async () => {
@@ -296,14 +409,16 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
         setErrorOutput("");
         setActivePanel('output');
 
-        // Validate output. Some exercises have a non-deterministic result
-        // (datetime.now(), versions, os.environ) and ship expectedOutput=''.
-        // For those, any error-free run counts as correct instead of always failing.
-        const expected = currentExercise.expectedOutput ?? "";
-        const isCorrect =
-          expected.trim() === ""
-            ? true
-            : validateOutput(result.output, expected);
+        // Confronto sempre reale. Prima un expectedOutput vuoto valeva "sempre
+        // corretto": era una toppa per gli esercizi non deterministici
+        // (datetime.now(), versioni, os.environ), che pero' sono stati resi
+        // deterministici in v3.3. Oggi l'unico esercizio con output atteso vuoto
+        // e' "Stringa vuota", che vuole davvero output vuoto: la toppa lo
+        // promuoveva qualunque cosa scrivesse l'utente.
+        const isCorrect = validateOutput(
+          result.output,
+          currentExercise.expectedOutput ?? ""
+        );
 
         // Track completion if correct
         if (isCorrect) {
@@ -613,155 +728,8 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   // Draw a fresh random subset from the pool and reshuffle order.
   const handleShuffle = () => setShuffleNonce((n) => n + 1);
 
-  const handleReset = () => {
-    if (currentExercise) {
-      if (practiceMode === "solve") {
-        setUserCode(currentExercise.starterCode);
-      } else {
-        setUserCode(currentExercise.brokenCode || currentExercise.starterCode);
-      }
-      setOutput("");
-      setErrorOutput("");
-      setActivePanel('output');
-      setSyntaxErrors([]);
-      setValidationResult(null);
-      setShowHint(false);
-      setShowSolution(false);
-    }
-  };
+  const handleReset = loadExerciseIntoEditor;
 
-  // Simple syntax highlighting for Python using token placeholders
-  const highlightPython = (code: string): string => {
-    // First escape HTML
-    let processed = code
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-
-    const tokens: Array<{ placeholder: string; html: string }> = [];
-    let tokenCounter = 0;
-
-    // Helper to create unique placeholder
-    const createToken = (html: string): string => {
-      const placeholder = `__TOKEN_${tokenCounter++}__`;
-      tokens.push({ placeholder, html });
-      return placeholder;
-    };
-
-    // Process line by line for comments
-    const lines = processed.split("\n");
-    processed = lines
-      .map((line) => {
-        // Comments first (protect entire rest of line)
-        if (line.includes("#")) {
-          const hashIndex = line.indexOf("#");
-          const beforeComment = line.substring(0, hashIndex);
-          const comment = line.substring(hashIndex);
-          return (
-            beforeComment +
-            createToken(`<span class="text-slate-500">${comment}</span>`)
-          );
-        }
-        return line;
-      })
-      .join("\n");
-
-    // Strings (protect from other replacements)
-    processed = processed.replace(/('[^']*'|"[^"]*")/g, (match) => {
-      if (match.includes("__TOKEN_")) return match;
-      return createToken(`<span class="text-emerald-400">${match}</span>`);
-    });
-
-    // Keywords
-    const keywords = [
-      "def",
-      "class",
-      "if",
-      "elif",
-      "else",
-      "for",
-      "while",
-      "return",
-      "import",
-      "from",
-      "as",
-      "in",
-      "not",
-      "and",
-      "or",
-      "True",
-      "False",
-      "None",
-      "break",
-      "continue",
-      "pass",
-      "try",
-      "except",
-      "finally",
-      "with",
-      "lambda",
-      "yield",
-    ];
-    keywords.forEach((kw) => {
-      const regex = new RegExp(`\\b(${kw})\\b`, "g");
-      processed = processed.replace(regex, (match) => {
-        if (match.includes("__TOKEN_")) return match;
-        return createToken(
-          `<span class="text-purple-400 font-semibold">${match}</span>`
-        );
-      });
-    });
-
-    // Built-in functions (only when followed by parenthesis)
-    const builtins = [
-      "print",
-      "input",
-      "len",
-      "range",
-      "int",
-      "float",
-      "str",
-      "list",
-      "dict",
-      "set",
-      "tuple",
-      "type",
-      "abs",
-      "min",
-      "max",
-      "sum",
-      "sorted",
-      "enumerate",
-      "zip",
-      "map",
-      "filter",
-      "any",
-      "all",
-      "pow",
-      "round",
-      "bool",
-    ];
-    builtins.forEach((fn) => {
-      const regex = new RegExp(`\\b(${fn})(?=\\()`, "g");
-      processed = processed.replace(regex, (match) => {
-        if (match.includes("__TOKEN_")) return match;
-        return createToken(`<span class="text-amber-400">${match}</span>`);
-      });
-    });
-
-    // Numbers
-    processed = processed.replace(/\b(\d+\.?\d*)\b/g, (match) => {
-      if (match.includes("__TOKEN_")) return match;
-      return createToken(`<span class="text-cyan-400">${match}</span>`);
-    });
-
-    // Replace all tokens with actual HTML
-    tokens.forEach(({ placeholder, html }) => {
-      processed = processed.replace(placeholder, html);
-    });
-
-    return processed;
-  };
 
   // Determine available topics based on search
   const filteredTopics = React.useMemo(() => {
@@ -1180,7 +1148,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                         className="absolute inset-0 font-mono text-sm overflow-auto pointer-events-none"
                       >
                         <div className="p-4">
-                          {userCode.split('\n').map((line, idx) => {
+                          {codeLines.map(({ text: line, html }, idx) => {
                             // Calculate indent level for rainbow
                             const indentMatch = line.match(/^(\s*)/);
                             const spaces = indentMatch ? indentMatch[1].length : 0;
@@ -1201,7 +1169,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                                   marginLeft: indentLevel > 0 ? '-3px' : undefined,
                                 }}
                                 dangerouslySetInnerHTML={{ 
-                                  __html: highlightPython(line) || '&nbsp;' 
+                                  __html: html 
                                 }}
                               />
                             );
