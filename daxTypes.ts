@@ -57,17 +57,49 @@ export interface DaxFormulaExercise extends DaxExerciseBase {
 
 export type DaxExercise = DaxMcqExercise | DaxFormulaExercise;
 
-// Forgiving normalizer so equivalent DAX matches: case, spacing, quotes around
-// table names, brackets around columns, and ; vs , as the argument separator.
-// ponytail: intentionally strips [] and quotes, so string literals inside a
-// measure aren't compared strictly. Fine for a learning tool; tighten if we
-// ever add exercises whose answer hinges on a literal string.
+/**
+ * Toglie il nome della misura, se presente.
+ *
+ * In DAX il nome e' una scelta libera di chi scrive: "Massimo = MAX(...)" e
+ * "Vendita piu alta = MAX(...)" sono la stessa identica misura. Confrontare la
+ * stringa intera bocciava una risposta giusta solo perche' l'utente aveva
+ * scelto un altro nome -- il motivo per cui questi esercizi risultavano
+ * impossibili da superare.
+ *
+ * Il taglio avviene solo se cio' che precede il primo "=" e' un identificatore
+ * semplice. Serve a non rovinare le espressioni che contengono un "=" come
+ * operatore, per esempio CALCULATE([Fatturato], Prodotti[Categoria] = "Bevande"):
+ * li' il testo prima dell'uguale contiene parentesi e virgole, quindi non e' un
+ * nome e la formula resta intatta.
+ */
+function stripMeasureName(s: string): string {
+  // ":=" (stile Tabular Editor) equivale a "="; "<=", ">=", "<>" NON sono assegnazioni.
+  const m = s.match(/^([^=<>!]*?)\s*:?=(?!=)([\s\S]+)$/);
+  if (!m) return s;
+  const [, nome, espressione] = m;
+  // Un nome di misura e' fatto solo di lettere, cifre, spazi, _ . % e accenti.
+  return /^[\p{L}\p{N}_.%\s]*$/u.test(nome) ? espressione : s;
+}
+
+// Normalizzatore tollerante: due formule equivalenti devono risultare uguali.
+// Assorbe maiuscole/minuscole, spaziatura (anche attorno agli operatori), apici
+// sulle tabelle, parentesi quadre, ";" o "," come separatore, il punto e virgola
+// finale e il nome della misura.
+// ponytail: toglie di proposito [] e apici, quindi le stringhe letterali dentro
+// una misura non sono confrontate alla lettera. Va bene per uno strumento di
+// studio; da stringere se un giorno la risposta dipendesse da un letterale.
 export function normalizeDax(s: string): string {
-  return s
+  return stripMeasureName(s.trim())
     .toUpperCase()
-    .replace(/[\[\]'"]/g, '')       // drop brackets and quotes
-    .replace(/;/g, ',')             // locale-agnostic separator
-    .replace(/\s*([(),])\s*/g, '$1')// no space around ( ) ,
+    .replace(/\s+/g, ' ')
+    .replace(/[;]+\s*$/, '')          // punto e virgola finale: rumore
+    .replace(/;/g, ',')               // separatore indipendente dal locale
+    // Gli spazi attorno alle quadre vanno tolti PRIMA di eliminarle, altrimenti
+    // "Vendite [ Importo ]" resta con gli spazi e non combacia con "Vendite[Importo]".
+    .replace(/\s*\[\s*/g, '[')
+    .replace(/\s*\]/g, ']')
+    .replace(/[\[\]'"]/g, '')         // via parentesi quadre e apici
+    .replace(/\s*(<=|>=|<>|[-+*/=<>(),])\s*/g, '$1') // niente spazi attorno agli operatori
     .replace(/\s+/g, ' ')
     .trim();
 }

@@ -20,10 +20,42 @@ export const DAX_TOPICS: DaxTopic[] = [
 ];
 
 // The shared model, described once so scenarios can reference it.
-export const DAX_MODEL_NOTE =
-  "Modello (schema a stella): Vendite(Data, ProdottoID, ClienteID, Quantita, Importo) · " +
-  "Prodotti(ProdottoID, Nome, Categoria, Costo) · Clienti(ClienteID, Nome, Citta, Segmento) · " +
-  "Calendario(Data, Anno, Mese, Trimestre). Vendite si collega a Prodotti, Clienti e Calendario.";
+// Schema completo del modello condiviso da tutti gli esercizi.
+//
+// Sostituisce la vecchia nota unica DAX_MODEL_NOTE, che era sempre a schermo,
+// sempre identica e per giunta INCOMPLETA: non dichiarava Vendite[DataSpedizione]
+// ne' Clienti[Email] ne' la tabella Permessi, tutte usate dagli esercizi. Chi
+// doveva scrivere una misura non poteva quindi conoscere i nomi delle colonne.
+// Ora e' l'esercizio a mostrare solo le tabelle che lo riguardano.
+export const DAX_SCHEMA: Record<string, string[]> = {
+  Vendite: ['Data', 'DataSpedizione', 'ProdottoID', 'ClienteID', 'Quantita', 'Importo'],
+  Prodotti: ['ProdottoID', 'Nome', 'Categoria', 'Costo'],
+  Clienti: ['ClienteID', 'Nome', 'Citta', 'Segmento', 'Email'],
+  Calendario: ['Data', 'Anno', 'Mese', 'Trimestre'],
+  Permessi: ['Email', 'Citta'],
+};
+
+/**
+ * Le tabelle che servono per questo esercizio, nell'ordine dello schema.
+ *
+ * Ricavate dal testo dell'esercizio (scenario, soluzione, opzioni), cosi' non
+ * c'e' un secondo elenco da tenere allineato a mano: se un esercizio cambia
+ * tabella, la riga mostrata cambia con lui. Mostra i nomi delle colonne, mai
+ * quale usare, quindi non svela la risposta.
+ */
+export function tablesForExercise(ex: DaxExercise): string[] {
+  const testo = [
+    ex.scenario,
+    ex.reference,
+    ...(ex.kind === 'mcq' ? ex.options : ex.accepted),
+  ].join(' ');
+  const trovate = Object.keys(DAX_SCHEMA).filter((t) =>
+    new RegExp(`\\b${t}\\b`, 'i').test(testo)
+  );
+  // Alcuni esercizi (per esempio le espressioni RLS, che sono solo [Colonna] = ...)
+  // non nominano la tabella: il contesto e' comunque la tabella dei fatti.
+  return trovate.length ? trovate : ['Vendite'];
+}
 
 export const DAX_EXERCISES: DaxExercise[] = [
   // ==================== AGGREGAZIONI ====================
@@ -47,7 +79,9 @@ export const DAX_EXERCISES: DaxExercise[] = [
     title: 'Numero di righe di vendita',
     scenario: "Scrivi una misura che conti quante righe ci sono nella tabella Vendite (una riga = una vendita registrata).",
     starter: 'Righe Vendite = ',
-    accepted: ['COUNTROWS(Vendite)', 'Righe Vendite = COUNTROWS(Vendite)'],
+    accepted: [
+      'COUNTROWS(Vendite)',
+    ],
     hints: ["Vuoi contare righe di una tabella, non valori di una colonna.", "La funzione giusta finisce per ROWS."],
     explanation: "COUNTROWS conta le righe di una tabella. È più diretto e più affidabile di COUNT su una colonna, perché non dipende dai valori vuoti.",
     reference: 'Righe Vendite = COUNTROWS(Vendite)',
@@ -72,7 +106,10 @@ export const DAX_EXERCISES: DaxExercise[] = [
     title: 'Importo medio per riga',
     scenario: "Scrivi una misura per l'importo medio di una riga di vendita.",
     starter: 'Importo medio = ',
-    accepted: ['AVERAGE(Vendite[Importo])', 'Importo medio = AVERAGE(Vendite[Importo])'],
+    accepted: [
+      'AVERAGE(Vendite[Importo])',
+      'AVERAGEX(Vendite, Vendite[Importo])',
+    ],
     hints: ["Esiste un'aggregazione dedicata alla media.", "Non serve dividere a mano SUM per COUNTROWS."],
     explanation: "AVERAGE calcola la media aritmetica di una colonna, gestendo da sola numeratore e denominatore. Fare SUM diviso COUNTROWS darebbe lo stesso numero ma con più codice e più margine di errore.",
     reference: 'Importo medio = AVERAGE(Vendite[Importo])',
@@ -163,7 +200,9 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Quota % = ',
     accepted: [
       'DIVIDE(SUM(Vendite[Importo]), CALCULATE(SUM(Vendite[Importo]), ALL(Prodotti)))',
-      'Quota % = DIVIDE(SUM(Vendite[Importo]), CALCULATE(SUM(Vendite[Importo]), ALL(Prodotti)))',
+      'DIVIDE([Fatturato], CALCULATE([Fatturato], ALL(Prodotti)))',
+      'DIVIDE(SUMX(Vendite, Vendite[Importo]), CALCULATE(SUMX(Vendite, Vendite[Importo]), ALL(Prodotti)))',
+      'DIVIDE(SUM(Vendite[Importo]), CALCULATE(SUM(Vendite[Importo]), REMOVEFILTERS(Prodotti)))',
     ],
     hints: ["Al denominatore ti serve il totale senza il filtro dei prodotti.", "ALL(Prodotti) toglie qualsiasi filtro sulla tabella Prodotti."],
     explanation: "ALL rimuove i filtri da una tabella, così il denominatore resta il totale generale mentre il numeratore segue la selezione. DIVIDE protegge dal denominatore zero.",
@@ -208,7 +247,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Margine = ',
     accepted: [
       'SUMX(Vendite, Vendite[Importo] - RELATED(Prodotti[Costo]) * Vendite[Quantita])',
-      'Margine = SUMX(Vendite, Vendite[Importo] - RELATED(Prodotti[Costo]) * Vendite[Quantita])',
     ],
     hints: ["Il calcolo cambia riga per riga, quindi ti serve un iteratore.", "Il costo è su Prodotti: raggiungilo con RELATED dentro l'iterazione su Vendite."],
     explanation: "SUMX itera Vendite. Dentro l'iterazione hai il contesto di riga, quindi RELATED porta il costo dal prodotto collegato. Sommi ricavo meno costo per quantità su ogni riga.",
@@ -300,7 +338,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Fatturato AP = ',
     accepted: [
       'CALCULATE(SUM(Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data]))',
-      'Fatturato AP = CALCULATE(SUM(Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data]))',
+      'CALCULATE(SUMX(Vendite, Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data]))',
+      'CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data]))',
     ],
     hints: ["SAMEPERIODLASTYEAR sposta il contesto data indietro di un anno.", "Va passata come filtro dentro CALCULATE."],
     explanation: "SAMEPERIODLASTYEAR restituisce le stesse date spostate di un anno indietro. Passata a CALCULATE, sposta il contesto e l'espressione viene valutata sul periodo dell'anno prima.",
@@ -377,7 +416,10 @@ export const DAX_EXERCISES: DaxExercise[] = [
     title: 'Quantità totale venduta',
     scenario: "Scrivi una misura che sommi tutte le quantità vendute.",
     starter: 'Quantita totale = ',
-    accepted: ['SUM(Vendite[Quantita])', 'Quantita totale = SUM(Vendite[Quantita])'],
+    accepted: [
+      'SUM(Vendite[Quantita])',
+      'SUMX(Vendite, Vendite[Quantita])',
+    ],
     hints: ["La colonna da sommare è Quantita, nella tabella Vendite.", "Una sola funzione di aggregazione su una colonna."],
     explanation: "SUM somma i valori numerici di una colonna. Qui accumula le quantità di tutte le righe di vendita nel contesto di filtro corrente.",
     reference: 'Quantita totale = SUM(Vendite[Quantita])',
@@ -387,7 +429,11 @@ export const DAX_EXERCISES: DaxExercise[] = [
     title: 'Prodotti diversi venduti',
     scenario: "Scrivi una misura che conti quanti prodotti DIVERSI sono stati venduti almeno una volta.",
     starter: 'Prodotti venduti = ',
-    accepted: ['DISTINCTCOUNT(Vendite[ProdottoID])', 'Prodotti venduti = DISTINCTCOUNT(Vendite[ProdottoID])'],
+    accepted: [
+      'DISTINCTCOUNT(Vendite[ProdottoID])',
+      'COUNTROWS(DISTINCT(Vendite[ProdottoID]))',
+      'COUNTROWS(VALUES(Vendite[ProdottoID]))',
+    ],
     hints: ["Ti servono i valori unici, non tutte le righe.", "La funzione conta i valori distinti di una colonna."],
     explanation: "DISTINCTCOUNT conta i valori unici di ProdottoID nelle vendite: un prodotto comprato dieci volte conta una volta sola.",
     reference: 'Prodotti venduti = DISTINCTCOUNT(Vendite[ProdottoID])',
@@ -399,7 +445,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Scontrino medio = ',
     accepted: [
       'DIVIDE(SUM(Vendite[Importo]), COUNTROWS(Vendite))',
-      'Scontrino medio = DIVIDE(SUM(Vendite[Importo]), COUNTROWS(Vendite))',
+      'DIVIDE(SUMX(Vendite, Vendite[Importo]), COUNTROWS(Vendite))',
+      'DIVIDE([Fatturato], COUNTROWS(Vendite))',
     ],
     hints: ["Numeratore: la somma degli importi. Denominatore: quante righe di vendita.", "DIVIDE protegge dal denominatore zero meglio dell'operatore /."],
     explanation: "DIVIDE fa la divisione restituendo vuoto (non un errore) quando il denominatore è zero. Qui rapporta il fatturato al numero di righe di vendita.",
@@ -412,7 +459,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Prezzo medio = ',
     accepted: [
       'DIVIDE(SUM(Vendite[Importo]), SUM(Vendite[Quantita]))',
-      'Prezzo medio = DIVIDE(SUM(Vendite[Importo]), SUM(Vendite[Quantita]))',
+      'DIVIDE(SUMX(Vendite, Vendite[Importo]), SUM(Vendite[Quantita]))',
+      'DIVIDE([Fatturato], SUM(Vendite[Quantita]))',
     ],
     hints: ["Non è AVERAGE di una colonna: è un rapporto tra due somme.", "Importo totale sopra, quantità totale sotto."],
     explanation: "Il rapporto tra la somma degli importi e la somma delle quantità dà il prezzo medio per unità venduta, che pesa ogni riga per la sua quantità. AVERAGE(Importo) darebbe invece la media per riga, un numero diverso.",
@@ -427,7 +475,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Allerta costo = ',
     accepted: [
       'IF(Prodotti[Costo] > 100, "In perdita", "OK")',
-      'Allerta costo = IF(Prodotti[Costo] > 100, "In perdita", "OK")',
     ],
     hints: ["IF vuole test, valore-se-vero, valore-se-falso.", "Il confronto è sulla colonna Costo di Prodotti."],
     explanation: "IF valuta la condizione riga per riga e restituisce la seconda espressione se vera, la terza se falsa. Senza il terzo argomento, le righe sotto soglia resterebbero vuote.",
@@ -455,9 +502,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Semaforo = ',
     accepted: [
       'SWITCH(TRUE(), SUM(Vendite[Importo]) < 1000, "Rosso", SUM(Vendite[Importo]) < 5000, "Giallo", "Verde")',
-      'Semaforo = SWITCH(TRUE(), SUM(Vendite[Importo]) < 1000, "Rosso", SUM(Vendite[Importo]) < 5000, "Giallo", "Verde")',
       'SWITCH(TRUE(), [Fatturato] < 1000, "Rosso", [Fatturato] < 5000, "Giallo", "Verde")',
-      'Semaforo = SWITCH(TRUE(), [Fatturato] < 1000, "Rosso", [Fatturato] < 5000, "Giallo", "Verde")',
+      'SWITCH(TRUE(), SUMX(Vendite, Vendite[Importo]) < 1000, "Rosso", SUMX(Vendite, Vendite[Importo]) < 5000, "Giallo", "Verde")',
     ],
     hints: ["SWITCH confronta per uguaglianza: mettendo TRUE() ogni caso diventa una condizione.", "I casi si valutano in ordine: prima la soglia più bassa."],
     explanation: "SWITCH(TRUE(), condizione1, risultato1, ...) sceglie il primo caso la cui condizione è vera. È il modo idiomatico per gestire intervalli, dove IF annidati sarebbero più difficili da leggere.",
@@ -472,7 +518,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Fatturato Milano = ',
     accepted: [
       'CALCULATE(SUM(Vendite[Importo]), Clienti[Citta] = "Milano")',
-      'Fatturato Milano = CALCULATE(SUM(Vendite[Importo]), Clienti[Citta] = "Milano")',
+      'CALCULATE([Fatturato], Clienti[Citta] = "Milano")',
+      'CALCULATE(SUMX(Vendite, Vendite[Importo]), Clienti[Citta] = "Milano")',
     ],
     hints: ["CALCULATE prende l'espressione e poi i filtri da applicare.", "Il filtro è sulla colonna Citta della tabella Clienti."],
     explanation: "CALCULATE valuta l'aggregazione applicando il filtro passato come argomento. La relazione Clienti-Vendite propaga il filtro di città alle righe di vendita.",
@@ -500,7 +547,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Fatturato big = ',
     accepted: [
       'CALCULATE(SUM(Vendite[Importo]), FILTER(Vendite, Vendite[Importo] > 500))',
-      'Fatturato big = CALCULATE(SUM(Vendite[Importo]), FILTER(Vendite, Vendite[Importo] > 500))',
+      'CALCULATE(SUMX(Vendite, Vendite[Importo]), FILTER(Vendite, Vendite[Importo] > 500))',
+      'CALCULATE([Fatturato], FILTER(Vendite, Vendite[Importo] > 500))',
     ],
     hints: ["FILTER restituisce la tabella filtrata che CALCULATE userà come contesto.", "Itera Vendite tenendo le righe con importo maggiore di 500."],
     explanation: "FILTER(Vendite, Vendite[Importo] > 500) costruisce la tabella delle sole righe volute, e CALCULATE somma gli importi in quel contesto. È la forma esplicita da preferire quando filtri una colonna della tabella di fatti.",
@@ -515,7 +563,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Valore = ',
     accepted: [
       'SUMX(Vendite, Vendite[Quantita] * Vendite[Importo])',
-      'Valore = SUMX(Vendite, Vendite[Quantita] * Vendite[Importo])',
     ],
     hints: ["Il valore va calcolato per ogni riga prima di sommare: serve un iteratore.", "SUMX(tabella, espressione) valuta l'espressione riga per riga."],
     explanation: "SUMX scorre Vendite, calcola Quantita per Importo su ogni riga e somma i risultati. SUM non basta perché il prodotto tra le due colonne non esiste come colonna pronta.",
@@ -545,7 +592,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Citta cliente = ',
     accepted: [
       'RELATED(Clienti[Citta])',
-      'Citta cliente = RELATED(Clienti[Citta])',
     ],
     hints: ["Vai dal lato molti (Vendite) al lato uno (Clienti).", "In quella direzione si usa RELATED, che riporta un valore singolo."],
     explanation: "RELATED segue la relazione dal lato molti al lato uno e porta un valore singolo: qui la città del cliente collegato a ogni riga di vendita.",
@@ -558,7 +604,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Numero ordini = ',
     accepted: [
       'COUNTROWS(RELATEDTABLE(Vendite))',
-      'Numero ordini = COUNTROWS(RELATEDTABLE(Vendite))',
     ],
     hints: ["Dal lato uno al lato molti serve RELATEDTABLE, che restituisce una tabella.", "Poi conta quelle righe con COUNTROWS."],
     explanation: "RELATEDTABLE restituisce le righe di Vendite collegate al cliente corrente; COUNTROWS le conta. COUNTROWS(Vendite) da solo conterebbe l'intera tabella ignorando la relazione.",
@@ -588,8 +633,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Delta AA = ',
     accepted: [
       '[Fatturato] - CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data]))',
-      'Delta AA = [Fatturato] - CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data]))',
       'SUM(Vendite[Importo]) - CALCULATE(SUM(Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data]))',
+      'SUMX(Vendite, Vendite[Importo]) - CALCULATE(SUMX(Vendite, Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data]))',
     ],
     hints: ["Fatturato di ora meno fatturato dell'anno scorso.", "SAMEPERIODLASTYEAR dentro CALCULATE sposta il contesto di un anno indietro."],
     explanation: "SAMEPERIODLASTYEAR sposta le date di un anno indietro; dentro CALCULATE ricalcola il fatturato su quel periodo. La differenza con il fatturato attuale è la crescita in valore.",
@@ -603,6 +648,10 @@ export const DAX_EXERCISES: DaxExercise[] = [
     accepted: [
       'VAR Ora = [Fatturato] VAR Prima = CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
       'Crescita % AA = VAR Ora = [Fatturato] VAR Prima = CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
+      'VAR Ora = SUM(Vendite[Importo]) VAR Prima = CALCULATE(SUM(Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
+      'Crescita % AA = VAR Ora = SUM(Vendite[Importo]) VAR Prima = CALCULATE(SUM(Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
+      'VAR Ora = SUMX(Vendite, Vendite[Importo]) VAR Prima = CALCULATE(SUMX(Vendite, Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
+      'Crescita % AA = VAR Ora = SUMX(Vendite, Vendite[Importo]) VAR Prima = CALCULATE(SUMX(Vendite, Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
     ],
     hints: ["Dichiara due variabili: fatturato attuale e dell'anno prima.", "RETURN chiude con DIVIDE(Ora - Prima, Prima)."],
     explanation: "Le VAR calcolano una volta il fatturato attuale e quello dell'anno scorso; RETURN restituisce la variazione relativa con DIVIDE, che evita l'errore quando l'anno prima vale zero.",
@@ -634,6 +683,9 @@ export const DAX_EXERCISES: DaxExercise[] = [
       'VAR F = SUM(Vendite[Importo]) RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
       'Stato fatturato = VAR F = SUM(Vendite[Importo]) RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
       'VAR F = [Fatturato] RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
+      'VAR F = SUMX(Vendite, Vendite[Importo]) RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
+      'Stato fatturato = VAR F = SUMX(Vendite, Vendite[Importo]) RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
+      'Stato fatturato = VAR F = [Fatturato] RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
     ],
     hints: ["Metti il fatturato in una VAR, poi usalo nell'IF dentro RETURN.", "Così calcoli il fatturato una volta sola."],
     explanation: "La variabile cattura il fatturato una volta e lo riusa nell'IF: più leggibile e senza ricalcolare la stessa aggregazione due volte. RETURN restituisce l'etichetta scelta.",
@@ -662,7 +714,10 @@ export const DAX_EXERCISES: DaxExercise[] = [
     title: 'Vendita più alta',
     scenario: "Scrivi una misura che restituisca l'importo della singola riga di vendita più alta.",
     starter: 'Vendita massima = ',
-    accepted: ['MAX(Vendite[Importo])', 'Vendita massima = MAX(Vendite[Importo])'],
+    accepted: [
+      'MAX(Vendite[Importo])',
+      'MAXX(Vendite, Vendite[Importo])',
+    ],
     hints: ["Serve un'aggregazione, non un ordinamento.", "È la funzione gemella di MIN."],
     explanation: "MAX percorre la colonna nel contesto di filtro corrente e restituisce il valore più grande. Non serve ordinare né usare TOPN: per un singolo valore l'aggregazione basta.",
     reference: 'Vendita massima = MAX(Vendite[Importo])',
@@ -689,7 +744,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'P90 importo = ',
     accepted: [
       'PERCENTILE.INC(Vendite[Importo], 0.9)',
-      'P90 importo = PERCENTILE.INC(Vendite[Importo], 0.9)',
       'PERCENTILE.INC(Vendite[Importo], 0,9)',
     ],
     hints: ["Il percentile si esprime come frazione, non come numero da 0 a 100.", "INC include gli estremi, EXC li esclude."],
@@ -733,8 +787,14 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Top 5 prodotti = ',
     accepted: [
       'SUMX(TOPN(5, ALL(Prodotti), [Fatturato], DESC), [Fatturato])',
-      'Top 5 prodotti = SUMX(TOPN(5, ALL(Prodotti), [Fatturato], DESC), [Fatturato])',
       'CALCULATE([Fatturato], TOPN(5, ALL(Prodotti), [Fatturato], DESC))',
+      'SUMX(TOPN(5, ALL(Prodotti), SUM(Vendite[Importo]), DESC), SUM(Vendite[Importo]))',
+      'SUMX(TOPN(5, REMOVEFILTERS(Prodotti), [Fatturato], DESC), [Fatturato])',
+      'CALCULATE(SUM(Vendite[Importo]), TOPN(5, ALL(Prodotti), SUM(Vendite[Importo]), DESC))',
+      'CALCULATE([Fatturato], TOPN(5, REMOVEFILTERS(Prodotti), [Fatturato], DESC))',
+      'SUMX(TOPN(5, ALL(Prodotti), SUMX(Vendite, Vendite[Importo]), DESC), SUMX(Vendite, Vendite[Importo]))',
+      'SUMX(TOPN(5, REMOVEFILTERS(Prodotti), SUM(Vendite[Importo]), DESC), SUM(Vendite[Importo]))',
+      'CALCULATE(SUM(Vendite[Importo]), TOPN(5, REMOVEFILTERS(Prodotti), SUM(Vendite[Importo]), DESC))',
     ],
     hints: ["TOPN restituisce una tabella con le prime N righe secondo un criterio.", "Poi ti serve un iteratore per sommare la misura su quella tabella."],
     explanation: "TOPN ritaglia le cinque righe migliori di ALL(Prodotti) ordinate per fatturato; SUMX scorre quella tabella e somma la misura riga per riga. ALL serve perché la classifica va calcolata sull'intero catalogo, non su ciò che è filtrato.",
@@ -762,7 +822,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Quota categoria = ',
     accepted: [
       'DIVIDE([Fatturato], CALCULATE([Fatturato], ALLEXCEPT(Prodotti, Prodotti[Categoria])))',
-      'Quota categoria = DIVIDE([Fatturato], CALCULATE([Fatturato], ALLEXCEPT(Prodotti, Prodotti[Categoria])))',
+      'DIVIDE(SUM(Vendite[Importo]), CALCULATE(SUM(Vendite[Importo]), ALLEXCEPT(Prodotti, Prodotti[Categoria])))',
+      'DIVIDE(SUMX(Vendite, Vendite[Importo]), CALCULATE(SUMX(Vendite, Vendite[Importo]), ALLEXCEPT(Prodotti, Prodotti[Categoria])))',
     ],
     hints: ["Il denominatore deve dimenticare il prodotto ma ricordare la categoria.", "ALLEXCEPT toglie tutti i filtri di una tabella tranne quelli che elenchi."],
     explanation: "ALLEXCEPT(Prodotti, Prodotti[Categoria]) rimuove ogni filtro su Prodotti tranne la categoria, quindi il denominatore diventa il totale della categoria corrente. DIVIDE protegge dal denominatore vuoto.",
@@ -791,7 +852,11 @@ export const DAX_EXERCISES: DaxExercise[] = [
     title: 'Ultima data del periodo',
     scenario: "Scrivi una misura che restituisca l'ultima data visibile nel contesto di filtro corrente del calendario.",
     starter: 'Ultima data = ',
-    accepted: ['LASTDATE(Calendario[Data])', 'Ultima data = LASTDATE(Calendario[Data])', 'MAX(Calendario[Data])', 'Ultima data = MAX(Calendario[Data])'],
+    accepted: [
+      'LASTDATE(Calendario[Data])',
+      'MAX(Calendario[Data])',
+      'MAXX(Calendario, Calendario[Data])',
+    ],
     hints: ["Esiste una funzione di time intelligence dedicata.", "Restituisce una tabella di una riga con la data più recente."],
     explanation: "LASTDATE restituisce l'ultima data del periodo filtrato come tabella di una riga, quindi si può usare direttamente come filtro dentro CALCULATE. MAX dà lo stesso giorno ma come valore scalare.",
     reference: 'Ultima data = LASTDATE(Calendario[Data])',
@@ -803,7 +868,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Saldo finale mese = ',
     accepted: [
       'CLOSINGBALANCEMONTH(SUM(Vendite[Quantita]), Calendario[Data])',
-      'Saldo finale mese = CLOSINGBALANCEMONTH(SUM(Vendite[Quantita]), Calendario[Data])',
+      'CLOSINGBALANCEMONTH(SUMX(Vendite, Vendite[Quantita]), Calendario[Data])',
     ],
     hints: ["Esiste una famiglia di funzioni CLOSINGBALANCE per mese, trimestre e anno.", "Vogliono l'espressione e la colonna data."],
     explanation: "CLOSINGBALANCEMONTH valuta l'espressione all'ultima data del mese presente nel contesto. È il modo canonico di gestire una misura semi-additiva senza scrivere a mano CALCULATE con LASTDATE.",
@@ -831,7 +896,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Ultimo valore = ',
     accepted: [
       'CALCULATE(SUM(Vendite[Quantita]), LASTDATE(Calendario[Data]))',
-      'Ultimo valore = CALCULATE(SUM(Vendite[Quantita]), LASTDATE(Calendario[Data]))',
+      'CALCULATE(SUMX(Vendite, Vendite[Quantita]), LASTDATE(Calendario[Data]))',
     ],
     hints: ["CALCULATE accetta una tabella come filtro.", "LASTDATE restituisce proprio una tabella di una riga."],
     explanation: "LASTDATE produce una tabella con la sola data più recente del contesto e CALCULATE la usa come filtro, quindi la somma viene calcolata su quel solo giorno. È la meccanica che le funzioni CLOSINGBALANCE incapsulano.",
@@ -891,8 +956,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     scenario: "Scrivi una tabella calcolata che contenga l'elenco delle categorie prodotto senza ripetizioni.",
     starter: 'Categorie = ',
     accepted: [
-      'VALUES(Prodotti[Categoria])', 'Categorie = VALUES(Prodotti[Categoria])',
-      'DISTINCT(Prodotti[Categoria])', 'Categorie = DISTINCT(Prodotti[Categoria])',
+      'VALUES(Prodotti[Categoria])',
+      'DISTINCT(Prodotti[Categoria])',
     ],
     hints: ["Cerchi i valori unici di una colonna.", "Due funzioni fanno quasi la stessa cosa: VALUES e DISTINCT."],
     explanation: "VALUES e DISTINCT restituiscono entrambe i valori unici della colonna. Differiscono su un dettaglio: VALUES include anche la riga vuota generata da eventuali relazioni non valide, DISTINCT no.",
@@ -920,7 +985,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Riepilogo = ',
     accepted: [
       'ADDCOLUMNS(SUMMARIZE(Vendite, Prodotti[Categoria]), "Fatturato", [Fatturato])',
-      'Riepilogo = ADDCOLUMNS(SUMMARIZE(Vendite, Prodotti[Categoria]), "Fatturato", [Fatturato])',
+      'ADDCOLUMNS(SUMMARIZE(Vendite, Prodotti[Categoria]), "Fatturato", SUM(Vendite[Importo]))',
     ],
     hints: ["Prima raggruppi, poi aggiungi la colonna calcolata.", "SUMMARIZE crea i gruppi, ADDCOLUMNS ci appende la misura."],
     explanation: "SUMMARIZE produce l'elenco delle categorie presenti nelle vendite, ADDCOLUMNS ci affianca il fatturato calcolato nel contesto di ogni gruppo. È il pattern raccomandato: SUMMARIZE per raggruppare, ADDCOLUMNS per calcolare.",
@@ -963,7 +1028,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Clienti inattivi = ',
     accepted: [
       'EXCEPT(VALUES(Clienti[ClienteID]), VALUES(Vendite[ClienteID]))',
-      'Clienti inattivi = EXCEPT(VALUES(Clienti[ClienteID]), VALUES(Vendite[ClienteID]))',
       'EXCEPT(DISTINCT(Clienti[ClienteID]), DISTINCT(Vendite[ClienteID]))',
     ],
     hints: ["Ti serve la differenza fra due insiemi di ID.", "EXCEPT tiene le righe della prima tabella che non stanno nella seconda."],
@@ -991,7 +1055,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
     scenario: "Scrivi una tabella calcolata con i valori da 0 a 100 con passo 5, da usare come parametro di uno slicer.",
     starter: 'Soglie = ',
     accepted: [
-      'GENERATESERIES(0, 100, 5)', 'Soglie = GENERATESERIES(0, 100, 5)',
+      'GENERATESERIES(0, 100, 5)',
     ],
     hints: ["Esiste una funzione che genera una serie numerica.", "Vuole inizio, fine e incremento."],
     explanation: "GENERATESERIES costruisce una tabella di una colonna con i valori dall'inizio alla fine usando l'incremento indicato. È il modo standard per creare le tabelle parametro che alimentano gli slicer what-if.",
@@ -1067,7 +1131,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Margine = ',
     accepted: [
       'Vendite[Importo] - RELATED(Prodotti[Costo]) * Vendite[Quantita]',
-      'Margine = Vendite[Importo] - RELATED(Prodotti[Costo]) * Vendite[Quantita]',
     ],
     hints: ["Sei in contesto di riga su Vendite e ti serve un valore da Prodotti.", "RELATED segue la relazione dal lato molti al lato uno."],
     explanation: "In una colonna calcolata su Vendite hai il contesto di riga, quindi RELATED recupera il costo del prodotto collegato a quella riga. Va moltiplicato per la quantità perché il costo è unitario mentre l'importo è già totale di riga.",
@@ -1110,7 +1173,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Nome prodotto = ',
     accepted: [
       'LOOKUPVALUE(Prodotti[Nome], Prodotti[ProdottoID], Vendite[ProdottoID])',
-      'Nome prodotto = LOOKUPVALUE(Prodotti[Nome], Prodotti[ProdottoID], Vendite[ProdottoID])',
     ],
     hints: ["RELATED richiede una relazione, qui non c'è.", "La funzione vuole: colonna da restituire, colonna da cercare, valore cercato."],
     explanation: "LOOKUPVALUE cerca nella tabella di destinazione la riga in cui la colonna chiave vale il valore indicato e restituisce la colonna richiesta, senza bisogno di una relazione. Se trova più corrispondenze restituisce un errore, quindi la chiave deve essere univoca.",
@@ -1169,7 +1231,10 @@ export const DAX_EXERCISES: DaxExercise[] = [
     title: 'Totale progressivo nel visual',
     scenario: "Come visual calculation, scrivi il totale progressivo del fatturato lungo l'asse della visualizzazione.",
     starter: 'Totale progressivo = ',
-    accepted: ['RUNNINGSUM([Fatturato])', 'Totale progressivo = RUNNINGSUM([Fatturato])'],
+    accepted: [
+      'RUNNINGSUM([Fatturato])',
+      'RUNNINGSUM(SUM(Vendite[Importo]))',
+    ],
     hints: ["Esiste una funzione dedicata nelle visual calculation.", "Il nome dice esattamente cosa fa."],
     explanation: "RUNNINGSUM accumula la misura seguendo l'ordine dell'asse della visualizzazione. Come misura classica servirebbe CALCULATE con un filtro su tutte le date minori o uguali a quella corrente.",
     reference: 'Totale progressivo = RUNNINGSUM([Fatturato])',
@@ -1196,7 +1261,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Anno precedente = ',
     accepted: [
       'CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Calendario[Data]))',
-      'Anno precedente = CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Calendario[Data]))',
     ],
     hints: ["Dentro un gruppo di calcolo la misura corrente ha un nome generico.", "Il resto è il solito CALCULATE con time intelligence."],
     explanation: "SELECTEDMEASURE è il segnaposto della misura a cui l'elemento viene applicato: la stessa definizione vale per fatturato, quantità o margine. CALCULATE con SAMEPERIODLASTYEAR sposta il contesto all'anno prima.",
@@ -1283,7 +1347,10 @@ export const DAX_EXERCISES: DaxExercise[] = [
     title: 'Filtro fisso su un segmento',
     scenario: "Scrivi l'espressione di filtro RLS che, applicata alla tabella Clienti, lascia visibili solo i clienti del segmento Premium.",
     starter: '',
-    accepted: ['[Segmento] = "Premium"', 'Clienti[Segmento] = "Premium"'],
+    accepted: [
+      '[Segmento] = "Premium"',
+      'Clienti[Segmento] = "Premium"',
+    ],
     hints: ["È una semplice espressione booleana sulla tabella.", "Non serve CALCULATE né FILTER."],
     explanation: "L'espressione di un ruolo è una condizione booleana valutata riga per riga sulla tabella a cui è associata: le righe che restituiscono vero restano visibili. Non serve avvolgerla in FILTER, il motore lo fa già.",
     reference: '[Segmento] = "Premium"',
@@ -1308,7 +1375,10 @@ export const DAX_EXERCISES: DaxExercise[] = [
     title: 'Ogni venditore vede i suoi',
     scenario: "La tabella Clienti ha una colonna Email con l'indirizzo del venditore assegnato. Scrivi l'espressione RLS che mostra a ciascuno solo i propri clienti.",
     starter: '',
-    accepted: ['[Email] = USERPRINCIPALNAME()', 'Clienti[Email] = USERPRINCIPALNAME()'],
+    accepted: [
+      '[Email] = USERPRINCIPALNAME()',
+      'Clienti[Email] = USERPRINCIPALNAME()',
+    ],
     hints: ["Confronta la colonna con l'identità di chi sta guardando.", "Una sola riga di espressione, nessun CALCULATE."],
     explanation: "Il confronto fra la colonna Email e USERPRINCIPALNAME viene valutato riga per riga: restano visibili solo i clienti assegnati a chi ha aperto il report. Un solo ruolo copre tutti i venditori, senza doverne creare uno a testa.",
     reference: '[Email] = USERPRINCIPALNAME()',
@@ -1428,6 +1498,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
       'VAR F = [Fatturato] RETURN IF(F > 1000, F, 0)',
       'Fatturato rilevante = VAR F = [Fatturato] RETURN IF(F > 1000, F, 0)',
       'VAR F = SUM(Vendite[Importo]) RETURN IF(F > 1000, F, 0)',
+      'Fatturato rilevante = VAR F = SUM(Vendite[Importo]) RETURN IF(F > 1000, F, 0)',
+      'VAR F = SUMX(Vendite, Vendite[Importo]) RETURN IF(F > 1000, F, 0)',
     ],
     hints: ["Il valore serve due volte: nel test e nel risultato.", "Una variabile lo cattura una volta sola."],
     explanation: "Senza variabile la misura verrebbe scritta due volte nell'espressione e il motore potrebbe valutarla due volte. La VAR la calcola una volta e la riusa, rendendo la formula più leggibile e potenzialmente più veloce.",
@@ -1487,8 +1559,8 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Fatturato bevande = ',
     accepted: [
       'CALCULATE([Fatturato], Prodotti[Categoria] = "Bevande")',
-      'Fatturato bevande = CALCULATE([Fatturato], Prodotti[Categoria] = "Bevande")',
       'CALCULATE(SUM(Vendite[Importo]), Prodotti[Categoria] = "Bevande")',
+      'CALCULATE(SUMX(Vendite, Vendite[Importo]), Prodotti[Categoria] = "Bevande")',
     ],
     hints: ["CALCULATE prende l'espressione e poi le condizioni di filtro.", "Per una condizione semplice non serve FILTER."],
     explanation: "CALCULATE valuta il fatturato dopo aver applicato il filtro sulla categoria. Con una condizione su una sola colonna si passa direttamente il predicato: è più corto e il motore lo esegue meglio di un FILTER esplicito.",
@@ -1516,9 +1588,11 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Fatturato assoluto = ',
     accepted: [
       'CALCULATE([Fatturato], ALL(Vendite))',
-      'Fatturato assoluto = CALCULATE([Fatturato], ALL(Vendite))',
       'CALCULATE([Fatturato], REMOVEFILTERS())',
-      'Fatturato assoluto = CALCULATE([Fatturato], REMOVEFILTERS())',
+      'CALCULATE(SUM(Vendite[Importo]), ALL(Vendite))',
+      'CALCULATE(SUM(Vendite[Importo]), REMOVEFILTERS())',
+      'CALCULATE(SUMX(Vendite, Vendite[Importo]), ALL(Vendite))',
+      'CALCULATE(SUMX(Vendite, Vendite[Importo]), REMOVEFILTERS())',
     ],
     hints: ["Serve una funzione che azzeri il contesto di filtro.", "REMOVEFILTERS è il nome più esplicito della stessa idea."],
     explanation: "ALL usato come argomento di CALCULATE rimuove i filtri dalla tabella indicata, quindi il totale resta costante. REMOVEFILTERS fa la stessa cosa con un nome che dice esplicitamente cosa succede, ed è la forma oggi consigliata.",
@@ -1531,9 +1605,9 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Fatturato YTD = ',
     accepted: [
       'TOTALYTD([Fatturato], Calendario[Data])',
-      'Fatturato YTD = TOTALYTD([Fatturato], Calendario[Data])',
       'CALCULATE([Fatturato], DATESYTD(Calendario[Data]))',
-      'Fatturato YTD = CALCULATE([Fatturato], DATESYTD(Calendario[Data]))',
+      'TOTALYTD(SUM(Vendite[Importo]), Calendario[Data])',
+      'CALCULATE(SUM(Vendite[Importo]), DATESYTD(Calendario[Data]))',
     ],
     hints: ["Esiste una funzione che fa tutto in un colpo.", "In alternativa, CALCULATE con DATESYTD."],
     explanation: "TOTALYTD accumula la misura dall'inizio dell'anno alla data corrente. È la scorciatoia di CALCULATE con DATESYTD: entrambe vanno bene, la prima è più compatta, la seconda mostra la meccanica.",
@@ -1561,8 +1635,10 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Fatturato 12 mesi = ',
     accepted: [
       'CALCULATE([Fatturato], DATESINPERIOD(Calendario[Data], LASTDATE(Calendario[Data]), -12, MONTH))',
-      'Fatturato 12 mesi = CALCULATE([Fatturato], DATESINPERIOD(Calendario[Data], LASTDATE(Calendario[Data]), -12, MONTH))',
       'CALCULATE([Fatturato], DATESINPERIOD(Calendario[Data], MAX(Calendario[Data]), -12, MONTH))',
+      'CALCULATE(SUM(Vendite[Importo]), DATESINPERIOD(Calendario[Data], LASTDATE(Calendario[Data]), -12, MONTH))',
+      'CALCULATE(SUM(Vendite[Importo]), DATESINPERIOD(Calendario[Data], MAX(Calendario[Data]), -12, MONTH))',
+      'CALCULATE([Fatturato], DATESINPERIOD(Calendario[Data], MAXX(Calendario, Calendario[Data]), -12, MONTH))',
     ],
     hints: ["DATESINPERIOD costruisce un intervallo a partire da una data.", "Il numero negativo indica che si va indietro nel tempo."],
     explanation: "DATESINPERIOD parte dall'ultima data visibile e torna indietro di dodici mesi, generando l'intervallo che CALCULATE usa come filtro. Il segno negativo è ciò che rende la finestra retrospettiva invece che prospettica.",
@@ -1575,7 +1651,6 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Fatturato calcolato = ',
     accepted: [
       'SUMX(Vendite, Vendite[Quantita] * Vendite[Importo])',
-      'Fatturato calcolato = SUMX(Vendite, Vendite[Quantita] * Vendite[Importo])',
     ],
     hints: ["SUM non sa moltiplicare due colonne fra loro.", "Serve un iteratore che lavori riga per riga."],
     explanation: "SUMX scorre Vendite creando un contesto di riga, calcola il prodotto per ciascuna e somma i risultati. SUM accetta una sola colonna e non potrebbe fare la moltiplicazione prima di sommare.",
@@ -1618,7 +1693,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
     starter: 'Fatturato spedito = ',
     accepted: [
       'CALCULATE([Fatturato], USERELATIONSHIP(Vendite[DataSpedizione], Calendario[Data]))',
-      'Fatturato spedito = CALCULATE([Fatturato], USERELATIONSHIP(Vendite[DataSpedizione], Calendario[Data]))',
+      'CALCULATE(SUM(Vendite[Importo]), USERELATIONSHIP(Vendite[DataSpedizione], Calendario[Data]))',
     ],
     hints: ["La relazione esiste già, va solo attivata per questo calcolo.", "USERELATIONSHIP va dentro CALCULATE."],
     explanation: "USERELATIONSHIP attiva la relazione indicata per la sola durata di quel CALCULATE, lasciando attiva quella predefinita ovunque altro. È il modo pulito di avere due misure, una per data ordine e una per data spedizione, sullo stesso calendario.",

@@ -1,13 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Page, Difficulty } from '../types';
 import {
-  Home as HomeIcon, Menu, ChevronLeft, ChevronRight, Lightbulb, Unlock, Lock,
-  TrendingUp, Check, X, BarChart3, Play, Database, Shuffle,
+  Menu, Lightbulb, Unlock, Lock, Check, X, BarChart3, Play, Database, Shuffle,
 } from 'lucide-react';
 import UserBadge from './UserBadge';
-import { ExerciseNav, HomeButton, ShuffleButton, AnalyticsButton } from './GymControls';
+import { ExerciseNav, HomeButton, IconButton, AnalyticsButton } from './GymControls';
 import {
-  DAX_TOPICS, DAX_EXERCISES, DAX_MODEL_NOTE, DAX_TOPIC_TOTALS, getDaxExercises,
+  DAX_TOPICS, DAX_EXERCISES, DAX_SCHEMA, DAX_TOPIC_TOTALS, getDaxExercises, tablesForExercise,
 } from '../services/daxExercises';
 import { DaxExercise, DaxTopicId, checkDaxFormula } from '../daxTypes';
 import AiExplainButton from './AiExplainButton';
@@ -201,7 +200,10 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
 
           </div>
 
-          {/* ROW 2: Counter (left) + tools (right), same as SQL Lab */}
+          {/* ROW 2: contatore + azioni sull'esercizio a sinistra, strumenti a destra.
+              Verifica/Suggerimento/Soluzione stanno qui, sotto il numero di
+              esercizio, come in SQL Lab: prima erano in fondo alla pagina e su
+              un esercizio lungo finivano sotto la piega. */}
           <div className="flex items-center gap-2">
             <ExerciseNav
               index={index}
@@ -210,19 +212,62 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
               onNext={() => go(1)}
               accentText="text-yellow-300"
             />
+
+            {exercise && (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={check}
+                  title="Verifica: controlla la tua risposta"
+                  aria-label="Verifica la risposta"
+                  className="h-10 px-4 rounded-xl text-xs font-bold flex items-center gap-2 bg-yellow-500 text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20 transition-all active:scale-95"
+                >
+                  <Play size={14} fill="currentColor" /> Verifica
+                </button>
+                {/* Solo icona: sono comandi secondari, l'etichetta vive nel tooltip. */}
+                <button
+                  onClick={() => setShowHint((v) => !v)}
+                  title="Suggerimento: un indizio per volta, senza svelare la soluzione"
+                  aria-label="Mostra un suggerimento"
+                  aria-pressed={showHint}
+                  className={`h-10 w-10 grid place-items-center rounded-xl ring-1 transition-all active:scale-95 ${
+                    showHint
+                      ? 'bg-amber-500/20 text-amber-300 ring-amber-500/30'
+                      : 'bg-white/[0.04] text-slate-300 ring-white/10 hover:bg-white/[0.08] hover:text-white'
+                  }`}
+                >
+                  <Lightbulb size={16} className={showHint ? 'fill-amber-300' : ''} />
+                </button>
+                <button
+                  onClick={() => setShowSolution((v) => !v)}
+                  title="Soluzione: mostra la misura corretta e la spiegazione"
+                  aria-label="Mostra la soluzione"
+                  aria-pressed={showSolution}
+                  className={`h-10 w-10 grid place-items-center rounded-xl ring-1 transition-all active:scale-95 ${
+                    showSolution
+                      ? 'bg-purple-500/20 text-purple-300 ring-purple-500/30'
+                      : 'bg-white/[0.04] text-slate-300 ring-white/10 hover:bg-white/[0.08] hover:text-white'
+                  }`}
+                >
+                  {showSolution ? <Unlock size={16} /> : <Lock size={16} />}
+                </button>
+              </div>
+            )}
+
             <div className="ml-auto flex items-center gap-2">
-              <ShuffleButton onClick={() => { setShuffleNonce((n) => n + 1); setIndex(0); }} />
+              {/* Mescola solo icona, come suggerimento e soluzione. Non riuso
+                  ShuffleButton perche' e' condiviso con SQL e Python, che
+                  tengono l'etichetta. */}
+              <IconButton
+                onClick={() => { setShuffleNonce((n) => n + 1); setIndex(0); }}
+                label="Mescola: pesca altri esercizi dal pool e cambia l'ordine"
+              >
+                <Shuffle size={16} />
+              </IconButton>
               {onNavigate && <AnalyticsButton onClick={() => onNavigate(Page.Analytics)} />}
               <UserBadge onNavigate={onNavigate} />
             </div>
           </div>
         </header>
-
-        {/* Model note */}
-        <div className="flex items-start gap-2 text-[11px] text-slate-400 bg-[#101219]/75 backdrop-blur-xl rounded-xl px-4 py-2.5 mb-3 shrink-0">
-          <Database size={14} className="text-yellow-400/70 shrink-0 mt-0.5" />
-          <span className="leading-relaxed">{DAX_MODEL_NOTE}</span>
-        </div>
 
         {!exercise ? (
           <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
@@ -246,6 +291,26 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
             <div className="bg-[#101219]/85 backdrop-blur-xl rounded-2xl px-6 py-5 shrink-0">
               <h2 className="font-outfit text-xl md:text-2xl text-white font-bold tracking-tight mb-2 leading-tight">{exercise.title}</h2>
               <p className="text-slate-200 text-sm leading-relaxed">{exercise.scenario}</p>
+
+              {/* Solo le tabelle che questo esercizio usa, con tutte le loro
+                  colonne. Sostituisce la vecchia nota di modello sempre a
+                  schermo: era lunga, identica per ogni esercizio e per giunta
+                  incompleta, quindi chi doveva scrivere una misura non poteva
+                  sapere come si chiamavano le colonne. Mostrare l'intera
+                  tabella, e non solo la colonna giusta, non svela la risposta.
+                  E' anche lo stile delle domande PL-300, che dichiarano il
+                  modello dentro allo scenario. */}
+              <div className="mt-4 pt-3 border-t border-white/5 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-slate-500">
+                  <Database size={12} className="text-yellow-400/70" /> Modello
+                </span>
+                {tablesForExercise(exercise).map((t) => (
+                  <span key={t} className="font-mono text-[11px] text-slate-400">
+                    <span className="text-yellow-300/90">{t}</span>
+                    ({DAX_SCHEMA[t].join(', ')})
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* MCQ options or formula input */}
@@ -288,38 +353,24 @@ const DaxGym: React.FC<DaxGymProps> = ({ onBack, onNavigate }) => {
               </div>
             )}
 
-            {/* Action row: one primary (Verifica) + neutral utilities */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <button title="Controlla la tua risposta"
-                onClick={check}
-                className="h-10 px-5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg bg-yellow-500 text-black hover:bg-yellow-400 shadow-yellow-500/20"
-              >
-                <Play size={14} fill="currentColor" /> Verifica
-              </button>
-              <button title="Un indizio per volta, senza svelare la soluzione"
-                onClick={() => setShowHint((v) => !v)}
-                className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showHint ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/20' : 'bg-[#101219]/85 text-slate-300 hover:bg-white/5'}`}
-              >
-                <Lightbulb size={14} className={showHint ? 'fill-amber-300' : ''} /> Suggerimento
-              </button>
-              <button title="Mostra la misura corretta e la spiegazione"
-                onClick={() => setShowSolution((v) => !v)}
-                className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md ${showSolution ? 'bg-purple-500/20 text-purple-300 ring-1 ring-purple-500/20' : 'bg-[#101219]/85 text-slate-300 hover:bg-white/5'}`}
-              >
-                {showSolution ? <Unlock size={14} /> : <Lock size={14} />} Soluzione
-              </button>
-
-              {result === 'correct' && (
-                <span className="flex items-center gap-1.5 text-sm font-bold text-emerald-400 ml-1">
-                  <Check size={16} /> Corretto
-                </span>
-              )}
-              {result === 'wrong' && (
-                <span className="flex items-center gap-1.5 text-sm font-bold text-red-400 ml-1">
-                  <X size={16} /> Riprova
-                </span>
-              )}
-            </div>
+            {/* Esito della verifica. I comandi (Verifica/Suggerimento/Soluzione)
+                sono nella toolbar in alto, sotto il contatore. */}
+            {/* `result` vale 'idle' | 'correct' | 'wrong': confrontare esplicitamente,
+                perche' 'idle' e' una stringa truthy e un semplice `result &&`
+                mostrava "Riprova" da subito, prima di premere Verifica. */}
+            {result !== 'idle' && (
+              <div className="flex items-center gap-2 shrink-0">
+                {result === 'correct' ? (
+                  <span className="flex items-center gap-1.5 text-sm font-bold text-emerald-400">
+                    <Check size={16} /> Corretto
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5 text-sm font-bold text-red-400">
+                    <X size={16} /> Riprova
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* AI error explainer (shown after a wrong answer) */}
             {result === 'wrong' && (
