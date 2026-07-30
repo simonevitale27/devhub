@@ -62,7 +62,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-agg-e1', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Fatturato totale',
-    scenario: "Ti serve una misura che restituisca il fatturato totale, cioè la somma di tutti gli importi in Vendite.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella dei fatti Vendite. La direzione commerciale chiede un indicatore con il fatturato complessivo. Devi creare una misura che sommi tutti gli importi registrati. Quale espressione DAX usi?",
     options: [
       'Fatturato = SUM(Vendite[Importo])',
       'Fatturato = COUNT(Vendite[Importo])',
@@ -77,7 +77,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-agg-e2', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Numero di righe di vendita',
-    scenario: "Scrivi una misura che conti quante righe ci sono nella tabella Vendite (una riga = una vendita registrata).",
+    scenario: "Hai un modello semantico Power BI in cui ogni riga di Vendite rappresenta una vendita registrata. Devi creare una misura che restituisca il numero di transazioni. Scrivi la misura.",
     starter: 'Righe Vendite = ',
     accepted: [
       'COUNTROWS(Vendite)',
@@ -89,7 +89,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-agg-m1', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Clienti che hanno acquistato',
-    scenario: "Vuoi sapere quanti clienti diversi compaiono nelle vendite. Un cliente che ha comprato dieci volte conta una volta sola.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Clienti. Il marketing vuole sapere quanti clienti hanno effettivamente acquistato: un cliente che ha comprato dieci volte deve contare una volta sola. Quale espressione DAX usi?",
     options: [
       'Clienti attivi = COUNT(Vendite[ClienteID])',
       'Clienti attivi = DISTINCTCOUNT(Vendite[ClienteID])',
@@ -104,7 +104,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-agg-m2', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Importo medio per riga',
-    scenario: "Scrivi una misura per l'importo medio di una riga di vendita.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura che restituisca l'importo medio di una riga di vendita. Scrivi la misura.",
     starter: 'Importo medio = ',
     accepted: [
       'AVERAGE(Vendite[Importo])',
@@ -117,7 +117,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-agg-h1', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Quantità media per ordine, non per riga',
-    scenario: "Ogni riga di Vendite è una riga d'ordine. Vuoi la quantità media venduta per prodotto distinto, cioè la quantità totale divisa per il numero di prodotti diversi venduti. Quale misura regge anche quando cambia il contesto di filtro?",
+    scenario: "Hai un modello semantico Power BI in cui ogni riga di Vendite è una riga d'ordine. Devi creare una misura che restituisca la quantità media per prodotto distinto, cioè la quantità totale divisa per il numero di prodotti diversi venduti. La misura deve restare corretta al variare del contesto di filtro ed essere protetta dal denominatore zero. Quale espressione DAX usi?",
     options: [
       'Media = AVERAGE(Vendite[Quantita])',
       'Media = SUM(Vendite[Quantita]) / DISTINCTCOUNT(Vendite[ProdottoID])',
@@ -134,7 +134,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-log-e1', topicId: DaxTopicId.Logical, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Etichetta alto/basso valore',
-    scenario: "In una colonna calcolata su Vendite vuoi scrivere \"Alto\" se l'importo supera 1000, altrimenti \"Basso\".",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi aggiungere una colonna calcolata che classifichi ogni riga come \"Alto\" quando l'importo supera 1000 e \"Basso\" negli altri casi. Quale espressione DAX usi?",
     options: [
       'Fascia = IF(Vendite[Importo] > 1000, "Alto", "Basso")',
       'Fascia = IF(Vendite[Importo] > 1000, "Alto")',
@@ -149,7 +149,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-log-m1', topicId: DaxTopicId.Logical, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Più categorie con SWITCH',
-    scenario: "Vuoi assegnare una priorità di magazzino in base alla categoria del prodotto: Bevande e Alimentari sono \"Deperibile\", il resto \"Standard\". Qual è la forma più pulita?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Prodotti. Il magazzino deve distinguere le merci deperibili: le categorie Bevande e Alimentari sono \"Deperibile\", tutte le altre \"Standard\". Devi aggiungere una colonna calcolata usando la forma più leggibile. Quale espressione DAX usi?",
     options: [
       'Priorita = IF(Prodotti[Categoria]="Bevande", "Deperibile", IF(Prodotti[Categoria]="Alimentari", "Deperibile", "Standard"))',
       'Priorita = SWITCH(Prodotti[Categoria], "Bevande", "Deperibile", "Alimentari", "Deperibile", "Standard")',
@@ -164,7 +164,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-log-h1', topicId: DaxTopicId.Logical, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Fasce numeriche con SWITCH(TRUE())',
-    scenario: "Vuoi una fascia di sconto in base all'importo: sotto 100 \"Nessuno\", da 100 a 499 \"5%\", da 500 in su \"10%\". Con SWITCH su intervalli, qual è la forma corretta?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi aggiungere una colonna calcolata che assegni una fascia di sconto in base all'importo: sotto 100 \"Nessuno\", da 100 a 499 \"5%\", da 500 in su \"10%\". La condizione è su intervalli, non su valori esatti. Quale espressione DAX usi?",
     options: [
       'Sconto = SWITCH(Vendite[Importo], <100, "Nessuno", <500, "5%", "10%")',
       'Sconto = SWITCH(TRUE(), Vendite[Importo] < 100, "Nessuno", Vendite[Importo] < 500, "5%", "10%")',
@@ -181,7 +181,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-calc-e1', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Fatturato di una sola categoria',
-    scenario: "Vuoi una misura col fatturato delle sole Bevande, a prescindere da cosa filtra la pagina.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una misura con il fatturato delle sole Bevande, che resti tale a prescindere dai filtri applicati alla pagina. Quale espressione DAX usi?",
     options: [
       'Bevande = SUM(Vendite[Importo]) WHERE Prodotti[Categoria] = "Bevande"',
       'Bevande = CALCULATE(SUM(Vendite[Importo]), Prodotti[Categoria] = "Bevande")',
@@ -196,7 +196,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-calc-m1', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Percentuale sul totale',
-    scenario: "Scrivi la quota percentuale del fatturato della selezione corrente sul totale di tutti i prodotti. Usa ALL(Prodotti) per rimuovere il filtro sui prodotti al denominatore.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una misura che esprima la quota percentuale del fatturato della selezione corrente sul totale di tutti i prodotti: al denominatore il filtro sui prodotti va rimosso con ALL. Scrivi la misura.",
     starter: 'Quota % = ',
     accepted: [
       'DIVIDE(SUM(Vendite[Importo]), CALCULATE(SUM(Vendite[Importo]), ALL(Prodotti)))',
@@ -211,7 +211,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-calc-h1', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Filtro complesso con FILTER',
-    scenario: "Vuoi il fatturato delle sole righe con quantità maggiore di 10. Il filtro è su una colonna della stessa tabella di fatti e va valutato riga per riga. Qual è la forma corretta?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura con il fatturato delle sole righe la cui quantità supera 10. La condizione riguarda una colonna della tabella dei fatti e va valutata riga per riga. Quale espressione DAX usi?",
     options: [
       'Big = CALCULATE(SUM(Vendite[Importo]), Vendite[Quantita] > 10)',
       'Big = CALCULATE(SUM(Vendite[Importo]), FILTER(Vendite, Vendite[Quantita] > 10))',
@@ -228,7 +228,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-iter-e1', topicId: DaxTopicId.Iterators, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'A cosa serve la X',
-    scenario: "Qual è la differenza tra SUM e SUMX?",
+    scenario: "Hai un modello semantico Power BI e stai scegliendo tra SUM e SUMX per un calcolo sulla tabella Vendite. Devi spiegare in che cosa si distinguono le due funzioni. Quale affermazione è corretta?",
     options: [
       'Sono identiche, X è solo un alias più veloce.',
       'SUM somma una colonna già pronta; SUMX calcola un\'espressione riga per riga e poi somma i risultati.',
@@ -243,7 +243,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-iter-m1', topicId: DaxTopicId.Iterators, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Margine totale',
-    scenario: "Ogni riga vale Importo di ricavo; il costo unitario sta in Prodotti[Costo] e la quantità in Vendite[Quantita]. Scrivi il margine totale: somma riga per riga di Importo meno costo per quantità.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti, collegate tra loro. Il ricavo di riga è in Vendite[Importo], il costo unitario in Prodotti[Costo] e la quantità in Vendite[Quantita]. Devi creare una misura con il margine totale, calcolato riga per riga. Scrivi la misura.",
     starter: 'Margine = ',
     accepted: [
       'SUMX(Vendite, Vendite[Importo] - RELATED(Prodotti[Costo]) * Vendite[Quantita])',
@@ -255,7 +255,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-iter-h1', topicId: DaxTopicId.Iterators, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Classifica dei prodotti',
-    scenario: "Vuoi una misura che dia la posizione in classifica di ogni prodotto per fatturato, dal più alto (1) al più basso. Quale funzione usi?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una misura che assegni a ogni prodotto la sua posizione in classifica per fatturato, dal più alto (1) al più basso. Quale funzione usi?",
     options: [
       'Rank = RANKX(ALL(Prodotti[Nome]), [Fatturato])',
       'Rank = RANK(Prodotti[Nome], [Fatturato])',
@@ -272,7 +272,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-rel-e1', topicId: DaxTopicId.Relationships, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Portare la categoria nei fatti',
-    scenario: "In una colonna calcolata su Vendite vuoi vedere la categoria del prodotto, che vive in Prodotti. La relazione Vendite verso Prodotti esiste già.",
+    scenario: "Hai un modello semantico Power BI in cui Vendite e Prodotti sono collegate da una relazione molti-a-uno già esistente. Devi aggiungere a Vendite una colonna calcolata che riporti la categoria del prodotto. Quale espressione DAX usi?",
     options: [
       'Categoria = Prodotti[Categoria]',
       'Categoria = RELATED(Prodotti[Categoria])',
@@ -287,7 +287,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-rel-m1', topicId: DaxTopicId.Relationships, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Quante vendite per prodotto',
-    scenario: "In una colonna calcolata su Prodotti vuoi contare quante righe di Vendite riguardano quel prodotto. Stai andando dal lato uno al lato molti.",
+    scenario: "Hai un modello semantico Power BI in cui Prodotti e Vendite sono collegate. Devi aggiungere a Prodotti una colonna calcolata che conti quante righe di Vendite riguardano quel prodotto, muovendoti dal lato uno al lato molti della relazione. Quale espressione DAX usi?",
     options: [
       'Numero vendite = COUNTROWS(RELATEDTABLE(Vendite))',
       'Numero vendite = RELATED(Vendite)',
@@ -302,7 +302,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-rel-h1', topicId: DaxTopicId.Relationships, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Costo medio pesato per categoria',
-    scenario: "Vuoi una misura del prezzo medio effettivo per categoria: fatturato totale diviso quantità totale. Entrambe le grandezze vivono in Vendite, ma vuoi filtrare per Prodotti[Categoria] nella visualizzazione. Cosa garantisce che il filtro di categoria arrivi ai fatti?",
+    scenario: "Hai un modello semantico Power BI in cui Vendite e Prodotti sono collegate. Devi creare una misura con il prezzo medio effettivo (fatturato totale diviso quantità totale) che resti corretta quando l'utente filtra per Prodotti[Categoria]. Entrambe le grandezze vivono in Vendite. Che cosa garantisce che il filtro di categoria raggiunga la tabella dei fatti?",
     options: [
       'La relazione attiva Vendite-Prodotti propaga il filtro di categoria alle righe di Vendite',
       'Serve RELATED dentro la misura per far arrivare il filtro',
@@ -319,7 +319,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-time-e1', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Fatturato da inizio anno',
-    scenario: "Vuoi il fatturato progressivo da inizio anno (year to date). Calendario è la tabella data del modello.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario, quest'ultima contrassegnata come tabella delle date. La direzione chiede il fatturato progressivo da inizio anno. Devi creare la misura. Quale espressione DAX usi?",
     options: [
       'YTD = TOTALYTD(SUM(Vendite[Importo]), Calendario[Data])',
       'YTD = SUM(Vendite[Importo]) * 12',
@@ -334,7 +334,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-time-m1', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Fatturato anno precedente',
-    scenario: "Scrivi una misura col fatturato dello stesso periodo dell'anno scorso, usando SAMEPERIODLASTYEAR sulla colonna Calendario[Data].",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. Devi creare una misura con il fatturato dello stesso periodo dell'anno precedente, così da poterlo confrontare con quello corrente. Scrivi la misura.",
     starter: 'Fatturato AP = ',
     accepted: [
       'CALCULATE(SUM(Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data]))',
@@ -348,7 +348,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-time-h1', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Spostare di un mese con DATEADD',
-    scenario: "Vuoi il fatturato del mese precedente. Quale espressione lo calcola correttamente rispettando il contesto di data?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. Devi creare una misura con il fatturato del mese precedente, rispettando il contesto di data della visualizzazione. Quale espressione DAX usi?",
     options: [
       'Mese prec = CALCULATE(SUM(Vendite[Importo]), DATEADD(Calendario[Data], -1, MONTH))',
       'Mese prec = SUM(Vendite[Importo]) - 1',
@@ -365,7 +365,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-var-e1', topicId: DaxTopicId.Variables, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Perché usare VAR',
-    scenario: "Qual è il vantaggio principale di dichiarare una variabile con VAR dentro una misura?",
+    scenario: "Hai un modello semantico Power BI e stai rivedendo una misura complessa che ripete più volte la stessa aggregazione. Devi spiegare quale vantaggio porta dichiarare quel valore in una variabile con VAR. Quale affermazione è corretta?",
     options: [
       'Rende la misura visibile in altre tabelle',
       'Calcola l\'espressione una volta sola e la riusa, rendendo la misura più leggibile e spesso più veloce',
@@ -380,7 +380,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-var-m1', topicId: DaxTopicId.Variables, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Crescita anno su anno con variabili',
-    scenario: "Vuoi la variazione percentuale del fatturato rispetto all'anno scorso, scritta in modo leggibile. Quale struttura è corretta?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. Devi creare una misura con la variazione percentuale del fatturato rispetto all'anno precedente, scritta in modo leggibile e manutenibile. Quale struttura è corretta?",
     options: [
       'VAR Ora = SUM(Vendite[Importo]) VAR Prima = CALCULATE(SUM(Vendite[Importo]), SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
       'RETURN DIVIDE(Ora - Prima, Prima) VAR Ora = ... VAR Prima = ...',
@@ -395,7 +395,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-var-h1', topicId: DaxTopicId.Variables, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Il contesto congelato di una variabile',
-    scenario: "Dentro una misura definisci VAR Totale = SUM(Vendite[Importo]) e poi la usi dentro un CALCULATE che cambia il filtro. Cosa restituisce la variabile dentro quel CALCULATE?",
+    scenario: "Hai un modello semantico Power BI in cui una misura definisce VAR Totale = SUM(Vendite[Importo]) e usa poi quella variabile dentro un CALCULATE che modifica il contesto di filtro. Devi prevedere quale valore assume la variabile dentro CALCULATE. Quale affermazione è corretta?",
     options: [
       'Il valore ricalcolato con il nuovo filtro del CALCULATE',
       'Il valore calcolato quando la variabile è stata definita, ignorando il nuovo filtro',
@@ -414,7 +414,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-agg-e3', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Quantità totale venduta',
-    scenario: "Scrivi una misura che sommi tutte le quantità vendute.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. La logistica chiede il totale dei pezzi movimentati. Devi creare una misura che sommi le quantità vendute. Scrivi la misura.",
     starter: 'Quantita totale = ',
     accepted: [
       'SUM(Vendite[Quantita])',
@@ -427,7 +427,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-agg-e4', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Prodotti diversi venduti',
-    scenario: "Scrivi una misura che conti quanti prodotti DIVERSI sono stati venduti almeno una volta.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una misura che restituisca quanti prodotti diversi sono stati venduti almeno una volta. Scrivi la misura.",
     starter: 'Prodotti venduti = ',
     accepted: [
       'DISTINCTCOUNT(Vendite[ProdottoID])',
@@ -441,7 +441,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-agg-m3', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Scontrino medio',
-    scenario: "Vuoi l'importo medio per ordine distinto: fatturato totale diviso numero di ordini. Nel nostro modello un ordine è una riga di Vendite, quindi usa il conteggio delle righe. Scrivi la misura con DIVIDE.",
+    scenario: "Hai un modello semantico Power BI in cui un ordine corrisponde a una riga di Vendite. Devi creare una misura con lo scontrino medio, cioè il fatturato totale diviso il numero di ordini, protetta dalla divisione per zero. Scrivi la misura.",
     starter: 'Scontrino medio = ',
     accepted: [
       'DIVIDE(SUM(Vendite[Importo]), COUNTROWS(Vendite))',
@@ -455,7 +455,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-agg-h2', topicId: DaxTopicId.Aggregations, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Prezzo medio effettivo',
-    scenario: "Scrivi la misura del prezzo medio effettivo: fatturato totale diviso quantità totale (il prezzo medio per pezzo, non per riga).",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Il controllo di gestione chiede il prezzo medio per pezzo venduto, non per riga d'ordine: il fatturato totale diviso la quantità totale. Devi creare la misura proteggendola dal denominatore zero. Scrivi la misura.",
     starter: 'Prezzo medio = ',
     accepted: [
       'DIVIDE(SUM(Vendite[Importo]), SUM(Vendite[Quantita]))',
@@ -471,7 +471,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-log-e2', topicId: DaxTopicId.Logical, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Margine in perdita',
-    scenario: "In una colonna calcolata su Prodotti vuoi l'etichetta 'In perdita' se il costo supera 100, altrimenti 'OK'. Scrivi la colonna con IF.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Prodotti. Devi aggiungere una colonna calcolata che riporti 'In perdita' quando il costo supera 100 e 'OK' negli altri casi. Scrivi la colonna calcolata.",
     starter: 'Allerta costo = ',
     accepted: [
       'IF(Prodotti[Costo] > 100, "In perdita", "OK")',
@@ -483,7 +483,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-log-m2', topicId: DaxTopicId.Logical, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'IF annidati o SWITCH',
-    scenario: "Devi assegnare una fascia in base al Segmento del cliente: 'Gold' e 'Platinum' danno priorità 'Alta', tutto il resto 'Normale'. Qual è la forma più leggibile?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Clienti. Il servizio clienti vuole una priorita' di gestione: i segmenti 'Gold' e 'Platinum' danno priorita' 'Alta', tutti gli altri 'Normalè. Devi aggiungere una colonna calcolata nella forma più leggibile. Quale espressione DAX usi?",
     options: [
       'Priorita = IF(Clienti[Segmento] = "Gold" || Clienti[Segmento] = "Platinum", "Alta", "Normale")',
       'Priorita = SWITCH(Clienti[Segmento], "Gold" || "Platinum", "Alta", "Normale")',
@@ -498,7 +498,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-log-h2', topicId: DaxTopicId.Logical, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Semaforo fatturato',
-    scenario: "Scrivi una misura che, in base al fatturato totale, restituisca 'Rosso' sotto 1000, 'Giallo' fino a 5000, 'Verde' oltre. Usa SWITCH(TRUE(), ...).",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. La direzione vuole un semaforo sul fatturato: 'Rosso' sotto 1000, 'Giallo' fino a 5000, 'Verdè oltre. Devi creare una misura che valuti intervalli invece di valori esatti. Scrivi la misura.",
     starter: 'Semaforo = ',
     accepted: [
       'SWITCH(TRUE(), SUM(Vendite[Importo]) < 1000, "Rosso", SUM(Vendite[Importo]) < 5000, "Giallo", "Verde")',
@@ -514,7 +514,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-calc-e2', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Fatturato di una città',
-    scenario: "Scrivi una misura col fatturato dei soli clienti di Milano, indipendentemente dai filtri di pagina. Usa CALCULATE.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Clienti. Devi creare una misura con il fatturato dei soli clienti di Milano, indipendente dai filtri di pagina. Scrivi la misura.",
     starter: 'Fatturato Milano = ',
     accepted: [
       'CALCULATE(SUM(Vendite[Importo]), Clienti[Citta] = "Milano")',
@@ -528,7 +528,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-calc-m2', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'A cosa serve ALL dentro CALCULATE',
-    scenario: "In una misura % sul totale scrivi CALCULATE(SUM(Vendite[Importo]), ALL(Prodotti)) al denominatore. Cosa fa ALL(Prodotti) qui?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. In una misura di percentuale sul totale, al denominatore compare CALCULATE(SUM(Vendite[Importo]), ALL(Prodotti)). Devi spiegare il ruolo di ALL(Prodotti) in questa espressione. Quale affermazione è corretta?",
     options: [
       'Ordina i prodotti alfabeticamente',
       'Rimuove i filtri sulla tabella Prodotti, così il denominatore resta il totale generale',
@@ -543,7 +543,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-calc-h2', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Fatturato premium sopra soglia',
-    scenario: "Scrivi il fatturato delle sole righe con importo superiore a 500. La condizione è su una colonna dei fatti, quindi usa FILTER dentro CALCULATE.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura con il fatturato delle sole righe di importo superiore a 500. La condizione è su una colonna dei fatti e richiede una valutazione riga per riga. Scrivi la misura.",
     starter: 'Fatturato big = ',
     accepted: [
       'CALCULATE(SUM(Vendite[Importo]), FILTER(Vendite, Vendite[Importo] > 500))',
@@ -559,7 +559,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-iter-e2', topicId: DaxTopicId.Iterators, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Valore riga per riga',
-    scenario: "Nel modello non esiste una colonna 'valore' pronta. Scrivi una misura che sommi, riga per riga, Quantita per Importo usando un iteratore.",
+    scenario: "Hai un modello semantico Power BI in cui la tabella Vendite non contiene una colonna con il valore già calcolato. Devi creare una misura che sommi, riga per riga, il prodotto tra Quantita e Importo. Scrivi la misura.",
     starter: 'Valore = ',
     accepted: [
       'SUMX(Vendite, Vendite[Quantita] * Vendite[Importo])',
@@ -571,7 +571,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-iter-h2', topicId: DaxTopicId.Iterators, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'AVERAGEX vs AVERAGE',
-    scenario: "Vuoi la media del valore (Quantita per Importo) per riga di vendita. Quale misura è corretta?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura con il valore medio per riga di vendita, dove il valore di riga è Quantita per Importo. Quale espressione DAX usi?",
     options: [
       'Media valore = AVERAGE(Vendite[Importo] * Vendite[Quantita])',
       'Media valore = AVERAGEX(Vendite, Vendite[Quantita] * Vendite[Importo])',
@@ -588,7 +588,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-rel-e2', topicId: DaxTopicId.Relationships, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Città del cliente nei fatti',
-    scenario: "In una colonna calcolata su Vendite vuoi la città del cliente, che vive in Clienti. La relazione esiste. Scrivi la colonna.",
+    scenario: "Hai un modello semantico Power BI in cui Vendite e Clienti sono collegate da una relazione già esistente. Devi aggiungere a Vendite una colonna calcolata con la città del cliente. Scrivi la colonna calcolata.",
     starter: 'Citta cliente = ',
     accepted: [
       'RELATED(Clienti[Citta])',
@@ -600,7 +600,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-rel-m2', topicId: DaxTopicId.Relationships, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Ordini per cliente',
-    scenario: "In una colonna calcolata su Clienti vuoi contare quante righe di Vendite ha ciascun cliente. Vai dal lato uno al lato molti. Scrivi la colonna.",
+    scenario: "Hai un modello semantico Power BI in cui Clienti e Vendite sono collegate. Devi aggiungere a Clienti una colonna calcolata che conti quante righe di Vendite ha ciascun cliente, muovendoti dal lato uno al lato molti. Scrivi la colonna calcolata.",
     starter: 'Numero ordini = ',
     accepted: [
       'COUNTROWS(RELATEDTABLE(Vendite))',
@@ -614,7 +614,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-time-e2', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Cosa serve alla time intelligence',
-    scenario: "Le funzioni come TOTALYTD o SAMEPERIODLASTYEAR non funzionano nel tuo report. Qual è il prerequisito più comune che manca?",
+    scenario: "Hai un modello semantico Power BI in cui le funzioni TOTALYTD e SAMEPERIODLASTYEAR restituiscono risultati errati o vuoti. Devi individuare il prerequisito che manca più di frequente in questa situazione. Quale affermazione è corretta?",
     options: [
       'Una misura chiamata esattamente Data',
       'Una tabella calendario continua, marcata come tabella data e collegata ai fatti',
@@ -629,7 +629,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-time-m2', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Crescita anno su anno (valore)',
-    scenario: "Scrivi la differenza in valore tra il fatturato corrente e quello dello stesso periodo dell'anno scorso. Puoi usare la misura [Fatturato] per l'anno corrente.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario, e una misura [Fatturato] già definita. Devi creare una misura con la differenza in valore tra il fatturato corrente e quello dello stesso periodo dell'anno precedente. Scrivi la misura.",
     starter: 'Delta AA = ',
     accepted: [
       '[Fatturato] - CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data]))',
@@ -643,7 +643,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-time-h2', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Crescita % anno su anno',
-    scenario: "Scrivi la variazione percentuale del fatturato rispetto all'anno scorso, protetta dalla divisione per zero. Usa VAR per leggibilità.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. La direzione chiede la crescita percentuale rispetto all'anno precedente. Devi creare una misura leggibile e protetta dalla divisione per zero, usando le variabili. Scrivi la misura.",
     starter: 'Crescita % AA = ',
     accepted: [
       'VAR Ora = [Fatturato] VAR Prima = CALCULATE([Fatturato], SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
@@ -662,7 +662,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-var-e2', topicId: DaxTopicId.Variables, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Dove va RETURN',
-    scenario: "In una misura con VAR, dove deve stare la parola RETURN?",
+    scenario: "Hai un modello semantico Power BI e stai scrivendo una misura con una o più variabili. Devi indicare la posizione corretta della parola RETURN nella definizione. Quale affermazione è corretta?",
     options: [
       'Prima di tutte le VAR',
       'Dopo aver dichiarato le VAR, per restituire il risultato finale',
@@ -677,7 +677,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-var-m2', topicId: DaxTopicId.Variables, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Etichetta con variabile',
-    scenario: "Scrivi una misura che calcoli il fatturato in una VAR e restituisca 'Sopra soglia' se supera 10000, altrimenti 'Sotto soglia'.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura che calcoli il fatturato una sola volta in una variabile e restituisca 'Sopra soglia' se supera 10000, altrimenti 'Sotto soglia'. Scrivi la misura.",
     starter: 'Stato fatturato = ',
     accepted: [
       'VAR F = SUM(Vendite[Importo]) RETURN IF(F > 10000, "Sopra soglia", "Sotto soglia")',
@@ -697,7 +697,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-stat-e1', topicId: DaxTopicId.Statistical, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Mediana invece di media',
-    scenario: "Pochi ordini enormi stanno gonfiando l'importo medio e il management vuole un valore che rappresenti l'ordine tipico. Quale misura usi?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Pochi ordini di importo molto elevato stanno gonfiando la media e la direzione chiede invece un valore che rappresenti l'ordine tipico. Quale espressione DAX usi?",
     options: [
       'Tipico = AVERAGE(Vendite[Importo])',
       'Tipico = MEDIAN(Vendite[Importo])',
@@ -712,7 +712,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-stat-e2', topicId: DaxTopicId.Statistical, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Vendita più alta',
-    scenario: "Scrivi una misura che restituisca l'importo della singola riga di vendita più alta.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura che restituisca l'importo della singola riga di vendita più alta. Scrivi la misura.",
     starter: 'Vendita massima = ',
     accepted: [
       'MAX(Vendite[Importo])',
@@ -725,7 +725,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-stat-e3', topicId: DaxTopicId.Statistical, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Quanto sono dispersi gli importi',
-    scenario: "Vuoi sapere quanto gli importi delle vendite si allontanano in media dal loro valore centrale, considerando i dati come l'intera popolazione.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura che indichi quanto gli importi si allontanano in media dal loro valore centrale, trattando i dati come l'intera popolazione e non come un campione. Quale espressione DAX usi?",
     options: [
       'Dispersione = STDEV.P(Vendite[Importo])',
       'Dispersione = AVERAGE(Vendite[Importo])',
@@ -740,7 +740,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-stat-m1', topicId: DaxTopicId.Statistical, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Novantesimo percentile',
-    scenario: "Scrivi una misura che restituisca il novantesimo percentile degli importi, includendo gli estremi della distribuzione.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura con il novantesimo percentile degli importi, includendo gli estremi della distribuzione. Scrivi la misura.",
     starter: 'P90 importo = ',
     accepted: [
       'PERCENTILE.INC(Vendite[Importo], 0.9)',
@@ -753,7 +753,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-stat-m2', topicId: DaxTopicId.Statistical, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Classifica dei prodotti',
-    scenario: "Vuoi una misura che assegni a ogni prodotto la sua posizione in classifica per fatturato, dal migliore al peggiore, saltando le posizioni in caso di parità.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una misura che assegni a ogni prodotto la posizione in classifica per fatturato, dal migliore al peggiore, saltando le posizioni in caso di parità. Quale espressione DAX usi?",
     options: [
       'Posizione = RANKX(ALL(Prodotti[Nome]), [Fatturato], , DESC, Dense)',
       'Posizione = RANKX(ALL(Prodotti[Nome]), [Fatturato], , DESC, Skip)',
@@ -768,7 +768,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-stat-m3', topicId: DaxTopicId.Statistical, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Media di una misura, non di una colonna',
-    scenario: "Vuoi il fatturato medio per cliente: prima calcoli il fatturato di ciascun cliente, poi ne fai la media. Quale forma è corretta?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Clienti. Devi creare una misura con il fatturato medio per cliente: prima il fatturato di ciascun cliente, poi la media di quei valori. Quale espressione DAX usi?",
     options: [
       'Media cliente = AVERAGE(Vendite[Importo])',
       'Media cliente = AVERAGEX(Clienti, [Fatturato])',
@@ -783,7 +783,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-stat-h1', topicId: DaxTopicId.Statistical, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Fatturato dei primi cinque prodotti',
-    scenario: "Scrivi una misura che sommi il fatturato dei cinque prodotti migliori per fatturato, ignorando eventuali filtri sui prodotti.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una misura che sommi il fatturato dei cinque prodotti migliori, ignorando eventuali filtri applicati ai prodotti. Scrivi la misura.",
     starter: 'Top 5 prodotti = ',
     accepted: [
       'SUMX(TOPN(5, ALL(Prodotti), [Fatturato], DESC), [Fatturato])',
@@ -803,7 +803,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-stat-h2', topicId: DaxTopicId.Statistical, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Perché la classifica dà tutti 1',
-    scenario: "Hai scritto Posizione = RANKX(Prodotti, [Fatturato], , DESC) e in una tabella per prodotto ogni riga mostra 1. Perché?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Un collega ha scritto Posizione = RANKX(Prodotti, [Fatturato], , DESC), ma in una tabella per prodotto ogni riga mostra il valore 1. Devi individuare la causa. Quale affermazione è corretta?",
     options: [
       'RANKX non funziona con le misure',
       'Il primo argomento risente del contesto di riga: dentro ogni prodotto Prodotti contiene una sola riga, quindi la classifica è di uno solo',
@@ -818,7 +818,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-stat-h3', topicId: DaxTopicId.Statistical, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Quota sul totale di categoria',
-    scenario: "Scrivi una misura che dia il peso percentuale del prodotto sul fatturato della sua categoria: il fatturato corrente diviso il fatturato di tutti i prodotti della stessa categoria.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una misura con il peso percentuale di ciascun prodotto sul fatturato della propria categoria: il fatturato corrente diviso il fatturato di tutti i prodotti della stessa categoria. Scrivi la misura.",
     starter: 'Quota categoria = ',
     accepted: [
       'DIVIDE([Fatturato], CALCULATE([Fatturato], ALLEXCEPT(Prodotti, Prodotti[Categoria])))',
@@ -835,7 +835,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-semi-e1', topicId: DaxTopicId.SemiAdditive, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Cosa vuol dire semi-additiva',
-    scenario: "Il magazzino registra ogni giorno le giacenze. Sommare le giacenze di tutti i giorni del mese non ha senso. Come si chiama una misura del genere?",
+    scenario: "Hai un modello semantico Power BI in cui il magazzino registra le giacenze giornaliere. Sommare le giacenze di tutti i giorni del mese produce un totale privo di senso. Devi indicare come si classifica una misura di questo tipo. Quale affermazione è corretta?",
     options: [
       'Additiva: si somma su ogni dimensione',
       'Semi-additiva: si somma su alcune dimensioni ma non sul tempo',
@@ -850,7 +850,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-semi-e2', topicId: DaxTopicId.SemiAdditive, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Ultima data del periodo',
-    scenario: "Scrivi una misura che restituisca l'ultima data visibile nel contesto di filtro corrente del calendario.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Calendario. Devi creare una misura che restituisca l'ultima data visibile nel contesto di filtro corrente. Scrivi la misura.",
     starter: 'Ultima data = ',
     accepted: [
       'LASTDATE(Calendario[Data])',
@@ -864,7 +864,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-semi-m1', topicId: DaxTopicId.SemiAdditive, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Saldo di fine mese',
-    scenario: "Scrivi una misura che dia la quantità registrata nell'ultimo giorno del mese corrente, anche quando la visualizzazione mostra un trimestre o un anno.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. Devi creare una misura con la quantità registrata nell'ultimo giorno del mese, che resti corretta anche quando la visualizzazione mostra un trimestre o un anno. Scrivi la misura.",
     starter: 'Saldo finale mese = ',
     accepted: [
       'CLOSINGBALANCEMONTH(SUM(Vendite[Quantita]), Calendario[Data])',
@@ -877,7 +877,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-semi-m2', topicId: DaxTopicId.SemiAdditive, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Apertura contro chiusura',
-    scenario: "Vuoi il valore di inizio periodo, cioè quello registrato l'ultimo giorno del periodo precedente. Quale funzione usi?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. Devi creare una misura con il valore di inizio periodo, cioè quello registrato l'ultimo giorno del periodo precedente. Quale funzione usi?",
     options: [
       'CLOSINGBALANCEYEAR',
       'OPENINGBALANCEMONTH',
@@ -892,7 +892,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-semi-m3', topicId: DaxTopicId.SemiAdditive, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Ultimo valore scritto a mano',
-    scenario: "Senza usare la famiglia CLOSINGBALANCE, scrivi una misura che dia la quantità dell'ultima data visibile nel contesto.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. Devi creare una misura con la quantità dell'ultima data visibile nel contesto, senza ricorrere alla famiglia CLOSINGBALANCE. Scrivi la misura.",
     starter: 'Ultimo valore = ',
     accepted: [
       'CALCULATE(SUM(Vendite[Quantita]), LASTDATE(Calendario[Data]))',
@@ -905,7 +905,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-semi-h1', topicId: DaxTopicId.SemiAdditive, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'LASTDATE contro LASTNONBLANK',
-    scenario: "Il magazzino non registra righe nei giorni di chiusura. Con LASTDATE il saldo di fine mese risulta vuoto quando l'ultimo giorno è festivo. Cosa usi?",
+    scenario: "Hai un modello semantico Power BI in cui il magazzino non registra righe nei giorni di chiusura. La misura di saldo di fine mese risulta vuota quando l'ultimo giorno del periodo è festivo. Devi correggerla in modo che riporti l'ultimo saldo noto. Quale espressione DAX usi?",
     options: [
       'LASTDATE, aggiungendo IFERROR',
       "LASTNONBLANK(Calendario[Data], CALCULATE(SUM(Vendite[Quantita])))",
@@ -920,7 +920,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-semi-h2', topicId: DaxTopicId.SemiAdditive, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Il totale annuo sbagliato',
-    scenario: "La tua misura di giacenza mostra numeri corretti per mese, ma la riga di totale annuo mostra la somma dei dodici mesi invece della giacenza di fine anno. Da cosa dipende?",
+    scenario: "Hai un modello semantico Power BI con una misura di giacenza corretta a livello di mese, mentre la riga di totale annuo mostra la somma dei dodici mesi invece della giacenza di fine anno. Devi individuare la causa. Quale affermazione è corretta?",
     options: [
       'La misura è additiva: al livello anno somma i valori mensili invece di prendere l\'ultimo',
       'Il modello ha una relazione sbagliata',
@@ -938,7 +938,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-tab-e1', topicId: DaxTopicId.TableFunctions, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Creare la tabella date',
-    scenario: "Devi creare una tabella calcolata con tutte le date dal primo gennaio 2024 al 31 dicembre 2026. Quale espressione usi?",
+    scenario: "Hai un modello semantico Power BI privo di una tabella delle date. Devi creare una tabella calcolata con tutte le date dal 1 gennaio 2024 al 31 dicembre 2026. Quale espressione DAX usi?",
     options: [
       'Calendario = CALENDAR(DATE(2024,1,1), DATE(2026,12,31))',
       'Calendario = CALENDARAUTO(2024)',
@@ -953,7 +953,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-tab-e2', topicId: DaxTopicId.TableFunctions, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Elenco delle categorie',
-    scenario: "Scrivi una tabella calcolata che contenga l'elenco delle categorie prodotto senza ripetizioni.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Prodotti. Devi creare una tabella calcolata con l'elenco delle categorie prodotto senza ripetizioni. Scrivi la tabella calcolata.",
     starter: 'Categorie = ',
     accepted: [
       'VALUES(Prodotti[Categoria])',
@@ -966,7 +966,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-tab-e3', topicId: DaxTopicId.TableFunctions, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Aggiungere una colonna a una tabella',
-    scenario: "Vuoi una tabella con tutti i clienti e, accanto, il loro fatturato. Quale funzione aggiunge una colonna calcolata a una tabella esistente?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Clienti e Vendite. Devi creare una tabella con tutti i clienti e, accanto, il loro fatturato, aggiungendo una colonna a una tabella esistente. Quale funzione usi?",
     options: [
       'SUMMARIZE',
       'ADDCOLUMNS',
@@ -981,7 +981,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-tab-m1', topicId: DaxTopicId.TableFunctions, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Fatturato per categoria',
-    scenario: "Scrivi una tabella calcolata che raggruppi per categoria prodotto e mostri il fatturato di ciascuna, usando la coppia SUMMARIZE più ADDCOLUMNS.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una tabella calcolata raggruppata per categoria prodotto con il fatturato di ciascuna, usando il modello raccomandato che separa il raggruppamento dal calcolo. Scrivi la tabella calcolata.",
     starter: 'Riepilogo = ',
     accepted: [
       'ADDCOLUMNS(SUMMARIZE(Vendite, Prodotti[Categoria]), "Fatturato", [Fatturato])',
@@ -994,7 +994,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-tab-m2', topicId: DaxTopicId.TableFunctions, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Tabella filtrata di clienti',
-    scenario: "Vuoi una tabella calcolata con i soli clienti del segmento Premium. Quale espressione è corretta?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Clienti. Devi creare una tabella calcolata con i soli clienti del segmento Premium. Quale espressione DAX usi?",
     options: [
       'Premium = FILTER(Clienti, Clienti[Segmento] = "Premium")',
       'Premium = CALCULATE(Clienti, Clienti[Segmento] = "Premium")',
@@ -1009,7 +1009,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-tab-m3', topicId: DaxTopicId.TableFunctions, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'SUMMARIZE con la misura dentro',
-    scenario: "Un collega scrive SUMMARIZE(Vendite, Prodotti[Categoria], \"Fatturato\", SUM(Vendite[Importo])). Funziona, ma perché è sconsigliato?",
+    scenario: "Hai un modello semantico Power BI in cui un collega ha scritto SUMMARIZE(Vendite, Prodotti[Categoria], \"Fatturato\", SUM(Vendite[Importo])). L'espressione funziona, ma non segue la pratica raccomandata. Devi spiegare il motivo. Quale affermazione è corretta?",
     options: [
       'Perché SUMMARIZE non accetta più di due argomenti',
       'Perché il calcolo delle colonne dentro SUMMARIZE può dare risultati inattesi: meglio raggruppare con SUMMARIZE e calcolare con ADDCOLUMNS',
@@ -1024,7 +1024,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-tab-h1', topicId: DaxTopicId.TableFunctions, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Clienti che non hanno mai comprato',
-    scenario: "Scrivi una tabella calcolata con i clienti presenti in anagrafica ma mai comparsi nelle vendite.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Clienti e Vendite. Il marketing vuole una lista di riattivazione. Devi creare una tabella calcolata con i clienti presenti in anagrafica ma mai comparsi nelle vendite. Scrivi la tabella calcolata.",
     starter: 'Clienti inattivi = ',
     accepted: [
       'EXCEPT(VALUES(Clienti[ClienteID]), VALUES(Vendite[ClienteID]))',
@@ -1037,7 +1037,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-tab-h2', topicId: DaxTopicId.TableFunctions, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Dimensione che gioca due ruoli',
-    scenario: "Le vendite hanno sia una data ordine sia una data spedizione e vuoi analizzarle entrambe con lo stesso calendario. Qual è l'approccio corretto?",
+    scenario: "Hai un modello semantico Power BI in cui la tabella Vendite contiene sia la data d'ordine sia la data di spedizione, e devi analizzarle entrambe con la stessa tabella Calendario. Devi scegliere l'approccio di modellazione corretto. Quale affermazione è corretta?",
     options: [
       'Duplicare la tabella Vendite',
       'Creare una seconda tabella data con una relazione attiva, oppure tenere una relazione inattiva e attivarla con USERELATIONSHIP',
@@ -1052,7 +1052,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-tab-h3', topicId: DaxTopicId.TableFunctions, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Tabella dei parametri',
-    scenario: "Scrivi una tabella calcolata con i valori da 0 a 100 con passo 5, da usare come parametro di uno slicer.",
+    scenario: "Hai un modello semantico Power BI e devi alimentare uno slicer what-if. Devi creare una tabella calcolata con i valori da 0 a 100 con passo 5. Scrivi la tabella calcolata.",
     starter: 'Soglie = ',
     accepted: [
       'GENERATESERIES(0, 100, 5)',
@@ -1067,7 +1067,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-e1', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Misura o colonna calcolata',
-    scenario: "Devi mostrare il fatturato totale che reagisce ai filtri della pagina. Meglio una misura o una colonna calcolata?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi mostrare il fatturato totale in un report, e il valore deve reagire ai filtri applicati alla pagina. Devi scegliere tra una misura e una colonna calcolata. Quale affermazione è corretta?",
     options: [
       'Colonna calcolata, così il valore è già pronto',
       'Misura: viene calcolata al momento nel contesto di filtro corrente e non occupa spazio nel modello',
@@ -1082,7 +1082,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-e2', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Quando serve una colonna calcolata',
-    scenario: "Devi raggruppare i prodotti in fasce di prezzo e usare quella fascia come asse di un grafico e come slicer. Cosa crei?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Prodotti. Devi raggruppare i prodotti in fasce di prezzo e usare quella fascia come asse di un grafico e come slicer. Quale oggetto crei?",
     options: [
       'Una misura',
       'Una colonna calcolata: serve un valore fisso per riga da usare come categoria',
@@ -1097,7 +1097,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-e3', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Verso del filtro nello schema a stella',
-    scenario: "Nel modello, Prodotti è una dimensione e Vendite è la tabella dei fatti con relazione uno-a-molti. In che direzione viaggia il filtro per impostazione predefinita?",
+    scenario: "Hai un modello semantico Power BI in cui Prodotti è una dimensione e Vendite è la tabella dei fatti, collegate da una relazione uno-a-molti. Devi indicare in che direzione si propaga il filtro per impostazione predefinita. Quale affermazione è corretta?",
     options: [
       'Da Vendite verso Prodotti',
       'Da Prodotti verso Vendite: dal lato uno verso il lato molti',
@@ -1112,7 +1112,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-e4', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Marcare la tabella data',
-    scenario: "Hai creato la tabella Calendario con CALENDAR. Perché è importante contrassegnarla come tabella delle date?",
+    scenario: "Hai un modello semantico Power BI in cui hai creato la tabella Calendario con CALENDAR. Devi indicare perché è importante contrassegnarla come tabella delle date. Quale affermazione è corretta?",
     options: [
       'Per farla comparire nell\'elenco dei campi',
       'Perché le funzioni di time intelligence funzionino in modo affidabile',
@@ -1127,7 +1127,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-m1', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Margine come colonna calcolata',
-    scenario: "In Vendite serve una colonna con il margine di riga: l'importo meno il costo del prodotto moltiplicato per la quantità. Il costo sta in Prodotti.",
+    scenario: "Hai un modello semantico Power BI in cui Vendite e Prodotti sono collegate. Devi aggiungere a Vendite una colonna calcolata con il margine di riga: l'importo meno il costo unitario del prodotto moltiplicato per la quantità. Scrivi la colonna calcolata.",
     starter: 'Margine = ',
     accepted: [
       'Vendite[Importo] - RELATED(Prodotti[Costo]) * Vendite[Quantita]',
@@ -1139,7 +1139,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-m2', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Filtro incrociato bidirezionale',
-    scenario: "Un collega imposta tutte le relazioni su filtro incrociato bidirezionale perché 'così funziona sempre'. Qual è il rischio?",
+    scenario: "Hai un modello semantico Power BI in cui un collega ha impostato tutte le relazioni con filtro incrociato bidirezionale, sostenendo che così funziona sempre. Devi indicare il rischio di questa scelta. Quale affermazione è corretta?",
     options: [
       'Nessuno, è la scelta consigliata',
       'Percorsi di filtro ambigui, calcoli più lenti e possibili risultati inattesi con la sicurezza a livello di riga',
@@ -1154,7 +1154,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-m3', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Cardinalità molti-a-molti',
-    scenario: "Stai collegando due tabelle e Power BI propone una relazione molti-a-molti. Cosa segnala di solito questa situazione?",
+    scenario: "Hai un modello semantico Power BI e, collegando due tabelle, Power BI propone una relazione molti-a-molti. Devi interpretare che cosa segnala di solito questa situazione. Quale affermazione è corretta?",
     options: [
       'Che il modello è ottimizzato',
       'Che manca una tabella ponte con i valori univoci, oppure che la colonna chiave ha duplicati inattesi',
@@ -1169,7 +1169,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-h1', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Cercare un valore senza relazione',
-    scenario: "Devi recuperare il nome del prodotto in una colonna di Vendite, ma la relazione fra le due tabelle non esiste. Usa la funzione di ricerca puntuale.",
+    scenario: "Hai un modello semantico Power BI in cui tra Vendite e Prodotti non esiste alcuna relazione. Devi aggiungere a Vendite una colonna calcolata con il nome del prodotto, usando una ricerca puntuale. Scrivi la colonna calcolata.",
     starter: 'Nome prodotto = ',
     accepted: [
       'LOOKUPVALUE(Prodotti[Nome], Prodotti[ProdottoID], Vendite[ProdottoID])',
@@ -1181,7 +1181,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-h2', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Perché RELATED non funziona in una misura',
-    scenario: "Dentro una misura scrivi RELATED(Prodotti[Costo]) e ottieni un errore. Perché?",
+    scenario: "Hai un modello semantico Power BI in cui una misura che usa RELATED(Prodotti[Costo]) restituisce un errore. Devi individuare la causa. Quale affermazione è corretta?",
     options: [
       'RELATED funziona solo con relazioni bidirezionali',
       'RELATED ha bisogno del contesto di riga, che in una misura non esiste finché non lo crei con un iteratore',
@@ -1196,7 +1196,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-mod-h3', topicId: DaxTopicId.Modeling, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Schema a stella contro fiocco di neve',
-    scenario: "Il tuo modello ha Prodotti collegata a una tabella Categorie separata, che a sua volta è collegata a Reparti. Cosa conviene valutare?",
+    scenario: "Hai un modello semantico Power BI in cui Prodotti è collegata a una tabella Categorie separata, a sua volta collegata a Reparti. Devi valutare se intervenire sulla struttura del modello. Quale affermazione è corretta?",
     options: [
       'Lasciare tutto com\'è, è sempre la soluzione migliore',
       'Appiattire le dimensioni in un\'unica tabella Prodotti: lo schema a stella riduce i salti fra tabelle ed è più veloce',
@@ -1214,7 +1214,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-vis-e1', topicId: DaxTopicId.VisualCalc, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Cos\'è una visual calculation',
-    scenario: "Power BI permette di scrivere calcoli direttamente dentro un oggetto visivo. In cosa si distinguono dalle misure normali?",
+    scenario: "Hai un report Power BI in cui puoi scrivere calcoli direttamente dentro un oggetto visivo. Devi spiegare in che cosa le visual calculation si distinguono dalle misure del modello. Quale affermazione è corretta?",
     options: [
       'Sono più veloci ma meno precise',
       'Operano solo sui dati già presenti nella visualizzazione, quindi possono riferirsi alle righe visibili come farebbe una tabella pivot',
@@ -1229,7 +1229,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-vis-e2', topicId: DaxTopicId.VisualCalc, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Totale progressivo nel visual',
-    scenario: "Come visual calculation, scrivi il totale progressivo del fatturato lungo l'asse della visualizzazione.",
+    scenario: "Hai un report Power BI con un grafico che mostra il fatturato lungo l'asse temporale. Devi aggiungere il totale progressivo come visual calculation. Scrivi l'espressione.",
     starter: 'Totale progressivo = ',
     accepted: [
       'RUNNINGSUM([Fatturato])',
@@ -1242,7 +1242,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-vis-e3', topicId: DaxTopicId.VisualCalc, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'A cosa serve un gruppo di calcolo',
-    scenario: "Hai venti misure e per ognuna servono le varianti anno corrente, anno precedente e variazione: sessanta misure da mantenere. Cosa risolve il problema?",
+    scenario: "Hai un modello semantico Power BI con venti misure, e per ciascuna servono le varianti anno corrente, anno precedente e variazione: sessanta misure da mantenere. Devi ridurre questa moltiplicazione. Quale funzionalità usi?",
     options: [
       'Una tabella calcolata',
       'Un gruppo di calcolo: definisci le varianti una volta sola e valgono per tutte le misure',
@@ -1257,7 +1257,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-vis-m1', topicId: DaxTopicId.VisualCalc, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Elemento di calcolo per l\'anno prima',
-    scenario: "In un gruppo di calcolo, scrivi l'elemento che applica alla misura selezionata lo stesso periodo dell'anno precedente.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Calendario e un gruppo di calcolo in costruzione. Devi scrivere l'elemento di calcolo che applica alla misura selezionata lo stesso periodo dell'anno precedente. Scrivi l'espressione.",
     starter: 'Anno precedente = ',
     accepted: [
       'CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Calendario[Data]))',
@@ -1269,7 +1269,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-vis-m2', topicId: DaxTopicId.VisualCalc, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Media mobile nel visual',
-    scenario: "Vuoi smussare una serie mostrando la media degli ultimi tre punti dell'asse, come visual calculation.",
+    scenario: "Hai un report Power BI con una serie temporale molto rumorosa. Devi smussarla mostrando la media degli ultimi tre punti dell'asse, come visual calculation. Quale espressione usi?",
     options: [
       'MOVINGAVERAGE([Fatturato], 3)',
       'AVERAGE([Fatturato], 3)',
@@ -1284,7 +1284,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-vis-m3', topicId: DaxTopicId.VisualCalc, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Ordine degli elementi di calcolo',
-    scenario: "In un gruppo di calcolo gli elementi appaiono in ordine alfabetico ma tu vuoi Anno corrente, Anno precedente, Variazione. Come si controlla l'ordine?",
+    scenario: "Hai un modello semantico Power BI con un gruppo di calcolo i cui elementi appaiono in ordine alfabetico, mentre devono comparire come Anno corrente, Anno precedente, Variazione. Devi controllarne l'ordine. Quale affermazione è corretta?",
     options: [
       'Rinominando gli elementi con un numero davanti',
       'Impostando la proprietà di ordinamento (ordinal) di ciascun elemento di calcolo',
@@ -1299,7 +1299,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-vis-h1', topicId: DaxTopicId.VisualCalc, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Variazione percentuale come elemento di calcolo',
-    scenario: "Scrivi l'elemento di calcolo che restituisce la variazione percentuale fra la misura selezionata e il suo valore dell'anno precedente.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Calendario e un gruppo di calcolo. Devi scrivere l'elemento di calcolo che restituisce la variazione percentuale tra la misura selezionata e il suo valore dell'anno precedente, protetto dalla divisione per zero. Scrivi l'espressione.",
     starter: 'Variazione % = ',
     accepted: [
       'VAR Ora = SELECTEDMEASURE() VAR Prima = CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Calendario[Data])) RETURN DIVIDE(Ora - Prima, Prima)',
@@ -1312,7 +1312,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-vis-h2', topicId: DaxTopicId.VisualCalc, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Visual calculation o misura',
-    scenario: "Ti serve un totale progressivo che compaia in un solo grafico e non debba essere riutilizzato altrove. Cosa conviene?",
+    scenario: "Hai un report Power BI in cui ti serve un totale progressivo che compare in un solo grafico e non deve essere riutilizzato altrove. Devi scegliere tra una visual calculation e una misura del modello. Quale affermazione è corretta?",
     options: [
       'Una misura, sempre',
       'Una visual calculation: resta nell\'oggetto visivo, non ingombra il modello e legge direttamente le righe mostrate',
@@ -1330,7 +1330,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-sec-e1', topicId: DaxTopicId.Security, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Dove si scrive il filtro RLS',
-    scenario: "Vuoi che ogni venditore veda solo i suoi clienti. Dove va scritta la regola di sicurezza a livello di riga?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Clienti. Ogni venditore deve vedere soltanto i propri clienti. Devi indicare dove va definita la regola di sicurezza a livello di riga. Quale affermazione è corretta?",
     options: [
       'In una misura',
       'In un ruolo, come espressione DAX di filtro su una tabella del modello',
@@ -1345,7 +1345,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-sec-e2', topicId: DaxTopicId.Security, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Filtro fisso su un segmento',
-    scenario: "Scrivi l'espressione di filtro RLS che, applicata alla tabella Clienti, lascia visibili solo i clienti del segmento Premium.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Clienti. Devi definire l'espressione di filtro di un ruolo che lasci visibili solo i clienti del segmento Premium. Scrivi l'espressione del ruolo.",
     starter: '',
     accepted: [
       '[Segmento] = "Premium"',
@@ -1358,7 +1358,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-sec-m1', topicId: DaxTopicId.Security, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Sicurezza dinamica',
-    scenario: "Non vuoi un ruolo per ogni venditore: vuoi una regola sola che riconosca chi ha aperto il report. Quale funzione ti serve?",
+    scenario: "Hai un modello semantico Power BI con decine di venditori e non vuoi creare un ruolo per ciascuno. Devi definire un'unica regola che riconosca chi ha aperto il report. Quale funzione usi?",
     options: [
       'USERNAME() o USERPRINCIPALNAME()',
       'SELECTEDVALUE()',
@@ -1373,7 +1373,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-sec-m2', topicId: DaxTopicId.Security, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Ogni venditore vede i suoi',
-    scenario: "La tabella Clienti ha una colonna Email con l'indirizzo del venditore assegnato. Scrivi l'espressione RLS che mostra a ciascuno solo i propri clienti.",
+    scenario: "Hai un modello semantico Power BI in cui la tabella Clienti contiene la colonna Email con l'indirizzo del venditore assegnato. Devi definire l'espressione di filtro di un ruolo che mostri a ciascun venditore solo i propri clienti. Scrivi l'espressione del ruolo.",
     starter: '',
     accepted: [
       '[Email] = USERPRINCIPALNAME()',
@@ -1386,7 +1386,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-sec-m3', topicId: DaxTopicId.Security, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Provare un ruolo prima di pubblicare',
-    scenario: "Hai scritto la regola RLS e vuoi verificarla prima di pubblicare. Come fai in Power BI Desktop?",
+    scenario: "Hai un modello semantico Power BI con una regola di sicurezza a livello di riga appena definita, che vuoi verificare prima della pubblicazione. Devi indicare come farlo in Power BI Desktop. Quale affermazione è corretta?",
     options: [
       'Pubblichi e chiedi a un collega',
       'Usi "Visualizza come" per simulare il ruolo, eventualmente indicando un utente specifico',
@@ -1401,7 +1401,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-sec-h1', topicId: DaxTopicId.Security, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Il filtro RLS non arriva alle vendite',
-    scenario: "Il ruolo filtra Clienti sull'email del venditore, ma i totali di Vendite mostrano ancora tutto. Cosa controlli per primo?",
+    scenario: "Hai un modello semantico Power BI in cui un ruolo filtra Clienti sull'email del venditore, ma i totali della tabella Vendite continuano a mostrare tutti i dati. Devi individuare che cosa controllare per primo. Quale affermazione è corretta?",
     options: [
       'Che la misura usi CALCULATE',
       'La relazione fra Clienti e Vendite: il filtro deve poter scendere dalla dimensione ai fatti',
@@ -1416,7 +1416,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-sec-h2', topicId: DaxTopicId.Security, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Sicurezza tramite tabella di mappatura',
-    scenario: "Una tabella Permessi associa l'email di ogni venditore alle città che può vedere. Scrivi l'espressione RLS sulla tabella Clienti che mostra solo le città consentite a chi sta guardando.",
+    scenario: "Hai un modello semantico Power BI in cui la tabella Permessi associa l'email di ogni venditore alle città che può vedere. Devi definire l'espressione di filtro del ruolo sulla tabella Clienti, che mostri solo le città consentite a chi sta guardando il report. Scrivi l'espressione del ruolo.",
     starter: '',
     accepted: [
       '[Citta] IN CALCULATETABLE(VALUES(Permessi[Citta]), Permessi[Email] = USERPRINCIPALNAME())',
@@ -1432,7 +1432,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-opt-e1', topicId: DaxTopicId.Optimization, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Divisione sicura',
-    scenario: "Vuoi calcolare il margine percentuale sapendo che il denominatore può valere zero. Qual è la forma corretta?",
+    scenario: "Hai un modello semantico Power BI e devi creare una misura di margine percentuale, sapendo che il denominatore può valere zero. Devi scegliere la forma corretta. Quale espressione DAX usi?",
     options: [
       'Margine % = [Margine] / [Fatturato]',
       'Margine % = DIVIDE([Margine], [Fatturato])',
@@ -1447,7 +1447,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-opt-e2', topicId: DaxTopicId.Optimization, difficulty: Difficulty.Easy, kind: 'mcq',
     title: 'Colonne che pesano',
-    scenario: "Il file è troppo grande. Quale intervento riduce di più le dimensioni del modello?",
+    scenario: "Hai un modello semantico Power BI il cui file è diventato troppo grande. Devi individuare l'intervento che riduce di più le dimensioni del modello. Quale affermazione è corretta?",
     options: [
       'Rinominare le colonne',
       'Rimuovere colonne e righe non usate, soprattutto quelle ad alta cardinalità come gli ID testuali e i timestamp al secondo',
@@ -1462,7 +1462,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-opt-m1', topicId: DaxTopicId.Optimization, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'FILTER su tutta la tabella',
-    scenario: "Un collega scrive CALCULATE([Fatturato], FILTER(Vendite, Vendite[Importo] > 100)). Perché conviene evitarlo quando basta una condizione semplice?",
+    scenario: "Hai un modello semantico Power BI in cui un collega ha scritto CALCULATE([Fatturato], FILTER(Vendite, Vendite[Importo] > 100)). Devi spiegare perché conviene evitare questa forma quando basta una condizione semplice. Quale affermazione è corretta?",
     options: [
       'Perché FILTER non funziona dentro CALCULATE',
       'Perché FILTER scorre riga per riga l\'intera tabella dei fatti, mentre CALCULATE([Fatturato], Vendite[Importo] > 100) usa un filtro più efficiente',
@@ -1477,7 +1477,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-opt-m2', topicId: DaxTopicId.Optimization, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Trovare la misura lenta',
-    scenario: "Una pagina impiega dieci secondi ad aprirsi e vuoi capire quale oggetto visivo la rallenta. Quale strumento usi?",
+    scenario: "Hai un report Power BI in cui una pagina impiega dieci secondi ad aprirsi e devi capire quale oggetto visivo la rallenta. Quale strumento usi?",
     options: [
       'Il Performance Analyzer di Power BI Desktop',
       'Il Query Editor',
@@ -1492,7 +1492,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-opt-m3', topicId: DaxTopicId.Optimization, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Calcolare una volta sola',
-    scenario: "Riscrivi in modo efficiente una misura che deve restituire il fatturato se supera 1000, altrimenti zero, senza calcolare il fatturato due volte.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura che restituisca il fatturato se supera 1000 e zero negli altri casi, senza calcolare il fatturato due volte. Scrivi la misura.",
     starter: 'Fatturato rilevante = ',
     accepted: [
       'VAR F = [Fatturato] RETURN IF(F > 1000, F, 0)',
@@ -1508,7 +1508,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-opt-h1', topicId: DaxTopicId.Optimization, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'KEEPFILTERS contro il filtro che sovrascrive',
-    scenario: "L'utente ha selezionato la categoria Bevande. La misura CALCULATE([Fatturato], Prodotti[Categoria] = \"Alimentari\") mostra comunque gli alimentari. Come fai a rispettare anche la selezione dell'utente?",
+    scenario: "Hai un report Power BI in cui l'utente ha selezionato la categoria Bevande, ma la misura CALCULATE([Fatturato], Prodotti[Categoria] = \"Alimentari\") continua a mostrare gli alimentari. Devi correggerla in modo che rispetti anche la selezione dell'utente. Quale espressione DAX usi?",
     options: [
       'Aggiungere ALL',
       'Avvolgere il predicato in KEEPFILTERS, così le due condizioni si intersecano invece di sostituirsi',
@@ -1523,7 +1523,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-opt-h2', topicId: DaxTopicId.Optimization, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Ridurre la granularità',
-    scenario: "La tabella dei fatti ha una riga per secondo ma i report mostrano solo dati giornalieri. Cosa conviene fare?",
+    scenario: "Hai un modello semantico Power BI in cui la tabella dei fatti registra una riga per secondo, mentre i report mostrano soltanto dati giornalieri. Devi ridurre le dimensioni del modello. Quale affermazione è corretta?",
     options: [
       'Lasciare tutto, potrebbe servire',
       'Aggregare i fatti a livello giornaliero in fase di caricamento: meno righe, modello più piccolo e query più veloci',
@@ -1538,7 +1538,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-opt-h3', topicId: DaxTopicId.Optimization, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Colonna calcolata o misura per la performance',
-    scenario: "Devi calcolare il margine di riga. Una colonna calcolata occupa memoria, una misura si ricalcola ogni volta. Quale criterio segui?",
+    scenario: "Hai un modello semantico Power BI e devi calcolare il margine di riga. Una colonna calcolata occupa memoria, una misura viene ricalcolata a ogni interrogazione. Devi scegliere in base a un criterio. Quale affermazione è corretta?",
     options: [
       'Sempre la colonna calcolata',
       'Colonna calcolata (meglio ancora in Power Query) se il valore serve come filtro, asse o slicer; misura se serve solo aggregato',
@@ -1555,7 +1555,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-calc-e3', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Easy, kind: 'formula',
     title: 'Fatturato di una sola categoria',
-    scenario: "Scrivi una misura che dia il fatturato dei soli prodotti di categoria Bevande.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una misura con il fatturato dei soli prodotti di categoria Bevande. Scrivi la misura.",
     starter: 'Fatturato bevande = ',
     accepted: [
       'CALCULATE([Fatturato], Prodotti[Categoria] = "Bevande")',
@@ -1569,7 +1569,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-calc-m4', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'ALL contro ALLSELECTED',
-    scenario: "Vuoi la percentuale sul totale, ma il totale deve rispettare i filtri che l'utente ha messo negli slicer e ignorare solo il filtro di riga della tabella. Cosa usi al denominatore?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Prodotti. Devi creare una misura di percentuale sul totale in cui il denominatore rispetta i filtri scelti dall'utente negli slicer, ma ignora il filtro di riga della visualizzazione. Quale funzione usi al denominatore?",
     options: [
       'ALL(Prodotti)',
       'ALLSELECTED(Prodotti)',
@@ -1584,7 +1584,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-calc-h3', topicId: DaxTopicId.Calculate, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Fatturato ignorando ogni filtro',
-    scenario: "Scrivi una misura che restituisca sempre il fatturato totale del modello, qualunque filtro sia applicato.",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Devi creare una misura di riferimento che restituisca sempre il fatturato totale del modello, qualunque filtro sia applicato. Scrivi la misura.",
     starter: 'Fatturato assoluto = ',
     accepted: [
       'CALCULATE([Fatturato], ALL(Vendite))',
@@ -1601,7 +1601,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-time-m4', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Fatturato da inizio anno',
-    scenario: "Scrivi una misura che accumuli il fatturato dall'inizio dell'anno fino alla data corrente del contesto.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. Devi creare una misura che accumuli il fatturato dall'inizio dell'anno fino alla data corrente del contesto. Scrivi la misura.",
     starter: 'Fatturato YTD = ',
     accepted: [
       'TOTALYTD([Fatturato], Calendario[Data])',
@@ -1616,7 +1616,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-time-m5', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'Mese precedente',
-    scenario: "Vuoi il fatturato del mese prima rispetto a quello selezionato. Quale forma è corretta?",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. Devi creare una misura con il fatturato del mese precedente a quello selezionato. Quale espressione DAX usi?",
     options: [
       'CALCULATE([Fatturato], PREVIOUSMONTH(Calendario[Data]))',
       'CALCULATE([Fatturato], Calendario[Mese] - 1)',
@@ -1631,7 +1631,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-time-h3', topicId: DaxTopicId.TimeIntelligence, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Ultimi dodici mesi mobili',
-    scenario: "Scrivi una misura che sommi il fatturato degli ultimi dodici mesi terminando all'ultima data del contesto.",
+    scenario: "Hai un modello semantico Power BI che contiene le tabelle Vendite e Calendario. Il controllo di gestione chiede un indicatore a dodici mesi mobili. Devi creare una misura che sommi il fatturato degli ultimi dodici mesi terminando all'ultima data del contesto. Scrivi la misura.",
     starter: 'Fatturato 12 mesi = ',
     accepted: [
       'CALCULATE([Fatturato], DATESINPERIOD(Calendario[Data], LASTDATE(Calendario[Data]), -12, MONTH))',
@@ -1647,7 +1647,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-iter-m3', topicId: DaxTopicId.Iterators, difficulty: Difficulty.Medium, kind: 'formula',
     title: 'Fatturato ricalcolato riga per riga',
-    scenario: "Le vendite hanno quantità e importo unitario in colonne separate. Scrivi una misura che moltiplichi le due colonne riga per riga e ne sommi il risultato.",
+    scenario: "Hai un modello semantico Power BI in cui la tabella Vendite registra la quantità e l'importo unitario in due colonne separate. Devi creare una misura che moltiplichi le due colonne riga per riga e ne sommi il risultato. Scrivi la misura.",
     starter: 'Fatturato calcolato = ',
     accepted: [
       'SUMX(Vendite, Vendite[Quantita] * Vendite[Importo])',
@@ -1659,7 +1659,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-iter-h3', topicId: DaxTopicId.Iterators, difficulty: Difficulty.Hard, kind: 'mcq',
     title: 'Perché SUMX e SUM danno numeri diversi',
-    scenario: "SUM(Vendite[Importo]) e SUMX(Vendite, Vendite[Quantita] * Vendite[Importo]) restituiscono valori diversi. Perché non è un errore?",
+    scenario: "Hai un modello semantico Power BI che contiene la tabella Vendite. Le espressioni SUM(Vendite[Importo]) e SUMX(Vendite, Vendite[Quantita] * Vendite[Importo]) restituiscono valori diversi e un collega sospetta un errore nel modello. Devi spiegare la differenza. Quale affermazione è corretta?",
     options: [
       'SUMX è sempre più preciso',
       'Calcolano cose diverse: la prima somma una colonna già valorizzata, la seconda somma un prodotto calcolato riga per riga',
@@ -1674,7 +1674,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-rel-m3', topicId: DaxTopicId.Relationships, difficulty: Difficulty.Medium, kind: 'mcq',
     title: 'RELATED o RELATEDTABLE',
-    scenario: "Sei in contesto di riga sulla tabella Clienti e vuoi contare quante vendite ha fatto quel cliente. Quale funzione usi?",
+    scenario: "Hai un modello semantico Power BI in cui Clienti e Vendite sono collegate. Ti trovi in contesto di riga sulla tabella Clienti e devi contare quante vendite ha effettuato quel cliente. Quale funzione usi?",
     options: [
       'RELATED(Vendite[Importo])',
       'COUNTROWS(RELATEDTABLE(Vendite))',
@@ -1689,7 +1689,7 @@ export const DAX_EXERCISES: DaxExercise[] = [
   {
     id: 'dax-rel-h2', topicId: DaxTopicId.Relationships, difficulty: Difficulty.Hard, kind: 'formula',
     title: 'Attivare una relazione inattiva',
-    scenario: "Fra Vendite[DataSpedizione] e Calendario[Data] esiste una relazione inattiva. Scrivi la misura che calcola il fatturato per data di spedizione.",
+    scenario: "Hai un modello semantico Power BI in cui tra Vendite[DataSpedizione] e Calendario[Data] esiste una relazione inattiva, mentre quella attiva usa la data d'ordine. Devi creare una misura che calcoli il fatturato per data di spedizione senza modificare la relazione attiva. Scrivi la misura.",
     starter: 'Fatturato spedito = ',
     accepted: [
       'CALCULATE([Fatturato], USERELATIONSHIP(Vendite[DataSpedizione], Calendario[Data]))',
