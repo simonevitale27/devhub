@@ -1,88 +1,247 @@
-# HANDOFF — DevHub
+# HANDOFF — DevHub Web
 
-> Aggiornato: 2026-07-16 · Sessione: Fase 0 + Fase 1 G001/G002/G003 (deployate) + G004 redesign + **nuova sezione DAX Lab**. Aggiunto **badge versione app** (v1.x, single source in `version.ts`, stamp fisso in alto a dx su OGNI schermata) — "old vs new build" tracker: **bumpare `APP_VERSION` a ogni passata visibile**. Build corrente: **v1.9**. Passate: v1.6 SQL toolbar (Formatta→neutro), v1.7 Python toolbar (Esegui→primario amber), v1.8 propagazione (Analytics back button glass; Home/DataLab/AccountPage erano già coerenti), **v1.9 DAX Lab** (nuovo lab PL-300). Prossimo: (1) humanizer sugli esercizi Python (474 blueprint già esistenti, testi spesso templatici) + riempire topic sottili; (2) più esercizi DAX (ora 23 starter); (3) pass /impeccable geometrie SQL/Python/DAX.
-> Regola: leggere questo file PRIMA di toccare codice. A fine sessione, aggiornarlo con la skill `handoff`.
->
-> **v3.0 — restauro UI COMPLETO su tutte le pagine.** Sistema condiviso: `index.css` (sfondo a strati + griglia, `.text-display` Syne, `.elev-1/2`, `.animate-rise`), tutte le pagine su `bg-transparent`. **Regole di geometria ora fisse: controlli `h-10` + `rounded-xl`, pannelli `rounded-2xl` + `ring-1 ring-white/[0.07]` + `elev-1`, celle in griglia hairline (`gap-px` su bg tinta) invece di card annidate, input `h-12`.** Tipografia: Syne per brand/display, Outfit per titoli, Inter body, JetBrains mono. Fatte: Landing, Home (ridisegnate), Analytics (summary strip al posto delle 4 tessere hero-metric), DataLab (**rimosse 5 side-stripe**, ban impeccable), AccountPage (tolto card-in-card), gym SQL/Python/DAX (geometrie controlli + tipografia). **Se tocchi UI, riusa queste regole invece di inventare nuovi valori.** Non verificato a video: vista AccountPage autenticata (ero in guest).
-> **v2.5/2.6 — Restauro UI (pass 1).** Debug completo prima: tsc pulito, SQL 775/775, Python 519 ok, DAX 42/0, rimosso dead code (`Bot`, `showErrorExplanation` in SqlGym). **Fondamenta** in `index.css`: sfondo near-black a strati (2 luci soft fisse + griglia sottile) al posto del `#000` piatto; classi `.text-display` (Syne, clamp), `.elev-1/.elev-2`, motion `.animate-rise`+`.delay-*`. **Landing** e **Home** ridisegnate in profondità (wordmark Syne, chip dei lab, card editoriali data-driven con affordance "APRI →", niente più posizionamento assoluto fragile). Tutte le classi accento sono scritte per intero (purge-safe). **Tutte** le pagine ora usano `bg-transparent` al root così le fondamenta si vedono ovunque. **DA FARE (pass 2, restauro profondo INTERNI)**: Analytics (è il cliché "hero-metric stat tiles" segnalato da impeccable — priorità), poi chrome dei gym SQL/Python/DAX (pannelli/tipografia/spaziature/empty-state), DataLab, AccountPage. NB regola: niente full-rewrite dei componenti da 1500+ righe, interventi mirati verificati a vista.
-> **v2.3 — Mescola + pool>mostrati + keying stabile.** Tutti i lab pescano un SOTTOINSIEME casuale da un pool più grande; Mescola / riapertura ridisegna il set. Fix portante: la completion era indicizzata sulla POSIZIONE mescolata (progressi inaffidabili); ora su `poolIndex` stabile (posizione del blueprint pre-shuffle), in `generateExercises`/`generatePythonExercises` + `recordCompletion`. Totali = pool intero. Python mostra 12, DAX 8. DAX: +19 esercizi (23→42, molti "scrivi la misura", inclusi Hard). Gate DAX nuovo: reference passa il proprio normalizer, indici MCQ validi, id unici, ≥2 hint, 0 dash.
-> **v2.4 — "Spiega errore" (AI gratuita).** Su risposta sbagliata, bottone che chiede a un LLM gratuito dove/perché/come correggere (IT, breve). `api/explain.ts` = proxy serverless Vercel con la chiave SERVER-SIDE; `services/aiExplain.ts` + `components/AiExplainButton.tsx` condivisi; wired in SQL (sostituito il vecchio bottone finto che usava solo `explainSqlError` statico), Python, DAX. Degrada senza rompere: no chiave→"configura la chiave", endpoint giù/vite locale→messaggio riprova.
-> **⚠️ STEP MANUALE per attivare l'AI**: su Vercel (progetto devhub) aggiungere env `OPENROUTER_API_KEY` (chiave free da openrouter.ai) su Production+Preview, poi redeploy. Opzionale `OPENROUTER_MODEL` (default `meta-llama/llama-3.3-70b-instruct:free`) se il modello free è rate-limited. Finché la chiave non c'è, il bottone mostra l'hint "configura la chiave" (nessun crash).
->
-> **v2.0 — QA gate + bug reali (fatto)**. Due gate riproducibili, entrambi verdi: Python 527 soluzioni eseguite con `python3` (519 ok / 0 mismatch / 0 error / 8 expectedOutput vuoto by design) e SQL 775 soluzioni eseguite su AlaSQL vero (0 failure / 0 debug-finti / 0 soluzioni a 0 righe). Bug trovati **eseguendo**, non leggendo:
-> - `explanation` era scritta per TUTTI (527 Python + 775 SQL) ma **non renderizzata in nessuno dei due lab**: contenuto morto. Ora mostrata con la soluzione. PythonGym mostrava solo `hints[0]` → ora tutti.
-> - Python: `Len stringa` aveva expectedOutput 34 ma `len()` = 33 (la risposta GIUSTA era bocciata). 8 hint che rivelavano la soluzione letterale. 2 `brokenCode` con placeholder `'...'`.
-> - SQL: `manager_id INT` faceva coercizione NULL→NaN → **ogni `WHERE manager_id IS NULL` era rotta**. Colonna ora untyped.
-> - SQL, limiti motore AlaSQL scoperti: `MIN(hire_date)` restituisce undefined (riscritto con SUM condizionale); `IN(subquery) AND NOT IN(subquery)` restituisce [] (riscritto con `NOT EXISTS`). **Tenerne conto scrivendo nuovi esercizi.**
-> - SQL: Orders/OrderItems sono generati **a random** → vari esercizi Hard non avevano risposta e, con result set vuoto, QUALSIASI query sbagliata veniva promossa. Ora ci sono righe-risposta deterministiche seedate in `sqlService.ts` (ordine full-house, dipendente isolato, reparto post-2021, compratore Laptop, Monitor-4K-senza-Keyboard, all-Accessories).
->
-> **NON fatto (bloccato)**: `/humanizer`. Il workflow multi-agente è fallito per **limite token di sessione** (12/17 agent falliti, output persi con la wipe della scratchpad). Da riprendere a limiti resettati.
->
-> **v2.2 — humanizer SQL: passata di CORRETTEZZA fatta inline e deployata.** 95 explanation riscritte (tutti i 91 keyword-mismatch), 346 esercizi con hint graduati (<2-hint ora = 0), 7 esercizi ridisegnati perché rotti (colonne fantasma zip_code/role/description, query/titolo in conflitto). Gate rifatti: 775/775 eseguibili, 0 zero-row, tsc pulito, walk browser di OGNI sezione ok. Il file exerciseGenerator.ts è stato RIGENERATO dal DB (formattazione JSON): i futuri edit vanno fatti sui dati, non aspettarsi la formattazione originale. **Resta (Tier B, bloccato dai limiti subagent)**: dedup stilistico di ~454 explanation SQL condivise-ma-corrette; 444 explanation Python corte; nuovi esercizi topic sottili (conditions/Medium=7, collections=3/3/3, seaborn, pandas Hard, SQL case Easy/Medium).
->
-> **PRIORITÀ humanizer = SQL, non Python** (misurato in v2.1, ora che le explanation si VEDONO):
-> - **SQL (775)**: **543 esercizi (70%) riciclano solo 52 testi** di explanation (una spiegazione di WHERE ripetuta 46 volte); **91 explanation citano una keyword che la loro query non usa** (es. "Filtro Combinato 1" spiega LIKE ma la query non ha LIKE) → sono proprio SBAGLIATE; **343 esercizi hanno <2 hint**; 123 explanation <60 char. Corretto solo `Nomi Utenti` (spiegava SELECT * su una query a colonna singola).
-> - **Python (527)**: 0 duplicati, 0 esercizi con <2 hint. Le explanation sono uniche, solo **corte** (444 sotto i 60 char). Qualità molto migliore del SQL.
-> Quindi: prima passata humanizer su SQL (dedup + mismatch keyword + hint mancanti), poi Python (espandere le corte). Coverage sottile da riempire: `conditions/Medium`=7, `collections`=3/3/3, seaborn/libraries.
-> **Versioning UI**: la versione mostrata è in `version.ts` (`APP_VERSION`). Incrementarla ad ogni cambiamento visibile così l'utente distingue la build vecchia da quella nuova sul live (devhub-gray.vercel.app).
+> Documento di passaggio. Leggilo **prima** di toccare codice.
+> Scritto per essere autosufficiente: una chat nuova non ha bisogno di altro.
+> A fine sessione aggiornalo (skill `handoff`).
 
-## Cos'è
+**Build corrente: v3.8** — live su https://devhub-gray.vercel.app
+`main` → push = deploy automatico Vercel.
 
-Piattaforma di apprendimento SQL/Python/Data Analysis, tutta client-side (React 19 + Vite 6 + TypeScript, AlaSQL in-browser, Pyodide WASM in Web Worker). Backend PocketBase self-hosted su Coolify (solo auth + sync progressi; guest mode completo senza backend). Deploy Vercel (devhub-gray.vercel.app). Docs interne: `ARCHITECTURE.md`, `DB_SCHEMA.md`, `DESIGN_SYSTEM.md`.
+**Regola di versioning**: `version.ts` è l'unica fonte (`APP_VERSION`, stampata
+in alto a destra su ogni schermata). **Bumpala a ogni cambiamento visibile**,
+così si distingue una build vecchia da una nuova sul live.
 
-## Backend PocketBase (attivo)
+---
 
-- URL API: `https://pocketbase-j6784mksa2l2i5a6eg5oolgd.49.12.96.95.sslip.io` (env `VITE_POCKETBASE_URL`, già su Vercel prod/preview/dev + `.env.local`).
-- Admin panel: `<URL>/_/` — credenziali in `~/.config/pocketbase/devhub.env` (chmod 600).
-- Collections: `users` (auth, regole default sicure `id = @request.auth.id`, campi extra `avatar_url`/`provider`), `user_progress` (regole `user = @request.auth.id`, indice UNIQUE su user+lab+topic_id+difficulty+exercise_index).
-- **Da fare a mano dall'utente** (non inseribili da Claude): Google OAuth (client id/secret in admin → users → OAuth2) e SMTP (già configurato dall'utente in questa sessione, verificare che il reset password arrivi end-to-end).
+## 0. Divisione del lavoro con DevHub Desktop
 
-## Stato lavori (roadmap epic in 6 workstream, deciso ordine dipendenze)
+Esistono **due repo separate e indipendenti**:
 
-### ✅ FATTO e DEPLOYATO in produzione
+| | dove | di cosa si occupa |
+| --- | --- | --- |
+| **DevHub Web** (questa) | `/Volumes/SSD/APPS/devhub` | i tre lab, i contenuti, la UI |
+| **DevHub Desktop** | `/Volumes/SSD/APPS/devhub-desktop` | app Tauri con Python locale reale; ospiterà il **Coding Lab** (problem solving, progetti 500–5.000 righe) |
 
-**Fase 0 — Stabilizzazione critica** (commit `cd4caff`, live). Ogni fix verificato nel renderer reale:
-1. Freeze Python risolto → Pyodide in Web Worker terminabile (`public/pyodide.worker.js` + `services/pythonService.ts` riscritto come proxy). `while True: pass` → timeout + worker ucciso/ricreato, no freeze. Verificato anche in prod.
-2. Sync progressi → `saveProgressPocketBase` idempotente (400 unique = successo, non trippa il circuit breaker) + guard single-flight in `syncLocalToBackend`; streak backend allineato al locale. `services/progressService.ts`.
-3. Validazione SQL → `utils/sqlHelpers.ts::compareResults` ora multiset (cardinalità: DISTINCT) + order-sensitive quando la soluzione ha ORDER BY (param `orderMatters`, passato da SqlGym); precisione numerica a 4 decimali.
-4. Esercizi SQL impossibili → riscritti gli unici 3 blueprint non eseguibili su AlaSQL (RANK/DENSE_RANK via subquery correlata, CTE "Sopra la Media" in forma JOIN) in `services/exerciseGenerator.ts`. **Gate QA: 775/775 soluzioni eseguibili** (verificato in browser eseguendo ogni queryTemplate). NB: l'audit sovrastimava — molte funzioni date "rotte" erano già registrate come `alasql.fn` in `services/sqlService.ts`.
-5. Seaborn → caricato via micropip nel worker (non è in Pyodide 0.24.1). `PythonGym` LIBRARY_PACKAGES + worker `loadPackages` PIP_ONLY.
-6. Percentuali progressi → totali reali per topic (`SQL_TOPIC_TOTALS`/`PYTHON_TOPIC_TOTALS` esportati dai generatori, passati a `getTopicProgress`) invece del 60 fisso. Clamp a 100%.
-7. Service worker (`public/sw.js`) → non cache più le richieste cross-origin (API PocketBase, CDN).
+**Non condividono file**: una modifica qui non arriva là e viceversa, va copiata
+a mano. **Unica eccezione assoluta**: `services/pythonService.ts` è il file che
+distingue le due build (Pyodide qui, `python3` di sistema là) — **non copiarlo
+mai fra i due**.
 
-**Fase 1 G001 — Tailwind build-time** (commit `f176b5a`, live): rimosso `cdn.tailwindcss.com`; `tailwind.config.js` + `postcss.config.js` + `index.css` (importato in `index.tsx`); config e `<style>` migrati da `index.html`. CSS compilato/purgato ~81KB. Verificato: 4 pagine identiche.
+---
 
-**Fase 1 G002 — Code-splitting gym SQL** (commit `8d7e386`, live): in `SqlGym.tsx` xlsx e pdfExport ora dynamic import negli handler; QuickChart e SchemaERDiagram ora `React.lazy`+Suspense; rimossi import morti jsPDF/autoTable. **Chunk SqlGym 232KB → 59KB (-75%)**; vendor-charts (1.27MB) ora on-demand. Verificato: QuickChart lazy renderizza.
+## 1. Cos'è
 
-**Fase 1 G003 — a11y baseline + palette** (commit `cb2b5ee`, live): focus-visible ring globale in `index.css`; `@media prefers-reduced-motion`; **palette unificata a `slate`** (deciso con l'utente; `zinc-*`→`slate-*` in 7 file); Escape chiude il modale QuickChart. Verificato. RIMANDATO a G004: estrazione token condivisi in `tailwind.config`, touch-target 44px sui bottoni icona, focus-trap su tutti i modali.
+Piattaforma di studio SQL / Python / DAX, interamente client-side.
+React 19 + Vite 6 + TypeScript · AlaSQL in-browser · Pyodide (WASM) in Web Worker.
+Backend PocketBase self-hosted su Coolify, solo per auth e sync progressi: la
+**guest mode funziona senza backend**. Deploy Vercel.
 
-### ⏭️ IN CORSO — Fase 1 G004 redesign (direzione decisa: RAFFINARE l'identità attuale — dark+glass+accento blu; NON rivoluzionare. Sezione di partenza: SQL Lab)
+Docs interne: `ARCHITECTURE.md`, `DB_SCHEMA.md`, `DESIGN_SYSTEM.md`.
 
-**Pass 1 fatto** (commit `32d33ec`, live): SqlGym spinner + stato vuoto leggibile. **Pass 2 (v1.6)**: SqlGym toolbar — `Formatta` era un secondo "primario" blu in conflitto con `Esegui`; ora è utility neutra, il blu marca UN solo primario. **Pass 3 (v1.7)**: PythonGym toolbar allineata a SqlGym — `Esegui` era icona-fantasma identica alle utility; ora è primario amber etichettato (identità Python = amber, SQL = blu; stessa *gerarchia*, colore diverso). Verificato: il codice gira e valida ("Corretto! 🎉"). **Da continuare** (iterare con l'utente che rivede): propagare gerarchia/glass/spacing a Home + Analytics (+ DataLab) per coerenza; poi rifinire densità/contrasto sidebar SQL Lab (chip keyword minuscole) e touch-target residui. La skill `ui-ux-pro-max` è orientata React-Native ma i principi (a11y, spacing 4/8, gerarchia, stati, motion 150-300ms) valgono. Regola: NIENTE full-rewrite dei componenti da 1500+ righe; interventi mirati e verificati a vista.
+### Contenuti attuali
 
-### ⏭️ Fasi successive (non ancora pianificate in dettaglio)
+| Lab | Esercizi | Note |
+| --- | --- | --- |
+| SQL | 775 | eseguiti contro AlaSQL vero dal gate |
+| Python | 660 su 15 argomenti | eseguiti con `python3` vero dal gate |
+| DAX | 110 su 14 argomenti | allineati alle skill PL-300, gate strutturale |
 
-- **Riscrittura contenuti esercizi SQL** (`/humanizer`): ~42% delle `explanation` sono boilerplate riciclato e spesso incollato sull'esercizio sbagliato; mismatch descrizione↔soluzione in vari Hard; hint non graduati; Case Easy/Medium hanno solo 10 blueprint (vs 30). Strategia consigliata: spacchettare il monolite `exerciseGenerator.ts` (7975 righe) in `services/exercises/sql/<topic>.ts` + barrel, poi riscrivere topic-per-topic con gate QA di eseguibilità già rodato in questa sessione.
-- **Sezione Python data-analysis** (pandas/matplotlib/seaborn): il topic Seaborn ora carica ma NON esistono esercizi che producono un grafico; il runner del Gym cattura solo stdout. Costruire sopra l'infra DataLab (runPythonForDataLab cattura già DataFrame JSON + PNG matplotlib). Vedi featureNotes dell'audit (dimensione python-section).
-- **Sezione DAX** (cert Power BI PL-300): ✅ **CREATA e DEPLOYATA (v1.9)**. `daxTypes.ts` (tipi + `normalizeDax`/`checkDaxFormula`), `services/daxExercises.ts` (23 esercizi humanizzati su 7 topic, un unico schema a stella condiviso Vendite/Prodotti/Clienti/Calendario, `DAX_TOPIC_TOTALS` calcolati dai dati), `components/DaxGym.tsx` (lab: sidebar topic+chip, Easy/Medium/Hard, MCQ + textarea formula, 1 primario giallo "Verifica" + utility neutre, identità Power BI gialla). Validazione **ibrida** (scelta utente): MCQ maggioritari + alcuni "scrivi la misura" con `normalizeDax` tollerante (case/spazi/`[]`/apici/`;`). Routing: `Page.AngularGym`→`Page.DaxGym`, lazy in App.tsx, card Home (griglia ora 2×2). **Progressi solo in localStorage** (`dax_completed_v1`); NON ancora integrati con `progressService`/Analytics/PocketBase (l'union `lab` resta `'sql'|'python'`). **Da fare**: più esercizi (coverage PL-300), integrazione progressi cross-lab (estendere union a `'dax'` in ~6 punti progressService + campo select `lab` PocketBase, poi Analytics).
-- **Sezione Admin**: nessun modello ruoli oggi. Servono su PocketBase users i campi `role` (select user/admin) e `blocked` (bool); authRule users `blocked = false` per il ban; collection `audit_log`; pagina `Page.Admin` con guard di ruolo. Ogni check lato client DEVE avere il gemello nelle API rules PocketBase.
+Argomenti Python: Operatori, Input/Output, Condizioni, Cicli, Collezioni, Liste,
+Tuple, Set, Dizionari, Pandas, Seaborn, Librerie, **Giochi**, **Forecasting**,
+**Deep Learning**.
 
-## Debiti tecnici / note
+---
 
-- `vendor-charts` 1.27MB resta grosso ma ora è lazy; DataLab importa ancora xlsx/QuickChart staticamente (chunk lazy separato).
-- Pyodide 0.24.1 pinnato; al timeout-kill del worker lo stato VFS/DataFrame di DataLab si perde (accettabile dopo runaway).
-- Audit completo di questa sessione: report multi-agente con scoring (Stabilità ~55 pre-fix, Perf 48, UX/UI 62, Manutenibilità 45). Molti finding erano sovrastimati (testati in isolamento); i confermati sono stati fixati in Fase 0.
-
-## Come avviare
+## 2. Come si avvia
 
 ```bash
 cd /Volumes/SSD/APPS/devhub
 npm install
-npm run dev   # launch config globale "devhub-dev" su porta 3100
+npm run dev      # launch config "devhub-dev", porta 3100
 ```
 
-Guest mode: nessuna env. Login: `VITE_POCKETBASE_URL` (già in `.env.local`).
+`npm run dev` e `npm run build` **scaricano Pyodide** in `public/pyodide/` prima
+di partire (vedi 4.1). La prima volta ci mette un paio di minuti; poi è istantaneo.
 
-## Stato pianificazione fablize
+Guest mode: nessuna env necessaria. Login: `VITE_POCKETBASE_URL` (già in `.env.local`).
 
-`.fablize/` contiene il piano Fase 1 (G001✅ G002✅ G003⏭️ G004⏭️). Per riprendere: `goals.py status` dalla root.
+### I gate di qualità — usarli, non fidarsi della lettura
+
+```bash
+TSX=/Users/simonevitale/.npm/_npx/69f9afb961c37556/node_modules/.bin/tsx
+$TSX scripts/validate_python.ts   # esegue TUTTE le 660 soluzioni con python3
+$TSX scripts/validate_dax.ts      # coerenza strutturale dei 110 esercizi DAX
+node scripts/validate_all_exercises.cjs   # 775 query SQL su AlaSQL vero
+npx tsc --noEmit
+```
+
+**Questi gate hanno trovato bug che l'ispezione non avrebbe visto** (output attesi
+sbagliati, esercizi insolubili, id duplicati). Eseguirli dopo ogni modifica ai
+contenuti.
+
+---
+
+## 3. Stato: cosa è stato fatto di recente
+
+- **v3.8** — i 110 scenari DAX riscritti in stile PL-300 (contesto del modello →
+  esigenza di business → domanda esplicita).
+- **v3.7** — DAX: validazione resa utilizzabile (vedi 4.2), modello per esercizio,
+  toolbar in alto, Suggerimento/Soluzione/Mescola a sola icona.
+- **v3.6** — elisione Python Lab (−32 righe) + bug di valutazione corretto.
+- **v3.5** — Python Lab: `Esegui` non rispondeva più dopo un timeout (vedi 4.3).
+  Aggiunta la scorciatoia ⌘/Ctrl+Enter, resa visibile sul pulsante.
+- **Pyodide self-hosted** (vedi 4.1): non dipende più da CDN esterni.
+- **v3.4** — tre argomenti Python nuovi: Giochi, Forecasting, Deep Learning.
+
+---
+
+## 4. Le decisioni che è importante conoscere
+
+### 4.1 Pyodide è self-hosted, non più da CDN
+**Perché**: dal PC dell'ufficio l'ambiente Python non partiva, da casa sì. Pyodide
+veniva scaricato da `cdn.jsdelivr.net` (~10 MB, nessun fallback) e le reti
+aziendali filtrano comunemente i CDN pubblici. Il service worker non poteva
+rimediare perché **ignora esplicitamente il cross-origin**, quindi non ne aveva
+mai messo in cache un byte.
+
+Ora tutto è servito dal dominio dell'app: core, 14 wheel (numpy/pandas/matplotlib/
+micropip + dipendenze) e **seaborn**, che prima veniva da PyPI — l'ultimo host
+esterno rimasto.
+
+- I ~78 MB **non sono nel repo**: `public/pyodide/` è gitignorato e
+  `scripts/fetch-pyodide.mjs` lo ricrea prima di ogni build. Idempotente.
+- Il download è **esplicito dentro i comandi `dev`/`build`**, non un hook
+  `prebuild`: su questa macchina `npm config get ignore-scripts` è `true`, quindi
+  gli hook non partirebbero mai qui mentre su Vercel sì → divergenza silenziosa
+  fra locale e produzione. **Non riconvertirlo in hook.**
+
+**⚠️ NON ANCORA VERIFICATO**: dopo il self-hosting, dal PC dell'ufficio l'errore
+è cambiato in `Python non disponibile: Program terminated with exit(1)`. È un
+errore del runtime Emscripten, non di rete: i file arrivano ma Python aborta
+all'avvio. Ipotesi principale: **il proxy aziendale blocca i `.zip`** (vettore
+malware tipico) e senza `python_stdlib.zip` Python non parte. Diagnostica da
+eseguire in ufficio: confrontare i byte scaricati con
+`python_stdlib.zip` = 8.882.369 byte, magic `50 4b 03 04`, e
+`pyodide.asm.wasm` = 8.995.509 byte, magic `00 61 73 6d`.
+Se confermato, la soluzione è intercettare la richiesta con il service worker e
+servirla da un URL con estensione innocua.
+
+### 4.2 La validazione DAX ignora il nome della misura
+In DAX il nome è una scelta libera: `Massimo = MAX(...)` e `Vendita alta = MAX(...)`
+sono la stessa misura. Confrontare la stringa intera bocciava risposte giuste —
+**9 casi su 15 fallivano**. `normalizeDax` in `daxTypes.ts` ora toglie il nome
+(solo se ciò che precede `=` è un identificatore semplice, per non rovinare
+`CALCULATE(..., Col = "x")` dove `=` è un operatore), normalizza gli spazi attorno
+a tutti gli operatori e dentro le quadre, e il punto e virgola finale.
+
+Le risposte accettate includono equivalenti veri (`SUM`↔`SUMX`, `ALL`↔`REMOVEFILTERS`,
+`[Fatturato]`↔`SUM(Vendite[Importo])`…), **con una guardia**: se la funzione
+alternativa è citata nel testo dell'esercizio, quella distinzione è il punto
+didattico e non viene allargata.
+
+### 4.3 Mai uscire in silenzio da un handler
+`handleRunCode` iniziava con `if (!isPyodideReady()) return`. Il worker viene
+distrutto al timeout, quindi **un solo ciclo infinito rendeva `Esegui` morto per
+sempre**: nessun output, nessun errore, niente in console, fino al reload.
+`runPython` chiama già `initPyodide()` da sé: il guard bloccava prima di arrivarci.
+
+### 4.4 Geometrie UI fisse (restauro v3.0)
+Riusare questi valori invece di inventarne di nuovi:
+- controlli `h-10` + `rounded-xl`
+- pannelli `rounded-2xl` + `ring-1 ring-white/[0.07]` + `elev-1`
+- gruppi di dati: griglia hairline (`gap-px`) invece di card annidate
+- input `h-12`
+- tipografia: Inter tight per il display (`.text-display`), Outfit per i titoli,
+  JetBrains mono per il codice
+
+I controlli condivisi dai tre lab stanno in `components/GymControls.tsx`
+(`ExerciseNav`, `HomeButton`, `IconButton`, `ShuffleButton`, `AnalyticsButton`):
+la geometria si corregge lì una volta sola.
+
+### 4.5 Pool più grande di quanto mostrato
+Ogni lab pesca un sottoinsieme casuale da un pool più ampio; Mescola / riapertura
+ridisegna il set. La completion è indicizzata su `poolIndex` **stabile**
+(posizione pre-shuffle), non sulla posizione mostrata: era un bug portante dei
+progressi. Python mostra 12, DAX 8.
+
+### 4.6 Limiti noti di AlaSQL (scrivendo esercizi SQL)
+- `manager_id` è volutamente **senza tipo**: come `INT`, AlaSQL trasforma NULL in
+  NaN e ogni `WHERE ... IS NULL` si rompe.
+- `MIN(hire_date)` restituisce undefined → riscritto con SUM condizionale.
+- `IN(subquery) AND NOT IN(subquery)` restituisce `[]` → usare `NOT EXISTS`.
+- Orders/OrderItems sono generati a random: alcune righe-risposta sono **seedate
+  deterministicamente** in `sqlService.ts`, altrimenti gli esercizi Hard non hanno
+  risposta e — con result set vuoto — qualunque query sbagliata viene promossa.
+
+---
+
+## 5. Prossimi passi
+
+### 5.1 Aperti e concreti
+- **Verificare Pyodide dal PC dell'ufficio** (vedi 4.1). È l'unico problema
+  funzionale noto che tocca un utente reale.
+- **Attivare l'AI "Spiega errore"**: serve `OPENROUTER_API_KEY` su Vercel
+  (Production + Preview) da openrouter.ai, poi redeploy. Opzionale
+  `OPENROUTER_MODEL` (default `meta-llama/llama-3.3-70b-instruct:free`). Finché
+  manca, il bottone mostra l'hint senza rompere nulla.
+  **Passo manuale dell'utente: Claude non inserisce chiavi.**
+- **Progressi DAX**: oggi solo `localStorage` (`dax_completed_v1`). Per portarli
+  in Analytics/PocketBase va estesa l'union `lab` da `'sql'|'python'` a `'dax'`
+  in ~6 punti di `progressService` + campo select su PocketBase.
+
+### 5.2 Contenuti, se si vuole alzare l'asticella
+- **SQL**: ~454 explanation sono corrette ma condivise fra molti esercizi
+  (stilisticamente ripetitive). I casi *sbagliati* sono già stati corretti.
+- Topic sottili: SQL `case` Easy/Medium.
+- Python: nessun pool sottile rimasto (verificato dal gate).
+
+### 5.3 Dubbio segnalato, mai risolto
+`validateOutput` con `strictMode: false` (il default) collassa gli spazi
+(`\s+` → `' '`), quindi un esercizio che attende `"1\n2\n3"` accetta anche
+`"1 2 3"`. Non è chiaro se la tolleranza sui newline sia voluta. Se le righe
+devono contare, è una modifica di due caratteri.
+
+---
+
+## 6. Backend PocketBase
+
+- API: `https://pocketbase-j6784mksa2l2i5a6eg5oolgd.49.12.96.95.sslip.io`
+  (env `VITE_POCKETBASE_URL`, già su Vercel prod/preview/dev e in `.env.local`).
+- Admin: `<URL>/_/` — credenziali in `~/.config/pocketbase/devhub.env` (chmod 600).
+  **Mai in chiaro nel repo.**
+- Collections: `users` (auth, regole `id = @request.auth.id`, campi extra
+  `avatar_url`/`provider`), `user_progress` (regole `user = @request.auth.id`,
+  indice UNIQUE su user+lab+topic_id+difficulty+exercise_index).
+- Google OAuth e SMTP: configurati dall'utente lato admin panel.
+
+---
+
+## 7. Dove sta cosa
+
+```
+components/GymControls.tsx        controlli condivisi dei tre lab
+components/PythonGym.tsx          Python Lab
+components/SqlGym.tsx             SQL Lab
+components/DaxGym.tsx             DAX Lab
+services/pythonService.ts         Pyodide via Web Worker  <- NON copiare nel desktop
+public/pyodide.worker.js          worker: punta a /pyodide/ (same-origin)
+scripts/fetch-pyodide.mjs         scarica Pyodide prima del build
+services/exerciseGenerator.ts     775 esercizi SQL (monolite, rigenerato da JSON)
+services/pythonExerciseGenerator.ts + pythonLibraryExercises.ts + pythonPlaygroundExercises.ts
+services/daxExercises.ts          110 esercizi DAX + DAX_SCHEMA + tablesForExercise
+daxTypes.ts                       normalizeDax / checkDaxFormula
+version.ts                        APP_VERSION
+```
+
+---
+
+## 8. Note di metodo che hanno pagato
+
+- **Riprodurre prima di correggere.** Ogni bug serio di questa sessione (Esegui
+  morto, validazione DAX, navigazione fuori range) è stato prima riprodotto, e in
+  due casi la causa non era quella che sembrava.
+- **Guardare lo schermo.** Due bug erano invisibili ai gate: numpy non caricato
+  per i nuovi argomenti, e `{result && ...}` che mostrava "Riprova" da subito
+  perché `'idle'` è una stringa truthy.
+- **Niente full-rewrite** dei componenti da 1500+ righe: interventi mirati,
+  verificati a vista.

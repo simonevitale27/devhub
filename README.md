@@ -1,6 +1,6 @@
 # DevHub - Interactive Dev Playground
 
-**Piattaforma interattiva per SQL, Python e Data Analysis. Esercizi pratici, editor live, grafici professionali e strumenti di analisi dati. Tutto gira nel browser, nessun server richiesto.**
+**Piattaforma interattiva per SQL, Python e DAX. Esercizi pratici, editor live, grafici professionali e strumenti di analisi dati. Tutto gira nel browser, nessun server richiesto.**
 
 [Demo Live](https://devhub-gray.vercel.app) | [Documentazione Tecnica](#architettura)
 
@@ -20,8 +20,9 @@
 
 ## Cosa Puoi Fare
 
-- **Oltre 800 esercizi SQL** organizzati per argomento e difficoltà
-- **Ambiente Python completo** con 12 argomenti, da basi a Pandas e Seaborn
+- **775 esercizi SQL** organizzati per argomento e difficoltà
+- **660 esercizi Python** su 15 argomenti: dalle basi a Pandas e Seaborn, più Giochi, Forecasting e Deep Learning
+- **110 esercizi DAX** allineati alle skill della certificazione Power BI PL-300
 - **DataLab**: carica file (CSV, JSON, Excel, TSV), analizza con SQL e Python, crea grafici Matplotlib
 - **Grafici professionali**: visualizzazioni con QuickChart e Matplotlib, esportabili in PNG, JPG, SVG e PDF
 - **Export completo**: scarica tabelle e risultati in CSV, Excel e PDF
@@ -131,6 +132,33 @@ Impara Python direttamente nel browser, senza installare nulla.
 
 ---
 
+### DAX Lab
+
+Percorso di preparazione alla certificazione **Power BI PL-300**, con 110
+esercizi su 14 argomenti: aggregazioni, CALCULATE e contesto di filtro,
+iteratori, relazioni, time intelligence, variabili, statistiche, misure
+semi-additive, funzioni tabella, modellazione, visual calculation e gruppi di
+calcolo, sicurezza a livello di riga, ottimizzazione.
+
+#### Due Tipi di Esercizio
+
+- **Quiz**: scegli l'espressione DAX corretta fra quattro alternative
+- **Scrivi la misura**: componi tu la formula, che viene validata
+
+#### Come Sono Scritti
+
+Gli scenari seguono la struttura delle domande d'esame: contesto del modello,
+esigenza di business, domanda esplicita. Ogni esercizio dichiara **le tabelle
+che gli servono con tutte le loro colonne**, così non devi indovinare i nomi.
+
+La validazione è tollerante di proposito: il **nome della misura**, le
+maiuscole, gli spazi e il punto e virgola finale non contano, e sono accettate
+le formulazioni equivalenti (`SUM` e `SUMX`, `ALL` e `REMOVEFILTERS`, …). Quando
+però la distinzione fra due funzioni è il punto dell'esercizio, l'alternativa
+non viene accettata.
+
+---
+
 ### Analytics Dashboard
 
 Monitora i tuoi progressi con visualizzazioni interattive:
@@ -166,8 +194,8 @@ Employees (id, name, department, hire_date, manager_id)
 | --------- | ---------- |
 | Frontend | React 19 + TypeScript + Vite 6 |
 | Database locale | AlaSQL (tutto nel browser) |
-| Backend | Supabase (solo login e sync progressi — in migrazione verso Supabase self-hosted su Coolify/VPS) |
-| Python | Pyodide (Python in WebAssembly, caricato da CDN al primo uso) |
+| Backend | PocketBase self-hosted su Coolify (solo login e sync progressi; la guest mode funziona senza backend) |
+| Python | Pyodide (Python in WebAssembly, **servito dal dominio dell'app**, non da CDN) |
 | Grafici SQL | Recharts |
 | Grafici Python | Matplotlib (via Pyodide) |
 | PDF | jsPDF |
@@ -231,10 +259,27 @@ Senza queste variabili l'app funziona in guest mode (progressi solo locali). Lo 
 
 ## Roadmap
 
-1. **Migrazione backend**: da Supabase Cloud a Supabase self-hosted su Coolify (VPS). Il client è già env-driven: la migrazione è uno swap di variabili d'ambiente. Dettagli operativi in [HANDOFF.md](HANDOFF.md).
-2. **Riscrittura esercizi**: rifattorizzare i generatori monolitici in moduli per argomento, migliorare qualità e progressione dei quesiti.
-3. **Nuova sezione DAX**: percorso di studio per la certificazione Power BI (PL-300) — misure, colonne calcolate, contesto di filtro, time intelligence — con quiz e validazione delle formule.
-4. **Tailwind build-time**: sostituire il CDN con la pipeline di build.
+Fatto di recente:
+
+- **Sezione DAX** per la certificazione Power BI PL-300: 110 esercizi, quiz e
+  formule da scrivere, con validazione tollerante (il nome della misura, gli
+  spazi e le maiuscole non contano) e scenari in stile esame.
+- **Pyodide self-hosted**: l'ambiente Python non dipende più da CDN esterni,
+  quindi parte anche dietro reti che li filtrano. Come effetto collaterale
+  resta utilizzabile offline dopo il primo caricamento.
+- **Tailwind build-time** al posto del CDN.
+- **Backend su PocketBase** self-hosted.
+
+In corso / prossimi:
+
+1. **Coding Lab** — sezione dedicata al problem solving: completare, riparare,
+   alleggerire e documentare progetti veri da 500 a 5.000 righe, valutati con
+   test automatici invece che con un output atteso. Vive in
+   [DevHub Desktop](../devhub-desktop), che ha un interprete Python reale.
+2. **Riscrittura esercizi SQL**: spacchettare il generatore monolitico in moduli
+   per argomento e uniformare le spiegazioni ripetute.
+3. **Progressi DAX cross-lab**: oggi salvati solo in locale, da portare in
+   Analytics e PocketBase.
 
 ---
 
