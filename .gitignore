@@ -36,8 +36,9 @@ dev_server.log
 *.backup.gz
 *.storage.zip
 
-# Env files (.env.local è già coperto da *.local)
-.env
+# Env files: qualsiasi variante, non solo .env e .env.local
+.env*
+!.env.example
 
 # Fablize session state (tool-local, non fa parte del progetto)
 .fablize/
