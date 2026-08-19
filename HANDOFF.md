@@ -4,7 +4,7 @@
 > Scritto per essere autosufficiente: una chat nuova non ha bisogno di altro.
 > A fine sessione aggiornalo (skill `handoff`).
 
-**Build corrente: v3.8** — live su https://devhub-gray.vercel.app
+**Build corrente: v3.11** — live su https://devhub-gray.vercel.app
 `main` → push = deploy automatico Vercel.
 
 **Regola di versioning**: `version.ts` è l'unica fonte (`APP_VERSION`, stampata
@@ -83,6 +83,11 @@ contenuti.
 
 ## 3. Stato: cosa è stato fatto di recente
 
+- **v3.11** — la spiegazione AI degli errori funziona davvero: chiave configurata
+  su Vercel e catena di ripiego fra modelli (vedi 4.7).
+- **v3.10** — bottone "Perché?" che diagnostica l'ambiente Python che non parte
+  (vedi 4.1). Nuovo logo su favicon e icone PWA.
+- **v3.9** — stesso logo dell'app desktop su tutta la parte web.
 - **v3.8** — i 110 scenari DAX riscritti in stile PL-300 (contesto del modello →
   esigenza di business → domanda esplicita).
 - **v3.7** — DAX: validazione resa utilizzabile (vedi 4.2), modello per esercizio,
@@ -115,16 +120,37 @@ esterno rimasto.
   gli hook non partirebbero mai qui mentre su Vercel sì → divergenza silenziosa
   fra locale e produzione. **Non riconvertirlo in hook.**
 
-**⚠️ NON ANCORA VERIFICATO**: dopo il self-hosting, dal PC dell'ufficio l'errore
-è cambiato in `Python non disponibile: Program terminated with exit(1)`. È un
-errore del runtime Emscripten, non di rete: i file arrivano ma Python aborta
-all'avvio. Ipotesi principale: **il proxy aziendale blocca i `.zip`** (vettore
-malware tipico) e senza `python_stdlib.zip` Python non parte. Diagnostica da
-eseguire in ufficio: confrontare i byte scaricati con
-`python_stdlib.zip` = 8.882.369 byte, magic `50 4b 03 04`, e
-`pyodide.asm.wasm` = 8.995.509 byte, magic `00 61 73 6d`.
-Se confermato, la soluzione è intercettare la richiesta con il service worker e
-servirla da un URL con estensione innocua.
+**Stato del problema ufficio (aggiornato al 19/08/2026).** Dopo il self-hosting
+l'errore in ufficio è diventato `Python non disponibile: Program terminated with
+exit(1)`. Quel messaggio è tutto ciò che Emscripten sa dire, e **non distingue
+due cause opposte**, quindi tirare a indovinare costava deploy a vuoto.
+
+Riprodotto in locale: **basta rendere irraggiungibile `python_stdlib.zip`** per
+ottenere esattamente lo stesso `exit(1)`. Quindi la classe di causa è certa —
+uno dei 4 file di avvio non arriva integro — ma quale, e perché, si vede solo da
+quella rete.
+
+Da v3.10 c'è `services/pythonDiagnostics.ts`, esposto dal bottone **"Perché?"**
+accanto all'errore in Python Lab. Controlla due cose:
+
+1. **se WebAssembly compila davvero.** Una policy aziendale che disattiva il JIT
+   lascia l'oggetto `WebAssembly` al suo posto ma gli impedisce di compilare:
+   sembra tutto a posto e non funziona niente.
+2. **se i 4 file di avvio arrivano integri**, guardando `content-type` e magic
+   bytes. Un proxy che blocca non chiude la connessione: risponde `200` con la
+   sua pagina HTML, e il primo byte `<` lo smaschera.
+
+Cosa fare col verdetto:
+
+| Verdetto | Via d'uscita |
+| --- | --- |
+| `file-filtrato` | aggirabile: servire il file con un'estensione che il proxy non riconosce (`.bin`) e riscrivere la richiesta nel worker |
+| `wasm-bloccato` | **non aggirabile nel browser**: Python gira in WebAssembly. Serve un'eccezione dall'IT o DevHub Desktop, che usa il python3 di sistema |
+
+⚠️ **Non implementare il workaround `.bin` prima del verdetto.** Se la causa è
+il JIT, quel lavoro non serve a niente; e i wheel `.whl` sono anch'essi archivi
+ZIP, quindi se il proxy filtra per contenuto e non per estensione il rename non
+basta comunque.
 
 ### 4.2 La validazione DAX ignora il nome della misura
 In DAX il nome è una scelta libera: `Massimo = MAX(...)` e `Vendita alta = MAX(...)`
@@ -175,16 +201,53 @@ progressi. Python mostra 12, DAX 8.
 
 ---
 
+### 4.7 La spiegazione AI degli errori (v3.11)
+
+`api/explain.ts` è una function Vercel che riceve esercizio + risposta sbagliata
+e restituisce una spiegazione in italiano. La chiave sta **solo** nelle
+Environment Variables di Vercel (Production e Preview), mai nel repo e mai nel
+bundle: il browser parla con la nostra function, non con OpenRouter.
+
+Tre cose imparate mettendola in funzione, tutte e tre costate un tentativo:
+
+1. **Gli id dei modelli `:free` ruotano.** Quello scritto nel codice
+   (`meta-llama/llama-3.3-70b-instruct:free`) era stato **ritirato**: con una
+   chiave valida rispondeva `404`, e sembrava un problema di chiave. Per
+   rileggere l'elenco aggiornato non serve autenticazione:
+   `curl -s https://openrouter.ai/api/v1/models | grep -o '"[^"]*:free"'`
+2. **La lista di ripiego accetta al massimo 3 modelli**, oltre risponde `400`.
+3. **I modelli `:free` hanno capacità condivisa** e restituiscono `429`/`502` a
+   caso quando sono saturi. Non è un guasto e **i crediti sul conto non lo
+   risolvono**: alzano il tetto giornaliero, non la capacità upstream.
+
+Per questo la richiesta porta una catena di 3 modelli e OpenRouter passa al
+primo disponibile; se sono giù tutti, l'utente legge "modelli momentaneamente
+saturi, riprova" invece del JSON grezzo.
+
+**Se la flakiness dà fastidio**: `OPENROUTER_MODEL` su Vercel sostituisce il
+primario senza toccare il codice. Puntandolo a un modello **a pagamento**
+(quindi senza `:free`) la capacità è dedicata e sparisce il 429; per richieste
+da ~320 token di output il costo è di frazioni di centesimo l'una.
+
+Verificato in produzione il 19/08/2026: risposta corretta e in italiano su un
+esercizio sbagliato di proposito.
+
+---
+
 ## 5. Prossimi passi
 
 ### 5.1 Aperti e concreti
-- **Verificare Pyodide dal PC dell'ufficio** (vedi 4.1). È l'unico problema
-  funzionale noto che tocca un utente reale.
-- **Attivare l'AI "Spiega errore"**: serve `OPENROUTER_API_KEY` su Vercel
-  (Production + Preview) da openrouter.ai, poi redeploy. Opzionale
-  `OPENROUTER_MODEL` (default `meta-llama/llama-3.3-70b-instruct:free`). Finché
-  manca, il bottone mostra l'hint senza rompere nulla.
-  **Passo manuale dell'utente: Claude non inserisce chiavi.**
+- **← IL PROSSIMO PASSO. Leggere il verdetto della diagnostica dall'ufficio**
+  (vedi 4.1): aprire Python Lab, cliccare **"Perché?"** sull'errore rosso e
+  guardare quale delle due cause esce. Da lì la strada è già decisa: se
+  `file-filtrato` si implementa il rename `.bin`, se `wasm-bloccato` nel browser
+  non c'è soluzione e resta DevHub Desktop.
+  *L'utente ha detto che ci va il 20/08/2026.* È l'unico problema funzionale
+  noto che tocca un utente reale.
+- ~~Attivare l'AI "Spiega errore"~~ **FATTO in v3.11** (vedi 4.7). Chiave su
+  Vercel Production + Preview, verificata in produzione. Resta valida la regola:
+  **Claude non inserisce chiavi**, nemmeno se gli vengono passate in chat — in
+  quel caso vanno considerate compromesse e rigenerate.
 - **Progressi DAX**: oggi solo `localStorage` (`dax_completed_v1`). Per portarli
   in Analytics/PocketBase va estesa l'union `lab` da `'sql'|'python'` a `'dax'`
   in ~6 punti di `progressService` + campo select su PocketBase.
@@ -225,7 +288,10 @@ components/SqlGym.tsx             SQL Lab
 components/DaxGym.tsx             DAX Lab
 services/pythonService.ts         Pyodide via Web Worker  <- NON copiare nel desktop
 public/pyodide.worker.js          worker: punta a /pyodide/ (same-origin)
+services/pythonDiagnostics.ts     perche' l'ambiente Python non parte (bottone "Perche'?")
 scripts/fetch-pyodide.mjs         scarica Pyodide prima del build
+scripts/make-icon.py              rigenera favicon e icone PWA (2 varianti, vedi commenti)
+api/explain.ts                    spiegazione AI degli errori (chiave solo su Vercel)
 services/exerciseGenerator.ts     775 esercizi SQL (monolite, rigenerato da JSON)
 services/pythonExerciseGenerator.ts + pythonLibraryExercises.ts + pythonPlaygroundExercises.ts
 services/daxExercises.ts          110 esercizi DAX + DAX_SCHEMA + tablesForExercise

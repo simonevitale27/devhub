@@ -26,6 +26,8 @@
 - **DataLab**: carica file (CSV, JSON, Excel, TSV), analizza con SQL e Python, crea grafici Matplotlib
 - **Grafici professionali**: visualizzazioni con QuickChart e Matplotlib, esportabili in PNG, JPG, SVG e PDF
 - **Export completo**: scarica tabelle e risultati in CSV, Excel e PDF
+- **Spiegazione AI degli errori**: quando sbagli un esercizio, un tutor spiega in
+  italiano dove hai sbagliato e come correggere
 - **Salva i progressi**: registrati per sincronizzare su più dispositivi
 - **Installabile su smartphone**: funziona come un'app nativa
 
@@ -130,6 +132,13 @@ Impara Python direttamente nel browser, senza installare nulla.
 - **Solve**: scrivi la soluzione da zero
 - **Debug**: trova e correggi i bug nel codice
 
+#### Se l'ambiente Python non parte
+
+Python gira nel browser tramite WebAssembly, e su alcune reti aziendali non si
+avvia. In quel caso compare un bottone **"Perché?"** che indica la causa reale:
+un file bloccato dal proxy (aggirabile) oppure la compilazione WebAssembly
+disattivata da policy (non aggirabile nel browser, serve la versione desktop).
+
 ---
 
 ### DAX Lab
@@ -198,6 +207,7 @@ Employees (id, name, department, hire_date, manager_id)
 | Python | Pyodide (Python in WebAssembly, **servito dal dominio dell'app**, non da CDN) |
 | Grafici SQL | Recharts |
 | Grafici Python | Matplotlib (via Pyodide) |
+| Spiegazioni AI | Vercel Function + OpenRouter (la chiave resta server-side) |
 | PDF | jsPDF |
 | Stile | Tailwind CSS |
 
@@ -222,7 +232,7 @@ Questo progetto dimostra competenze in:
 
 - **React avanzato**: gestione stato complessa, hooks personalizzati
 - **TypeScript**: tipizzazione rigorosa su un codebase di 10.000+ righe
-- **Database**: integrazione AlaSQL + Supabase
+- **Database**: integrazione AlaSQL + PocketBase
 - **UX/UI**: interfaccia professionale con dark mode
 - **Performance**: ottimizzazione per dispositivi mobile
 - **PWA**: app installabile con service worker
@@ -249,11 +259,17 @@ npm run dev
 Per abilitare login e sync, crea `.env.local`:
 
 ```env
-VITE_SUPABASE_URL=tua_url
-VITE_SUPABASE_ANON_KEY=tua_key
+VITE_POCKETBASE_URL=https://tuo-pocketbase
 ```
 
-Senza queste variabili l'app funziona in guest mode (progressi solo locali). Lo schema del backend è in `supabase_setup.sql`.
+Senza questa variabile l'app funziona in guest mode, con i progressi salvati solo
+in locale.
+
+Per la spiegazione AI degli errori serve `OPENROUTER_API_KEY` fra le Environment
+Variables del progetto su Vercel — **non in un file del repo**: la chiave resta
+lato server e non finisce mai nel bundle del browser. Facoltativa
+`OPENROUTER_MODEL` per cambiare modello senza toccare il codice. Se manca la
+chiave, il bottone mostra un avviso e il resto dell'app funziona normalmente.
 
 ---
 
@@ -267,6 +283,10 @@ Fatto di recente:
 - **Pyodide self-hosted**: l'ambiente Python non dipende più da CDN esterni,
   quindi parte anche dietro reti che li filtrano. Come effetto collaterale
   resta utilizzabile offline dopo il primo caricamento.
+- **Spiegazione AI degli errori**: un tutor che dice dove hai sbagliato, con
+  ripiego automatico fra più modelli quando quelli gratuiti sono saturi.
+- **Diagnostica dell'ambiente Python**: se non parte, l'app dice *perché* invece
+  di mostrare il criptico `exit(1)` di Emscripten.
 - **Tailwind build-time** al posto del CDN.
 - **Backend su PocketBase** self-hosted.
 
