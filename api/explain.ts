@@ -34,6 +34,15 @@ export default async function handler(req: any, res: any) {
     // Se un giorno sparisce anche questo, la variabile OPENROUTER_MODEL lo
     // sostituisce senza toccare il codice.
     const model = process.env.OPENROUTER_MODEL || 'z-ai/glm-5.2:free';
+    // I modelli :free hanno capacita' condivisa e rispondono 429 quando sono
+    // saturi: con un solo modello la spiegazione fallisce a caso. OpenRouter
+    // accetta una lista di ripiego e passa al primo che risponde.
+    const ripieghi = [
+      model,
+      'google/gemma-4-31b-it:free',
+      'openai/gpt-oss-20b:free',
+      'nvidia/nemotron-3-super-120b-a12b:free',
+    ].filter((m, i, a) => a.indexOf(m) === i);
 
     const prompt =
       `Sei un tutor paziente di ${lab || 'programmazione'}. Uno studente ha sbagliato un esercizio.\n\n` +
@@ -53,6 +62,7 @@ export default async function handler(req: any, res: any) {
       },
       body: JSON.stringify({
         model,
+        models: ripieghi,
         max_tokens: 320,
         temperature: 0.3,
         messages: [{ role: 'user', content: prompt }],
@@ -61,7 +71,13 @@ export default async function handler(req: any, res: any) {
 
     if (!r.ok) {
       const t = await r.text();
-      res.status(200).json({ explanation: null, error: `AI ${r.status}: ${t.slice(0, 140)}` });
+      // 429 dopo aver provato tutta la catena vuol dire che i modelli gratuiti
+      // sono saturi adesso, non che qualcosa e' configurato male: dirlo cosi'.
+      const messaggio =
+        r.status === 429
+          ? 'I modelli gratuiti sono momentaneamente saturi. Riprova fra qualche minuto.'
+          : `AI ${r.status}: ${t.slice(0, 140)}`;
+      res.status(200).json({ explanation: null, error: messaggio });
       return;
     }
 
