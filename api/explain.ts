@@ -27,7 +27,13 @@ export default async function handler(req: any, res: any) {
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
     const { lab, title, description, expected, userAnswer, error } = body;
-    const model = process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free';
+    // Gli id dei modelli :free su OpenRouter ruotano: quello impostato qui prima
+    // (llama-3.3-70b) e' stato ritirato e l'endpoint rispondeva 404. Per vedere
+    // quali esistono ORA senza bisogno di chiave:
+    //   curl -s https://openrouter.ai/api/v1/models | grep -o '"[^"]*:free"'
+    // Se un giorno sparisce anche questo, la variabile OPENROUTER_MODEL lo
+    // sostituisce senza toccare il codice.
+    const model = process.env.OPENROUTER_MODEL || 'z-ai/glm-5.2:free';
 
     const prompt =
       `Sei un tutor paziente di ${lab || 'programmazione'}. Uno studente ha sbagliato un esercizio.\n\n` +
