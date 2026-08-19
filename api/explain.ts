@@ -37,12 +37,10 @@ export default async function handler(req: any, res: any) {
     // I modelli :free hanno capacita' condivisa e rispondono 429 quando sono
     // saturi: con un solo modello la spiegazione fallisce a caso. OpenRouter
     // accetta una lista di ripiego e passa al primo che risponde.
-    const ripieghi = [
-      model,
-      'google/gemma-4-31b-it:free',
-      'openai/gpt-oss-20b:free',
-      'nvidia/nemotron-3-super-120b-a12b:free',
-    ].filter((m, i, a) => a.indexOf(m) === i);
+    // Massimo 3: oltre, OpenRouter rifiuta la richiesta con 400.
+    const ripieghi = [model, 'google/gemma-4-31b-it:free', 'openai/gpt-oss-20b:free']
+      .filter((m, i, a) => a.indexOf(m) === i)
+      .slice(0, 3);
 
     const prompt =
       `Sei un tutor paziente di ${lab || 'programmazione'}. Uno studente ha sbagliato un esercizio.\n\n` +
