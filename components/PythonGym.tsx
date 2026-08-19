@@ -52,6 +52,7 @@ import {
   formatPythonError,
 } from "../services/pythonService";
 import { recordCompletion } from "../services/progressService";
+import { diagnosticaPython, Diagnosi } from "../services/pythonDiagnostics";
 import AutocompleteDropdown, { AutocompleteItem } from "./AutocompleteDropdown";
 import { PYTHON_KEYWORDS, PYTHON_BUILTINS, PYTHON_SNIPPETS } from "../utils/pythonConstants";
 import UserBadge from "./UserBadge";
@@ -260,6 +261,7 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [pyodideLoading, setPyodideLoading] = useState(true);
   const [pyodideError, setPyodideError] = useState<string | null>(null);
+  const [diagnosi, setDiagnosi] = useState<Diagnosi | "in-corso" | null>(null);
   const [packagesLoading, setPackagesLoading] = useState(false);
   
   // Autocomplete state
@@ -1006,6 +1008,19 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                     <>
                       <AlertCircle size={14} className="shrink-0" />
                       <span>Python non disponibile: {pyodideError}</span>
+                      {/* "exit(1)" non dice quale sia la causa: questo bottone la
+                          identifica dal browser che ha il problema. */}
+                      <button
+                        onClick={async () => {
+                          setDiagnosi("in-corso");
+                          setDiagnosi(await diagnosticaPython());
+                        }}
+                        disabled={diagnosi === "in-corso"}
+                        className="ml-auto shrink-0 px-2 py-1 rounded border border-red-500/40 hover:bg-red-500/10 disabled:opacity-50"
+                        title="Verifica perché l'ambiente Python non parte"
+                      >
+                        {diagnosi === "in-corso" ? "Controllo…" : "Perché?"}
+                      </button>
                     </>
                   ) : (
                     <>
@@ -1017,6 +1032,24 @@ const PythonGym: React.FC<PythonGymProps> = ({ onBack, onNavigate }) => {
                       </span>
                     </>
                   )}
+                </div>
+              )}
+
+              {diagnosi && diagnosi !== "in-corso" && (
+                <div className="px-4 py-3 text-xs border-b bg-slate-900/70 border-slate-700 text-slate-300 space-y-2">
+                  <p className="text-slate-100">{diagnosi.verdetto}</p>
+                  <p>{diagnosi.cosaFare}</p>
+                  <pre className="overflow-x-auto p-2 rounded bg-black/40 text-[11px] leading-relaxed text-slate-400">
+                    {diagnosi.dettagli.join("\n")}
+                  </pre>
+                  <button
+                    onClick={() =>
+                      navigator.clipboard?.writeText(diagnosi.dettagli.join("\n"))
+                    }
+                    className="px-2 py-1 rounded border border-slate-600 hover:bg-slate-700/50"
+                  >
+                    Copia il dettaglio
+                  </button>
                 </div>
               )}
 
