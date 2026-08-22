@@ -28,11 +28,20 @@ const OUT = path.join(root, 'public', 'pyodide');
 
 // Solo i file che il worker carica davvero: niente .map ne' pyodide.mjs (il
 // worker usa importScripts, quindi lo script classico).
+// python_stdlib.zip e' copiato come .bin di proposito, NON e' un errore.
+// Diagnosticato il 20/08/2026 dal PC dell'ufficio: il proxy aziendale risponde
+// 403 a quel file e solo a quello (il .wasm da 8,9 MB passa senza problemi),
+// quindi il blocco e' sul tipo "archivio", non sulla dimensione o sul binario.
+// Stessi byte, estensione innocua: Vercel lo serve come application/octet-stream
+// invece di application/zip. Il worker lo indica a Pyodide con l'opzione
+// `stdLibURL`, che e' supportata: non stiamo aggirando niente a mano.
+const STDLIB_SRC = 'python_stdlib.zip';
+const STDLIB_DEST = 'python_stdlib.bin';
+
 const CORE = [
   'pyodide.js',
   'pyodide.asm.js',
   'pyodide.asm.wasm',
-  'python_stdlib.zip',
   'pyodide-lock.json',
 ];
 
@@ -69,6 +78,9 @@ async function main() {
     const dest = path.join(OUT, f);
     if (!(await exists(dest))) await copyFile(path.join(SRC, f), dest);
   }
+
+  const stdlib = path.join(OUT, STDLIB_DEST);
+  if (!(await exists(stdlib))) await copyFile(path.join(SRC, STDLIB_SRC), stdlib);
 
   const lock = JSON.parse(await readFile(path.join(OUT, 'pyodide-lock.json'), 'utf8'));
   const pkgs = lock.packages;

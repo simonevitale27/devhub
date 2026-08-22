@@ -21,7 +21,14 @@ let stderrBuf = '';
 
 async function ensurePyodide() {
   if (pyodide) return pyodide;
-  pyodide = await self.loadPyodide({ indexURL: PYODIDE_BASE });
+  // stdLibURL: la libreria standard e' servita come .bin, non .zip. Il proxy
+  // dell'ufficio rispondeva 403 al solo python_stdlib.zip (il .wasm da 8,9 MB
+  // passava), quindi blocca gli archivi per tipo. Stessi byte, altro nome.
+  // Opzione ufficiale di loadPyodide, non un trucco: vedi scripts/fetch-pyodide.mjs.
+  pyodide = await self.loadPyodide({
+    indexURL: PYODIDE_BASE,
+    stdLibURL: PYODIDE_BASE + 'python_stdlib.bin',
+  });
   pyodide.setStdout({ batched: (s) => { stdoutBuf += s; } });
   pyodide.setStderr({ batched: (s) => { stderrBuf += s; } });
   return pyodide;
