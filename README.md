@@ -282,7 +282,9 @@ Fatto di recente:
   spazi e le maiuscole non contano) e scenari in stile esame.
 - **Pyodide self-hosted**: l'ambiente Python non dipende più da CDN esterni,
   quindi parte anche dietro reti che li filtrano. Come effetto collaterale
-  resta utilizzabile offline dopo il primo caricamento.
+  resta utilizzabile offline dopo il primo caricamento. La libreria standard è
+  servita come `.bin` e non come `.zip`, perché alcuni proxy aziendali bloccano
+  gli archivi: stessi byte, tipo di file che non fa scattare il filtro.
 - **Spiegazione AI degli errori**: un tutor che dice dove hai sbagliato, con
   ripiego automatico fra più modelli quando quelli gratuiti sono saturi.
 - **Diagnostica dell'ambiente Python**: se non parte, l'app dice *perché* invece
